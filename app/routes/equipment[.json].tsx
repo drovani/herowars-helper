@@ -1,7 +1,8 @@
 import { EquipmentRecord } from "@/data/equipment.zod";
 import { equipmentDAL } from "@/lib/equipment-dal";
-import { createReadableStreamFromReadable } from "@remix-run/node";
+import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
+import { Route } from "./+types/equipment[.json]";
 
 function removeEmptyArrays<T>(_: string, value: T): T | undefined {
     // Check if value is an array and it's empty
@@ -12,14 +13,16 @@ function removeEmptyArrays<T>(_: string, value: T): T | undefined {
 }
 
 // Ensure dates are in ISO format when stringifying
-function formatEquipmentForExport(equipment: EquipmentRecord[]): EquipmentRecord[] {
+function formatEquipmentForExport(
+    equipment: EquipmentRecord[]
+): EquipmentRecord[] {
     return equipment.map((item) => ({
         ...item,
         created_at: new Date(item.created_at).toISOString(),
     }));
 }
 
-export async function loader() {
+export async function loader(_: Route.LoaderArgs) {
     const equipment = await equipmentDAL.getAllEquipment();
     const formattedEquipment = formatEquipmentForExport(equipment);
 

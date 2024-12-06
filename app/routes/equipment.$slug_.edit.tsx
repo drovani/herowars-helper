@@ -1,3 +1,4 @@
+import { Route } from ".react-router/types/app/routes/+types/equipment.$slug_.edit";
 import EquipmentForm from "@/components/EquipmentForm";
 import {
     EquipmentMutationSchema,
@@ -6,22 +7,16 @@ import {
 import { equipmentDAL } from "@/lib/equipment-dal";
 import { missionDAL } from "@/lib/mission-dal";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-    ActionFunctionArgs,
-    LoaderFunctionArgs,
-    MetaFunction,
-} from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
 import { useForm } from "react-hook-form";
+import { redirect } from "react-router";
 import invariant from "tiny-invariant";
 import { ZodError } from "zod";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
+export const meta = ({ data }: Route.MetaArgs) => {
     return [{ title: `Edit ${data?.equipment.name}` }];
 };
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params }: Route.LoaderArgs) => {
     invariant(params.slug, "Missing equipment slug param.");
     const equipment = await equipmentDAL.getEquipmentBySlug(params.slug);
     if (!equipment) {
@@ -44,10 +39,10 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
         ),
     ];
 
-    return json({ existingItems, existingStats, allMissions, equipment });
+    return { existingItems, existingStats, allMissions, equipment };
 };
 
-export const action = async ({ params, request }: ActionFunctionArgs) => {
+export const action = async ({ params, request }: Route.ActionArgs) => {
     invariant(params.slug, "Missing equipment slug param");
 
     const formData = await request.formData();
@@ -64,15 +59,14 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
         return redirect(`/equipment/${updatedEquipment.slug}`);
     } catch (error) {
         if (error instanceof ZodError) {
-            return json({ errors: error.format() }, { status: 400 });
+            return data({ errors: error.format() }, { status: 400 });
         }
         throw error;
     }
 };
 
-export default function EditEquipment() {
-    const { allMissions, existingStats, existingItems, equipment } =
-        useLoaderData<typeof loader>();
+export default function EditEquipment({ loaderData }: Route.ComponentProps) {
+    const { allMissions, existingStats, existingItems, equipment } = loaderData;
 
     const form = useForm<EquipmentMutation>({
         resolver: zodResolver(EquipmentMutationSchema),

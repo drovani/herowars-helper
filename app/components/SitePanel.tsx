@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import logo_image from "../images/hero-wars-alliance-logo.webp";
 import SiteNavigation from "./SiteNavigation";
 

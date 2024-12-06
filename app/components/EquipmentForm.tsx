@@ -19,9 +19,9 @@ import {
 } from "@/data/equipment.zod";
 import type { Mission } from "@/data/mission.zod";
 import { generateSlug } from "@/lib/utils";
-import { useNavigate, useSubmit } from "@remix-run/react";
 import { useEffect, useMemo, useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
+import { useNavigate, useSubmit } from "react-router";
 import { z } from "zod";
 import CampaignSourcesField from "./CampaignSourcesField";
 import CraftingField from "./CraftingField";

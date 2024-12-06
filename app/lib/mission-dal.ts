@@ -1,7 +1,4 @@
-import {
-    MissionSchema,
-    type Mission,
-} from "@/data/mission.zod";
+import { MissionSchema, type Mission } from "@/data/mission.zod";
 import missionData from "@/data/missions.json";
 import { getStore } from "@netlify/blobs";
 
@@ -28,7 +25,9 @@ class LocalMissionCache {
         return Array.from(this.missions.values()).sort((a, b) => {
             const [aChapter, aMission] = a.id.split("-").map(Number);
             const [bChapter, bMission] = b.id.split("-").map(Number);
-            return aChapter === bChapter ? aMission - bMission : aChapter - bChapter;
+            return aChapter === bChapter
+                ? aMission - bMission
+                : aChapter - bChapter;
         });
     }
 
@@ -58,7 +57,11 @@ export class MissionDAL {
     private useLocalCache: boolean = false;
 
     constructor() {
-        this.store = getStore("missions");
+        this.store = getStore({
+            name: "missions",
+            siteID: "herowars-helper",
+            token: "nfp_issmYycyeVFStWR9YVMPn5zYUjpyr47i43b8",
+        });
         this.localCache = new LocalMissionCache();
     }
 
@@ -70,7 +73,7 @@ export class MissionDAL {
             await this.store.list();
             return true;
         } catch (error) {
-            console.warn("Netlify blob storage is not accessible:", error);
+            //console.warn("Netlify blob storage is not accessible:", error);
             return false;
         }
     }
@@ -100,7 +103,9 @@ export class MissionDAL {
             return;
         }
 
-        console.log("Netlify storage is now accessible. Syncing local changes...");
+        console.log(
+            "Netlify storage is now accessible. Syncing local changes..."
+        );
 
         try {
             const localData = await this.localCache.getAll();
@@ -140,7 +145,9 @@ export class MissionDAL {
                 .sort((a, b) => {
                     const [aChapter, aMission] = a.id.split("-").map(Number);
                     const [bChapter, bMission] = b.id.split("-").map(Number);
-                    return aChapter === bChapter ? aMission - bMission : aChapter - bChapter;
+                    return aChapter === bChapter
+                        ? aMission - bMission
+                        : aChapter - bChapter;
                 });
 
             return missions;
@@ -183,7 +190,9 @@ export class MissionDAL {
 
             const existing = await this.getMission(validated.id);
             if (existing) {
-                throw new Error(`Mission with id ${validated.id} already exists`);
+                throw new Error(
+                    `Mission with id ${validated.id} already exists`
+                );
             }
 
             if (this.useLocalCache) {
@@ -195,7 +204,10 @@ export class MissionDAL {
             // Try to sync to Netlify if we're using local cache
             if (this.useLocalCache) {
                 await this.syncToNetlify().catch((error) => {
-                    console.warn("Failed to sync new mission to Netlify:", error);
+                    console.warn(
+                        "Failed to sync new mission to Netlify:",
+                        error
+                    );
                 });
             }
 
@@ -225,7 +237,9 @@ export class MissionDAL {
             }
 
             if (validated.id !== id) {
-                throw new Error(`Cannot change mission ID from ${id} to ${validated.id}`);
+                throw new Error(
+                    `Cannot change mission ID from ${id} to ${validated.id}`
+                );
             }
 
             if (this.useLocalCache) {
@@ -237,7 +251,10 @@ export class MissionDAL {
             // Try to sync to Netlify if we're using local cache
             if (this.useLocalCache) {
                 await this.syncToNetlify().catch((error) => {
-                    console.warn("Failed to sync updated mission to Netlify:", error);
+                    console.warn(
+                        "Failed to sync updated mission to Netlify:",
+                        error
+                    );
                 });
             }
 
@@ -292,7 +309,10 @@ export class MissionDAL {
             const allMissions = await this.getAllMissions();
             return allMissions.filter((mission) => mission.chapter === chapter);
         } catch (error) {
-            console.error(`Failed to get missions for chapter ${chapter}:`, error);
+            console.error(
+                `Failed to get missions for chapter ${chapter}:`,
+                error
+            );
             throw new Error(`Failed to get missions for chapter ${chapter}`);
         }
     }
@@ -305,7 +325,10 @@ export class MissionDAL {
             const allMissions = await this.getAllMissions();
             return allMissions.filter((mission) => mission.boss === bossName);
         } catch (error) {
-            console.error(`Failed to get missions for boss ${bossName}:`, error);
+            console.error(
+                `Failed to get missions for boss ${bossName}:`,
+                error
+            );
             throw new Error(`Failed to get missions for boss ${bossName}`);
         }
     }

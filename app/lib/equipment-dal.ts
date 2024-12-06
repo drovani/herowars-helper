@@ -27,9 +27,20 @@ class LocalEquipmentCache {
         this.initialized = true;
     }
 
-    async getAll(): Promise<EquipmentRecord[]> {
-        return Array.from(this.equipment.values()).sort((a, b) =>
-            a.name.localeCompare(b.name)
+    async getAll(slugs?: string[]): Promise<EquipmentRecord[]> {
+        let equipment = Array.from(this.equipment.values());
+
+        if (slugs) {
+            equipment = equipment.filter((e) =>
+                slugs.some((s) => e.slug === s)
+            );
+        }
+
+        return equipment.sort((a, b) =>
+            a.quality !== b.quality
+                ? EQUIPMENT_QUALITIES.indexOf(a.quality) -
+                  EQUIPMENT_QUALITIES.indexOf(b.quality)
+                : a.name.localeCompare(b.name)
         );
     }
 
@@ -59,7 +70,11 @@ export class EquipmentDAL {
     private useLocalCache: boolean = false;
 
     constructor() {
-        this.store = getStore("equipment");
+        this.store = getStore({
+            name: "equipment",
+            siteID: "herowars-helper",
+            token: "nfp_issmYycyeVFStWR9YVMPn5zYUjpyr47i43b8",
+        });
         this.localCache = new LocalEquipmentCache();
     }
 
@@ -71,7 +86,7 @@ export class EquipmentDAL {
             await this.store.list();
             return true;
         } catch (error) {
-            console.warn("Netlify blob storage is not accessible:", error);
+            //console.warn("Netlify blob storage is not accessible:", error);
             return false;
         }
     }
@@ -128,7 +143,7 @@ export class EquipmentDAL {
 
         try {
             if (this.useLocalCache) {
-                return await this.localCache.getAll();
+                return await this.localCache.getAll(slugs);
             }
 
             const storeList = await this.store.list();
@@ -140,13 +155,13 @@ export class EquipmentDAL {
 
             let equipment = (await Promise.all(equipmentPromises))
                 .filter((item): item is EquipmentRecord => item !== null)
-                .sort((a, b) => {
-                    const aq = EQUIPMENT_QUALITIES.indexOf(a.quality);
-                    const bq = EQUIPMENT_QUALITIES.indexOf(b.quality);
-                    return aq - bq || a.name.localeCompare(b.name);
-                });
-
-            if (slugs !== undefined) {
+                .sort((a, b) =>
+                    a.quality !== b.quality
+                        ? EQUIPMENT_QUALITIES.indexOf(a.quality) -
+                          EQUIPMENT_QUALITIES.indexOf(b.quality)
+                        : a.name.localeCompare(b.name)
+                );
+            if (slugs) {
                 equipment = equipment.filter((item) =>
                     slugs.some((s) => s === item.slug)
                 );
@@ -318,16 +333,13 @@ export class EquipmentDAL {
         try {
             const allEquipment = await this.getAllEquipment();
 
-            return allEquipment.filter((equipment) => {
-                if (
-                    "crafting" in equipment &&
-                    equipment.crafting !== undefined
-                ) {
-                    return Object.keys(equipment.crafting.required_items).some(
+            return allEquipment.filter((e) => {
+                if ("crafting" in e && e.crafting !== undefined) {
+                    return Object.keys(e.crafting.required_items).some(
                         (item_slug) => item_slug === slug
                     );
                 } else {
-                    return [];
+                    return false;
                 }
             });
         } catch (error) {

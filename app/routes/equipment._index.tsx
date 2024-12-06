@@ -1,10 +1,11 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { equipmentDAL } from "@/lib/equipment-dal";
 import { cn, parseSlugGetImageUrl } from "@/lib/utils";
-import { Link, useLoaderData } from "@remix-run/react";
 import { cva } from "class-variance-authority";
+import { Link } from "react-router";
+import { Route } from "./+types/equipment._index";
 
-export const loader = async () => {
+export const loader = async (_: Route.LoaderArgs) => {
     const equipments = await equipmentDAL.getAllEquipment();
 
     return { equipments };
@@ -26,8 +27,8 @@ const cardVariants = cva("p-1 bottom-0 absolute w-full text-center", {
     },
 });
 
-export default function EquipmentIndex() {
-    const { equipments } = useLoaderData<typeof loader>();
+export default function EquipmentIndex({ loaderData }: Route.ComponentProps) {
+    const { equipments } = loaderData;
 
     return (
         <div>

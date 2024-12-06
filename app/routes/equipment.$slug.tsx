@@ -1,3 +1,4 @@
+import { Route } from ".react-router/types/app/routes/+types/equipment.$slug";
 import EquipmentImage from "@/components/EquipmentImage";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -12,26 +13,16 @@ import type { EquipmentRecord } from "@/data/equipment.zod";
 import type { Mission } from "@/data/mission.zod";
 import { equipmentDAL } from "@/lib/equipment-dal";
 import { missionDAL } from "@/lib/mission-dal";
-import { json, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { AlertCircle, ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
+import { Form, Link, useNavigate } from "react-router";
 import invariant from "tiny-invariant";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
+export const meta = ({ data }: Route.MetaArgs) => {
     return [{ title: data?.equipment.name }];
 };
 
-interface LoaderData {
-    equipment: EquipmentRecord;
-    requiredEquipment: (EquipmentRecord | null)[];
-    requiredFor: EquipmentRecord[];
-    missionSources: Mission[];
-    prevEquipment: EquipmentRecord | null;
-    nextEquipment: EquipmentRecord | null;
-}
-
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params }: Route.LoaderArgs) => {
     invariant(params.slug, "Missing equipment slug param");
 
     // Get main equipment details
@@ -59,6 +50,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     const requiredFor = await equipmentDAL.getEquipmentThatRequires(
         equipment.slug
     );
+
     const requiredEquipment =
         "crafting" in equipment && equipment.crafting
             ? await equipmentDAL.getAllEquipment(
@@ -81,14 +73,14 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
               })
         : [];
 
-    return json<LoaderData>({
+    return {
         equipment,
         requiredEquipment,
         requiredFor,
         missionSources,
         prevEquipment,
         nextEquipment,
-    });
+    };
 };
 
 // Component to render either a valid equipment item or a placeholder
@@ -131,7 +123,7 @@ const EquipmentItem = ({
     );
 };
 
-export default function Equipment() {
+export default function Equipment({ loaderData }: Route.ComponentProps) {
     const {
         equipment,
         requiredEquipment,
@@ -139,7 +131,7 @@ export default function Equipment() {
         missionSources,
         prevEquipment,
         nextEquipment,
-    } = useLoaderData<LoaderData>();
+    } = loaderData;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -231,28 +223,32 @@ export default function Equipment() {
             </div>
 
             {/* Stats Section */}
-            {"stats" in equipment && equipment.stats && Object.entries(equipment.stats).length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Stats</CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {Object.entries(equipment.stats).map(
-                            ([stat, value]) => (
-                                <div
-                                    key={stat}
-                                    className="flex items-center gap-2"
-                                >
-                                    <span className="capitalize">{stat}:</span>
-                                    <span className="font-semibold">
-                                        {value}
-                                    </span>
-                                </div>
-                            )
-                        )}
-                    </CardContent>
-                </Card>
-            )}
+            {"stats" in equipment &&
+                equipment.stats &&
+                Object.entries(equipment.stats).length > 0 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Stats</CardTitle>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            {Object.entries(equipment.stats).map(
+                                ([stat, value]) => (
+                                    <div
+                                        key={stat}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <span className="capitalize">
+                                            {stat}:
+                                        </span>
+                                        <span className="font-semibold">
+                                            {value}
+                                        </span>
+                                    </div>
+                                )
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
             {/* Campaign Sources Section */}
             {missionSources.length > 0 && (

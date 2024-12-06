@@ -1,21 +1,14 @@
-import { LinksFunction, MetaFunction } from "@remix-run/node";
-import {
-    Links,
-    Meta,
-    Outlet,
-    Scripts,
-    ScrollRestoration,
-} from "@remix-run/react";
-
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { Route } from "./+types/root";
 import SiteHeader from "./components/SiteHeader";
 import SitePanel from "./components/SitePanel";
 import styles from "./tailwind.css?url";
 
-export const links: LinksFunction = () => [
+export const links: Route.LinksFunction = () => [
     { rel: "stylesheet", href: styles, as: "style" },
 ];
 
-export const meta: MetaFunction = () => {
+export const meta = (_: Route.MetaArgs) => {
     return [
         { title: "Hero Wars Helper: Heroes" },
         {
@@ -24,7 +17,7 @@ export const meta: MetaFunction = () => {
         },
     ];
 };
-export default function App() {
+export default function App(_: Route.ComponentProps) {
     return (
         <html lang="en" className="h-full bg-gray-100">
             <head>

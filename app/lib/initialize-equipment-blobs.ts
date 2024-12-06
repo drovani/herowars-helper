@@ -33,7 +33,7 @@ export async function initializeEquipmentBlobs(
     try {
         details.push("Starting equipment blob initialization...");
 
-        const store = getStore("equipment");
+        const store = getStore({ name: "equipment", siteID: "herowars-helper", token: "nfp_issmYycyeVFStWR9YVMPn5zYUjpyr47i43b8" });
 
         // Check for existing data by listing all keys
         const existingKeys = await store.list();

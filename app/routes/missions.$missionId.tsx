@@ -1,22 +1,22 @@
+import { Route } from ".react-router/types/app/routes/+types/missions.$missionId";
 import EquipmentImage from "@/components/EquipmentImage";
 import { buttonVariants } from "@/components/ui/button";
 import { EquipmentRecord } from "@/data/equipment.zod";
 import { equipmentDAL } from "@/lib/equipment-dal";
 import { missionDAL } from "@/lib/mission-dal";
 import { generateSlug } from "@/lib/utils";
-import { json, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { MapIcon } from "lucide-react";
 import { useEffect } from "react";
+import { Link, useNavigate } from "react-router";
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => {
+export const meta = ({ data }: Route.MetaArgs) => {
     if (!data) {
         return [{ title: "Mission not found" }];
     }
     return [{ title: `${data.mission.id}: ${data.mission.name}` }];
 };
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params }: Route.LoaderArgs) => {
     const missionId = params.missionId;
 
     if (!missionId) {
@@ -45,17 +45,17 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     const nextMission =
         missionIndex < missions.length - 1 ? missions[missionIndex + 1] : null;
 
-    return json({
+    return {
         mission,
         equipmentInMission,
         prevMission,
         nextMission,
-    });
+    };
 };
 
-export default function MissionDetails() {
+export default function MissionDetails({ loaderData }: Route.ComponentProps) {
     const { mission, equipmentInMission, prevMission, nextMission } =
-        useLoaderData<typeof loader>();
+        loaderData;
     const navigate = useNavigate();
 
     useEffect(() => {

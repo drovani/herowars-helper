@@ -1,9 +1,9 @@
+import { Route } from ".react-router/types/app/routes/+types/admin.setup";
 import { initializeEquipmentBlobs } from "@/lib/initialize-equipment-blobs";
 import { initializeMissionBlobs } from "@/lib/initialize-mission-blobs";
-import { json, type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { data } from "react-router";
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
     try {
         const url = new URL(request.url);
         const mode = url.searchParams.get("mode") || "basic";
@@ -25,17 +25,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
                 ? await initializeMissionBlobs(options)
                 : { status: "not loaded" };
 
-        return json({
+        return {
             message: "Equipment blob initialization complete",
             mode,
             results: { equipment: { ...resultE }, mission: { ...resultM } },
-        });
+        };
     } catch (error) {
         const message =
             error instanceof Error ? error.message : "Unknown error";
         console.error("Setup failed:", message);
 
-        return json(
+        return data(
             {
                 message: "Blob initialization failed",
                 error: message,
@@ -51,8 +51,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
 }
 
-export default function AdminSetp() {
-    const results = useLoaderData<typeof loader>();
+export default function AdminSetup({ loaderData }: Route.ComponentProps) {
+    const results = loaderData;
 
     return (
         <div>

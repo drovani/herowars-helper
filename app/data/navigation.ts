@@ -6,9 +6,8 @@ import {
   PresentationIcon,
   ShieldIcon,
   ShoppingBagIcon,
-  StoreIcon,
   SwordIcon,
-  UsersIcon,
+  UsersIcon
 } from "lucide-react";
 
 export const navigation = [
@@ -69,11 +68,6 @@ export const navigation = [
         name: "Force reload all records",
         href: "/admin/setup?mode=force",
         icon: FileWarningIcon,
-      },
-      {
-        name: "Parse Store Data",
-        href: "/admin/parse",
-        icon: StoreIcon,
       },
     ],
   },

@@ -1,6 +1,7 @@
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { LoaderCircle, MoreHorizontalIcon } from "lucide-react";
 import type React from "react";
+import { useMemo } from "react";
 import { Link, NavLink } from "react-router";
 import { navigation } from "~/data/navigation";
 import { useNetlifyAuth } from "~/hooks/useNetlifyAuth";
@@ -28,6 +29,13 @@ export function SiteSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
   const { isMobile, setOpenMobile } = useSidebar();
 
   const { isAuthenticated, user, authenticate } = useNetlifyAuth();
+  const navitems = useMemo(
+    () =>
+      navigation.filter(
+        (item) => "roles" in item === false || item.roles.some((i) => user?.app_metadata.roles.find((r) => r === i))
+      ),
+    [user?.app_metadata.roles]
+  );
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -38,7 +46,7 @@ export function SiteSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
         <SidebarGroup>
           <SidebarGroupLabel>Hero Wars Helper Tools</SidebarGroupLabel>
           <SidebarMenu>
-            {navigation.map((item) => (
+            {navitems.map((item) => (
               <SidebarMenuItem key={item.name} className="">
                 <SidebarMenuButton asChild>
                   {"href" in item ? (

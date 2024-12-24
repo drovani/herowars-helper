@@ -86,7 +86,7 @@ export default function AdminSetup({ loaderData }: Route.ComponentProps) {
                         value={"errors" in result ? result.errors : 0}
                         icon={<AlertCircle className="h-4 w-4 text-red-500" />}
                       />
-                      <StatsCard title="Total" value={result.total} />
+                      <StatsCard title="Total" value={"total" in result ? result.total : 0} />
                     </div>
                     <Accordion type="single" collapsible className="border rounded-md">
                       <AccordionItem value={`details-${type}`}>

@@ -18,6 +18,12 @@
                 "heroes.json"
             ],
             "url": "./app/data/hero-schema.json"
+        },
+        {
+            "fileMatch": [
+                "player.json"
+            ],
+            "url": "./app/data/player.json"
         }
     ]
 }

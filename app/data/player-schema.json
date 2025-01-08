@@ -1,0 +1,169 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Player Hero Collection",
+    "type": "object",
+    "required": [
+        "userId",
+        "heroes",
+        "lastUpdated",
+        "version"
+    ],
+    "properties": {
+        "userId": {
+            "type": "string",
+            "description": "Unique identifier of the player"
+        },
+        "heroes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "slug",
+                    "owned",
+                    "lastUpdated"
+                ],
+                "properties": {
+                    "slug": {
+                        "type": "string",
+                        "description": "Unique identifier of the hero"
+                    },
+                    "owned": {
+                        "type": "boolean",
+                        "description": "Whether the player owns this hero"
+                    },
+                    "stars": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 6
+                    },
+                    "level": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 130
+                    },
+                    "glyphs": {
+                        "type": "array",
+                        "minItems": 5,
+                        "maxItems": 5,
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "stat",
+                                "level"
+                            ],
+                            "properties": {
+                                "stat": {
+                                    "type": "string"
+                                },
+                                "level": {
+                                    "type": "integer",
+                                    "minimum": 0
+                                }
+                            }
+                        }
+                    },
+                    "skins": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": [
+                                "name",
+                                "level",
+                                "unlocked"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "level": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 60
+                                },
+                                "unlocked": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    },
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "current_tier",
+                            "items"
+                        ],
+                        "properties": {
+                            "current_tier": {
+                                "type": "string"
+                            },
+                            "items": {
+                                "type": "array",
+                                "minItems": 6,
+                                "maxItems": 6,
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "equipped",
+                                        "crafted",
+                                        "none"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "artifacts": {
+                        "type": "object",
+                        "required": [
+                            "weapon",
+                            "book",
+                            "ring"
+                        ],
+                        "properties": {
+                            "weapon": {
+                                "type": "object",
+                                "required": [
+                                    "level",
+                                    "stars"
+                                ],
+                                "properties": {
+                                    "level": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 100
+                                    },
+                                    "stars": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 6
+                                    }
+                                }
+                            },
+                            "book": {
+                                "$ref": "#/properties/heroes/items/properties/artifacts/properties/weapon"
+                            },
+                            "ring": {
+                                "$ref": "#/properties/heroes/items/properties/artifacts/properties/weapon"
+                            }
+                        }
+                    },
+                    "lastUpdated": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            }
+        },
+        "lastUpdated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last time any hero data was updated"
+        },
+        "version": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "description": "Schema version for future migrations"
+        }
+    }
+}

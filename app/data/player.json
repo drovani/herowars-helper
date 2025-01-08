@@ -1,0 +1,73 @@
+{
+    "userId": "lore.family@gmail.com",
+    "heroes": [
+        {
+            "slug": "auora",
+            "owned": true,
+            "stars": 5,
+            "level": 120,
+            "glyphs": [
+                {
+                    "stat": "magic-attack",
+                    "level": 45
+                },
+                {
+                    "stat": "health",
+                    "level": 45
+                },
+                {
+                    "stat": "magic-penetration",
+                    "level": 45
+                },
+                {
+                    "stat": "dodge",
+                    "level": 45
+                },
+                {
+                    "stat": "strength",
+                    "level": 45
+                }
+            ],
+            "skins": [
+                {
+                    "name": "Default Skin",
+                    "level": 60,
+                    "unlocked": true
+                },
+                {
+                    "name": "Nordic Skin",
+                    "level": 60,
+                    "unlocked": true
+                }
+            ],
+            "items": {
+                "current_tier": "orange+1",
+                "items": [
+                    "equipped",
+                    "equipped",
+                    "equipped",
+                    "equipped",
+                    "equipped",
+                    "none"
+                ]
+            },
+            "artifacts": {
+                "weapon": {
+                    "level": 100,
+                    "stars": 4
+                },
+                "book": {
+                    "level": 100,
+                    "stars": 4
+                },
+                "ring": {
+                    "ring": 100,
+                    "stars": 4
+                }
+            },
+            "lastUpdated": "2025-01-05"
+        }
+    ],
+    "lastUpdated": "2025-01-05",
+    "version": 1
+}

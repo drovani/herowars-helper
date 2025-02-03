@@ -17,8 +17,6 @@ interface HydrateDataOptions {
   failIfExists?: boolean;
   /** If true, will force update all items regardless of existence */
   forceUpdate?: boolean;
-  /** If true, delete all existing data first */
-  purgeFirst?: boolean;
 }
 
 interface HydrateDataResult {
@@ -301,7 +299,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
 
   async hydrateBlobData(
     records: TRecord[],
-    options: HydrateDataOptions = { skipExisting: true, failIfExists: false, forceUpdate: false, purgeFirst: false }
+    options: HydrateDataOptions = { skipExisting: true, failIfExists: false, forceUpdate: false }
   ): Promise<HydrateDataResult> {
     const { skipExisting, failIfExists, forceUpdate } = options;
     const details: string[] = [];
@@ -319,13 +317,6 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
         if (failIfExists) {
           throw new Error(`Existing ${this.recordName} data found. Aborting data hydration.`);
         }
-      }
-
-      if (options.purgeFirst) {
-        for (const key of existingKeys.blobs) {
-          await this.netlifyStore.delete(key.key);
-        }
-        details.push(`Purged all existing ${this.recordName} data`);
       }
 
       let successCount = 0;

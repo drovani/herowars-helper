@@ -87,5 +87,4 @@ export default {
   },
   darkMode: "class",
   plugins: [],
-  corePlugins: {},
 } satisfies Config;

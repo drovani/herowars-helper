@@ -5,17 +5,18 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import type { EquipmentRecord } from "~/data/equipment.zod";
 import equipmentData from "~/data/equipments.json";
-import type { MissionRecord } from "~/data/mission.zod";
 import missionData from "~/data/missions.json";
 import { initializeHeroBlobs } from "~/lib/initialize-hero-blobs";
+import { generateSlug } from "~/lib/utils";
+import ChapterRepository, { type Chapter } from "~/services/ChapterRepository";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import MissionDataService from "~/services/MissionDataService";
+import type { HydrateDataResult } from "~/services/IDataService";
+import MissionRepository, { type MissionRow } from "~/services/MissionRepository";
 import type { Route } from "./+types/admin.setup";
 
 export async function action({ request }: Route.ActionArgs) {
@@ -23,30 +24,59 @@ export async function action({ request }: Route.ActionArgs) {
     const formData = await request.formData();
     const mode = formData.get("mode")?.toString() || "basic";
     const dataset = formData.get("dataset")?.toString();
-    const purge = formData.get("purge") === "true";
 
     // Set initialization options based on mode
     const options = {
       skipExisting: mode !== "force",
       failIfExists: mode === "safe",
       forceUpdate: mode === "force",
-      purgeFirst: purge,
     };
 
-    const resultE =
-      !dataset || dataset === "equipment"
-        ? await EquipmentDataService.hydrateBlobData(equipmentData as EquipmentRecord[], options)
-        : { status: "not loaded" };
-    const resultM =
-      !dataset || dataset === "missions"
-        ? await MissionDataService.hydrateBlobData(missionData as MissionRecord[], options)
-        : { status: "not loaded" };
-    const resultH = !dataset || dataset === "heroes" ? await initializeHeroBlobs(options) : { status: "not loaded" };
+    const results: {
+      equipment?: HydrateDataResult | { status: string };
+      chapter?: HydrateDataResult | { status: string };
+      mission?: HydrateDataResult | { status: string };
+      hero?: HydrateDataResult | { status: string };
+    } = {};
+
+    if (!dataset || dataset === "equipment") {
+      results.equipment = await EquipmentDataService.hydrateBlobData(equipmentData as EquipmentRecord[], options);
+    } else {
+      results.equipment = { status: "Equipment not loaded" };
+    }
+
+    if (!dataset || dataset === "missions") {
+      const chapters: Chapter[] = missionData
+        .filter((m, idx, data) => data.findIndex((d) => d.chapter === m.chapter) === idx)
+        .map((m) => ({
+          id: m.chapter,
+          title: m.chapter_title,
+        }));
+      const missions: MissionRow[] = missionData.map((m) => ({
+        slug: m.id,
+        chapter_id: m.chapter,
+        level: m.mission_number,
+        name: m.name,
+        hero_slug: generateSlug(m.boss),
+      }));
+
+      results.chapter = await ChapterRepository.hydrateTableData(chapters, options);
+      results.mission = await MissionRepository.hydrateTableData(missions, options);
+    } else {
+      results.mission = { status: "not loaded" };
+      results.chapter = { status: "not loaded" };
+    }
+
+    if (!dataset || dataset === "heroes") {
+      results.hero = await initializeHeroBlobs(options);
+    } else {
+      results.hero = { status: "not loaded" };
+    }
 
     return {
       message: "Equipment blob initialization complete",
       mode,
-      results: { equipment: { ...resultE }, mission: { ...resultM }, hero: { ...resultH } },
+      results,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -101,12 +131,6 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                       </Label>
                     </div>
                   </RadioGroup>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox name="purge" className="mt-4" value="true" />
-                    <Label htmlFor="purge" className="font-normal pt-4">
-                      Purge existing data
-                    </Label>
-                  </div>
                 </div>
 
                 <div>

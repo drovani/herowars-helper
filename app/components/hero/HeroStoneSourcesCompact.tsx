@@ -1,11 +1,11 @@
 import { Link } from "react-router";
 import { Badge } from "~/components/ui/badge";
 import type { HeroRecord } from "~/data/hero.zod";
-import type { MissionRecord } from "~/data/mission.zod";
+import type { Mission } from "~/services/MissionRepository";
 
 interface HeroStoneSourcesProps {
   stoneSources: HeroRecord["stone_source"];
-  campaignSources: MissionRecord[];
+  campaignSources: Mission[];
 }
 
 export default function HeroStoneSources({ stoneSources, campaignSources }: HeroStoneSourcesProps) {
@@ -22,9 +22,9 @@ export default function HeroStoneSources({ stoneSources, campaignSources }: Hero
         ))}
       {campaignSources.length > 0 &&
         campaignSources.map((mission) => (
-          <Link to={`/missions/${mission.id}`} key={mission.id}>
+          <Link to={`/missions/${mission.slug}`} key={mission.slug}>
             <Badge variant="outline">
-              {mission.chapter}-{mission.mission_number}: {mission.name}
+              {mission.chapter_id}-{mission.level}: {mission.name}
             </Badge>
           </Link>
         ))}

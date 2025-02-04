@@ -40,11 +40,11 @@ export default abstract class BaseRepository<TRecord, TMutation> {
     const records = await this.getAll(ids);
     const jsonString = JSON.stringify(
       records,
-      (_: string, value: any): any | undefined => {
+      (key: string, value: any): any | undefined => {
         if (Array.isArray(value) && value.length === 0) {
           // remove properties that are empty arrays
           return undefined;
-        } else if (value === null) {
+        } else if (value === null || value === "") {
           return undefined;
         }
         return value;

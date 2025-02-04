@@ -12,7 +12,6 @@ import type { EquipmentRecord } from "~/data/equipment.zod";
 import equipmentData from "~/data/equipments.json";
 import missionData from "~/data/missions.json";
 import { initializeHeroBlobs } from "~/lib/initialize-hero-blobs";
-import { generateSlug } from "~/lib/utils";
 import ChapterRepository, { type Chapter } from "~/services/ChapterRepository";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import type { HydrateDataResult } from "~/services/IDataService";
@@ -47,17 +46,17 @@ export async function action({ request }: Route.ActionArgs) {
 
     if (!dataset || dataset === "missions") {
       const chapters: Chapter[] = missionData
-        .filter((m, idx, data) => data.findIndex((d) => d.chapter === m.chapter) === idx)
+        .filter((m, idx, data) => data.findIndex((d) => d.chapter_id === m.chapter_id) === idx)
         .map((m) => ({
-          id: m.chapter,
+          id: m.chapter_id,
           title: m.chapter_title,
         }));
       const missions: MissionRow[] = missionData.map((m) => ({
-        slug: m.id,
-        chapter_id: m.chapter,
-        level: m.mission_number,
+        slug: m.slug,
+        chapter_id: m.chapter_id,
+        level: m.level,
         name: m.name,
-        hero_slug: generateSlug(m.boss),
+        hero_slug: m.hero_slug,
       }));
 
       results.chapter = await ChapterRepository.hydrateTableData(chapters, options);
@@ -273,7 +272,7 @@ export function ErrorBoundary(props: Route.ErrorBoundaryProps) {
         <AlertTitle>Error in this route</AlertTitle>
         <AlertDescription>
           For some reason, after the form is posted and the data is processed, React Router throws an AbortError. I
-          can't figure out why, but I know the data is there and the results are good. I'll try to fix this soon.
+          can't figure out why, but the data is consistently there and the results are good. I'll try to fix this soon.
         </AlertDescription>
         <AlertDescription>
           <pre>{JSON.stringify(props, null, 2)}</pre>

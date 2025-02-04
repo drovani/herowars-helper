@@ -4,10 +4,10 @@ import log from "loglevel";
 import type { HydrateDataOptions, HydrateDataResult } from "./IDataService";
 
 export default abstract class BaseRepository<TRecord, TMutation> {
-  protected tableName: string;
-  protected select: string;
-  protected idField: string;
-  protected supabase;
+  protected readonly tableName: string;
+  protected readonly select: string;
+  protected readonly idField: string;
+  protected readonly supabase;
 
   constructor(tableName: string, idField: string, select: readonly string[]) {
     this.tableName = tableName;
@@ -43,6 +43,8 @@ export default abstract class BaseRepository<TRecord, TMutation> {
       (_: string, value: any): any | undefined => {
         if (Array.isArray(value) && value.length === 0) {
           // remove properties that are empty arrays
+          return undefined;
+        } else if (value === null) {
           return undefined;
         }
         return value;

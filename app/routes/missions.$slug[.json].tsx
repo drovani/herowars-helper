@@ -41,13 +41,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
   const allEquipment = await EquipmentDataService.getAll();
   const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(missionSlug));
 
-  let prevMission = "";
-  if (mission.level > 1) prevMission = `${mission.chapter_id}-${mission.level - 1}`;
-  else if (mission.chapter_id > 1) prevMission = `${mission.chapter_id - 1}-${mission.chapter_id > 2 ? 15 : 10}`;
-  let nextMission = "";
-  if ((mission.chapter_id > 1 && mission.level < 15) || (mission.chapter_id === 1 && mission.level < 10))
-    nextMission = `${mission.chapter_id}-${mission.level + 1}`;
-  else if (mission.chapter_id < 13) nextMission = `${mission.chapter_id + 1}-1`;
+  const [prevMission, nextMission] = await MissionRepository.getPrevNextMission(mission);
 
   return {
     mission,

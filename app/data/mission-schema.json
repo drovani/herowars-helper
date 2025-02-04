@@ -5,19 +5,19 @@
     "items": {
         "type": "object",
         "required": [
-            "id",
-            "chapter",
+            "slug",
+            "chapter_id",
             "chapter_title",
-            "mission_number",
+            "level",
             "name"
         ],
         "properties": {
-            "id": {
+            "slug": {
                 "type": "string",
                 "description": "Mission identifier in format 'chapter-mission' (e.g., '1-1')",
                 "pattern": "^\\d+-\\d+$"
             },
-            "chapter": {
+            "chapter_id": {
                 "type": "integer",
                 "description": "Chapter number",
                 "minimum": 1
@@ -26,7 +26,7 @@
                 "type": "string",
                 "description": "Title of the chapter"
             },
-            "mission_number": {
+            "level": {
                 "type": "integer",
                 "description": "Mission number within the chapter",
                 "minimum": 1
@@ -35,9 +35,14 @@
                 "type": "string",
                 "description": "Name of the mission"
             },
-            "boss": {
+            "energy_cost": {
+                "type": "integer",
+                "description": "The energy cost to battle/raid the mission",
+                "minimum": 0
+            },
+            "hero_slug": {
                 "type": "string",
-                "description": "Optional boss name for the mission"
+                "description": "Optional hero slug for the mission"
             }
         },
         "additionalProperties": false

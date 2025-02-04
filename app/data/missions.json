@@ -1,1383 +1,1712 @@
 [
   {
-    "id": "1-1",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 1,
+    "chapter_id": 1,
     "name": "Ashen Road",
-    "boss": "Astaroth"
+    "slug": "1-1",
+    "level": 1,
+    "hero_slug": "astaroth",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-2",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 2,
-    "name": "Glades of Silence"
+    "chapter_id": 1,
+    "name": "Glades of Silence",
+    "slug": "1-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-3",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 3,
-    "name": "Dry Dale"
+    "chapter_id": 1,
+    "name": "Dry Dale",
+    "slug": "1-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-4",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 4,
-    "name": "Smoky Crossroads"
+    "chapter_id": 1,
+    "name": "Smoky Crossroads",
+    "slug": "1-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-5",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 5,
+    "chapter_id": 1,
     "name": "Merchant Camp",
-    "boss": "Ginger"
+    "slug": "1-5",
+    "level": 5,
+    "hero_slug": "ginger",
+    "energy_cost": 12,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-6",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 6,
-    "name": "City Gate"
+    "chapter_id": 1,
+    "name": "City Gate",
+    "slug": "1-6",
+    "level": 6,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-7",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 7,
-    "name": "City on Fire"
+    "chapter_id": 1,
+    "name": "City on Fire",
+    "slug": "1-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-8",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 8,
-    "name": "Scorching Pavement"
+    "chapter_id": 1,
+    "name": "Scorching Pavement",
+    "slug": "1-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-9",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 9,
-    "name": "Elder's House"
+    "chapter_id": 1,
+    "name": "Elder's House",
+    "slug": "1-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "1-10",
-    "chapter": 1,
-    "chapter_title": "Ruled by Fire",
-    "mission_number": 10,
+    "chapter_id": 1,
     "name": "Marax the Titan's Domain",
-    "boss": "Mojo"
+    "slug": "1-10",
+    "level": 10,
+    "hero_slug": "mojo",
+    "energy_cost": 18,
+    "chapter_title": "Ruled by Fire"
   },
   {
-    "id": "2-1",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 1,
+    "chapter_id": 2,
     "name": "Wilheim",
-    "boss": "Thea"
+    "slug": "2-1",
+    "level": 1,
+    "hero_slug": "thea",
+    "energy_cost": 12,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-2",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 2,
-    "name": "Reaper's Cabin"
+    "chapter_id": 2,
+    "name": "Reaper's Cabin",
+    "slug": "2-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-3",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 3,
-    "name": "Outskirts"
+    "chapter_id": 2,
+    "name": "Outskirts",
+    "slug": "2-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-4",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 4,
-    "name": "Overgrown Path"
+    "chapter_id": 2,
+    "name": "Overgrown Path",
+    "slug": "2-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-5",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 5,
-    "name": "Thick Forest"
+    "chapter_id": 2,
+    "name": "Thick Forest",
+    "slug": "2-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-6",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 6,
+    "chapter_id": 2,
     "name": "Outskirts of Wilheim",
-    "boss": "Galahad"
+    "slug": "2-6",
+    "level": 6,
+    "hero_slug": "galahad",
+    "energy_cost": 12,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-7",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 7,
-    "name": "Monolith of Meron"
+    "chapter_id": 2,
+    "name": "Monolith of Meron",
+    "slug": "2-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-8",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 8,
-    "name": "Secret Ford"
+    "chapter_id": 2,
+    "name": "Secret Ford",
+    "slug": "2-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-9",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 9,
-    "name": "River of Oblivion"
+    "chapter_id": 2,
+    "name": "River of Oblivion",
+    "slug": "2-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-10",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 10,
+    "chapter_id": 2,
     "name": "Magic Thicket",
-    "boss": "Astaroth"
+    "slug": "2-10",
+    "level": 10,
+    "hero_slug": "astaroth",
+    "energy_cost": 12,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-11",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 11,
-    "name": "Marax' Trace"
+    "chapter_id": 2,
+    "name": "Marax' Trace",
+    "slug": "2-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-12",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 12,
-    "name": "Nameless Road"
+    "chapter_id": 2,
+    "name": "Nameless Road",
+    "slug": "2-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-13",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 13,
-    "name": "Deadlands"
+    "chapter_id": 2,
+    "name": "Deadlands",
+    "slug": "2-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-14",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 14,
-    "name": "Seal of Fire"
+    "chapter_id": 2,
+    "name": "Seal of Fire",
+    "slug": "2-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "2-15",
-    "chapter": 2,
-    "chapter_title": "Distorted Magic",
-    "mission_number": 15,
+    "chapter_id": 2,
     "name": "Lava Fracture",
-    "boss": "Aurora"
+    "slug": "2-15",
+    "level": 15,
+    "hero_slug": "aurora",
+    "energy_cost": 10,
+    "chapter_title": "Distorted Magic"
   },
   {
-    "id": "3-1",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 1,
+    "chapter_id": 3,
     "name": "Outpost",
-    "boss": "Phobos"
+    "slug": "3-1",
+    "level": 1,
+    "hero_slug": "phobos",
+    "energy_cost": 12,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-2",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 2,
-    "name": "Rocky Wasteland"
+    "chapter_id": 3,
+    "name": "Rocky Wasteland",
+    "slug": "3-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-3",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 3,
-    "name": "Grog's Stairway"
+    "chapter_id": 3,
+    "name": "Grog's Stairway",
+    "slug": "3-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-4",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 4,
-    "name": "Dusty Cliff"
+    "chapter_id": 3,
+    "name": "Dusty Cliff",
+    "slug": "3-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-5",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 5,
-    "name": "Rotten Ravine"
+    "chapter_id": 3,
+    "name": "Rotten Ravine",
+    "slug": "3-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-6",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 6,
+    "chapter_id": 3,
     "name": "Living Mountains",
-    "boss": "Keira"
+    "slug": "3-6",
+    "level": 6,
+    "hero_slug": "keira",
+    "energy_cost": 12,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-7",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 7,
-    "name": "Dilapidated Bridge"
+    "chapter_id": 3,
+    "name": "Dilapidated Bridge",
+    "slug": "3-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-8",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 8,
-    "name": "Scorched Lands"
+    "chapter_id": 3,
+    "name": "Scorched Lands",
+    "slug": "3-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-9",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 9,
-    "name": "Road of Mourning"
+    "chapter_id": 3,
+    "name": "Road of Mourning",
+    "slug": "3-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-10",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 10,
+    "chapter_id": 3,
     "name": "Sanctuary of The Ancestors",
-    "boss": "Fox"
+    "slug": "3-10",
+    "level": 10,
+    "hero_slug": "fox",
+    "energy_cost": 12,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-11",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 11,
-    "name": "Fir Valley"
+    "chapter_id": 3,
+    "name": "Fir Valley",
+    "slug": "3-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-12",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 12,
-    "name": "Camp Approach"
+    "chapter_id": 3,
+    "name": "Camp Approach",
+    "slug": "3-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-13",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 13,
-    "name": "Orcish Patrol"
+    "chapter_id": 3,
+    "name": "Orcish Patrol",
+    "slug": "3-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-14",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 14,
-    "name": "Frontier Camp"
+    "chapter_id": 3,
+    "name": "Frontier Camp",
+    "slug": "3-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "3-15",
-    "chapter": 3,
-    "chapter_title": "Hardan's Plateau",
-    "mission_number": 15,
+    "chapter_id": 3,
     "name": "Leader's Tent",
-    "boss": "Mojo"
+    "slug": "3-15",
+    "level": 15,
+    "hero_slug": "mojo",
+    "energy_cost": 18,
+    "chapter_title": "Hardan's Plateau"
   },
   {
-    "id": "4-1",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 1,
+    "chapter_id": 4,
     "name": "Shepherds' Lands",
-    "boss": "Heidi"
+    "slug": "4-1",
+    "level": 1,
+    "hero_slug": "heidi",
+    "energy_cost": 12,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-2",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 2,
-    "name": "Dry Wind"
+    "chapter_id": 4,
+    "name": "Dry Wind",
+    "slug": "4-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-3",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 3,
-    "name": "Edge of Dusk"
+    "chapter_id": 4,
+    "name": "Edge of Dusk",
+    "slug": "4-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-4",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 4,
-    "name": "Surrounding Highway"
+    "chapter_id": 4,
+    "name": "Surrounding Highway",
+    "slug": "4-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-5",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 5,
-    "name": "Trial by Darkness"
+    "chapter_id": 4,
+    "name": "Trial by Darkness",
+    "slug": "4-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-6",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 6,
+    "chapter_id": 4,
     "name": "Burnt Canyon",
-    "boss": "Ginger"
+    "slug": "4-6",
+    "level": 6,
+    "hero_slug": "ginger",
+    "energy_cost": 12,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-7",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 7,
-    "name": "Ashes and Coal"
+    "chapter_id": 4,
+    "name": "Ashes and Coal",
+    "slug": "4-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-8",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 8,
-    "name": "At Worlds' End"
+    "chapter_id": 4,
+    "name": "At Worlds' End",
+    "slug": "4-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-9",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 9,
-    "name": "Bottomless Chasm"
+    "chapter_id": 4,
+    "name": "Bottomless Chasm",
+    "slug": "4-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-10",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 10,
+    "chapter_id": 4,
     "name": "Necropolis",
-    "boss": "Keira"
+    "slug": "4-10",
+    "level": 10,
+    "hero_slug": "keira",
+    "energy_cost": 12,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-11",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 11,
-    "name": "Granite of Silence"
+    "chapter_id": 4,
+    "name": "Granite of Silence",
+    "slug": "4-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-12",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 12,
-    "name": "Death Shroud"
+    "chapter_id": 4,
+    "name": "Death Shroud",
+    "slug": "4-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-13",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 13,
-    "name": "In the Afterlife"
+    "chapter_id": 4,
+    "name": "In the Afterlife",
+    "slug": "4-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-14",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 14,
-    "name": "Atrium"
+    "chapter_id": 4,
+    "name": "Atrium",
+    "slug": "4-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "4-15",
-    "chapter": 4,
-    "chapter_title": "Deadlands",
-    "mission_number": 15,
+    "chapter_id": 4,
     "name": "Gravehall Estate",
-    "boss": "Thea"
+    "slug": "4-15",
+    "level": 15,
+    "hero_slug": "thea",
+    "energy_cost": 12,
+    "chapter_title": "Deadlands"
   },
   {
-    "id": "5-1",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 1,
-    "name": "Smagard Terraces"
+    "chapter_id": 5,
+    "name": "Smagard Terraces",
+    "slug": "5-1",
+    "level": 1,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-2",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 2,
+    "chapter_id": 5,
     "name": "Obelisk",
-    "boss": "Galahad"
+    "slug": "5-2",
+    "level": 2,
+    "hero_slug": "galahad",
+    "energy_cost": 12,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-3",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 3,
-    "name": "Emerald Dust"
+    "chapter_id": 5,
+    "name": "Emerald Dust",
+    "slug": "5-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-4",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 4,
-    "name": "Exit from Gravehall"
+    "chapter_id": 5,
+    "name": "Exit from Gravehall",
+    "slug": "5-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-5",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 5,
-    "name": "Blinding Light"
+    "chapter_id": 5,
+    "name": "Blinding Light",
+    "slug": "5-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-6",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 6,
+    "chapter_id": 5,
     "name": "Flourishing Life",
-    "boss": "Aurora"
+    "slug": "5-6",
+    "level": 6,
+    "hero_slug": "aurora",
+    "energy_cost": 12,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-7",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 7,
-    "name": "Poisonous Lashes"
+    "chapter_id": 5,
+    "name": "Poisonous Lashes",
+    "slug": "5-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-8",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 8,
-    "name": "Hemlock Thicket"
+    "chapter_id": 5,
+    "name": "Hemlock Thicket",
+    "slug": "5-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-9",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 9,
-    "name": "Dangerous Shores"
+    "chapter_id": 5,
+    "name": "Dangerous Shores",
+    "slug": "5-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-10",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 10,
+    "chapter_id": 5,
     "name": "Drowner's Bridge",
-    "boss": "Astaroth"
+    "slug": "5-10",
+    "level": 10,
+    "hero_slug": "astaroth",
+    "energy_cost": 12,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-11",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 11,
-    "name": "Uninvited Guest"
+    "chapter_id": 5,
+    "name": "Uninvited Guest",
+    "slug": "5-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-12",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 12,
-    "name": "Enemy Hearth"
+    "chapter_id": 5,
+    "name": "Enemy Hearth",
+    "slug": "5-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-13",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 13,
-    "name": "Halt"
+    "chapter_id": 5,
+    "name": "Halt",
+    "slug": "5-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-14",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 14,
-    "name": "violet Wilds"
+    "chapter_id": 5,
+    "name": "violet Wilds",
+    "slug": "5-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "5-15",
-    "chapter": 5,
-    "chapter_title": "Cadang Thicket",
-    "mission_number": 15,
+    "chapter_id": 5,
     "name": "Illwood",
-    "boss": "Mojo"
+    "slug": "5-15",
+    "level": 15,
+    "hero_slug": "mojo",
+    "energy_cost": 18,
+    "chapter_title": "Cadang Thicket"
   },
   {
-    "id": "6-1",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 1,
-    "name": "Backwater"
+    "chapter_id": 6,
+    "name": "Backwater",
+    "slug": "6-1",
+    "level": 1,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-2",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 2,
+    "chapter_id": 6,
     "name": "Wretched Goosefoot",
-    "boss": "Fox"
+    "slug": "6-2",
+    "level": 2,
+    "hero_slug": "fox",
+    "energy_cost": 12,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-3",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 3,
-    "name": "Bogger"
+    "chapter_id": 6,
+    "name": "Bogger",
+    "slug": "6-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-4",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 4,
-    "name": "Damp Area"
+    "chapter_id": 6,
+    "name": "Damp Area",
+    "slug": "6-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-5",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 5,
-    "name": "Mandrake Flowers"
+    "chapter_id": 6,
+    "name": "Mandrake Flowers",
+    "slug": "6-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-6",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 6,
+    "chapter_id": 6,
     "name": "Forlorn Churchyard",
-    "boss": "Heidi"
+    "slug": "6-6",
+    "level": 6,
+    "hero_slug": "heidi",
+    "energy_cost": 12,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-7",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 7,
-    "name": "Frigid Place"
+    "chapter_id": 6,
+    "name": "Frigid Place",
+    "slug": "6-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-8",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 8,
-    "name": "Misty Cliff"
+    "chapter_id": 6,
+    "name": "Misty Cliff",
+    "slug": "6-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-9",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 9,
-    "name": "Morth Chrone's Lands"
+    "chapter_id": 6,
+    "name": "Morth Chrone's Lands",
+    "slug": "6-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-10",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 10,
+    "chapter_id": 6,
     "name": "Ritual Circle",
-    "boss": "Daredevil"
+    "slug": "6-10",
+    "level": 10,
+    "hero_slug": "daredevil",
+    "energy_cost": 12,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-11",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 11,
-    "name": "Tarrot's Arches"
+    "chapter_id": 6,
+    "name": "Tarrot's Arches",
+    "slug": "6-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-12",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 12,
-    "name": "Eternal Night"
+    "chapter_id": 6,
+    "name": "Eternal Night",
+    "slug": "6-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-13",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 13,
-    "name": "Game of Shadows"
+    "chapter_id": 6,
+    "name": "Game of Shadows",
+    "slug": "6-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-14",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 14,
-    "name": "Trapper's Nets"
+    "chapter_id": 6,
+    "name": "Trapper's Nets",
+    "slug": "6-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 6,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "6-15",
-    "chapter": 6,
-    "chapter_title": "Chaos Realm",
-    "mission_number": 15,
+    "chapter_id": 6,
     "name": "Thorn Arches",
-    "boss": "Mojo"
+    "slug": "6-15",
+    "level": 15,
+    "hero_slug": "mojo",
+    "energy_cost": 18,
+    "chapter_title": "Chaos Realm"
   },
   {
-    "id": "7-1",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 1,
+    "chapter_id": 7,
     "name": "Toll Gate",
-    "boss": "Keira"
+    "slug": "7-1",
+    "level": 1,
+    "hero_slug": "keira",
+    "energy_cost": 14,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-2",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 2,
-    "name": "Weapon Stands"
+    "chapter_id": 7,
+    "name": "Weapon Stands",
+    "slug": "7-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-3",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 3,
-    "name": "Gnawed Bones"
+    "chapter_id": 7,
+    "name": "Gnawed Bones",
+    "slug": "7-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-4",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 4,
-    "name": "Torchlit Passage"
+    "chapter_id": 7,
+    "name": "Torchlit Passage",
+    "slug": "7-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-5",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 5,
-    "name": "Training Fields"
+    "chapter_id": 7,
+    "name": "Training Fields",
+    "slug": "7-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-6",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 6,
+    "chapter_id": 7,
     "name": "Blood of the Earth",
-    "boss": "Astaroth"
+    "slug": "7-6",
+    "level": 6,
+    "hero_slug": "astaroth",
+    "energy_cost": null,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-7",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 7,
-    "name": "Blood and Sweat"
+    "chapter_id": 7,
+    "name": "Blood and Sweat",
+    "slug": "7-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-8",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 8,
-    "name": "Break of Times"
+    "chapter_id": 7,
+    "name": "Break of Times",
+    "slug": "7-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-9",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 9,
-    "name": "Bridge over the Chasm"
+    "chapter_id": 7,
+    "name": "Bridge over the Chasm",
+    "slug": "7-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-10",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 10,
+    "chapter_id": 7,
     "name": "Titan Plains",
-    "boss": "Thea"
+    "slug": "7-10",
+    "level": 10,
+    "hero_slug": "thea",
+    "energy_cost": 16,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-11",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 11,
-    "name": "Battle of Santar"
+    "chapter_id": 7,
+    "name": "Battle of Santar",
+    "slug": "7-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-12",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 12,
-    "name": "Great Split"
+    "chapter_id": 7,
+    "name": "Great Split",
+    "slug": "7-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-13",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 13,
-    "name": "Path of War"
+    "chapter_id": 7,
+    "name": "Path of War",
+    "slug": "7-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-14",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 14,
-    "name": "Mortal Wound"
+    "chapter_id": 7,
+    "name": "Mortal Wound",
+    "slug": "7-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "7-15",
-    "chapter": 7,
-    "chapter_title": "Split of Tribes",
-    "mission_number": 15,
+    "chapter_id": 7,
     "name": "Burial Mound",
-    "boss": "Galahad"
+    "slug": "7-15",
+    "level": 15,
+    "hero_slug": "galahad",
+    "energy_cost": null,
+    "chapter_title": "Split of Tribes"
   },
   {
-    "id": "8-1",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 1,
+    "chapter_id": 8,
     "name": "Fire-Worshippers' Capital",
-    "boss": "Daredevil"
+    "slug": "8-1",
+    "level": 1,
+    "hero_slug": "daredevil",
+    "energy_cost": 16,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-2",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 2,
-    "name": "Monolith of Guile"
+    "chapter_id": 8,
+    "name": "Monolith of Guile",
+    "slug": "8-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-3",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 3,
-    "name": "Anthracite Palace"
+    "chapter_id": 8,
+    "name": "Anthracite Palace",
+    "slug": "8-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-4",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 4,
-    "name": "Basalts"
+    "chapter_id": 8,
+    "name": "Basalts",
+    "slug": "8-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-5",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 5,
-    "name": "Monolith of Deceit"
+    "chapter_id": 8,
+    "name": "Monolith of Deceit",
+    "slug": "8-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-6",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 6,
+    "chapter_id": 8,
     "name": "Soul of the Volcano",
-    "boss": "Phobos"
+    "slug": "8-6",
+    "level": 6,
+    "hero_slug": "phobos",
+    "energy_cost": 16,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-7",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 7,
-    "name": "Monolith of Enmity"
+    "chapter_id": 8,
+    "name": "Monolith of Enmity",
+    "slug": "8-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-8",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 8,
-    "name": "Foundry"
+    "chapter_id": 8,
+    "name": "Foundry",
+    "slug": "8-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-9",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 9,
-    "name": "Torture Chamber"
+    "chapter_id": 8,
+    "name": "Torture Chamber",
+    "slug": "8-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-10",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 10,
+    "chapter_id": 8,
     "name": "Flaming Gates",
-    "boss": "Artemis"
+    "slug": "8-10",
+    "level": 10,
+    "hero_slug": "artemis",
+    "energy_cost": 16,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-11",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 11,
-    "name": "Monolith of Pain"
+    "chapter_id": 8,
+    "name": "Monolith of Pain",
+    "slug": "8-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-12",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 12,
-    "name": "Monolith of Groans"
+    "chapter_id": 8,
+    "name": "Monolith of Groans",
+    "slug": "8-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-13",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 13,
-    "name": "Shore of Despair"
+    "chapter_id": 8,
+    "name": "Shore of Despair",
+    "slug": "8-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-14",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 14,
-    "name": "Lava River"
+    "chapter_id": 8,
+    "name": "Lava River",
+    "slug": "8-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "8-15",
-    "chapter": 8,
-    "chapter_title": "Blazing Heart",
-    "mission_number": 15,
+    "chapter_id": 8,
     "name": "Furnace of Horror",
-    "boss": "Mojo"
+    "slug": "8-15",
+    "level": 15,
+    "hero_slug": "mojo",
+    "energy_cost": 24,
+    "chapter_title": "Blazing Heart"
   },
   {
-    "id": "9-1",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 1,
+    "chapter_id": 9,
     "name": "Shore",
-    "boss": "Aurora"
+    "slug": "9-1",
+    "level": 1,
+    "hero_slug": "aurora",
+    "energy_cost": null,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-2",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 2,
-    "name": "Abandoned Lighthouse"
+    "chapter_id": 9,
+    "name": "Abandoned Lighthouse",
+    "slug": "9-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-3",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 3,
-    "name": "Sea Lanes"
+    "chapter_id": 9,
+    "name": "Sea Lanes",
+    "slug": "9-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-4",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 4,
-    "name": "Grig's Strand"
+    "chapter_id": 9,
+    "name": "Grig's Strand",
+    "slug": "9-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-5",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 5,
-    "name": "Mainland"
+    "chapter_id": 9,
+    "name": "Mainland",
+    "slug": "9-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-6",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 6,
+    "chapter_id": 9,
     "name": "Treasure Island",
-    "boss": "Peppy"
+    "slug": "9-6",
+    "level": 6,
+    "hero_slug": "peppy",
+    "energy_cost": 16,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-7",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 7,
-    "name": "Dunes"
+    "chapter_id": 9,
+    "name": "Dunes",
+    "slug": "9-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-8",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 8,
-    "name": "Cape of Despair"
+    "chapter_id": 9,
+    "name": "Cape of Despair",
+    "slug": "9-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-9",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 9,
-    "name": "Transit Point"
+    "chapter_id": 9,
+    "name": "Transit Point",
+    "slug": "9-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-10",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 10,
+    "chapter_id": 9,
     "name": "Pirate Den",
-    "boss": "Daredevil"
+    "slug": "9-10",
+    "level": 10,
+    "hero_slug": "daredevil",
+    "energy_cost": 14,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-11",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 11,
-    "name": "Secret Route"
+    "chapter_id": 9,
+    "name": "Secret Route",
+    "slug": "9-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-12",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 12,
-    "name": "Pariah's Mooring"
+    "chapter_id": 9,
+    "name": "Pariah's Mooring",
+    "slug": "9-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-13",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 13,
-    "name": "Warstream"
+    "chapter_id": 9,
+    "name": "Warstream",
+    "slug": "9-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-14",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 14,
-    "name": "Dead Man's Strait"
+    "chapter_id": 9,
+    "name": "Dead Man's Strait",
+    "slug": "9-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "9-15",
-    "chapter": 9,
-    "chapter_title": "Archipelago",
-    "mission_number": 15,
+    "chapter_id": 9,
     "name": "Coral Reef",
-    "boss": "Fox"
+    "slug": "9-15",
+    "level": 15,
+    "hero_slug": "fox",
+    "energy_cost": 16,
+    "chapter_title": "Archipelago"
   },
   {
-    "id": "10-1",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 1,
+    "chapter_id": 10,
     "name": "Flying Dutchman",
-    "boss": "Heidi"
+    "slug": "10-1",
+    "level": 1,
+    "hero_slug": "heidi",
+    "energy_cost": 16,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-2",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 2,
-    "name": "Shipwreck"
+    "chapter_id": 10,
+    "name": "Shipwreck",
+    "slug": "10-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-3",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 3,
-    "name": "Rough Sea"
+    "chapter_id": 10,
+    "name": "Rough Sea",
+    "slug": "10-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-4",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 4,
-    "name": "Outer Vortex"
+    "chapter_id": 10,
+    "name": "Outer Vortex",
+    "slug": "10-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-5",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 5,
-    "name": "Roaring Abyss"
+    "chapter_id": 10,
+    "name": "Roaring Abyss",
+    "slug": "10-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-6",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 6,
+    "chapter_id": 10,
     "name": "Whirlpool",
-    "boss": "Peppy"
+    "slug": "10-6",
+    "level": 6,
+    "hero_slug": "peppy",
+    "energy_cost": 16,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-7",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 7,
-    "name": "Salvation's Run"
+    "chapter_id": 10,
+    "name": "Salvation's Run",
+    "slug": "10-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-8",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 8,
-    "name": "Strait of Fortune"
+    "chapter_id": 10,
+    "name": "Strait of Fortune",
+    "slug": "10-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-9",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 9,
-    "name": "Seaman's Song"
+    "chapter_id": 10,
+    "name": "Seaman's Song",
+    "slug": "10-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-10",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 10,
+    "chapter_id": 10,
     "name": "Sirens",
-    "boss": "Ginger"
+    "slug": "10-10",
+    "level": 10,
+    "hero_slug": "ginger",
+    "energy_cost": 16,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-11",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 11,
-    "name": "Becalmed Waters"
+    "chapter_id": 10,
+    "name": "Becalmed Waters",
+    "slug": "10-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-12",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 12,
-    "name": "Shallow Waters"
+    "chapter_id": 10,
+    "name": "Shallow Waters",
+    "slug": "10-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-13",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 13,
-    "name": "Sea Lane"
+    "chapter_id": 10,
+    "name": "Sea Lane",
+    "slug": "10-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 8,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-14",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 14,
-    "name": "Dark Waters"
+    "chapter_id": 10,
+    "name": "Dark Waters",
+    "slug": "10-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 7,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "10-15",
-    "chapter": 10,
-    "chapter_title": "Cursed Waters",
-    "mission_number": 15,
+    "chapter_id": 10,
     "name": "Kraken's Cave",
-    "boss": "Helios"
+    "slug": "10-15",
+    "level": 15,
+    "hero_slug": "helios",
+    "energy_cost": 24,
+    "chapter_title": "Cursed Waters"
   },
   {
-    "id": "11-1",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 1,
+    "chapter_id": 11,
     "name": "Longship Moorings",
-    "boss": "Lars"
+    "slug": "11-1",
+    "level": 1,
+    "hero_slug": "lars",
+    "energy_cost": 20,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-2",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 2,
-    "name": "Old Docks"
+    "chapter_id": 11,
+    "name": "Old Docks",
+    "slug": "11-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-3",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 3,
-    "name": "Jorn's Hut"
+    "chapter_id": 11,
+    "name": "Jorn's Hut",
+    "slug": "11-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-4",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 4,
-    "name": "Worn Rut"
+    "chapter_id": 11,
+    "name": "Worn Rut",
+    "slug": "11-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-5",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 5,
-    "name": "Mark of Doom"
+    "chapter_id": 11,
+    "name": "Mark of Doom",
+    "slug": "11-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-6",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 6,
+    "chapter_id": 11,
     "name": "Grimling Camp",
-    "boss": "Artemis"
+    "slug": "11-6",
+    "level": 6,
+    "hero_slug": "artemis",
+    "energy_cost": 20,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-7",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 7,
-    "name": "Mountain Tunnel"
+    "chapter_id": 11,
+    "name": "Mountain Tunnel",
+    "slug": "11-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-8",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 8,
-    "name": "The Bear Corner"
+    "chapter_id": 11,
+    "name": "The Bear Corner",
+    "slug": "11-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-9",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 9,
-    "name": "Hunters' Dugouts"
+    "chapter_id": 11,
+    "name": "Hunters' Dugouts",
+    "slug": "11-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-10",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 10,
+    "chapter_id": 11,
     "name": "Doomsdale",
-    "boss": "Krista"
+    "slug": "11-10",
+    "level": 10,
+    "hero_slug": "krista",
+    "energy_cost": 20,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-11",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 11,
-    "name": "Everfrost"
+    "chapter_id": 11,
+    "name": "Everfrost",
+    "slug": "11-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-12",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 12,
-    "name": "Cold Ridge"
+    "chapter_id": 11,
+    "name": "Cold Ridge",
+    "slug": "11-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-13",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 13,
-    "name": "Berserker Gorge"
+    "chapter_id": 11,
+    "name": "Berserker Gorge",
+    "slug": "11-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-14",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 14,
-    "name": "Crystal Waters"
+    "chapter_id": 11,
+    "name": "Crystal Waters",
+    "slug": "11-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "11-15",
-    "chapter": 11,
-    "chapter_title": "Nordland",
-    "mission_number": 15,
+    "chapter_id": 11,
     "name": "Gunar the Ferocious's Grotto",
-    "boss": "Helios"
+    "slug": "11-15",
+    "level": 15,
+    "hero_slug": "helios",
+    "energy_cost": 30,
+    "chapter_title": "Nordland"
   },
   {
-    "id": "12-1",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 1,
+    "chapter_id": 12,
     "name": "Glass Lake",
-    "boss": "Lars"
+    "slug": "12-1",
+    "level": 1,
+    "hero_slug": "lars",
+    "energy_cost": 20,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-2",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 2,
-    "name": "Depths of Solitude"
+    "chapter_id": 12,
+    "name": "Depths of Solitude",
+    "slug": "12-2",
+    "level": 2,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-3",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 3,
-    "name": "A Slippery Path"
+    "chapter_id": 12,
+    "name": "A Slippery Path",
+    "slug": "12-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-4",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 4,
-    "name": "Ice Ridges"
+    "chapter_id": 12,
+    "name": "Ice Ridges",
+    "slug": "12-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-5",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 5,
-    "name": "Labyrinth of Past Hopes"
+    "chapter_id": 12,
+    "name": "Labyrinth of Past Hopes",
+    "slug": "12-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-6",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 6,
+    "chapter_id": 12,
     "name": "The Lost Wonder",
-    "boss": "Phobos"
+    "slug": "12-6",
+    "level": 6,
+    "hero_slug": "phobos",
+    "energy_cost": 20,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-7",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 7,
-    "name": "Cliff Path"
+    "chapter_id": 12,
+    "name": "Cliff Path",
+    "slug": "12-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-8",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 8,
-    "name": "Frigid Place"
+    "chapter_id": 12,
+    "name": "Frigid Place",
+    "slug": "12-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-9",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 9,
-    "name": "Cold Fire"
+    "chapter_id": 12,
+    "name": "Cold Fire",
+    "slug": "12-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-10",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 10,
+    "chapter_id": 12,
     "name": "Runic Millstone",
-    "boss": "Krista"
+    "slug": "12-10",
+    "level": 10,
+    "hero_slug": "krista",
+    "energy_cost": 20,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-11",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 11,
-    "name": "Guardian Border"
+    "chapter_id": 12,
+    "name": "Guardian Border",
+    "slug": "12-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-12",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 12,
-    "name": "Touch of the Frost"
+    "chapter_id": 12,
+    "name": "Touch of the Frost",
+    "slug": "12-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-13",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 13,
-    "name": "Path of the Skalds"
+    "chapter_id": 12,
+    "name": "Path of the Skalds",
+    "slug": "12-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-14",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 14,
-    "name": "The Dying Hearth"
+    "chapter_id": 12,
+    "name": "The Dying Hearth",
+    "slug": "12-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "12-15",
-    "chapter": 12,
-    "chapter_title": "Boundless Snow",
-    "mission_number": 15,
+    "chapter_id": 12,
     "name": "Jarl's Estate",
-    "boss": "Helios"
+    "slug": "12-15",
+    "level": 15,
+    "hero_slug": "helios",
+    "energy_cost": 30,
+    "chapter_title": "Boundless Snow"
   },
   {
-    "id": "13-1",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 1,
-    "name": "Perilous Pass"
+    "chapter_id": 13,
+    "name": "Perilous Pass",
+    "slug": "13-1",
+    "level": 1,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-2",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 2,
+    "chapter_id": 13,
     "name": "Wolfsfang Cliff",
-    "boss": "Lars"
+    "slug": "13-2",
+    "level": 2,
+    "hero_slug": "lars",
+    "energy_cost": 20,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-3",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 3,
-    "name": "Stone Steps"
+    "chapter_id": 13,
+    "name": "Stone Steps",
+    "slug": "13-3",
+    "level": 3,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-4",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 4,
-    "name": "Unhappy Meeting"
+    "chapter_id": 13,
+    "name": "Unhappy Meeting",
+    "slug": "13-4",
+    "level": 4,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-5",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 5,
-    "name": "Hangman's Crossing"
+    "chapter_id": 13,
+    "name": "Hangman's Crossing",
+    "slug": "13-5",
+    "level": 5,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-6",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 6,
+    "chapter_id": 13,
     "name": "Stonemasons' Village",
-    "boss": "Peppy"
+    "slug": "13-6",
+    "level": 6,
+    "hero_slug": "peppy",
+    "energy_cost": 20,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-7",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 7,
-    "name": "Thawed Snow"
+    "chapter_id": 13,
+    "name": "Thawed Snow",
+    "slug": "13-7",
+    "level": 7,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-8",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 8,
-    "name": "Dangerous Ravine"
+    "chapter_id": 13,
+    "name": "Dangerous Ravine",
+    "slug": "13-8",
+    "level": 8,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-9",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 9,
-    "name": "Warmer, Warmer"
+    "chapter_id": 13,
+    "name": "Warmer, Warmer",
+    "slug": "13-9",
+    "level": 9,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-10",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 10,
+    "chapter_id": 13,
     "name": "Valley of Geysers",
-    "boss": "Krista"
+    "slug": "13-10",
+    "level": 10,
+    "hero_slug": "krista",
+    "energy_cost": 20,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-11",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 11,
-    "name": "Fetid Springs"
+    "chapter_id": 13,
+    "name": "Fetid Springs",
+    "slug": "13-11",
+    "level": 11,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-12",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 12,
-    "name": "Feast"
+    "chapter_id": 13,
+    "name": "Feast",
+    "slug": "13-12",
+    "level": 12,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-13",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 13,
-    "name": "Distribution"
+    "chapter_id": 13,
+    "name": "Distribution",
+    "slug": "13-13",
+    "level": 13,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-14",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 14,
-    "name": "Crystal Bridge"
+    "chapter_id": 13,
+    "name": "Crystal Bridge",
+    "slug": "13-14",
+    "level": 14,
+    "hero_slug": "",
+    "energy_cost": 10,
+    "chapter_title": "Crystal Throne"
   },
   {
-    "id": "13-15",
-    "chapter": 13,
-    "chapter_title": "Crystal Throne",
-    "mission_number": 15,
+    "chapter_id": 13,
     "name": "Escape from Winter",
-    "boss": "Helios"
+    "slug": "13-15",
+    "level": 15,
+    "hero_slug": "helios",
+    "energy_cost": 24,
+    "chapter_title": "Crystal Throne"
   }
 ]

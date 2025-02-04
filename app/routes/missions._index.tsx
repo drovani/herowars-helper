@@ -143,9 +143,9 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
                         {mission.chapter_id}-{mission.level}
                       </span>
                     </div>
-                    <div className="pr-1 ml-1 mt-1 rounded-md max-w-max bg-white/90">
+                    <div data-energy={mission.energy_cost || "unknown"} className="pr-1 ml-1 mt-1 rounded-md max-w-max bg-blue-100/95 data-[energy=unknown]:bg-red-500">
                       <img src="/images/energy.png" className="size-4 inline -mt-1 -mr-0.5" alt="" role="presentation" />
-                      {mission.energy_cost}
+                      {mission.energy_cost || "!!"}
                     </div>
                     <CardHeader
                       className={cn(

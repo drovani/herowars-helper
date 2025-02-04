@@ -47,13 +47,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
   const allEquipment = await EquipmentDataService.getAll();
   const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(missionSlug));
 
-  let prevMission = "";
-  if (mission.level > 1) prevMission = `${mission.chapter_id}-${mission.level - 1}`;
-  else if (mission.chapter_id > 1) prevMission = `${mission.chapter_id - 1}-${mission.chapter_id > 2 ? 15 : 10}`;
-  let nextMission = "";
-  if ((mission.chapter_id > 1 && mission.level < 15) || (mission.chapter_id === 1 && mission.level < 10))
-    nextMission = `${mission.chapter_id}-${mission.level + 1}`;
-  else if (mission.chapter_id < 13) nextMission = `${mission.chapter_id + 1}-1`;
+  const [prevMission, nextMission] = await MissionRepository.getPrevNextMission(mission);
 
   return {
     mission,
@@ -109,9 +103,9 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
           <div className="text-lg text-muted-foreground mt-1">
             Chapter {mission.chapter_id}: {mission.chapter_title}
           </div>
-          <div className="flex" title={`${mission.energy_cost} energy per battle/raid`}>
+          <div className="flex" title={`${mission.energy_cost || "Unknown"} energy per battle/raid`}>
             <img src="/images/energy.png" alt="" role="presentation" className="size-6" />
-            {mission.energy_cost}
+            {mission.energy_cost || "!!"}
           </div>
         </div>
 
@@ -156,8 +150,8 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
       {/* Navigation */}
       <div className="flex justify-between items-center pt-4">
         {prevMission ? (
-          <Link to={`/missions/${prevMission}`} className={buttonVariants({ variant: "outline" })} viewTransition>
-            ← {prevMission}
+          <Link to={`/missions/${prevMission.slug}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+            ← {prevMission.chapter_id}-{prevMission.level}
           </Link>
         ) : (
           <div />
@@ -168,8 +162,8 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
         </Link>
 
         {nextMission ? (
-          <Link to={`/missions/${nextMission}`} className={buttonVariants({ variant: "outline" })} viewTransition>
-            {nextMission} →
+          <Link to={`/missions/${nextMission.slug}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+            {nextMission.chapter_id}-{nextMission.level} →
           </Link>
         ) : (
           <div />

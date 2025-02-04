@@ -41,6 +41,23 @@ class MissionRepository extends BaseRepository<Mission, MissionRow> {
     return data;
   }
 
+  public async getPrevNextMission(
+    mission: Mission
+  ): Promise<[prevMission: Mission | null, nextMission: Mission | null]> {
+    let prevMissionSlug = "";
+    if (mission.level > 1) prevMissionSlug = `${mission.chapter_id}-${mission.level - 1}`;
+    else if (mission.chapter_id > 1) prevMissionSlug = `${mission.chapter_id - 1}-${mission.chapter_id > 2 ? 15 : 10}`;
+    let nextMissionSlug = "";
+    if ((mission.chapter_id > 1 && mission.level < 15) || (mission.chapter_id === 1 && mission.level < 10))
+      nextMissionSlug = `${mission.chapter_id}-${mission.level + 1}`;
+    else if (mission.chapter_id < 13) nextMissionSlug = `${mission.chapter_id + 1}-1`;
+
+    const prevMission = await this.getById(prevMissionSlug);
+    const nextMission = await this.getById(nextMissionSlug);
+
+    return [prevMission, nextMission];
+  }
+
   protected getRecordId(record: Mission | MissionRow) {
     return record.slug;
   }

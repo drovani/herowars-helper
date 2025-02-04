@@ -18,6 +18,7 @@ export default [
   route("missions", "./routes/missions.tsx", [
     index("./routes/missions._index.tsx"),
     route(":slug", "./routes/missions.$slug.tsx"),
+    route(":slug.json", "./routes/missions.$slug[.json].tsx"),
   ]),
   route("missions.json", "./routes/missions[.json].tsx"),
   route("equipment.json", "./routes/equipment[.json].tsx"),

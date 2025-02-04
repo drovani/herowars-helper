@@ -1,10 +1,10 @@
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
-import MissionDataService from "~/services/MissionDataService";
+import MissionRepository from "~/services/MissionRepository";
 import type { Route } from "./+types/missions[.json]";
 
 export async function loader(_: Route.LoaderArgs) {
-  const missionsJson = await MissionDataService.getAllAsJson();
+  const missionsJson = await MissionRepository.getAllAsJson();
 
   const file = createReadableStreamFromReadable(Readable.from(missionsJson));
 

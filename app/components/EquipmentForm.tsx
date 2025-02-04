@@ -217,7 +217,7 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                       className="pl-10"
                     />
                     <img
-                      src="/images/gold.webp"
+                      src="/images/gold.png"
                       alt="Gold"
                       className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8"
                     />
@@ -269,7 +269,7 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                         className="pl-10"
                       />
                       <img
-                        src="/images/gold.webp"
+                        src="/images/gold.png"
                         alt="Gold"
                         className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8"
                       />

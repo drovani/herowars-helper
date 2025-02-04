@@ -8,6 +8,7 @@ export interface Mission {
   name: string;
   level: number;
   hero_slug?: string;
+  energy_cost?: number;
 }
 
 export interface MissionRow extends Omit<Mission, "chapter_title"> {}
@@ -21,6 +22,7 @@ class MissionRepository extends BaseRepository<Mission, MissionRow> {
       "slug",
       "level",
       "hero_slug",
+      "energy_cost"
     ] as const;
     super("mission", "slug", select);
     this.supabase.from(this.tableName).select().order;
@@ -30,7 +32,7 @@ class MissionRepository extends BaseRepository<Mission, MissionRow> {
     return record.slug;
   }
   protected sortRecords(records: Mission[]): Mission[] {
-    return records.sort((a, b) => a.slug.localeCompare(b.slug));
+    return records.sort((a, b) => a.chapter_id !== b.chapter_id ? a.chapter_id - b.chapter_id : a.level - b.level);
   }
 
   protected finalize(

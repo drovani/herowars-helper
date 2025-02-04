@@ -6,51 +6,54 @@ import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import MissionDataService from "~/services/MissionDataService";
-import type { Route } from "./+types/missions.$missionId";
+import MissionRepository from "~/services/MissionRepository";
+import type { Route } from "./+types/missions.$slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   if (!data) {
     return [{ title: "Mission not found" }];
   }
-  return [{ title: `${data.mission.id}: ${data.mission.name}` }];
+  return [{ title: `${data.mission.slug}: ${data.mission.name}` }];
 };
 
 export const handle = {
   breadcrumb: (match: UIMatch<Route.ComponentProps["loaderData"], unknown>) => [
     {
-      href: `/missions#chapter-${match.data.mission.chapter}`,
-      title: `Chapter ${match.data.mission.chapter}: ${match.data.mission.chapter_title}`,
+      href: `/missions#chapter-${match.data.mission.chapter_id}`,
+      title: `Chapter ${match.data.mission.chapter_id}: ${match.data.mission.chapter_title}`,
     },
     {
       href: match.pathname,
-      title: `Mission ${match.data.mission.mission_number}: ${match.data.mission.name}`,
+      title: `Mission ${match.data.mission.level}: ${match.data.mission.name}`,
     },
   ],
 };
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
-  const missionId = params.missionId;
+  const missionSlug = params.slug;
 
-  if (!missionId) {
-    throw new Response("Missing missionId parameter", { status: 400 });
+  if (!missionSlug) {
+    throw new Response("Missing mission slug parameter", { status: 400 });
   }
 
   // Find the mission
-  const [missions, mission] = await Promise.all([MissionDataService.getAll(), MissionDataService.getById(missionId)]);
+  const mission = await MissionRepository.getById(missionSlug);
 
   if (!mission) {
-    throw new Response(`Mission ${missionId} not found`, { status: 404 });
+    throw new Response(`Mission ${missionSlug} not found`, { status: 404 });
   }
 
   // Get equipment that can be found in this mission
   const allEquipment = await EquipmentDataService.getAll();
-  const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(missionId));
+  const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(missionSlug));
 
-  // Get previous and next missions for navigation
-  const missionIndex = missions.findIndex((m) => m.id === missionId);
-  const prevMission = missionIndex > 0 ? missions[missionIndex - 1] : null;
-  const nextMission = missionIndex < missions.length - 1 ? missions[missionIndex + 1] : null;
+  let prevMission = "";
+  if (mission.level > 1) prevMission = `${mission.chapter_id}-${mission.level - 1}`;
+  else if (mission.chapter_id > 1) prevMission = `${mission.chapter_id - 1}-${mission.chapter_id > 2 ? 15 : 10}`;
+  let nextMission = "";
+  if ((mission.chapter_id > 1 && mission.level < 15) || (mission.chapter_id === 1 && mission.level < 10))
+    nextMission = `${mission.chapter_id}-${mission.level + 1}`;
+  else if (mission.chapter_id < 13) nextMission = `${mission.chapter_id + 1}-1`;
 
   return {
     mission,
@@ -74,12 +77,12 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
       switch (event.key) {
         case "ArrowLeft":
           if (prevMission) {
-            navigate(`/missions/${prevMission.id}`);
+            navigate(`/missions/${prevMission}`);
           }
           break;
         case "ArrowRight":
           if (nextMission) {
-            navigate(`/missions/${nextMission.id}`);
+            navigate(`/missions/${nextMission}`);
           }
           break;
       }
@@ -100,26 +103,30 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
           <div className="flex items-center gap-2">
             <MapIcon className="h-6 w-6" />
             <h2 className="text-2xl font-bold">
-              {mission.chapter}-{mission.mission_number}: {mission.name}
+              {mission.chapter_id}-{mission.level}: {mission.name}
             </h2>
           </div>
-          <p className="text-lg text-muted-foreground mt-1">
-            Chapter {mission.chapter}: {mission.chapter_title}
-          </p>
+          <div className="text-lg text-muted-foreground mt-1">
+            Chapter {mission.chapter_id}: {mission.chapter_title}
+          </div>
+          <div className="flex" title={`${mission.energy_cost} energy per battle/raid`}>
+            <img src="/images/energy.png" alt="" role="presentation" className="size-6" />
+            {mission.energy_cost}
+          </div>
         </div>
 
-        {mission.boss && (
+        {mission.hero_slug && (
           <div className="text-center">
             <div className="relative w-16 h-16 mx-auto">
-              <Link to={`/heroes/${generateSlug(mission.boss)}`} viewTransition>
+              <Link to={`/heroes/${mission.hero_slug}`} viewTransition>
                 <img
-                  src={getBossImageUrl(mission.boss)}
-                  alt={mission.boss}
+                  src={getBossImageUrl(mission.hero_slug)}
+                  alt={mission.hero_slug}
                   className="w-full h-full object-cover rounded-lg"
                 />
               </Link>
             </div>
-            <p className="mt-1 text-sm font-medium">Boss: {mission.boss}</p>
+            <p className="mt-1 text-sm font-medium">Boss: {mission.hero_slug}</p>
           </div>
         )}
       </div>
@@ -149,8 +156,8 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
       {/* Navigation */}
       <div className="flex justify-between items-center pt-4">
         {prevMission ? (
-          <Link to={`/missions/${prevMission.id}`} className={buttonVariants({ variant: "outline" })} viewTransition>
-            ← {prevMission.chapter}-{prevMission.mission_number}
+          <Link to={`/missions/${prevMission}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+            ← {prevMission}
           </Link>
         ) : (
           <div />
@@ -161,8 +168,8 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
         </Link>
 
         {nextMission ? (
-          <Link to={`/missions/${nextMission.id}`} className={buttonVariants({ variant: "outline" })} viewTransition>
-            {nextMission.chapter}-{nextMission.mission_number} →
+          <Link to={`/missions/${nextMission}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+            {nextMission} →
           </Link>
         ) : (
           <div />

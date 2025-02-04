@@ -150,7 +150,7 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                   <>
                     {craftingData.gold_cost > 0 && (
                       <Badge variant="secondary" className="flex items-center gap-1">
-                        <img src="/images/gold.webp" alt="Gold" className="w-4 h-4" />
+                        <img src="/images/gold.png" alt="Gold" className="w-4 h-4" />
                         {craftingData.gold_cost.toLocaleString()}
                       </Badge>
                     )}
@@ -206,7 +206,7 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                           className="pl-10"
                         />
                         <img
-                          src="/images/gold.webp"
+                          src="/images/gold.png"
                           alt="Gold"
                           className="absolute left-1 top-1/2 -translate-y-1/2 w-8 h-8"
                         />

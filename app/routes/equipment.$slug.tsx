@@ -150,7 +150,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
             <div className="text-sm space-y-2">
               <div>Buy Value:</div>
               <div className={`flex items-center gap-2 ${equipment.buy_value_gold === 0 && "opacity-40"}`}>
-                <img src="/images/gold.webp" alt="Gold" className="w-6 h-6" />
+                <img src="/images/gold.png" alt="Gold" className="w-6 h-6" />
                 <span>{equipment.buy_value_gold.toLocaleString()}</span>
               </div>
               <div className={`flex items-center gap-2 ${equipment.buy_value_coin === 0 && "opacity-40"}`}>
@@ -162,7 +162,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
               <div>Sell Value:</div>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <img src="/images/gold.webp" alt="Gold" className="w-6 h-6" />
+                  <img src="/images/gold.png" alt="Gold" className="w-6 h-6" />
                   <span>{equipment.sell_value.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -230,7 +230,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
             <CardTitle>Crafting Requirements</CardTitle>
             {"crafting" in equipment && equipment.crafting?.gold_cost && (
               <CardDescription className="flex items-center gap-1">
-                <img src="/images/gold.webp" alt="Gold cost" className="w-6 h-6" />
+                <img src="/images/gold.png" alt="Gold cost" className="w-6 h-6" />
                 {equipment.crafting.gold_cost.toLocaleString()} gold
               </CardDescription>
             )}
@@ -251,7 +251,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                 <div>
                   <h4>Raw Components:</h4>
                   <div className="flex items-center">
-                    <img src="/images/gold.webp" alt="Gold cost" className="w-6 h-6" />
+                    <img src="/images/gold.png" alt="Gold cost" className="w-6 h-6" />
                     <span>{requiredEquipmentRaw.gold_cost.toLocaleString()} gold</span>
                   </div>
                   <div className="inline-grid gap-x-2 gap-y-1" style={{ gridTemplateColumns: "min-content auto" }}>

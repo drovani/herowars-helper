@@ -7,11 +7,11 @@ import { FormControl, FormField, FormItem, FormMessage } from "~/components/ui/f
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "~/components/ui/hover-card";
 import { Input } from "~/components/ui/input";
 import type { EquipmentMutation } from "~/data/equipment.zod";
-import { type MissionRecord, groupMissionsByChapter } from "~/data/mission.zod";
+import { groupMissionsByChapter, type Mission } from "~/services/MissionRepository";
 
 interface CampaignSourcesFieldProps {
   form: UseFormReturn<EquipmentMutation>;
-  missions: MissionRecord[];
+  missions: Mission[];
 }
 
 export default function CampaignSourcesField({ form, missions }: CampaignSourcesFieldProps) {
@@ -39,7 +39,7 @@ export default function CampaignSourcesField({ form, missions }: CampaignSources
   // Filter missions based on search query (both id and name)
   const filteredMissions = missions.filter((mission) => {
     const query = searchQuery.toLowerCase();
-    return mission.id.toLowerCase().includes(query) || mission.name.toLowerCase().includes(query);
+    return mission.slug.toLowerCase().includes(query) || mission.name.toLowerCase().includes(query);
   });
 
   // Group filtered missions by chapter

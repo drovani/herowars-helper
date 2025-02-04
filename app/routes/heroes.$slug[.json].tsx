@@ -2,7 +2,7 @@ import { type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
-import MissionDataService from "~/services/MissionDataService";
+import MissionRepository from "~/services/MissionRepository";
 import type { Route } from "./+types/heroes.$slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -35,7 +35,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const campaignSources = await MissionDataService.getMissionsByBoss(hero.name);
+  const campaignSources = await MissionRepository.getAllByHeroSlug(hero.slug);
   const equipmentSlugs: string[] = [];
   if (hero.items !== undefined) {
     for (const tier of Object.entries(hero.items)) {

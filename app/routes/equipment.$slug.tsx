@@ -11,7 +11,7 @@ import type { EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
-import MissionDataService from "~/services/MissionDataService";
+import MissionRepository from "~/services/MissionRepository";
 import type { Route } from "./+types/equipment.$slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -52,7 +52,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
   }
 
   // Get all missions and filter for sources
-  const missionSources = equipment.campaign_sources ? await MissionDataService.getAll(equipment.campaign_sources) : [];
+  const missionSources = equipment.campaign_sources ? await MissionRepository.getAll(equipment.campaign_sources) : [];
 
   const heroesUsingItem = await HeroDataService.getHeroesUsingItem(equipment.slug);
 
@@ -203,18 +203,18 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
             <div className="flex gap-2 flex-wrap">
               {missionSources.map((mission) => (
                 <Link
-                  key={mission.id}
-                  to={`/missions/${mission.id}`}
+                  key={mission.slug}
+                  to={`/missions/${mission.slug}`}
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-accent"
                   viewTransition
                 >
                   <Badge variant="outline">
-                    {mission.chapter}-{mission.mission_number}
+                    {mission.chapter_id}-{mission.level}
                   </Badge>
                   <span>{mission.name}</span>
-                  {mission.boss && (
-                    <Badge variant="secondary" className="ml-auto">
-                      {mission.boss}
+                  {mission.hero_slug && (
+                    <Badge variant="secondary" className="ml-auto capitalize">
+                      {mission.hero_slug}
                     </Badge>
                   )}
                 </Link>

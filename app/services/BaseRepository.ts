@@ -1,5 +1,6 @@
 import { PostgrestFilterBuilder, PostgrestTransformBuilder } from "@supabase/postgrest-js";
 import { createClient } from "@supabase/supabase-js";
+import log from "loglevel";
 import type { HydrateDataOptions, HydrateDataResult } from "./IDataService";
 
 export default abstract class BaseRepository<TRecord, TMutation> {
@@ -29,7 +30,7 @@ export default abstract class BaseRepository<TRecord, TMutation> {
     const { data, error } = await this.finalize(query);
 
     if (error) {
-      console.error(`Failed to get all ${this.tableName} records:`, error);
+      log.error(`Failed to get all ${this.tableName} records:`, error);
       throw new Error(`Failed to retrieve ${this.tableName} records.`);
     }
 
@@ -59,7 +60,7 @@ export default abstract class BaseRepository<TRecord, TMutation> {
       .maybeSingle();
 
     if (error) {
-      console.error(`Failed to get ${this.tableName} ${id}:`, error);
+      log.error(`Failed to get ${this.tableName} ${id}:`, error);
       throw new Error(`Failed to retrieve ${this.tableName} ${id}`);
     }
 
@@ -111,7 +112,7 @@ export default abstract class BaseRepository<TRecord, TMutation> {
           .upsert(record, { onConflict: this.idField });
 
         if (upsertError) {
-          console.error(`✗ Failed to handle ${this.tableName} ${id}:`, upsertError);
+          log.error(`✗ Failed to handle ${this.tableName} ${id}:`, upsertError);
           errorCount++;
         }
 
@@ -136,7 +137,7 @@ export default abstract class BaseRepository<TRecord, TMutation> {
         details,
       } satisfies HydrateDataResult;
     } catch (error) {
-      console.error("Fatal error during initialization:", error);
+      log.error("Fatal error during initialization:", error);
       throw error;
     }
   }

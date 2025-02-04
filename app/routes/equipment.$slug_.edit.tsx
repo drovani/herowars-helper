@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import EquipmentForm from "~/components/EquipmentForm";
 import { EquipmentMutationSchema, type EquipmentMutation } from "~/data/equipment.zod";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import MissionDataService from "~/services/MissionDataService";
+import MissionRepository from "~/services/MissionRepository";
 import type { Route } from "./+types/equipment.$slug_.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -43,7 +43,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const [allMissions, existingItems] = await Promise.all([MissionDataService.getAll(), EquipmentDataService.getAll()]);
+  const [allMissions, existingItems] = await Promise.all([MissionRepository.getAll(), EquipmentDataService.getAll()]);
 
   return data(
     { existingItems, allMissions, equipment },

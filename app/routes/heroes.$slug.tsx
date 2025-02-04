@@ -11,7 +11,7 @@ import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
-import MissionDataService from "~/services/MissionDataService";
+import MissionRepository from "~/services/MissionRepository";
 import type { Route } from "./+types/heroes.$slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -36,7 +36,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const campaignSources = await MissionDataService.getMissionsByBoss(hero.name);
+  const campaignSources = await MissionRepository.getAllByHeroSlug(hero.slug);
   const equipmentSlugs: string[] = [];
   if (hero.items !== undefined) {
     for (const itemSlugs of Object.values(hero.items)) {

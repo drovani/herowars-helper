@@ -40,7 +40,7 @@ export default abstract class BaseRepository<TRecord, TMutation> {
     const records = await this.getAll(ids);
     const jsonString = JSON.stringify(
       records,
-      (key: string, value: any): any | undefined => {
+      (_: string, value: any): any | undefined => {
         if (Array.isArray(value) && value.length === 0) {
           // remove properties that are empty arrays
           return undefined;
@@ -71,7 +71,8 @@ export default abstract class BaseRepository<TRecord, TMutation> {
 
   async hydrateTableData(
     records: TMutation[],
-    options: HydrateDataOptions = { skipExisting: true, failIfExists: false, forceUpdate: false }
+    options: HydrateDataOptions = { skipExisting: true, failIfExists: false, forceUpdate: false },
+    onUpsertCallback?: (record: TRecord) => void
   ): Promise<HydrateDataResult> {
     const { skipExisting, failIfExists, forceUpdate } = options;
     const details: string[] = [];
@@ -109,13 +110,15 @@ export default abstract class BaseRepository<TRecord, TMutation> {
             throw new Error(`${this.tableName} ${id} already exists and skipExisting is false`);
           }
         }
-        const { error: upsertError } = await this.supabase
-          .from(this.tableName)
-          .upsert(record, { onConflict: this.idField });
+        const { data: upsertData, error: upsertError } = await this.finalize(
+          this.supabase.from(this.tableName).upsert(record, { onConflict: this.idField })
+        ).maybeSingle();
 
         if (upsertError) {
           log.error(`✗ Failed to handle ${this.tableName} ${id}:`, upsertError);
           errorCount++;
+        } else if (onUpsertCallback && upsertData) {
+          onUpsertCallback(upsertData);
         }
 
         const action = exists ? "updated" : "stored";

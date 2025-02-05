@@ -1,6 +1,9 @@
 import { PostgrestFilterBuilder, PostgrestTransformBuilder } from "@supabase/postgrest-js";
 import log from "loglevel";
 import BaseRepository from "~/services/BaseRepository";
+import type { Chapter } from "./ChapterRepository";
+import ChapterRepository from "./ChapterRepository";
+import { type HydrateDataOptions, type HydrateDataResult } from "./IDataService";
 
 export interface Mission {
   slug: string;
@@ -26,7 +29,6 @@ class MissionRepository extends BaseRepository<Mission, MissionRow> {
       "energy_cost",
     ] as const;
     super("mission", "slug", select);
-    this.supabase.from(this.tableName).select().order;
   }
 
   public async getAllByHeroSlug(heroSlug: string): Promise<Mission[]> {
@@ -58,13 +60,43 @@ class MissionRepository extends BaseRepository<Mission, MissionRow> {
     return [prevMission, nextMission];
   }
 
+  public async hydrateTableData(
+    missions: Mission[],
+    options: HydrateDataOptions = { skipExisting: true, failIfExists: false, forceUpdate: false }
+  ): Promise<HydrateDataResult> {
+    const chapters: Chapter[] = missions
+      .filter((m, idx, data) => data.findIndex((d) => d.chapter_id === m.chapter_id) === idx)
+      .map((m) => ({
+        id: m.chapter_id,
+        title: m.chapter_title,
+      }));
+    const missionRows: MissionRow[] = missions.map((m) => ({
+      slug: m.slug,
+      chapter_id: m.chapter_id,
+      level: m.level,
+      name: m.name,
+      hero_slug: m.hero_slug,
+    }));
+
+    const chapterResults = await ChapterRepository.hydrateTableData(chapters, options);
+    const missionResults = await super.hydrateTableData(missionRows, options);
+
+    return {
+      details: chapterResults.details.concat(missionResults.details),
+      errors: chapterResults.errors + missionResults.errors,
+      existingCount: chapterResults.existingCount + missionResults.existingCount,
+      skipped: chapterResults.skipped + missionResults.skipped,
+      success: chapterResults.success + missionResults.success,
+      total: chapterResults.total + missionResults.total,
+    };
+  }
+
   protected getRecordId(record: Mission | MissionRow) {
     return record.slug;
   }
   protected sortRecords(records: Mission[]): Mission[] {
     return records.sort((a, b) => (a.chapter_id !== b.chapter_id ? a.chapter_id - b.chapter_id : a.level - b.level));
   }
-
   protected finalize(
     query: PostgrestFilterBuilder<any, any, any, unknown, unknown>
   ): PostgrestTransformBuilder<any, any, Mission[], string, unknown> {

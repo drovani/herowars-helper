@@ -11,11 +11,16 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import type { EquipmentRecord } from "~/data/equipment.zod";
 import equipmentData from "~/data/equipments.json";
 import missionData from "~/data/missions.json";
+import type { Stats } from "~/data/ReadonlyArrays";
 import { initializeHeroBlobs } from "~/lib/initialize-hero-blobs";
-import ChapterRepository, { type Chapter } from "~/services/ChapterRepository";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import EquipmentRepository, {
+  type Equipable,
+  type Equipment,
+  type Fragment,
+  type Recipe,
+} from "~/services/EquipmentRepository";
 import type { HydrateDataResult } from "~/services/IDataService";
-import MissionRepository, { type MissionRow } from "~/services/MissionRepository";
+import MissionRepository, { type Mission } from "~/services/MissionRepository";
 import type { Route } from "./+types/admin.setup";
 
 export async function action({ request }: Route.ActionArgs) {
@@ -33,37 +38,71 @@ export async function action({ request }: Route.ActionArgs) {
 
     const results: {
       equipment?: HydrateDataResult | { status: string };
-      chapter?: HydrateDataResult | { status: string };
       mission?: HydrateDataResult | { status: string };
       hero?: HydrateDataResult | { status: string };
     } = {};
 
     if (!dataset || dataset === "equipment") {
-      results.equipment = await EquipmentDataService.hydrateBlobData(equipmentData as EquipmentRecord[], options);
+      const transformedEquipment: Equipment[] = (equipmentData as EquipmentRecord[]).map((item) => {
+        if (item.type === "equipable") {
+          return {
+            slug: item.slug,
+            name: item.name,
+            quality: item.quality,
+            type: item.type,
+            buy_value_gold: item.buy_value_gold || undefined,
+            buy_value_coin: item.buy_value_coin || undefined,
+            sell_value: item.sell_value,
+            guild_activity_points: item.guild_activity_points,
+            hero_level_required: item.hero_level_required,
+            stats: item.stats as {
+              [stat in (typeof Stats)[number]]: number;
+            },
+            campaign_sources: item.campaign_sources,
+            crafting: item.crafting,
+          } satisfies Equipable;
+        } else if (item.type === "recipe")
+          return {
+            slug: item.slug,
+            name: item.name,
+            quality: item.quality,
+            type: item.type,
+            buy_value_gold: item.buy_value_gold || undefined,
+            buy_value_coin: item.buy_value_coin || undefined,
+            sell_value: item.sell_value,
+            guild_activity_points: item.guild_activity_points,
+            crafting: item.crafting,
+            campaign_sources: item.campaign_sources,
+          } satisfies Recipe;
+        else if (item.type === "fragment")
+          return {
+            slug: item.slug,
+            name: item.name,
+            quality: item.quality,
+            type: item.type,
+            buy_value_gold: item.buy_value_gold || undefined,
+            buy_value_coin: item.buy_value_coin || undefined,
+            sell_value: item.sell_value,
+            campaign_sources: item.campaign_sources,
+            guild_activity_points: item.guild_activity_points,
+          } satisfies Fragment;
+        else {
+          const _: never = item;
+          throw new Error(`Unknown equipment type during admin setup.`);
+        }
+      });
+
+      results.equipment = await EquipmentRepository.hydrateTableData(transformedEquipment, options);
     } else {
       results.equipment = { status: "Equipment not loaded" };
     }
 
     if (!dataset || dataset === "missions") {
-      const chapters: Chapter[] = missionData
-        .filter((m, idx, data) => data.findIndex((d) => d.chapter_id === m.chapter_id) === idx)
-        .map((m) => ({
-          id: m.chapter_id,
-          title: m.chapter_title,
-        }));
-      const missions: MissionRow[] = missionData.map((m) => ({
-        slug: m.slug,
-        chapter_id: m.chapter_id,
-        level: m.level,
-        name: m.name,
-        hero_slug: m.hero_slug,
-      }));
+      missionData satisfies Mission[];
 
-      results.chapter = await ChapterRepository.hydrateTableData(chapters, options);
-      results.mission = await MissionRepository.hydrateTableData(missions, options);
+      results.mission = await MissionRepository.hydrateTableData(missionData, options);
     } else {
       results.mission = { status: "not loaded" };
-      results.chapter = { status: "not loaded" };
     }
 
     if (!dataset || dataset === "heroes") {

@@ -55,9 +55,10 @@ export async function action({ request }: Route.ActionArgs) {
             sell_value: item.sell_value,
             guild_activity_points: item.guild_activity_points,
             hero_level_required: item.hero_level_required,
-            stats: item.stats as {
-              [stat in (typeof Stats)[number]]: number;
-            },
+            stats: Object.entries(item.stats).map(([stat, value]) => ({
+              stat: stat as (typeof Stats)[number],
+              value,
+            })),
             campaign_sources: item.campaign_sources,
             crafting_gold_cost: item.crafting?.gold_cost,
             required_items:

@@ -25,8 +25,9 @@ export interface Craftable {
 export interface Equipable extends BaseEquipment, Partial<Craftable> {
   type: "equipable";
   stats: {
-    [stat in (typeof Stats)[number]]: number;
-  };
+    stat: (typeof Stats)[number];
+    value: number;
+  }[];
   hero_level_required: number;
 }
 
@@ -77,6 +78,7 @@ class EquipmentRepository extends BaseRepository<Equipment, EquipmentRow> {
       "campaign_sources",
       "crafting_gold_cost",
       "required_items:equipment_required_item!equipment_required_item_base_slug_fkey(required_slug, quantity)",
+      "stats:equipment_stat(stat, value)",
     ] as const;
     super("equipment", "slug", select);
   }
@@ -111,10 +113,9 @@ class EquipmentRepository extends BaseRepository<Equipment, EquipmentRow> {
             ...ri,
           }));
         }
-        statsRows[eq.slug] = Object.entries(eq.stats).map(([stat, value]) => ({
+        statsRows[eq.slug] = eq.stats.map((st) => ({
           equipment_slug: eq.slug,
-          stat: stat as (typeof Stats)[number],
-          value: value,
+          ...st,
         }));
 
         return {

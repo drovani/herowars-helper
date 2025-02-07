@@ -178,7 +178,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
             <CardTitle>Stats</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row md:flex-wrap gap-4">
-            {Object.entries(equipment.stats).map(([stat, value]) => (
+            {equipment.stats.map(({stat, value}) => (
               <div key={stat} className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
                   <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />

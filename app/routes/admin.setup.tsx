@@ -59,9 +59,15 @@ export async function action({ request }: Route.ActionArgs) {
               [stat in (typeof Stats)[number]]: number;
             },
             campaign_sources: item.campaign_sources,
-            crafting: item.crafting,
+            crafting_gold_cost: item.crafting?.gold_cost,
+            required_items:
+              item.crafting?.required_items &&
+              Object.entries(item.crafting.required_items).map(([required_slug, quantity]) => ({
+                required_slug,
+                quantity,
+              })),
           } satisfies Equipable;
-        } else if (item.type === "recipe")
+        } else if (item.type === "recipe") {
           return {
             slug: item.slug,
             name: item.name,
@@ -71,10 +77,15 @@ export async function action({ request }: Route.ActionArgs) {
             buy_value_coin: item.buy_value_coin || undefined,
             sell_value: item.sell_value,
             guild_activity_points: item.guild_activity_points,
-            crafting: item.crafting,
-            campaign_sources: item.campaign_sources,
+            crafting_gold_cost: item.crafting?.gold_cost,
+            required_items:
+              item.crafting?.required_items &&
+              Object.entries(item.crafting.required_items).map(([required_slug, quantity]) => ({
+                required_slug,
+                quantity,
+              })),
           } satisfies Recipe;
-        else if (item.type === "fragment")
+        } else if (item.type === "fragment") {
           return {
             slug: item.slug,
             name: item.name,
@@ -86,7 +97,7 @@ export async function action({ request }: Route.ActionArgs) {
             campaign_sources: item.campaign_sources,
             guild_activity_points: item.guild_activity_points,
           } satisfies Fragment;
-        else {
+        } else {
           const _: never = item;
           throw new Error(`Unknown equipment type during admin setup.`);
         }

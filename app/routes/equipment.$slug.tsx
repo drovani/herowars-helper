@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Separator } from "~/components/ui/separator";
 import type { EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import EquipmentRepository, { type Equipment } from "~/services/EquipmentRepository";
 import HeroDataService from "~/services/HeroDataService";
 import MissionRepository from "~/services/MissionRepository";
 import type { Route } from "./+types/equipment.$slug";
@@ -29,7 +29,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing equipment slug param");
 
   // Get main equipment details
-  const equipment = await EquipmentDataService.getById(params.slug);
+  const equipment = await EquipmentRepository.getById(params.slug);
 
   if (!equipment) {
     throw new Response(null, {
@@ -38,18 +38,15 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const sortedEquipment = await EquipmentDataService.getAll();
+  const sortedEquipment = await EquipmentRepository.getAll();
   const currentIndex = sortedEquipment.findIndex((e) => e.slug === equipment.slug);
   const prevEquipment = currentIndex > 0 ? sortedEquipment[currentIndex - 1] : null;
   const nextEquipment = currentIndex < sortedEquipment.length ? sortedEquipment[currentIndex + 1] : null;
 
-  const requiredFor = await EquipmentDataService.getEquipmentThatRequires(equipment.slug);
-  const requiredEquipment = await EquipmentDataService.getEquipmentRequiredFor(equipment);
-  let requiredEquipmentRaw = await EquipmentDataService.getEquipmentRequiredForRaw(equipment);
+  const requiredFor = await EquipmentRepository.getAllThatRequires(equipment.slug);
 
-  if ("crafting" in equipment && equipment.crafting?.gold_cost === requiredEquipmentRaw?.gold_cost) {
-    requiredEquipmentRaw = null;
-  }
+  const requiredEquipment = await EquipmentRepository.getAllRequiredFor(equipment);
+  const requiredEquipmentRaw = await EquipmentRepository.getAllRequiredFor(equipment, { deep: true });
 
   // Get all missions and filter for sources
   const missionSources = equipment.campaign_sources ? await MissionRepository.getAll(equipment.campaign_sources) : [];
@@ -69,7 +66,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 };
 
 // Component to render either a valid equipment item or a placeholder
-const EquipmentItem = ({ item, quantity }: { item: EquipmentRecord | null; quantity: number }) => {
+const EquipmentItem = ({ item, quantity }: { item: EquipmentRecord | Equipment | null; quantity: number }) => {
   if (!item) {
     return (
       <div className="flex flex-col items-center gap-2">
@@ -149,13 +146,13 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
           <div className="flex gap-4">
             <div className="text-sm space-y-2">
               <div>Buy Value:</div>
-              <div className={`flex items-center gap-2 ${equipment.buy_value_gold === 0 && "opacity-40"}`}>
+              <div className={`flex items-center gap-2 ${!equipment.buy_value_gold && "opacity-40"}`}>
                 <img src="/images/gold.png" alt="Gold" className="w-6 h-6" />
-                <span>{equipment.buy_value_gold.toLocaleString()}</span>
+                {equipment.buy_value_gold && <span>{equipment.buy_value_gold.toLocaleString()}</span>}
               </div>
-              <div className={`flex items-center gap-2 ${equipment.buy_value_coin === 0 && "opacity-40"}`}>
+              <div className={`flex items-center gap-2 ${!equipment.buy_value_coin && "opacity-40"}`}>
                 <img src="/images/arena-coin.png" alt="Arena Coin" className="w-6 h-6 rounded-full" />
-                <span>{equipment.buy_value_coin.toLocaleString()}</span>
+                {equipment.buy_value_coin && <span>{equipment.buy_value_coin.toLocaleString()}</span>}
               </div>
             </div>
             <div className="text-sm space-y-2">
@@ -224,28 +221,28 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
         </Card>
       )}
       {/* Crafting Requirements Section */}
-      {requiredEquipment.length > 0 && (
+      {"crafting_gold_cost" in equipment && requiredEquipment && (
         <Card>
           <CardHeader>
             <CardTitle>Crafting Requirements</CardTitle>
-            {"crafting" in equipment && equipment.crafting?.gold_cost && (
+            {equipment.crafting_gold_cost && (
               <CardDescription className="flex items-center gap-1">
                 <img src="/images/gold.png" alt="Gold cost" className="w-6 h-6" />
-                {equipment.crafting.gold_cost.toLocaleString()} gold
+                {equipment.crafting_gold_cost.toLocaleString()} gold
               </CardDescription>
             )}
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap items-center gap-4">
-              {requiredEquipment.map((item, index) => (
+              {requiredEquipment.required_items.map(({equipment, quantity}, index) => (
                 <EquipmentItem
-                  key={item?.slug || `missing-${index}`}
-                  item={item}
-                  quantity={"crafting" in equipment ? equipment.crafting?.required_items[item?.slug || ""] || 0 : 0}
+                  key={equipment.slug}
+                  item={equipment}
+                  quantity={quantity}
                 />
               ))}
             </div>
-            {requiredEquipmentRaw && (
+            {requiredEquipmentRaw && requiredEquipmentRaw.gold_cost !== equipment.crafting_gold_cost && (
               <>
                 <Separator className="my-2" decorative={true} />
                 <div>
@@ -289,9 +286,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                   <EquipmentImage equipment={item} size="sm" />
                   <div>
                     <div className="group-hover:underline whitespace-nowrap">{item.name}</div>
-                    <div className="text-sm text-muted-foreground whitespace-nowrap">
-                      Requires {"crafting" in item ? item.crafting?.required_items[equipment.slug] : 0}x
-                    </div>
+                    <div className="text-sm text-muted-foreground whitespace-nowrap">Requires {item.qty_needed}x</div>
                   </div>
                 </Link>
               ))}

@@ -72,7 +72,7 @@ export default abstract class BaseRepository<TRecord, TMutation> {
   async hydrateTableData(
     records: TMutation[],
     options: HydrateDataOptions = { skipExisting: true, failIfExists: false, forceUpdate: false },
-    onUpsertCallback?: (record: TRecord) => void
+    onUpsertCallback?: (record: TRecord | null) => void
   ): Promise<HydrateDataResult> {
     const { skipExisting, failIfExists, forceUpdate } = options;
     const details: string[] = [];
@@ -110,14 +110,17 @@ export default abstract class BaseRepository<TRecord, TMutation> {
             throw new Error(`${this.tableName} ${id} already exists and skipExisting is false`);
           }
         }
-        const { data: upsertData, error: upsertError } = await this.finalize(
-          this.supabase.from(this.tableName).upsert(record, { onConflict: this.idField })
-        ).maybeSingle();
+        const { data: upsertData, error: upsertError } = await this.supabase
+          .from(this.tableName)
+          .upsert(record, { onConflict: this.idField })
+          .select()
+          .returns<TRecord[]>()
+          .maybeSingle();
 
         if (upsertError) {
           log.error(`✗ Failed to handle ${this.tableName} ${id}:`, upsertError);
           errorCount++;
-        } else if (onUpsertCallback && upsertData) {
+        } else if (onUpsertCallback) {
           onUpsertCallback(upsertData);
         }
 

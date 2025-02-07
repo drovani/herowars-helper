@@ -73,7 +73,7 @@ class EquipmentDataService extends BaseDataService<EquipmentRecord, EquipmentMut
   ): void {
     for (const req of source) {
       const found = target.find((t) => t.equipment.slug === req.equipment.slug);
-      if (found) found.quantity += req.quantity & qty;
+      if (found) found.quantity += req.quantity * qty;
       else target.push({ ...req, quantity: req.quantity * qty });
     }
   }

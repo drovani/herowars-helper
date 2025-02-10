@@ -5,7 +5,7 @@ import EquipmentImage from "~/components/EquipmentImage";
 import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import EquipmentRepository from "~/services/EquipmentRepository";
 import MissionRepository from "~/services/MissionRepository";
 import type { Route } from "./+types/missions.$slug";
 
@@ -44,8 +44,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
   }
 
   // Get equipment that can be found in this mission
-  const allEquipment = await EquipmentDataService.getAll();
-  const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(missionSlug));
+  const equipmentInMission = await EquipmentRepository.getAllForMission(mission.slug);
 
   const [prevMission, nextMission] = await MissionRepository.getPrevNextMission(mission);
 

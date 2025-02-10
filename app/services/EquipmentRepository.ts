@@ -228,6 +228,10 @@ class EquipmentRepository extends BaseRepository<Equipment, EquipmentRow> {
 
     return baseItems;
   }
+  public async getAllForMission(missionSlug: string): Promise<Equipment[] | null> {
+    const {data, error} = await this.supabase.from("equipment").select(this.select).an
+
+  }
 
   protected combineEquipmentRequirements(
     target: EquipmentRequirements["required_items"],

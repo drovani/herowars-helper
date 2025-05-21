@@ -16,7 +16,7 @@ import missionData from "~/data/missions.json";
 import { initializeHeroBlobs } from "~/lib/initialize-hero-blobs";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import MissionDataService from "~/services/MissionDataService";
-import type { Route } from "./+types/admin.setup";
+import type { Route } from "./+types/_protected.admin.setup";
 
 export async function action({ request }: Route.ActionArgs) {
   try {

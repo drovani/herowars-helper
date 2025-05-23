@@ -12,6 +12,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "~/components/ui/sidebar";
 import { useAuth } from "~/contexts/AuthContext";
+import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 
 export function SiteUserMenu() {
@@ -55,6 +56,13 @@ export function SiteUserMenu() {
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">{user.name}</span>
                       <span className="truncate text-xs">{user.email}</span>
+                    </div>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {user.roles.map(role => (
+                        <Badge key={role} variant="outline" className="capitalize text-xs">
+                          {role}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 </DropdownMenuLabel>

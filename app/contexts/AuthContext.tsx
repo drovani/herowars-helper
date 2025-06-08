@@ -63,7 +63,7 @@ export function AuthProvider({ children, request }: { children: React.ReactNode,
       id: supabaseUser.id,
       email: supabaseUser.email || "anonymousshroom@example.com",
       name: fullName,
-      roles: appMetadata.roles || ['admin'],
+      roles: appMetadata.roles || ["guest"], // Default to guest if no roles
       fallback: fallback,
       avatar: userMetadata.avatar_url || "/images/heroes/mushy-and-shroom.png",
     };

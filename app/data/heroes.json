@@ -632,6 +632,7 @@
     },
     {
         "name": "Chabba",
+        "slug": "chabba",
         "class": "tank",
         "faction": "nature",
         "main_stat": "strength",
@@ -639,15 +640,180 @@
             "physical",
             "pure"
         ],
-        "artifact_team_buff": [
-            "armor"
-        ],
         "stone_source": [
             "Arena Shop"
         ],
         "order_rank": 1,
-        "slug": "chabba",
-        "updated_on": "2024-09-10T17:16:56.000Z"
+        "skins": [
+            {
+                "name": "Default Skin",
+                "stat": "strength",
+                "has_plus": false
+            },
+            {
+                "name": "Demonic Skin",
+                "stat": "physical attack",
+                "has_plus": false
+            },
+            {
+                "name": "Winter Skin",
+                "stat": "armor",
+                "has_plus": false
+            },
+            {
+                "name": "Masquerade Skin",
+                "stat": "health",
+                "has_plus": false
+            },
+            {
+                "name": "Lunar Skin",
+                "stat": "magic defense",
+                "has_plus": false
+            },
+            {
+                "name": "Romantic Skin",
+                "stat": "health",
+                "has_plus": true
+            }
+        ],
+        "items": {
+            "white": [
+                "orcish-knuckles",
+                "wooden-shield",
+                "travellers-shoes",
+                "steel-pauldron",
+                "lucky-dice",
+                "dagger"
+            ],
+            "green": [
+                "imperial-shield",
+                "orcish-yatagan",
+                "sledgehammer",
+                "orcish-hammer",
+                "fire-sword",
+                "cains-seal"
+            ],
+            "green+1": [
+                "orcish-hammer",
+                "orcish-hammer",
+                "fire-sword",
+                "cains-seal",
+                "wall-breaker",
+                "guardians-shield"
+            ],
+            "blue": [
+                "branch-of-antiaris",
+                "wall-breaker",
+                "screaming-blade",
+                "brothers",
+                "wyverns-heart",
+                "enchanted-lute"
+            ],
+            "blue+1": [
+                "branch-of-antiaris",
+                "shining-armor",
+                "wall-breaker",
+                "needle",
+                "enchanted-lute",
+                "trackers-shield"
+            ],
+            "blue+2": [
+                "branch-of-antiaris",
+                "shining-armor",
+                "wyverns-heart",
+                "needle",
+                "thunderfoot-boots",
+                "prince-of-thieves-armor"
+            ],
+            "violet": [
+                "storm-hammer",
+                "dark-grail",
+                "thunderfoot-boots",
+                "hand-of-midas",
+                "giant-slayer",
+                "minotaurs-head"
+            ],
+            "violet+1": [
+                "sirens-song",
+                "thunderfoot-boots",
+                "hand-of-midas",
+                "prince-of-thieves-armor",
+                "giant-slayer",
+                "lion-helmet"
+            ],
+            "violet+2": [
+                "dark-grail",
+                "trackers-shield",
+                "trackers-shield",
+                "hand-of-midas",
+                "world-tremor",
+                "angels-mace"
+            ],
+            "violet+3": [
+                "prince-of-thieves-armor",
+                "trackers-shield",
+                "world-tremor",
+                "flaming-heart",
+                "lion-helmet",
+                "archangels-mace"
+            ],
+            "orange": [
+                "executioners-sword",
+                "lion-helmet",
+                "world-tremor",
+                "angels-mace",
+                "alchemists-set",
+                "harunian-helm"
+            ],
+            "orange+1": [
+                "flaming-heart",
+                "executioners-sword",
+                "angels-mace",
+                "harunian-helm",
+                "riversars-tiara",
+                "alucards-amulet"
+            ],
+            "orange+2": [
+                "trine",
+                "governor",
+                "alchemists-set",
+                "asklepius-staff",
+                "asklepius-staff",
+                "shining-armor"
+            ],
+            "orange+3": [
+                "lion-helmet",
+                "archangels-mace",
+                "alucards-amulet",
+                "asklepius-staff",
+                "lycanthropes-fang",
+                "unity-of-extremes"
+            ],
+            "orange+4": [
+                "angels-mace",
+                "archangels-mace",
+                "alucards-amulet",
+                "asklepius-staff",
+                "alucards-amulet",
+                "evil-genius-cuirass"
+            ]
+        },
+        "glyphs": [
+            "physical attack",
+            "armor",
+            "magic defense",
+            "health",
+            "strength"
+        ],
+        "artifacts": {
+            "weapon": {
+                "name": "Bracers of Hunger",
+                "team_buff": "armor"
+            },
+            "book": "Defender's Covenant",
+            "ring": null
+        },
+        "updated_on": "2025-01-06T20:45:00.000Z"
     },
     {
         "name": "Cleaver",
@@ -878,6 +1044,7 @@
     },
     {
         "name": "Galahad",
+        "slug": "galahad",
         "class": "warrior",
         "faction": "honor",
         "main_stat": "strength",
@@ -885,6 +1052,173 @@
             "physical",
             "pure"
         ],
+        "stone_source": [
+            "Campaign",
+            "Heroic Chest"
+        ],
+        "skins": [
+            {
+                "name": "Default Skin",
+                "stat": "strength",
+                "has_plus": false
+            },
+            {
+                "name": "Angel Skin",
+                "stat": "physical attack",
+                "has_plus": false
+            },
+            {
+                "name": "Champion's Skin",
+                "stat": "health",
+                "has_plus": false
+            },
+            {
+                "name": "Romantic Skin",
+                "stat": "armor",
+                "has_plus": false
+            },
+            {
+                "name": "Celestial Skin",
+                "stat": "magic defense",
+                "has_plus": false
+            },
+            {
+                "name": "Thunder Skin",
+                "stat": "physical attack",
+                "has_plus": false
+            }
+        ],
+        "items": {
+            "white": [
+                "orcish-knuckles",
+                "wooden-shield",
+                "steel-pauldron",
+                "lucky-dice",
+                "orcish-yatagan",
+                "dagger"
+            ],
+            "green": [
+                "imperial-shield",
+                "lucky-dice",
+                "sledgehammer",
+                "orcish-hammer",
+                "cuirass",
+                "fire-sword"
+            ],
+            "green+1": [
+                "sledgehammer",
+                "orcish-hammer",
+                "cains-seal",
+                "fire-sword",
+                "poleaxe",
+                "shining-armor"
+            ],
+            "blue": [
+                "branch-of-antiaris",
+                "screaming-blade",
+                "elven-armor",
+                "traitors-shield",
+                "needle",
+                "serenity-stone"
+            ],
+            "blue+1": [
+                "wall-breaker",
+                "shining-armor",
+                "poleaxe",
+                "needle",
+                "serenity-stone",
+                "sacrificial-dagger"
+            ],
+            "blue+2": [
+                "screaming-blade",
+                "poleaxe",
+                "needle",
+                "thunderfoot-boots",
+                "sacrificial-dagger",
+                "hand-of-midas"
+            ],
+            "violet": [
+                "storm-hammer",
+                "dark-grail",
+                "sacrificial-dagger",
+                "prince-of-thieves-armor",
+                "giant-slayer",
+                "dragon-shield"
+            ],
+            "violet+1": [
+                "dragonslayers-spear",
+                "sacrificial-dagger",
+                "prince-of-thieves-armor",
+                "dragon-shield",
+                "flaming-heart",
+                "lion-helmet"
+            ],
+            "violet+2": [
+                "sacrificial-dagger",
+                "prince-of-thieves-armor",
+                "flaming-heart",
+                "apostles-mace",
+                "executioners-sword",
+                "world-tremor"
+            ],
+            "violet+3": [
+                "hand-of-midas",
+                "apostles-mace",
+                "executioners-sword",
+                "wasp",
+                "world-tremor",
+                "cosmic-tremor"
+            ],
+            "orange": [
+                "lion-helmet",
+                "executioners-sword",
+                "apostles-mace",
+                "cosmic-tremor",
+                "harunian-helm",
+                "lycanthropes-fang"
+            ],
+            "orange+1": [
+                "governor",
+                "wasp",
+                "cosmic-tremor",
+                "harunian-helm",
+                "lycanthropes-fang",
+                "blued-plate-armor"
+            ],
+            "orange+2": [
+                "executioners-sword",
+                "lion-helmet",
+                "harunian-helm",
+                "citadel-guardian",
+                "alucards-amulet",
+                "shining-armor"
+            ],
+            "orange+3": [
+                "world-tremor",
+                "executioners-sword",
+                "riversars-tiara",
+                "blued-plate-armor",
+                "rulers-globus",
+                "unity-of-extremes"
+            ],
+            "orange+4": [
+                "executioners-sword",
+                "angels-mace",
+                "alchemists-set",
+                "blued-plate-armor",
+                "unity-of-extremes",
+                "evil-genius-cuirass"
+            ]
+        },
+        "glyphs": [
+            "physical attack",
+            "armor",
+            "health",
+            "magic defense",
+            "strength"
+        ],
+        "order_rank": 10,
+        "updated_on": "2025-01-06T22:30:00.000Z",
         "artifacts": {
             "weapon": {
                 "name": "Harunian Sword",
@@ -892,14 +1226,7 @@
             },
             "book": "Defender's Covenant",
             "ring": null
-        },
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 10,
-        "slug": "galahad",
-        "updated_on": "2024-09-10T17:16:56.000Z"
+        }
     },
     {
         "name": "Ginger",

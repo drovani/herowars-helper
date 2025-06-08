@@ -9,3 +9,8 @@ node_modules
 .netlify
 .DS_Store
 *:Zone.Identifier
+
+# Ignore all .env files
+.env*
+# But not .env.example
+!.env.example

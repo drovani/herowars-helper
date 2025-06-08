@@ -49,7 +49,6 @@ export default function HeroForm({ form, hero, equipment }: HeroFormProps) {
             Cancel
           </Button>
         </div>
-        {form.formState.errors && <pre>{JSON.stringify(form.formState.errors, null, 2)}</pre>}
       </form>
     </Form>
   );

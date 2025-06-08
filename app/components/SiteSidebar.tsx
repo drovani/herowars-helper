@@ -4,8 +4,8 @@ import type React from "react";
 import { Link, NavLink } from "react-router";
 import { useAuth } from "~/contexts/AuthContext";
 import { navigation } from "~/data/navigation";
+import HeroWarsLogo from "~/images/hero-wars-alliance-logo.webp";
 import { cn } from "~/lib/utils";
-import { SiteSwitcher } from "./SiteSwitcher";
 import { SiteUserMenu } from "./SiteUserMenu";
 import { DropdownMenuContent } from "./ui/dropdown-menu";
 import {
@@ -36,7 +36,15 @@ export function SiteSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SiteSwitcher />
+        <Link to="/" className="flex items-center gap-2 px-4" viewTransition>
+          <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-background text-sidebar-primary-foreground">
+            <img src={HeroWarsLogo} alt="Hero Wars Helper" className="size-8" />
+          </div>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">HW Helper</span>
+            <span className="truncate text-xs">Tools for players</span>
+          </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

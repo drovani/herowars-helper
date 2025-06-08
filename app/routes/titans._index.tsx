@@ -5,7 +5,7 @@ export default function Titans() {
     {
       round: "Round 1",
       items: {
-        "Sigurd Weapon (Siungur's Aegis) to Level 105": false,
+        "Sigurd Weapon (Siungur's Aegis) to Level 105": true,
         "Angus Seal (Defense Seal) to Level 105": false,
         "Hyperion Weapon (Siungur's Staff) to Level 105": false,
         "Angus Crown (Earth Crown) to Level 105": false,
@@ -43,10 +43,10 @@ export default function Titans() {
   const skinPriorities = {
     "Angus & Sigurd Primordial Skin to Level 45": true,
     "Angus & Sigurd Primordial Skin to Level 55": true,
-    "Hyperion, Angus, Araji, Iyari Default Skins to Level 55": false,
-    "Sigurd Default Skin to level 45": false,
-    "Angus & Sigurd Primordial Skin to Level 60": false,
-    "Hyperion, Angus, Araji, Iyari Default Skins to Level 60": false,
+    "Hyperion, Angus, Araji, Iyari Default Skins to Level 55": true,
+    "Sigurd Default Skin to level 45": true,
+    "Angus & Sigurd Primordial Skin to Level 60 (Max)": true,
+    "Angus, Iyari, Hyperion, Araji Default Skins to Level 60": false,
     "Sigurd Default Skin to level 60": false,
   };
 
@@ -56,17 +56,21 @@ export default function Titans() {
         <CardHeader>
           <CardTitle>Titan Quick Guide</CardTitle>
           <CardDescription>
-            Based on the{" "}
-            <a
-              href="https://www.reddit.com/r/HeroWarsApp/comments/1bq1r65/titan_guide_infographic_march_2024/#lightbox"
-              className="text-blue-500 hover:text-blue-600"
-            >
-              infograph
-            </a>{" "}
-            created by{" "}
-            <a href="https://www.reddit.com/user/FancyGamesStudio/" className="text-blue-500 hover:text-blue-600">
-              FancyGamesStudio
-            </a>
+            <p>Based on the{" "}
+              <a
+                href="https://www.reddit.com/r/HeroWarsApp/comments/1bq1r65/titan_guide_infographic_march_2024/#lightbox"
+                className="text-blue-500 hover:text-blue-600"
+              >
+                infograph
+              </a>{" "}
+              created by{" "}
+              <a href="https://www.reddit.com/user/FancyGamesStudio/" className="text-blue-500 hover:text-blue-600">
+                FancyGamesStudio
+              </a>.
+            </p>
+            <p>
+              This guide is a work in progress and will be updated as new information becomes available. It particular, it has not been updated since the release of Verdoc, Verdant Protector.
+            </p>
           </CardDescription>
         </CardHeader>
       </Card>

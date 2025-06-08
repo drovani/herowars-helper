@@ -27,7 +27,12 @@ export const meta = (_: Route.MetaArgs) => {
   ];
 };
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  return { request };
+};
+
+export function Layout(props: Route.ComponentProps) {
+  const request = props?.loaderData?.request;
   const matches = useMatches() as UIMatch<
     unknown,
     {
@@ -55,12 +60,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="max-h-screen">
-        <AuthProvider>
+        <AuthProvider request={request as unknown as Request}>
           <SidebarProvider defaultOpen={true}>
             <SiteSidebar />
             <SidebarInset>
               <SiteHeader breadcrumbs={breadcrumbs} />
-              <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 max-w-4xl">{children}</main>
+              <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 max-w-4xl">
+                <Outlet />
+              </main>
             </SidebarInset>
           </SidebarProvider>
         </AuthProvider>

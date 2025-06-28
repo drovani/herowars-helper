@@ -1,61 +1,102 @@
 import {
+  BarChart3Icon,
+  DatabaseZapIcon,
   DropletIcon,
   FileJson2Icon,
   MapIcon,
-  PresentationIcon,
   ShieldIcon,
   ShoppingBagIcon,
   SwordIcon,
-  UsersIcon
+  UsersIcon,
+  UsersRoundIcon,
 } from "lucide-react";
 
-export const navigation = [
+interface NavigationGroup {
+  name: string;
+  icon?: React.ComponentType<any>;
+  items: NavigationItem[];
+  roles?: string[];
+}
+
+interface NavigationItem {
+  name: string;
+  icon: React.ComponentType<any>;
+  href?: string;
+  children?: NavigationItem[];
+  reloadDocument?: boolean;
+}
+
+export const navigation: NavigationGroup[] = [
   {
-    name: "Heroes",
-    icon: UsersIcon,
-    href: "/heroes",
-    children: [
+    name: "Hero Wars Helper Tools",
+    items: [
       {
-        name: "Export as JSON",
-        href: "/heroes.json",
-        icon: FileJson2Icon,
-        reloadDocument: true,
+        name: "Heroes",
+        icon: UsersRoundIcon,
+        href: "/heroes",
+        children: [
+          {
+            name: "Export as JSON",
+            icon: FileJson2Icon,
+            href: "/heroes.json",
+          },
+        ],
       },
+      { name: "Titans", icon: SwordIcon, href: "/titans" },
+      {
+        name: "Equipment",
+        icon: ShieldIcon,
+        href: "/equipment",
+        children: [
+          {
+            name: "Export as JSON",
+            icon: FileJson2Icon,
+            href: "/equipment.json",
+          },
+        ],
+      },
+      {
+        name: "Missions",
+        icon: MapIcon,
+        href: "/missions",
+        children: [
+          {
+            name: "Export as JSON",
+            icon: FileJson2Icon,
+            href: "/missions.json",
+          },
+        ],
+      },
+      { name: "Merchant", icon: ShoppingBagIcon },
+      { name: "Hydras", icon: DropletIcon },
     ],
   },
-  { name: "Titans", icon: SwordIcon, href: "/titans" },
   {
-    name: "Equipment",
-    icon: ShieldIcon,
-    href: "/equipment",
-    children: [
-      {
-        name: "Export as JSON",
-        href: "/equipment.json",
-        icon: FileJson2Icon,
-        reloadDocument: true,
-      },
+    name: "Guild Coordination Tools",
+    items: [
+      { name: "Guild Roster", icon: UsersRoundIcon },
+      { name: "Hydra Planning", icon: DropletIcon },
     ],
   },
   {
-    name: "Missions",
-    icon: MapIcon,
-    href: "/missions",
-    children: [
-      {
-        name: "Export as JSON",
-        href: "/missions.json",
-        icon: FileJson2Icon,
-        reloadDocument: true,
-      },
-    ],
-  },
-  { name: "Merchant", icon: ShoppingBagIcon },
-  { name: "Hydras", icon: DropletIcon },
-  {
-    name: "Admin Setup",
-    icon: PresentationIcon,
-    href: "/admin/setup",
+    name: "Administration",
     roles: ["admin"],
+    items: [
+      {
+        name: "Data Setup",
+        icon: DatabaseZapIcon,
+        href: "/admin/setup",
+      },
+      {
+        name: "User Management",
+        icon: UsersIcon,
+        href: "/admin/users",
+      },
+      {
+        name: "Test Coverage",
+        icon: BarChart3Icon,
+        href: "/admin/test-coverage",
+      },
+    ],
   },
 ] as const;

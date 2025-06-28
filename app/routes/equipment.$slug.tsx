@@ -34,7 +34,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
   if (!equipment) {
     throw new Response(null, {
       status: 404,
-      statusText: `Equipment with id ${params.equipmentId} not found.`,
+      statusText: `Equipment with id ${params.slug} not found.`,
     });
   }
 

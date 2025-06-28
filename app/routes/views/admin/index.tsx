@@ -1,4 +1,4 @@
-import type { Route } from "./+types/admin";
+import type { Route } from "./+types/index";
 
 export const meta = (_: Route.MetaArgs) => {
   return [{ name: "robots", content: "noindex" }];

@@ -90,5 +90,10 @@
   },
   "engines": {
     "node": ">=22.12.0"
+  },
+  "overrides": {
+    "vite-plugin-devtools-json": {
+      "vite": "$vite"
+    }
   }
 }

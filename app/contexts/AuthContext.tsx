@@ -65,7 +65,7 @@ export function AuthProvider({ children, request }: { children: React.ReactNode,
       name: fullName,
       roles: appMetadata.roles || ['user'],
       fallback: fallback,
-      avatar: userMetadata.avatar_url,
+      avatar: userMetadata.avatar_url || '/images/heroes/mushy-and-shroom.png',
     };
   }, [supabaseUser]);
 

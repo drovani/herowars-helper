@@ -3,7 +3,27 @@ import log from "loglevel";
 log.enableAll();
 
 export default [
-  index("./routes/_index.tsx"),
+  index("./routes/views/public/index.tsx"),
+  route("auth/confirm", "./routes/views/auth/confirm.tsx"),
+  route("auth/error", "./routes/views/auth/error.tsx"),
+  route("login", "./routes/views/auth/login.tsx"),
+  route("logout", "./routes/views/public/logout.tsx"),
+  route("forgot-password", "./routes/views/auth/forgot-password.tsx"),
+  route("update-password", "./routes/views/auth/update-password.tsx"),
+  route("sign-up", "./routes/views/auth/sign-up.tsx"),
+  route("api/admin/users", "./routes/resources/api/admin/users.tsx"),
+  ...prefix("admin", [
+    layout("./layouts/ProtectedAdminLayout.tsx", [
+      route("setup", "./routes/views/admin/setup.tsx"),
+      route("users", "./routes/views/admin/users.tsx"),
+      route("test-coverage", "./routes/views/admin/test-coverage.tsx"),
+      route("/*", "./routes/views/admin/index.tsx"),
+    ]),
+  ]),
+  layout("./layouts/ProtectedUserLayout.tsx", [
+    route("account", "./routes/views/account/index.tsx", [index("./routes/views/account/profile.tsx")]),
+  ]),
+  route("protected", "./routes/views/public/protected.tsx"),
   route("heroes", "./routes/heroes.tsx", [
     index("./routes/heroes._index.tsx"),
     route(":slug", "./routes/heroes.$slug.tsx"),
@@ -24,20 +44,4 @@ export default [
   route("missions.json", "./routes/missions[.json].tsx"),
   route("equipment.json", "./routes/equipment[.json].tsx"),
   route("heroes.json", "./routes/heroes[.json].tsx"),
-  route("auth/confirm", "./routes/auth.confirm.tsx"),
-  route("auth/error", "./routes/auth.error.tsx"),
-  route("login", "./routes/login.tsx"),
-  route("logout", "./routes/logout.tsx"),
-  route("forgot-password", "./routes/forgot-password.tsx"),
-  route("update-password", "./routes/update-password.tsx"),
-  route("sign-up", "./routes/sign-up.tsx"),
-  ...prefix("admin", [
-    layout("./layouts/ProtectedAdminLayout.tsx", [
-      route("setup", "./routes/admin.setup.tsx"),
-      route("/*", "./routes/admin.tsx"),
-    ]),
-  ]),
-  layout("./layouts/ProtectedUserLayout.tsx", [
-    route("account", "./routes/account.tsx", [index("./routes/account._index.tsx")]),
-  ]),
 ] satisfies RouteConfig;

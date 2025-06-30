@@ -12,6 +12,7 @@ import SiteHeader from "~/components/SiteHeader";
 import type { Route } from "./+types/root";
 import { SiteSidebar } from "./components/SiteSidebar";
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
+import { formatTitle, siteConfig } from "./config/site";
 import { AuthProvider } from "./contexts/AuthContext";
 import styles from "./tailwind.css?url";
 
@@ -19,10 +20,10 @@ export const links: Route.LinksFunction = () => [{ rel: "stylesheet", href: styl
 
 export const meta = (_: Route.MetaArgs) => {
   return [
-    { title: "Hero Wars Helper: Heroes" },
+    { title: formatTitle() },
     {
       name: "description",
-      content: "A helper app for Hero Wars: Alliance mobile game",
+      content: siteConfig.meta.description,
     },
   ];
 };
@@ -62,7 +63,11 @@ export function Layout(props: Route.ComponentProps) {
       <body className="max-h-screen">
         <AuthProvider request={request as unknown as Request}>
           <SidebarProvider defaultOpen={true}>
-            <SiteSidebar />
+            <SiteSidebar settings={{
+              site_title: siteConfig.title,
+              site_subtitle: siteConfig.subtitle,
+              site_logo: <img src={siteConfig.logo.src} alt={siteConfig.logo.alt} className="size-8" />,
+            }} />
             <SidebarInset>
               <SiteHeader breadcrumbs={breadcrumbs} />
               <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 max-w-4xl">

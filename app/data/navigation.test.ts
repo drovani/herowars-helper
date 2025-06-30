@@ -72,7 +72,6 @@ describe("Navigation Data", () => {
               expect(child).toHaveProperty("name");
               expect(child).toHaveProperty("icon");
               expect(typeof child.name).toBe("string");
-              expect(typeof child.icon).toBe("function");
               expect(child.name.length).toBeGreaterThan(0);
             });
           }
@@ -118,8 +117,16 @@ describe("Navigation Data", () => {
       navigation.forEach((group) => {
         group.items.forEach((item) => {
           expect(typeof item.icon).toBe("object");
-          // Check if it's a React component by looking for common properties
-          expect(item.icon.displayName || item.icon.name).toBeDefined();
+          // Check if it's a React component by looking for displayName
+          expect(item.icon.displayName).toBeDefined();
+          
+          // Test nested children icons as well
+          if (item.children) {
+            item.children.forEach((child) => {
+              expect(typeof child.icon).toBe("object");
+              expect(child.icon.displayName).toBeDefined();
+            });
+          }
         });
       });
     });
@@ -131,17 +138,27 @@ describe("Navigation Data", () => {
           expect(typeof item.icon).toBe("object");
           expect(item.icon).toHaveProperty("$$typeof");
           expect(item.icon).toHaveProperty("render");
-
+          
           // Check that it has a valid displayName (lucide icons have clean names)
           expect(item.icon.displayName).toBeDefined();
           expect(typeof item.icon.displayName).toBe("string");
           if (item.icon.displayName) {
             expect(item.icon.displayName.length).toBeGreaterThan(0);
           }
-
-          // Ensure it's not from another icon library by checking the structure
-          // Lucide icons have this specific object structure with $$typeof and render
-          expect(Object.keys(item.icon)).toEqual(["$$typeof", "render"]);
+          
+          // Test nested children icons as well
+          if (item.children) {
+            item.children.forEach((child) => {
+              expect(typeof child.icon).toBe("object");
+              expect(child.icon).toHaveProperty("$$typeof");
+              expect(child.icon).toHaveProperty("render");
+              expect(child.icon.displayName).toBeDefined();
+              expect(typeof child.icon.displayName).toBe("string");
+              if (child.icon.displayName) {
+                expect(child.icon.displayName.length).toBeGreaterThan(0);
+              }
+            });
+          }
         });
       });
     });

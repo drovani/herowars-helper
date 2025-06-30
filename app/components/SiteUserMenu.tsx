@@ -1,4 +1,5 @@
 import { BadgeCheck, ChevronsUpDown, LogInIcon, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
@@ -17,10 +18,16 @@ import { Button } from "./ui/button";
 export function SiteUserMenu() {
   const { isMobile, state } = useSidebar();
   const { isAuthenticated, user, signOut } = useAuth();
+  const [authState, setAuthState] = useState({ isAuthenticated, user });
+
+  // Update auth state when authentication changes
+  useEffect(() => {
+    setAuthState({ isAuthenticated, user });
+  }, [isAuthenticated, user]);
 
   return (
     <div>
-      {isAuthenticated && user !== null ? (
+      {authState.isAuthenticated && authState.user !== null ? (
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -30,12 +37,12 @@ export function SiteUserMenu() {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={`${user.avatar}`} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">{user.fallback}</AvatarFallback>
+                    <AvatarImage src={`${authState.user.avatar}`} alt={authState.user.name} />
+                    <AvatarFallback className="rounded-lg">{authState.user.fallback}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">{user.name}</span>
-                    <span className="truncate text-xs">{user.email}</span>
+                    <span className="truncate font-semibold">{authState.user.name}</span>
+                    <span className="truncate text-xs">{authState.user.email}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
@@ -49,12 +56,12 @@ export function SiteUserMenu() {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage src={`${user.avatar}`} alt={user.name} />
-                      <AvatarFallback className="rounded-lg">{user.fallback}</AvatarFallback>
+                      <AvatarImage src={`${authState.user.avatar}`} alt={authState.user.name} />
+                      <AvatarFallback className="rounded-lg">{authState.user.fallback}</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user.name}</span>
-                      <span className="truncate text-xs">{user.email}</span>
+                      <span className="truncate font-semibold">{authState.user.name}</span>
+                      <span className="truncate text-xs">{authState.user.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>

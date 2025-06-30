@@ -2,6 +2,7 @@ import { AlertCircle, ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useNavigate, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
+import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
@@ -315,15 +316,17 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
         </Card>
       )}
       {/* Action Buttons */}
-      <div className="flex gap-4">
-        <Link
-          to={`/equipment/${equipment.slug}/edit`}
-          className={buttonVariants({ variant: "default" })}
-          viewTransition
-        >
-          Edit
-        </Link>
-      </div>
+      <RequireEditor>
+        <div className="flex gap-4">
+          <Link
+            to={`/equipment/${equipment.slug}/edit`}
+            className={buttonVariants({ variant: "default" })}
+            viewTransition
+          >
+            Edit
+          </Link>
+        </div>
+      </RequireEditor>
       {/* Navigation Buttons */}
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 w-full">
         <div className="flex justify-start w-full sm:w-auto">

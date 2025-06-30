@@ -1,5 +1,8 @@
 import { cva } from "class-variance-authority";
+import { Plus } from "lucide-react";
 import { Link } from "react-router";
+import { RequireEditor } from "~/components/auth/RequireRole";
+import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn, parseSlugGetImageUrl } from "~/lib/utils";
 import EquipmentDataService from "~/services/EquipmentDataService";
@@ -31,7 +34,18 @@ export default function EquipmentIndex({ loaderData }: Route.ComponentProps) {
   const { equipments } = loaderData;
 
   return (
-    <div>
+    <div className="space-y-6">
+      <RequireEditor>
+        <div className="flex justify-end">
+          <Button asChild>
+            <Link to="/equipment/new" viewTransition>
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Equipment
+            </Link>
+          </Button>
+        </div>
+      </RequireEditor>
+
       {equipments.length ? (
         <div className="gap-2 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {equipments.map((equipment) => (

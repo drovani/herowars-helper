@@ -2,6 +2,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useNavigate, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
+import { RequireEditor } from "~/components/auth/RequireRole";
 import HeroArtifacts from "~/components/hero/HeroArtifacts";
 import HeroGlyphs from "~/components/hero/HeroGlyphs";
 import HeroItems from "~/components/hero/HeroItems";
@@ -129,11 +130,13 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
       <HeroGlyphs glyphs={hero.glyphs} />
       <HeroStoneSources stoneSource={hero.stone_source} campaignSources={campaignSources} />
 
-      <div className="flex gap-4">
-        <Link to={`/heroes/${hero.slug}/edit`} className={buttonVariants({ variant: "default" })} viewTransition>
-          Edit
-        </Link>
-      </div>
+      <RequireEditor>
+        <div className="flex gap-4">
+          <Link to={`/heroes/${hero.slug}/edit`} className={buttonVariants({ variant: "default" })} viewTransition>
+            Edit
+          </Link>
+        </div>
+      </RequireEditor>
 
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 w-full">
         <div className="flex justify-start w-full sm:w-auto">

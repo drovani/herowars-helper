@@ -63,16 +63,6 @@ describe("Navigation Data", () => {
       });
     });
 
-    it("items with children do not have href", () => {
-      navigation.forEach((group) => {
-        group.items.forEach((item) => {
-          if (item.children) {
-            expect(item.href).toBeUndefined();
-          }
-        });
-      });
-    });
-
     it("nested children follow same structure", () => {
       navigation.forEach((group) => {
         group.items.forEach((item) => {

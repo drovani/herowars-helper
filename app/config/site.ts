@@ -36,8 +36,8 @@ export const siteConfig: SiteConfig = {
     url: "https://rovani.net",
   },
   meta: {
-    defaultTitle: "HW Helper",
-    titleTemplate: "%s | HW Helper",
+    defaultTitle: "Hero Wars Helper",
+    titleTemplate: "%s | Hero Wars Helper",
     description: "A modern React Router v7 template with Supabase authentication, role-based access control, and production-ready tooling",
   },
   version: "0.1.0",

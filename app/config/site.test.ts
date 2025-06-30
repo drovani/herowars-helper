@@ -66,7 +66,7 @@ describe('Site Configuration', () => {
     })
 
     it('has consistent branding across title fields', () => {
-      const brandName = 'HW Helper'
+      const brandName = 'Hero Wars Helper'
       expect(siteConfig.title).toContain(brandName)
       expect(siteConfig.meta.defaultTitle).toContain(brandName)
       expect(siteConfig.meta.titleTemplate).toContain(brandName)
@@ -92,25 +92,25 @@ describe('Site Configuration', () => {
     it('formats page title with template', () => {
       const pageTitle = 'About Us'
       const result = formatTitle(pageTitle)
-      expect(result).toBe('About Us | HW Helper')
+      expect(result).toBe('About Us | Hero Wars Helper')
     })
 
     it('handles special characters in page title', () => {
       const pageTitle = 'Products & Services'
       const result = formatTitle(pageTitle)
-      expect(result).toBe('Products & Services | HW Helper')
+      expect(result).toBe('Products & Services | Hero Wars Helper')
     })
 
     it('handles numeric page titles', () => {
       const pageTitle = '404'
       const result = formatTitle(pageTitle)
-      expect(result).toBe('404 | HW Helper')
+      expect(result).toBe('404 | Hero Wars Helper')
     })
 
     it('handles long page titles', () => {
       const pageTitle = 'This is a very long page title that should still work correctly'
       const result = formatTitle(pageTitle)
-      expect(result).toBe('This is a very long page title that should still work correctly | HW Helper')
+      expect(result).toBe('This is a very long page title that should still work correctly | Hero Wars Helper')
     })
 
     it('preserves template structure', () => {
@@ -138,7 +138,7 @@ describe('Site Configuration', () => {
     it('handles whitespace in page titles', () => {
       const pageTitle = '  Trimmed Title  '
       const result = formatTitle(pageTitle)
-      expect(result).toBe('  Trimmed Title   | HW Helper')
+      expect(result).toBe('  Trimmed Title   | Hero Wars Helper')
     })
   })
 

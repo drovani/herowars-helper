@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRoles } from "~/hooks/useRoles";
 
 interface RequireRoleProps {
@@ -11,9 +11,15 @@ interface RequireRoleProps {
  * Component that conditionally renders children based on user roles
  */
 export function RequireRole({ roles, children, fallback = null }: RequireRoleProps) {
-  const { hasRole } = useRoles();
+  const { hasRole, isAuthenticated, user } = useRoles();
+  const [shouldRender, setShouldRender] = useState(false);
 
-  if (hasRole(roles)) {
+  // Update render state when authentication or user data changes
+  useEffect(() => {
+    setShouldRender(hasRole(roles));
+  }, [hasRole, roles, isAuthenticated, user]);
+
+  if (shouldRender) {
     return <>{children}</>;
   }
 

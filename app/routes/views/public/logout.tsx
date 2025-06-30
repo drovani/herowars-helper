@@ -1,4 +1,5 @@
 import { type ActionFunctionArgs, redirect } from 'react-router'
+import log from 'loglevel'
 import { createClient } from '~/lib/supabase/client'
 
 export async function loader({ request }: ActionFunctionArgs) {
@@ -7,7 +8,7 @@ export async function loader({ request }: ActionFunctionArgs) {
   const { error } = await supabase.auth.signOut()
 
   if (error) {
-    console.error(error)
+    log.error('Logout error:', error)
     return { success: false, error: error.message }
   }
 

@@ -15,9 +15,12 @@ const Avatar = forwardRef<React.ElementRef<typeof Root>, React.ComponentPropsWit
 Avatar.displayName = Root.displayName;
 
 const AvatarImage = forwardRef<React.ElementRef<typeof Image>, React.ComponentPropsWithoutRef<typeof Image>>(
-  ({ className, ...props }, ref) => (
-    <Image ref={ref} className={cn("aspect-square h-full w-full", className)} {...props} />
-  )
+  ({ className, src, ...props }, ref) => {
+    if (src && src !== "") {
+      return <Image ref={ref} src={src} className={cn("aspect-square h-full w-full", className)} {...props} />
+    }
+    else return null;
+  }
 );
 AvatarImage.displayName = Image.displayName;
 

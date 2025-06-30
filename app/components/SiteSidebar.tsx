@@ -2,6 +2,7 @@ import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/r
 import { LoaderCircle, MoreHorizontalIcon } from "lucide-react";
 import type React from "react";
 import type { ReactElement } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
 import { useAuth } from "~/contexts/AuthContext";
 import { navigation } from "~/data/navigation";
@@ -33,12 +34,23 @@ export function SiteSidebar({ settings, ...props }
   }) {
   const { isMobile, setOpenMobile } = useSidebar();
   const { isAuthenticated, user } = useAuth();
-
-  const navgroups = navigation.filter(
-    (group) =>
-      !("roles" in group) ||
-      (isAuthenticated && user?.roles.some((role) => (group.roles as ReadonlyArray<string>).includes(role)))
+  const [navgroups, setNavgroups] = useState(() => 
+    navigation.filter(
+      (group) =>
+        !("roles" in group) ||
+        (isAuthenticated && user?.roles.some((role) => (group.roles as ReadonlyArray<string>).includes(role)))
+    )
   );
+
+  // Update navigation groups when authentication state changes
+  useEffect(() => {
+    const filteredGroups = navigation.filter(
+      (group) =>
+        !("roles" in group) ||
+        (isAuthenticated && user?.roles.some((role) => (group.roles as ReadonlyArray<string>).includes(role)))
+    );
+    setNavgroups(filteredGroups);
+  }, [isAuthenticated, user]);
 
   return (
     <Sidebar collapsible="icon" {...props}>

@@ -44,6 +44,7 @@ describe("ProtectedEditorLayout", () => {
           fallback: "TE",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -83,6 +84,7 @@ describe("ProtectedEditorLayout", () => {
           fallback: "TA",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -111,6 +113,7 @@ describe("ProtectedEditorLayout", () => {
           fallback: "SU",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -139,6 +142,7 @@ describe("ProtectedEditorLayout", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -183,6 +187,7 @@ describe("ProtectedEditorLayout", () => {
       mockUseAuth.mockReturnValue({
         user: null,
         isAuthenticated: false,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -232,6 +237,7 @@ describe("ProtectedEditorLayout", () => {
           fallback: "NR",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -257,6 +263,7 @@ describe("ProtectedEditorLayout", () => {
           fallback: "UR",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "~/contexts/AuthContext";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -20,14 +20,21 @@ export const meta = (_: Route.MetaArgs) => {
 };
 
 export default function AccountIndex(_: Route.ComponentProps) {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, isLoading: authLoading } = useAuth();
   const [displayName, setDisplayName] = useState(user?.name || "");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Update displayName when user data loads
+  useEffect(() => {
+    if (user?.name) {
+      setDisplayName(user.name);
+    }
+  }, [user?.name]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsUpdating(true);
     setMessage("");
 
     try {
@@ -36,9 +43,34 @@ export default function AccountIndex(_: Route.ComponentProps) {
     } catch (error) {
       setMessage("Failed to update display name. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsUpdating(false);
     }
   };
+
+  // Show loading state while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Loading...</CardTitle>
+            <CardDescription>
+              Initializing your account information.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-10 bg-gray-200 rounded"></div>
+              <div className="h-10 bg-gray-200 rounded w-1/3"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -66,8 +98,8 @@ export default function AccountIndex(_: Route.ComponentProps) {
               />
             </div>
             
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Updating..." : "Update Display Name"}
+            <Button type="submit" disabled={isUpdating}>
+              {isUpdating ? "Updating..." : "Update Display Name"}
             </Button>
             
             {message && (

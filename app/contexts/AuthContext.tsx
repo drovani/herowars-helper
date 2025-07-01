@@ -12,6 +12,7 @@ interface AuthContextType {
     fallback: string;
   } | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   signOut: () => Promise<void>;
   updateProfile: (data: { full_name: string }) => Promise<void>;
 }
@@ -97,15 +98,16 @@ export function AuthProvider({ children, request }: { children: React.ReactNode,
     () => ({
       user: transformedUser,
       isAuthenticated: !!supabaseUser,
+      isLoading: loading,
       signOut,
       updateProfile,
     }),
-    [transformedUser, supabaseUser, signOut, updateProfile]
+    [transformedUser, supabaseUser, loading, signOut, updateProfile]
   );
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }

@@ -34,6 +34,7 @@ describe("RequireRole", () => {
           fallback: "TE",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
     });
 
@@ -88,6 +89,7 @@ describe("RequireRole", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
     });
 
@@ -153,6 +155,7 @@ describe("RequireRole", () => {
           fallback: "TE",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
 
       render(
@@ -190,6 +193,7 @@ describe("RequireEditor", () => {
           fallback: "TE",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
     });
 
@@ -221,6 +225,7 @@ describe("RequireEditor", () => {
           fallback: "TA",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
 
       render(
@@ -247,6 +252,7 @@ describe("RequireEditor", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
 
       render(
@@ -279,6 +285,7 @@ describe("RequireEditor", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
     });
 

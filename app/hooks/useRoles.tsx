@@ -4,7 +4,7 @@ import { useAuth } from "~/contexts/AuthContext";
  * Hook for checking user roles and permissions
  */
 export function useRoles() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
   /**
    * Check if user has any of the specified roles
@@ -44,5 +44,6 @@ export function useRoles() {
     isUser,
     user,
     isAuthenticated,
+    isLoading,
   };
 }

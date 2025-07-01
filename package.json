@@ -12,7 +12,14 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:debug": "playwright test --debug",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report",
+    "e2e:debug-tools": "playwright test --grep \"@debug-tools\"",
+    "e2e:no-debug": "playwright test --grep-invert \"@debug-tools\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -62,6 +69,7 @@
   },
   "devDependencies": {
     "@mjackson/node-fetch-server": "0.7.0",
+    "@playwright/test": "^1.53.2",
     "@react-router/dev": "^7.6.3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",

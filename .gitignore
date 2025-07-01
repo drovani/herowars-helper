@@ -14,3 +14,8 @@ node_modules
 .env*
 # But not .env.example
 !.env.example
+
+# Playwright test artifacts
+/playwright-report/
+/test-results/
+/playwright/.cache/

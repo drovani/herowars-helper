@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import type { Route } from "./+types/index";
 
 const recentUpdates = {
-  asof: new Date("2025-5-20"),
+  asof: new Date("2025-05-20"),
   updates: [
     "Added equipment database for gray, green, blue, violet, and orange items with crafting trees",
     "Began inputting some hero information",
@@ -14,9 +14,16 @@ const recentUpdates = {
     "Added Titan guide with upgrade priorities",
   ],
 }
-const roadmapSparkles = recentUpdates.asof > new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
 
-export default function Index(_: Route.ComponentProps) {
+export const loader = async (_: Route.LoaderArgs) => {
+  const currentDate = new Date();
+  return { currentDate: currentDate.toISOString() };
+};
+
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const currentDate = new Date(loaderData.currentDate);
+  // Check if the update date is within the last 14 days
+  const roadmapSparkles = recentUpdates.asof > new Date(currentDate.getTime() - 14 * 24 * 60 * 60 * 1000);
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       {/* Hero Section */}
@@ -248,7 +255,7 @@ export default function Index(_: Route.ComponentProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             Recent Updates
-            <Badge variant="outline" className="ml-2">{recentUpdates.asof.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</Badge>
+            <Badge variant="outline" className="ml-2">{recentUpdates.asof.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>

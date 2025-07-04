@@ -1,5 +1,6 @@
 import { BadgeCheck, ChevronsUpDown, LogInIcon, LogOut } from "lucide-react";
 import { Link } from "react-router";
+import { LoginModal } from "~/components/auth/LoginModal";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
   DropdownMenu,
@@ -77,17 +78,18 @@ export function SiteUserMenu() {
           </SidebarMenuItem>
         </SidebarMenu>
       ) : state === "expanded" ? (
-        <Button variant={"outline"} asChild className="w-full flex items-center gap-2">
-          <Link to="/login">
+        <LoginModal>
+          <Button variant={"outline"} className="w-full flex items-center gap-2">
             <LogInIcon />
             <span>Sign in</span>
-          </Link>
-        </Button>
+          </Button>
+        </LoginModal>
       ) : (
-        <LogInIcon
-          className="size-8 p-0.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground"
-          onClick={signOut}
-        />
+        <LoginModal>
+          <LogInIcon
+            className="size-8 p-0.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer"
+          />
+        </LoginModal>
       )}
     </div>
   );

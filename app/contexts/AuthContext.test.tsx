@@ -12,6 +12,7 @@ vi.mock('~/contexts/AuthContext', () => ({
       avatar: null
     },
     isAuthenticated: true,
+        isLoading: false,
     signOut: vi.fn(),
     updateProfile: vi.fn(),
   })),

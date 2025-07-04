@@ -6,6 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the **Hero Wars Helper** - a React Router v7 application built to help players manage and track their Hero Wars game data. The application provides tools for managing heroes, equipment, missions, and guild coordination features. It's built with Supabase authentication, Tailwind CSS v4, and deployed on Netlify.
 
+## AI Expectations
+
+- **NEVER** make assumptions about the intent of the command if you have any confusion. Instead, ask clarifying questions.
+- Always be completely honest, especially if you believe the command given is a poor technical or architectural decision. State your reasons for having doubts and confirm with the user if they would like to override your objections.
+
 ## Development Commands
 
 - `npm run dev` - Start development server on port 3000
@@ -133,26 +138,20 @@ Optional for full user management:
 
 ## Testing Framework
 
-The project uses **Vitest** with React Testing Library for comprehensive testing:
+The project uses a comprehensive testing approach with **Vitest** for unit/integration tests and **Playwright** for end-to-end testing:
 
-### Available Test Commands
+### Unit & Integration Testing (Vitest)
 - `npm test` - Run tests in watch mode
 - `npm run test:run` - Run tests once
 - `npm run test:coverage` - Run tests with coverage report
 - `npm run test:ui` - Run tests with UI interface
 
-### Test Structure
+#### Test Structure
 - **Unit Tests**: Components, hooks, utility functions
 - **Integration Tests**: API business logic, auth flows (mocked)
 - **Repository Tests**: Supabase database operations (mocked)
 
-### Testing Guidelines
-- **Components**: Test rendering, interactions, props, and accessibility
-- **Hooks**: Test state changes, effects, and edge cases  
-- **Business Logic**: Test validation, permissions, and error handling
-- **Supabase Operations**: Mock the client and test query building and data transformation
-
-### Test Files Location
+#### Test Files Location
 - Component tests: `app/components/**/*.test.tsx`
 - Hook tests: `app/hooks/**/*.test.tsx`
 - Context tests: `app/contexts/**/*.test.tsx`
@@ -160,11 +159,66 @@ The project uses **Vitest** with React Testing Library for comprehensive testing
 - Test utilities: `app/__tests__/utils/`
 - Mocks: `app/__tests__/mocks/`
 
-### Mocking Patterns
+#### Mocking Patterns
 - **Supabase Client**: Use `app/__tests__/mocks/supabase.ts` for database operations
 - **Auth Context**: Mock authentication state for component testing
 - **External APIs**: Use MSW for HTTP request mocking
 - **Browser APIs**: Mock matchMedia, IntersectionObserver, etc.
+
+### End-to-End Testing (Playwright)
+- `npm run e2e` - Run all e2e tests
+- `npm run e2e:headed` - Run tests with browser UI visible
+- `npm run e2e:debug` - Run tests in debug mode (step through)
+- `npm run e2e:ui` - Run tests with Playwright UI
+- `npm run e2e:report` - View test results report
+
+#### E2E Testing Features
+- **DOM Snapshots**: Automatic HTML and screenshot capture at key test steps
+- **Console Error Tracking**: Monitor and capture all browser console messages, errors, and warnings
+- **Debug Reports**: Generate comprehensive JSON reports with all captured debugging data
+- **Network Monitoring**: Wait for network idle states and track async operations
+- **Responsive Testing**: Test across different viewport sizes and devices
+- **Multi-Browser Support**: Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari
+
+#### E2E Test Structure
+- Test files: `e2e/**/*.spec.ts`
+- Debug utilities: `e2e/utils/debug-helpers.ts`
+- Configuration: `playwright.config.ts`
+- Documentation: `e2e/README.md`
+
+#### Debugging UI Issues with Playwright
+When encountering wonky or unintuitive UI behavior or regressions:
+
+1. **Run example debug test**: `npm run e2e e2e/example-debug.spec.ts`
+2. **Use headed mode**: `npm run e2e:headed` to see browser interactions
+3. **Step through with debugger**: `npm run e2e:debug` for interactive debugging
+4. **Check console errors**: Review `playwright-report/debug-reports/` for JavaScript errors
+5. **Analyze DOM snapshots**: Compare HTML structure in `playwright-report/snapshots/`
+6. **Test responsive behavior**: Verify UI works across different screen sizes
+
+#### E2E Debug Helper Usage
+```typescript
+import { createDebugHelper } from './utils/debug-helpers';
+
+test('my test', async ({ page }) => {
+  const debug = createDebugHelper(page, 'test-name');
+  
+  await page.goto('/');
+  await debug.takeDOMSnapshot('step-name');
+  await debug.waitForNetworkIdle();
+  await debug.logPageState();
+  await debug.assertNoConsoleErrors();
+  await debug.generateDebugReport();
+});
+```
+
+### Testing Guidelines
+- **Components**: Test rendering, interactions, props, and accessibility
+- **Hooks**: Test state changes, effects, and edge cases  
+- **Business Logic**: Test validation, permissions, and error handling
+- **Supabase Operations**: Mock the client and test query building and data transformation
+- **E2E Tests**: Focus on user workflows, critical paths, and cross-browser compatibility
+- **Debug First**: When UI issues are reported, use Playwright's debugging tools to understand the problem before making changes
 
 ## Tailwind CSS Guidelines
 

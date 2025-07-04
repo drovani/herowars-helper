@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { data, useNavigate, useSubmit } from "react-router";
 import { ZodError } from "zod";
+import log from "loglevel";
 import CampaignSourcesField from "~/components/equipment-form/CampaignSourcesField";
 import CraftingField from "~/components/equipment-form/CraftingField";
 import StatsField from "~/components/equipment-form/StatsField";
@@ -70,7 +71,7 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
       formData.append("equipment", JSON.stringify(validated));
       submit(formData, { method: "post" });
     } catch (error) {
-      console.error(error);
+      log.error(error);
       if (error instanceof ZodError) {
         return data({ errors: error.format() }, { status: 400 });
       }

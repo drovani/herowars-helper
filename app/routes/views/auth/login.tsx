@@ -1,5 +1,5 @@
-import { type ActionFunctionArgs, Link, redirect, useFetcher } from 'react-router'
-import { Button } from '~/components/ui/button'
+import { type ActionFunctionArgs, Link, redirect } from 'react-router'
+import { LoginForm } from '~/components/auth/LoginForm'
 import {
     Card,
     CardContent,
@@ -7,8 +7,6 @@ import {
     CardHeader,
     CardTitle,
 } from '~/components/ui/card'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
 import { createClient } from '~/lib/supabase/client'
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -18,6 +16,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const redirectTo = formData.get('redirectTo') as string
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -30,16 +29,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   }
 
-  // Update this route to redirect to an authenticated route. The user already has an active session.
-  return redirect('/protected', { headers })
+  // If redirectTo is provided (from modal), return success with headers
+  // The modal will handle the page reload
+  if (redirectTo) {
+    return Response.json({ success: true, redirectTo }, { headers })
+  }
+  
+  // Otherwise, redirect to account page (for dedicated login page)
+  return redirect('/account', { headers })
 }
 
 export default function Login() {
-  const fetcher = useFetcher<typeof action>()
-
-  const error = fetcher.data?.error
-  const loading = fetcher.state === 'submitting'
-
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
@@ -50,42 +50,21 @@ export default function Login() {
               <CardDescription>Enter your email below to login to your account</CardDescription>
             </CardHeader>
             <CardContent>
-              <fetcher.Form method="post">
-                <div className="flex flex-col gap-6">
-                  <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="m@example.com"
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <div className="flex items-center">
-                      <Label htmlFor="password">Password</Label>
-                      <Link
-                        to="/forgot-password"
-                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                      >
-                        Forgot your password?
-                      </Link>
-                    </div>
-                    <Input id="password" type="password" name="password" required />
-                  </div>
-                  {error && <p className="text-sm text-red-500">{error}</p>}
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? 'Logging in...' : 'Login'}
-                  </Button>
-                </div>
-                <div className="mt-4 text-center text-sm">
-                  Don&apos;t have an account?{' '}
-                  <Link to="/sign-up" className="underline underline-offset-4">
-                    Sign up
-                  </Link>
-                </div>
-              </fetcher.Form>
+              <LoginForm />
+              <div className="mt-4 text-center text-sm">
+                <Link
+                  to="/forgot-password"
+                  className="inline-block text-sm underline-offset-4 hover:underline"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+              <div className="mt-4 text-center text-sm">
+                Don&apos;t have an account?{' '}
+                <Link to="/sign-up" className="underline underline-offset-4">
+                  Sign up
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

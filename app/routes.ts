@@ -34,14 +34,15 @@ export default [
     index("./routes/equipment._index.tsx"),
     route(":slug", "./routes/equipment.$slug.tsx"),
   ]),
+  route("missions", "./routes/missions.tsx", [
+    index("./routes/missions._index.tsx"),
+    route(":missionId", "./routes/missions.$missionId.tsx"),
+  ]),
   layout("./layouts/ProtectedEditorLayout.tsx", [
     route("heroes/:slug/edit", "./routes/heroes.$slug_.edit.tsx"),
     route("equipment/:slug/edit", "./routes/equipment.$slug_.edit.tsx"),
     route("equipment/new", "./routes/equipment.new.tsx"),
-  ]),
-  route("missions", "./routes/missions.tsx", [
-    index("./routes/missions._index.tsx"),
-    route(":missionId", "./routes/missions.$missionId.tsx"),
+    route("missions/:missionId/edit", "./routes/missions.$missionId_.edit.tsx"),
   ]),
   route("missions.json", "./routes/missions[.json].tsx"),
   route("equipment.json", "./routes/equipment[.json].tsx"),

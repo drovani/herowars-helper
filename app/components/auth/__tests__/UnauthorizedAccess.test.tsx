@@ -30,6 +30,7 @@ describe("UnauthorizedAccess", () => {
         isUser: vi.fn(() => false),
         user: null,
         isAuthenticated: false,
+        isLoading: false,
       });
     });
 
@@ -84,6 +85,7 @@ describe("UnauthorizedAccess", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
     });
 
@@ -136,6 +138,7 @@ describe("UnauthorizedAccess", () => {
           fallback: "MR",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
 
       render(
@@ -178,6 +181,7 @@ describe("UnauthorizedAccess", () => {
           fallback: "NR",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
 
       render(
@@ -204,6 +208,7 @@ describe("UnauthorizedAccess", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
 
       render(
@@ -225,6 +230,7 @@ describe("UnauthorizedAccess", () => {
         isUser: vi.fn(() => false),
         user: null,
         isAuthenticated: false,
+        isLoading: false,
       });
 
       render(
@@ -251,6 +257,7 @@ describe("UnauthorizedAccess", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
       });
 
       render(

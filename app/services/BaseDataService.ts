@@ -1,4 +1,5 @@
 import { z, ZodError } from "zod";
+import log from "loglevel";
 
 export interface DataService<TRecord, TMutation> {
   getAll(ids?: string[]): Promise<TRecord[]>;
@@ -71,7 +72,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
         return this.sortRecords([...this.localRecordsCache.values()]);
       }
     } catch (error) {
-      console.error(`Failed to get all ${this.recordName} records:`, error);
+      log.error(`Failed to get all ${this.recordName} records:`, error);
       throw new Error(`Failed to retrieve ${this.recordName} records.`);
     }
   }
@@ -95,7 +96,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
     try {
       return this.localRecordsCache.get(id) || null;
     } catch (error) {
-      console.error(`Failed to get ${this.recordName} ${id}:`, error);
+      log.error(`Failed to get ${this.recordName} ${id}:`, error);
       throw new Error(`Failed to retrieve ${this.recordName} ${id}`);
     }
   }
@@ -117,7 +118,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
       this.localRecordsCache.set(id, parseResults.data);
       return parseResults.data;
     } catch (error) {
-      console.error(`Failed to create ${this.recordName} record:`, error);
+      log.error(`Failed to create ${this.recordName} record:`, error);
       if (error instanceof Error) {
         throw error;
       }
@@ -143,11 +144,19 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
         throw new Error(`${this.recordName} record with id ${id} not found.`);
       }
 
-      const updated = { ...existing, ...parseResults.data, updated_on: new Date().toISOString() };
+      // Explicitly handle undefined values to ensure they overwrite existing values
+      const updated = { ...existing, updated_on: new Date().toISOString() };
+      
+      // Copy all properties from parseResults.data, including undefined values
+      for (const key in parseResults.data) {
+        if (key in parseResults.data) {
+          updated[key as keyof TRecord] = parseResults.data[key as keyof typeof parseResults.data] as any;
+        }
+      }
       this.localRecordsCache.set(id, updated);
       return updated;
     } catch (error) {
-      console.error(`Failed to update ${this.recordName} record ${id}:`, error);
+      log.error(`Failed to update ${this.recordName} record ${id}:`, error);
       if (error instanceof Error) {
         throw error;
       }
@@ -164,7 +173,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
 
       this.localRecordsCache.delete(id);
     } catch (error) {
-      console.error(`Failed to delete ${this.recordName} record ${id}:`, error);
+      log.error(`Failed to delete ${this.recordName} record ${id}:`, error);
       if (error instanceof Error) {
         throw error;
       }
@@ -227,7 +236,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
           details.push(`✓ Successfully ${action} ${this.recordName} ${id}`);
           successCount++;
         } catch (error) {
-          console.error(`✗ Failed to handle ${this.recordName} ${id}:`, error);
+          log.error(`✗ Failed to handle ${this.recordName} ${id}:`, error);
           errorCount++;
         }
       }
@@ -248,7 +257,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
         details,
       } satisfies HydrateDataResult;
     } catch (error) {
-      console.error("Fatal error during initialization:", error);
+      log.error("Fatal error during initialization:", error);
       throw error;
     }
   }

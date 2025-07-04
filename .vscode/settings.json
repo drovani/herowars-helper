@@ -19,5 +19,6 @@
             ],
             "url": "./app/data/hero-schema.json"
         }
-    ]
+    ],
+    "explorer.excludeGitIgnore": true
 }

@@ -1,6 +1,7 @@
 import { MapIcon } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useNavigate, type UIMatch } from "react-router";
+import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
 import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
@@ -145,6 +146,14 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
           <p className="text-muted-foreground">No equipment found in this mission.</p>
         )}
       </div>
+
+      <RequireEditor>
+        <div className="flex gap-4">
+          <Link to={`/missions/${mission.id}/edit`} className={buttonVariants({ variant: "default" })} viewTransition>
+            Edit
+          </Link>
+        </div>
+      </RequireEditor>
 
       {/* Navigation */}
       <div className="flex justify-between items-center pt-4">

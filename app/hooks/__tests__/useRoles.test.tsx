@@ -20,6 +20,7 @@ describe("useRoles", () => {
       mockUseAuth.mockReturnValue({
         user: null,
         isAuthenticated: false,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -64,6 +65,7 @@ describe("useRoles", () => {
           fallback: "TU",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -115,6 +117,7 @@ describe("useRoles", () => {
           fallback: "TE",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -165,6 +168,7 @@ describe("useRoles", () => {
           fallback: "TA",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -209,6 +213,7 @@ describe("useRoles", () => {
           fallback: "UW",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -232,6 +237,7 @@ describe("useRoles", () => {
           fallback: "U",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -253,6 +259,7 @@ describe("useRoles", () => {
           fallback: "U",
         },
         isAuthenticated: true,
+        isLoading: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });

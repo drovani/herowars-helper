@@ -33,7 +33,8 @@ export function SiteSidebar({ settings, ...props }
   }) {
   const { isMobile, setOpenMobile } = useSidebar();
   const { isAuthenticated, user } = useAuth();
-
+  
+  // Filter navigation groups based on current auth state
   const navgroups = navigation.filter(
     (group) =>
       !("roles" in group) ||

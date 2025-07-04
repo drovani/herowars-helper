@@ -6,11 +6,13 @@ export const MissionMutationSchema = z
     chapter_title: z.string().min(1, "Chapter title cannot be empty"),
     mission_number: z.number().int("Mission number must be an integer").positive("Mission number must be positive"),
     name: z.string().min(1, "Mission name cannot be empty"),
-    boss: z.string().min(1, "Boss name cannot be empty").optional(),
+    boss: z.string().optional().transform((val) => val === "" ? undefined : val),
   })
   .transform((mutation) => {
     return {
       ...mutation,
+      // Explicitly include boss field even if undefined to ensure it gets copied
+      boss: mutation.boss,
       id: `${mutation.chapter}-${mutation.mission_number}`,
       updated_on: new Date().toISOString(),
     };

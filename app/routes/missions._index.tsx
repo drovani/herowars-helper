@@ -16,7 +16,7 @@ export const loader = async () => {
   // Get unique boss names for the select dropdown
   const uniqueBosses = Array.from(
     new Set(
-      missions.filter((m): m is MissionRecord & Required<Pick<MissionRecord, "boss">> => !!m.boss).map((m) => m.boss)
+      missions.filter((m): m is MissionRecord & Required<Pick<MissionRecord, "boss">> => !!m.boss).map((m) => m.boss!)
     )
   ).sort();
 

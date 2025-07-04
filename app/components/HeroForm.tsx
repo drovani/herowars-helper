@@ -1,6 +1,7 @@
 import { type UseFormReturn } from "react-hook-form";
 import { data, useNavigate, useSubmit } from "react-router";
 import { ZodError } from "zod";
+import log from "loglevel";
 import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
 import type { EquipmentRecord } from "~/data/equipment.zod";
@@ -28,7 +29,7 @@ export default function HeroForm({ form, hero, equipment }: HeroFormProps) {
       formData.append("hero", JSON.stringify(validated));
       submit(formData, { method: "post" });
     } catch (error) {
-      console.error(error);
+      log.error(error);
       if (error instanceof ZodError) {
         return data({ errors: error.format() }, { status: 400 });
       }

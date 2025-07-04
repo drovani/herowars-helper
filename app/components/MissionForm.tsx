@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { useNavigate, useSubmit } from "react-router";
+import log from "loglevel";
 import { Button } from "~/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
@@ -26,7 +27,7 @@ export default function MissionForm({ form }: MissionFormProps) {
         const heroesData = await HeroDataService.getAll();
         setHeroes(heroesData);
       } catch (error) {
-        console.error("Failed to load heroes:", error);
+        log.error("Failed to load heroes:", error);
         setHeroes([]);
       } finally {
         setIsLoadingHeroes(false);
@@ -44,7 +45,7 @@ export default function MissionForm({ form }: MissionFormProps) {
       formData.append("mission", JSON.stringify(validated));
       submit(formData, { method: "post" });
     } catch (error) {
-      console.error("Mission form validation error:", error);
+      log.error("Mission form validation error:", error);
     } finally {
       setIsSubmitting(false);
     }

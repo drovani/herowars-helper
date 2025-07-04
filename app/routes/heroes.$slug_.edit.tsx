@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { data, redirect, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
+import log from "loglevel";
 import { ZodError } from "zod";
 import HeroForm from "~/components/HeroForm";
 import { Badge } from "~/components/ui/badge";
@@ -74,7 +75,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
 
   const updateResults = await HeroDataService.update(params.slug, dustedData as HeroMutation);
   if (updateResults instanceof ZodError) {
-    console.error("Captured validation ZodError:", JSON.stringify(updateResults.format(), null, 2));
+    log.error("Captured validation ZodError:", JSON.stringify(updateResults.format(), null, 2));
     return data({ errors: updateResults.format() }, { status: 400 });
   }
 

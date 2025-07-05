@@ -82,6 +82,10 @@ Required environment variables:
 Optional for full user management:
 - `SUPABASE_SERVICE_ROLE_KEY` - Service role key for admin user management functions
 
+## Node.js Version Requirements
+
+- **Node.js** >= 22.12.0 (specified in package.json engines)
+
 ## Game Data Structure
 
 ### Heroes
@@ -171,6 +175,8 @@ The project uses a comprehensive testing approach with **Vitest** for unit/integ
 - `npm run e2e:debug` - Run tests in debug mode (step through)
 - `npm run e2e:ui` - Run tests with Playwright UI
 - `npm run e2e:report` - View test results report
+- `npm run e2e:debug-tools` - Run tests tagged with @debug-tools
+- `npm run e2e:no-debug` - Run tests excluding @debug-tools
 
 #### E2E Testing Features
 - **DOM Snapshots**: Automatic HTML and screenshot capture at key test steps

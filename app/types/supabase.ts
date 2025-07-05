@@ -7,43 +7,176 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
+  public: {
     Tables: {
-      [_ in never]: never
+      chapter: {
+        Row: {
+          id: number
+          title: string
+        }
+        Insert: {
+          id: number
+          title: string
+        }
+        Update: {
+          id?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      equipment: {
+        Row: {
+          buy_value_coin: number | null
+          buy_value_gold: number | null
+          campaign_sources: string[] | null
+          crafting_gold_cost: number | null
+          guild_activity_points: number
+          hero_level_required: number | null
+          name: string
+          quality: Database["public"]["Enums"]["equipment_quality"]
+          sell_value: number
+          slug: string
+          type: Database["public"]["Enums"]["equipment_type"]
+        }
+        Insert: {
+          buy_value_coin?: number | null
+          buy_value_gold?: number | null
+          campaign_sources?: string[] | null
+          crafting_gold_cost?: number | null
+          guild_activity_points: number
+          hero_level_required?: number | null
+          name: string
+          quality: Database["public"]["Enums"]["equipment_quality"]
+          sell_value: number
+          slug: string
+          type: Database["public"]["Enums"]["equipment_type"]
+        }
+        Update: {
+          buy_value_coin?: number | null
+          buy_value_gold?: number | null
+          campaign_sources?: string[] | null
+          crafting_gold_cost?: number | null
+          guild_activity_points?: number
+          hero_level_required?: number | null
+          name?: string
+          quality?: Database["public"]["Enums"]["equipment_quality"]
+          sell_value?: number
+          slug?: string
+          type?: Database["public"]["Enums"]["equipment_type"]
+        }
+        Relationships: []
+      }
+      equipment_required_item: {
+        Row: {
+          base_slug: string
+          quantity: number
+          required_slug: string
+        }
+        Insert: {
+          base_slug: string
+          quantity: number
+          required_slug: string
+        }
+        Update: {
+          base_slug?: string
+          quantity?: number
+          required_slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_required_item_base_slug_fkey"
+            columns: ["base_slug"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "equipment_required_item_required_slug_fkey"
+            columns: ["required_slug"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      equipment_stat: {
+        Row: {
+          equipment_slug: string
+          stat: string
+          value: number
+        }
+        Insert: {
+          equipment_slug: string
+          stat: string
+          value: number
+        }
+        Update: {
+          equipment_slug?: string
+          stat?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_stat_equipment_slug_fkey"
+            columns: ["equipment_slug"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      mission: {
+        Row: {
+          chapter_id: number
+          energy_cost: number | null
+          hero_slug: string | null
+          level: number | null
+          name: string
+          slug: string
+        }
+        Insert: {
+          chapter_id: number
+          energy_cost?: number | null
+          hero_slug?: string | null
+          level?: number | null
+          name: string
+          slug: string
+        }
+        Update: {
+          chapter_id?: number
+          energy_cost?: number | null
+          hero_slug?: string | null
+          level?: number | null
+          name?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapter"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      graphql: {
-        Args: {
-          query?: string
-          operationName?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
+      get_equipment_with_neighbors: {
+        Args: { slug_input: string }
+        Returns: {
+          quality: string
+          slug: string
+          name: string
+        }[]
       }
     }
     Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-  public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      [_ in never]: never
+      equipment_quality: "gray" | "green" | "blue" | "violet" | "orange"
+      equipment_type: "equipable" | "fragment" | "recipe"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -157,11 +290,10 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
-    Enums: {},
+    Enums: {
+      equipment_quality: ["gray", "green", "blue", "violet", "orange", "red"],
+      equipment_type: ["equipable", "fragment", "recipe"],
+    },
   },
 } as const
-

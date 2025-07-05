@@ -88,6 +88,7 @@
     "netlify-cli": "^22.2.1",
     "postcss": "^8.5.6",
     "react-router-devtools": "^5.0.6",
+    "supabase": "^2.30.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
     "tailwindcss-animate": "^1.0.7",

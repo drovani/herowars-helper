@@ -1,7 +1,7 @@
 import { z } from "zod"
+import type { Database } from "~/types/supabase"
 import { BaseRepository } from "./BaseRepository"
 import type { RepositoryResult } from "./types"
-import type { Database } from "~/types/supabase"
 
 // Zod schema for mission validation
 const missionSchema = z.object({
@@ -98,7 +98,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
       // Find missions with slugs that match campaign sources
       const { data: missions, error: missionError } = await this.supabase
         .from("mission")
-        .select("*")
+        .select()
         .in("slug", data.campaign_sources)
         .order("slug", { ascending: true })
 
@@ -133,9 +133,10 @@ export class MissionRepository extends BaseRepository<"mission"> {
   // Chapter operations
   async findAllChapters(): Promise<RepositoryResult<Chapter[]>> {
     try {
+      const chapterColumns: (keyof Chapter)[] = ["id", "title"]
       const { data, error } = await this.supabase
         .from("chapter")
-        .select("*")
+        .select()
         .order("id", { ascending: true })
 
       if (error) {
@@ -168,7 +169,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
     try {
       const { data, error } = await this.supabase
         .from("chapter")
-        .select("*")
+        .select()
         .eq("id", id)
         .single()
 

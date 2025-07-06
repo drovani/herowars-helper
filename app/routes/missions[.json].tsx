@@ -1,10 +1,20 @@
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
-import MissionDataService from "~/services/MissionDataService";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/missions[.json]";
 
-export async function loader(_: Route.LoaderArgs) {
-  const missionsJson = await MissionDataService.getAllAsJson();
+export async function loader({ request }: Route.LoaderArgs) {
+  const missionRepo = new MissionRepository(request);
+  const missionsResult = await missionRepo.findAll({
+    orderBy: { column: "slug", ascending: true }
+  });
+
+  if (missionsResult.error) {
+    throw new Response("Failed to load missions", { status: 500 });
+  }
+
+  const missions = missionsResult.data || [];
+  const missionsJson = JSON.stringify(missions, null, 2);
 
   const file = createReadableStreamFromReadable(Readable.from(missionsJson));
 

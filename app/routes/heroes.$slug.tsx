@@ -10,9 +10,9 @@ import HeroSkins from "~/components/hero/HeroSkins";
 import HeroStoneSources from "~/components/hero/HeroStoneSources";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
-import MissionDataService from "~/services/MissionDataService";
 import type { Route } from "./+types/heroes.$slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -26,7 +26,7 @@ export const handle = {
   }),
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing hero slug param");
 
   const hero = await HeroDataService.getById(params.slug);
@@ -37,7 +37,26 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const campaignSources = await MissionDataService.getMissionsByBoss(hero.name);
+  const missionRepo = new MissionRepository(request);
+  const campaignSourcesResult = await missionRepo.findByHeroSlug(hero.name);
+
+  if (campaignSourcesResult.error) {
+    throw new Response("Failed to load campaign sources", { status: 500 });
+  }
+
+  const missions = campaignSourcesResult.data || [];
+
+  // Convert Mission[] to MissionRecord[] for compatibility with existing components
+  const campaignSources = missions.map(mission => ({
+    id: mission.slug,
+    chapter: mission.chapter_id,
+    chapter_title: "", // We'd need to fetch this from chapters table
+    mission_number: parseInt(mission.slug.split('-')[1]),
+    name: mission.name,
+    boss: mission.hero_slug || undefined,
+    updated_on: new Date().toISOString()
+  }));
+
   const equipmentSlugs: string[] = [];
   if (hero.items !== undefined) {
     for (const itemSlugs of Object.values(hero.items)) {

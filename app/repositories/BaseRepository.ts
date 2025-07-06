@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
-import * as log from "loglevel"
+import log from "loglevel"
 import type { ZodSchema } from "zod"
 import { createClient } from "~/lib/supabase/client"
 import type { Database } from "~/types/supabase"

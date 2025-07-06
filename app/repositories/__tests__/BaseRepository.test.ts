@@ -46,7 +46,7 @@ const mockEquipmentSchema = z.object({
 
 class TestEquipmentRepository extends BaseRepository<'equipment'> {
   constructor(request: Request | null = null) {
-    super('equipment', mockEquipmentSchema, request)
+    super('equipment', mockEquipmentSchema, request, 'slug')
   }
 }
 
@@ -496,10 +496,6 @@ describe('BaseRepository', () => {
   })
 
   describe('protected methods', () => {
-    it('should get correct ID column for different tables', () => {
-      expect((repository as any).getIdColumn()).toBe('slug')
-    })
-
     it('should build basic select clause', () => {
       expect((repository as any).buildSelectClause()).toBe('*')
     })

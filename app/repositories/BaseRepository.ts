@@ -21,12 +21,14 @@ export abstract class BaseRepository<T extends TableName> {
   protected supabase: SupabaseClient<Database>
   protected tableName: T
   protected schema: ZodSchema<any>
+  protected primaryKeyColumn: string
 
-  constructor(tableName: T, schema: ZodSchema<any>, request: Request | null = null) {
+  constructor(tableName: T, schema: ZodSchema<any>, request: Request | null = null, primaryKeyColumn: string = 'id') {
     const { supabase } = createClient(request)
     this.supabase = supabase
     this.tableName = tableName
     this.schema = schema
+    this.primaryKeyColumn = primaryKeyColumn
   }
 
   async findAll(options: FindAllOptions = {}): Promise<RepositoryResult<EntityRow<T>[]>> {
@@ -86,7 +88,7 @@ export abstract class BaseRepository<T extends TableName> {
       const { data, error } = await this.supabase
         .from(this.tableName)
         .select(this.buildSelectClause(options.include))
-        .eq(this.getIdColumn() as any, id)
+        .eq(this.primaryKeyColumn as any, id)
         .single()
 
       if (error) {
@@ -182,7 +184,7 @@ export abstract class BaseRepository<T extends TableName> {
       const { data, error } = await this.supabase
         .from(this.tableName)
         .update(input as any)
-        .eq(this.getIdColumn() as any, id)
+        .eq(this.primaryKeyColumn as any, id)
         .select()
         .single()
 
@@ -219,7 +221,7 @@ export abstract class BaseRepository<T extends TableName> {
       const { error } = await this.supabase
         .from(this.tableName)
         .delete()
-        .eq(this.getIdColumn() as any, id)
+        .eq(this.primaryKeyColumn as any, id)
 
       if (error) {
         log.error(`Error deleting ${this.tableName} with id ${id}:`, error)
@@ -381,17 +383,6 @@ export abstract class BaseRepository<T extends TableName> {
     }
   }
 
-  protected getIdColumn(): string {
-    const primaryKeys: Record<string, string> = {
-      chapter: "id",
-      equipment: "slug",
-      equipment_required_item: "base_slug",
-      equipment_stat: "equipment_slug",
-      mission: "slug",
-    }
-
-    return primaryKeys[this.tableName] || "id"
-  }
 
   protected buildSelectClause(include?: IncludeOptions): string {
     if (!include) {

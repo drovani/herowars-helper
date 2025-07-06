@@ -420,23 +420,10 @@ export abstract class BaseRepository<T extends TableName> {
   }
 
   protected getTableRelationships(): Record<string, boolean> {
-    const relationships: Record<string, Record<string, boolean>> = {
-      equipment: {
-        equipment_stats: true,
-        required_items: true,
-      },
-      mission: {
-        chapter: true,
-      },
-      equipment_required_item: {
-        base_equipment: true,
-        required_equipment: true,
-      },
-      equipment_stat: {
-        equipment: true,
-      },
-    }
-
-    return relationships[this.tableName] || {}
+    // Default implementation returns empty relationships
+    // Subclasses can override this method to define their specific relationships
+    // This follows the open-closed principle - the base class is closed for modification
+    // but open for extension via inheritance
+    return {}
   }
 }

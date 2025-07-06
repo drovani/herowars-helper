@@ -501,6 +501,12 @@ describe('BaseRepository', () => {
     })
 
     it('should build select clause with includes', () => {
+      // Override getTableRelationships for this test
+      ;(repository as any).getTableRelationships = vi.fn().mockReturnValue({
+        equipment_stats: true,
+        required_items: true,
+      })
+      
       const include = {
         equipment_stats: true,
         required_items: true,

@@ -1,0 +1,426 @@
+import { describe, it, expect, beforeEach, vi } from "vitest"
+import { MissionRepository } from "../MissionRepository"
+
+// Mock the supabase client
+const mockSupabaseClient = {
+  from: vi.fn().mockReturnThis(),
+  select: vi.fn().mockReturnThis(),
+  insert: vi.fn().mockReturnThis(),
+  update: vi.fn().mockReturnThis(),
+  delete: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  in: vi.fn().mockReturnThis(),
+  order: vi.fn().mockReturnThis(),
+  limit: vi.fn().mockReturnThis(),
+  range: vi.fn().mockReturnThis(),
+  single: vi.fn().mockResolvedValue({ data: null, error: null }),
+}
+
+vi.mock("~/lib/supabase/client", () => ({
+  createClient: vi.fn(() => ({
+    supabase: mockSupabaseClient,
+  })),
+}))
+
+describe("MissionRepository", () => {
+  let repository: MissionRepository
+  let mockSupabase: any
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    repository = new MissionRepository()
+    mockSupabase = (repository as any).supabase
+  })
+
+  describe("constructor", () => {
+    it("should initialize with correct table name and schema", () => {
+      expect((repository as any).tableName).toBe("mission")
+      expect((repository as any).primaryKeyColumn).toBe("slug")
+      expect((repository as any).schema).toBeDefined()
+    })
+
+    it("should define chapter relationship", () => {
+      const relationships = (repository as any).getTableRelationships()
+      expect(relationships).toEqual({
+        chapter: true,
+      })
+    })
+  })
+
+  describe("findByChapter", () => {
+    it("should find missions by chapter ID", async () => {
+      const mockMissions = [
+        { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
+        { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
+      ]
+
+      // Mock the final call in the chain - order is the last method called
+      mockSupabase.order.mockResolvedValueOnce({
+        data: mockMissions,
+        error: null,
+      })
+
+      const result = await repository.findByChapter(1)
+
+      expect(result.data).toEqual(mockMissions)
+      expect(result.error).toBeNull()
+      expect(mockSupabase.from).toHaveBeenCalledWith("mission")
+    })
+
+    it("should handle errors when finding missions by chapter", async () => {
+      const mockError = {
+        message: "Database error",
+        code: "DB_ERROR",
+        details: "Connection failed",
+      }
+
+      // Mock the final call in the chain to return an error
+      mockSupabase.order.mockResolvedValueOnce({
+        data: null,
+        error: mockError,
+      })
+
+      const result = await repository.findByChapter(1)
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual(mockError)
+    })
+  })
+
+  describe("findByHeroSlug", () => {
+    it("should find missions by hero slug", async () => {
+      const mockMissions = [
+        { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
+        { slug: "3-5", name: "Mission 3-5", chapter_id: 3, hero_slug: "astaroth", energy_cost: 8, level: 25 },
+      ]
+
+      // Mock the final call in the chain - order is the last method called
+      mockSupabase.order.mockResolvedValueOnce({
+        data: mockMissions,
+        error: null,
+      })
+
+      const result = await repository.findByHeroSlug("astaroth")
+
+      expect(result.data).toEqual(mockMissions)
+      expect(result.error).toBeNull()
+    })
+  })
+
+  describe("findWithChapter", () => {
+    it("should find mission with chapter relationship", async () => {
+      const mockMissionWithChapter = {
+        slug: "1-1",
+        name: "Mission 1",
+        chapter_id: 1,
+        hero_slug: "astaroth",
+        energy_cost: 6,
+        level: 1,
+        chapter: {
+          id: 1,
+          title: "Chapter 1",
+        },
+      }
+
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockMissionWithChapter,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.findWithChapter("1-1")
+
+      expect(result.data).toEqual(mockMissionWithChapter)
+      expect(result.error).toBeNull()
+    })
+  })
+
+  describe("findByCampaignSource", () => {
+    it("should find missions by equipment campaign source", async () => {
+      const mockEquipment = {
+        slug: "sword-of-justice",
+        campaign_sources: ["1-1", "1-2", "2-3"],
+      }
+
+      const mockMissions = [
+        { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
+        { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
+        { slug: "2-3", name: "Mission 3", chapter_id: 2, hero_slug: "keira", energy_cost: 7, level: 15 },
+      ]
+
+      // Mock the equipment query first
+      mockSupabase.from.mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockEquipment,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      // Then mock the mission query
+      mockSupabase.from.mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          in: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: mockMissions,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.findByCampaignSource("sword-of-justice")
+
+      expect(result.data).toEqual(mockMissions)
+      expect(result.error).toBeNull()
+    })
+
+    it("should return empty array when equipment has no campaign sources", async () => {
+      const mockEquipment = {
+        slug: "crafted-item",
+        campaign_sources: null,
+      }
+
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockEquipment,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.findByCampaignSource("crafted-item")
+
+      expect(result.data).toEqual([])
+      expect(result.error).toBeNull()
+    })
+
+    it("should handle errors when equipment is not found", async () => {
+      const mockError = {
+        message: "Equipment not found",
+        code: "PGRST116",
+        details: "No rows returned",
+      }
+
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: mockError,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.findByCampaignSource("non-existent-equipment")
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual(mockError)
+    })
+  })
+
+  describe("findAllChapters", () => {
+    it("should find all chapters", async () => {
+      const mockChapters = [
+        { id: 1, title: "Chapter 1" },
+        { id: 2, title: "Chapter 2" },
+        { id: 3, title: "Chapter 3" },
+      ]
+
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({
+            data: mockChapters,
+            error: null,
+          }),
+        }),
+      })
+
+      const result = await repository.findAllChapters()
+
+      expect(result.data).toEqual(mockChapters)
+      expect(result.error).toBeNull()
+      expect(mockSupabase.from).toHaveBeenCalledWith("chapter")
+    })
+
+    it("should handle errors when finding chapters", async () => {
+      const mockError = {
+        message: "Database error",
+        code: "DB_ERROR",
+        details: "Connection failed",
+      }
+
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          order: vi.fn().mockResolvedValue({
+            data: null,
+            error: mockError,
+          }),
+        }),
+      })
+
+      const result = await repository.findAllChapters()
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual(mockError)
+    })
+  })
+
+  describe("findChapterById", () => {
+    it("should find chapter by ID", async () => {
+      const mockChapter = { id: 1, title: "Chapter 1" }
+
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockChapter,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.findChapterById(1)
+
+      expect(result.data).toEqual(mockChapter)
+      expect(result.error).toBeNull()
+    })
+  })
+
+  describe("findChapterWithMissions", () => {
+    it("should find chapter with missions", async () => {
+      const mockChapterWithMissions = {
+        id: 1,
+        title: "Chapter 1",
+        missions: [
+          { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
+          { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
+        ],
+      }
+
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockChapterWithMissions,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.findChapterWithMissions(1)
+
+      expect(result.data).toEqual(mockChapterWithMissions)
+      expect(result.error).toBeNull()
+    })
+  })
+
+  describe("bulkCreateChapters", () => {
+    it("should create multiple chapters successfully", async () => {
+      const inputChapters = [
+        { id: 1, title: "Chapter 1" },
+        { id: 2, title: "Chapter 2" },
+      ]
+
+      const mockCreatedChapters = [
+        { id: 1, title: "Chapter 1" },
+        { id: 2, title: "Chapter 2" },
+      ]
+
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn()
+              .mockResolvedValueOnce({
+                data: mockCreatedChapters[0],
+                error: null,
+              })
+              .mockResolvedValueOnce({
+                data: mockCreatedChapters[1],
+                error: null,
+              }),
+          }),
+        }),
+      })
+
+      const result = await repository.bulkCreateChapters(inputChapters)
+
+      expect(result.data).toEqual(mockCreatedChapters)
+      expect(result.error).toBeNull()
+    })
+
+    it("should handle validation errors in bulk create", async () => {
+      const inputChapters = [
+        { id: 1, title: "Chapter 1" },
+        { id: -1, title: "" }, // Invalid data
+      ]
+
+      // Mock successful creation for the first item
+      mockSupabase.from.mockReturnValueOnce({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: { id: 1, title: "Chapter 1" },
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.bulkCreateChapters(inputChapters)
+
+      expect(result.data).toHaveLength(1) // Only valid chapter created
+      expect(result.error).toBeDefined()
+      expect(result.error?.code).toBe("BULK_PARTIAL_FAILURE")
+    })
+  })
+
+  describe("bulkCreateMissions", () => {
+    it("should create multiple missions successfully", async () => {
+      const inputMissions = [
+        { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
+        { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
+      ]
+
+      const mockCreatedMissions = [
+        { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
+        { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
+      ]
+
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn()
+              .mockResolvedValueOnce({
+                data: mockCreatedMissions[0],
+                error: null,
+              })
+              .mockResolvedValueOnce({
+                data: mockCreatedMissions[1],
+                error: null,
+              }),
+          }),
+        }),
+      })
+
+      const result = await repository.bulkCreateMissions(inputMissions)
+
+      expect(result.data).toEqual(mockCreatedMissions)
+      expect(result.error).toBeNull()
+    })
+  })
+})

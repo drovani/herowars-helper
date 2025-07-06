@@ -19,6 +19,11 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - `npm run tsc` - Run TypeScript type checking and generate route types
 - `npm run supabase:types` - Generate Supabase types from local database
 
+### Repository Development Commands
+- `npm run tsc` - TypeScript checking (run after repository changes)
+- `npm run supabase:types` - Regenerate database types after schema changes
+- `npm test` - Run repository tests with mocked Supabase client
+
 ## Architecture
 
 ### Authentication & Authorization
@@ -49,11 +54,44 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Responsive Design**: Mobile-first approach with custom hooks (`useIsMobile.tsx`)
 
 ### Data Layer
-- **Data Services**: Service classes for Heroes, Equipment, and Missions data management
+- **Repository Pattern**: BaseRepository class with type-safe database operations (`app/repositories/BaseRepository.ts`)
+- **Legacy Services**: Service classes (being migrated to repositories) in `app/services/`
 - **JSON Data Storage**: Static data files for heroes, equipment, and missions in `app/data/`; used for initial database hydration, not for regular runtime
 - **Zod Schema Validation**: Type-safe validation schemas for all game data
 - **Supabase Client**: SSR-compatible client creation (`app/lib/supabase/client.ts`)
 - **Type Safety**: Generated Supabase types and strict TypeScript
+
+### Repository Architecture
+- **BaseRepository Class**: Located in `app/repositories/BaseRepository.ts`
+- **Repository Pattern**: Extends BaseRepository<TableName> for type-safe database operations
+- **Repository Types**: Defined in `app/repositories/types.ts`
+- **Current Status**: BaseRepository implemented, migrating from legacy services in `app/services/`
+
+#### Database Schema Key Points
+- **Mission Table**: Uses `slug` as primary key, `chapter_id` as foreign key
+- **Chapter Table**: Uses `id` as primary key, contains `title`
+- **Equipment Table**: Uses `slug` as primary key, `campaign_sources` string array references mission slugs
+- **Relationships**: Mission belongs to Chapter, Equipment references Missions via campaign_sources
+
+#### Repository vs Service Migration
+- **Legacy**: Service classes in `app/services/` work with JSON data
+- **New**: Repository classes in `app/repositories/` work with Supabase database
+- **Data Mismatch**: JSON uses compound IDs ("1-1"), DB uses separate slug/chapter_id fields
+
+### Database Schema Quick Reference
+```sql
+-- Core tables for mission system
+mission: slug (PK), name, chapter_id (FK), hero_slug, energy_cost, level
+chapter: id (PK), title
+equipment: slug (PK), name, campaign_sources (string[])
+```
+
+### Current Architecture State
+- **BaseRepository**: ✅ Implemented in `feature/base-repository-class`
+- **MissionRepository**: ❌ Not implemented (Issue [#37](https://github.com/drovani/herowars-helper/issues/37))
+- **EquipmentRepository**: ❌ Not implemented (Issue [#36](https://github.com/drovani/herowars-helper/issues/36))
+- **HeroRepository**: ❌ Not implemented  (Issue [#38](https://github.com/drovani/herowars-helper/issues/38))
+- **Legacy Services**: Still in use, need migration to repositories
 
 ### Navigation System
 - **Dynamic Navigation**: Role-based menu items defined in `app/data/navigation.ts`
@@ -71,7 +109,8 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - `app/data/heroes.json` - Hero data with stats, skills, and equipment
 - `app/data/equipment.json` - Equipment data with stats and sources
 - `app/data/missions.json` - Mission data for campaign and event content
-- `app/services/` - Data service classes for game entities
+- `app/repositories/` - Database repositories (BaseRepository + specific implementations)
+- `app/services/` - Legacy service classes (being migrated to repositories)
 
 ## Environment Setup
 
@@ -154,6 +193,12 @@ The project uses a comprehensive testing approach with **Vitest** for unit/integ
 - **Unit Tests**: Components, hooks, utility functions
 - **Integration Tests**: API business logic, auth flows (mocked)
 - **Repository Tests**: Supabase database operations (mocked)
+
+#### Repository Testing Patterns
+- **Location**: `app/repositories/__tests__/`
+- **Mock Pattern**: Use `app/__tests__/mocks/supabase.ts` for Supabase client mocking
+- **Test Structure**: Mock createClient, test CRUD operations, validate error handling
+- **Example**: See `BaseRepository.test.ts` for patterns extending BaseRepository
 
 #### Test Files Location
 - Component tests: `app/components/**/*.test.tsx`

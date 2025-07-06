@@ -62,10 +62,13 @@ export const mockSupabaseClient = {
   update: vi.fn().mockReturnThis(),
   delete: vi.fn().mockReturnThis(),
   eq: vi.fn().mockReturnThis(),
+  order: vi.fn().mockReturnThis(),
+  limit: vi.fn().mockReturnThis(),
+  range: vi.fn().mockReturnThis(),
   single: vi.fn().mockResolvedValue({ data: null, error: null }),
 }
 
 // Mock the createClient function
 vi.mock('~/lib/supabase/client', () => ({
-  createClient: vi.fn(() => mockSupabaseClient),
+  createClient: vi.fn(() => ({ supabase: mockSupabaseClient, headers: undefined })),
 }))

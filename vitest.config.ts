@@ -10,6 +10,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./app/__tests__/setup.ts"],
     css: true,
+    exclude: ["e2e/**/*", "node_modules/**/*", ".netlify/**/*"],
     coverage: {
       provider: "v8",
       clean: false,

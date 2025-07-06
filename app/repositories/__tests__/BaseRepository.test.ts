@@ -4,24 +4,22 @@ import { BaseRepository } from '../BaseRepository'
 import type { CreateInput, UpdateInput } from '../types'
 
 vi.mock('loglevel', () => ({
-  log: {
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn(),
-  },
+  error: vi.fn(),
+  warn: vi.fn(),
+  info: vi.fn(),
+  debug: vi.fn(),
 }))
 
 const mockSupabaseClient = {
-  from: vi.fn(),
-  select: vi.fn(),
-  insert: vi.fn(),
-  update: vi.fn(),
-  delete: vi.fn(),
-  eq: vi.fn(),
-  order: vi.fn(),
-  limit: vi.fn(),
-  range: vi.fn(),
+  from: vi.fn().mockReturnThis(),
+  select: vi.fn().mockReturnThis(),
+  insert: vi.fn().mockReturnThis(),
+  update: vi.fn().mockReturnThis(),
+  delete: vi.fn().mockReturnThis(),
+  eq: vi.fn().mockReturnThis(),
+  order: vi.fn().mockReturnThis(),
+  limit: vi.fn().mockReturnThis(),
+  range: vi.fn().mockReturnThis(),
   single: vi.fn(),
 }
 
@@ -58,17 +56,6 @@ describe('BaseRepository', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     repository = new TestEquipmentRepository()
-    
-    // Reset all mocks to return themselves for chaining
-    mockSupabaseClient.from.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.select.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.insert.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.update.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.delete.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.eq.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.order.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.limit.mockReturnValue(mockSupabaseClient)
-    mockSupabaseClient.range.mockReturnValue(mockSupabaseClient)
   })
 
   describe('findAll', () => {
@@ -122,31 +109,44 @@ describe('BaseRepository', () => {
     it('should apply where conditions', async () => {
       const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
 
-      mockSupabaseClient.select.mockResolvedValueOnce({ data: mockData, error: null })
+      // Mock the final call in the chain to resolve the promise
+      mockSupabaseClient.eq.mockResolvedValueOnce({ data: mockData, error: null })
 
-      await repository.findAll({ where: { quality: 'green' } })
+      const result = await repository.findAll({ where: { quality: 'green' } })
 
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
+      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
       expect(mockSupabaseClient.eq).toHaveBeenCalledWith('quality', 'green')
+      expect(result.data).toEqual(mockData)
+      expect(result.error).toBeNull()
     })
 
     it('should apply ordering', async () => {
       const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
 
-      mockSupabaseClient.select.mockResolvedValueOnce({ data: mockData, error: null })
+      mockSupabaseClient.order.mockResolvedValueOnce({ data: mockData, error: null })
 
-      await repository.findAll({ orderBy: { column: 'name', ascending: true } })
+      const result = await repository.findAll({ orderBy: { column: 'name', ascending: true } })
 
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
+      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
       expect(mockSupabaseClient.order).toHaveBeenCalledWith('name', { ascending: true })
+      expect(result.data).toEqual(mockData)
+      expect(result.error).toBeNull()
     })
 
     it('should apply limit', async () => {
       const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
 
-      mockSupabaseClient.select.mockResolvedValueOnce({ data: mockData, error: null })
+      mockSupabaseClient.limit.mockResolvedValueOnce({ data: mockData, error: null })
 
-      await repository.findAll({ limit: 10 })
+      const result = await repository.findAll({ limit: 10 })
 
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
+      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
       expect(mockSupabaseClient.limit).toHaveBeenCalledWith(10)
+      expect(result.data).toEqual(mockData)
+      expect(result.error).toBeNull()
     })
   })
 
@@ -337,7 +337,7 @@ describe('BaseRepository', () => {
 
   describe('delete', () => {
     it('should delete record successfully', async () => {
-      mockSupabaseClient.delete.mockResolvedValueOnce({
+      mockSupabaseClient.eq.mockResolvedValueOnce({
         error: null,
       })
 
@@ -357,7 +357,7 @@ describe('BaseRepository', () => {
         details: 'No rows found',
       }
 
-      mockSupabaseClient.delete.mockResolvedValueOnce({
+      mockSupabaseClient.eq.mockResolvedValueOnce({
         error: mockError,
       })
 

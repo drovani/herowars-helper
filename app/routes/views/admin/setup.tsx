@@ -1,5 +1,5 @@
 import log from "loglevel";
-import { AlertCircle, RefreshCwIcon } from "lucide-react";
+import { AlertCircle, RefreshCwIcon, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
 import { useMemo } from "react";
 import { data, useFetcher } from "react-router";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
@@ -8,10 +8,43 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Badge } from "~/components/ui/badge";
 import { formatTitle } from "~/config/site";
+import { MissionRepository } from "~/repositories/MissionRepository";
+import missionsData from "~/data/missions.json";
 import type { Route } from "./+types/setup";
 
+// Helper function to extract unique chapters from missions data
+function extractChapters(missions: typeof missionsData) {
+  const chaptersMap = new Map<number, string>();
+  
+  missions.forEach((mission) => {
+    if (!chaptersMap.has(mission.chapter)) {
+      chaptersMap.set(mission.chapter, mission.chapter_title);
+    }
+  });
+  
+  return Array.from(chaptersMap.entries()).map(([id, title]) => ({
+    id,
+    title,
+  }));
+}
+
+// Helper function to transform missions to database format
+function transformMissions(missions: typeof missionsData) {
+  return missions.map((mission) => ({
+    slug: mission.id,
+    name: mission.name,
+    chapter_id: mission.chapter,
+    hero_slug: mission.boss || null,
+    energy_cost: null, // Not in JSON data
+    level: null, // Not in JSON data
+  }));
+}
+
 export async function action({ request }: Route.ActionArgs) {
+  const startTime = Date.now();
+  
   try {
     const formData = await request.formData();
     const mode = formData.get("mode")?.toString() || "basic";
@@ -26,14 +59,76 @@ export async function action({ request }: Route.ActionArgs) {
       purgeFirst: purge,
     };
 
+    const results: any = {
+      chapters: { created: 0, errors: 0, total: 0, errorDetails: [] },
+      missions: { created: 0, errors: 0, total: 0, errorDetails: [] },
+      processingTime: 0,
+      mode,
+      dataset: dataset || "all",
+      purge,
+    };
+
+    // Initialize mission repository
+    const missionRepo = new MissionRepository(request);
+
+    // Load missions data if dataset is empty (all) or "missions"
+    if (!dataset || dataset === "missions") {
+      log.info("Loading mission data...");
+      
+      // Extract and create chapters first (foreign key dependency)
+      const chaptersToCreate = extractChapters(missionsData);
+      results.chapters.total = chaptersToCreate.length;
+      log.info(`Creating ${chaptersToCreate.length} chapters...`);
+      
+      const chapterResult = await missionRepo.bulkCreateChapters(chaptersToCreate);
+      if (chapterResult.error && chapterResult.error.code !== "BULK_PARTIAL_FAILURE") {
+        throw new Error(`Chapter creation failed: ${chapterResult.error.message}`);
+      }
+      
+      results.chapters.created = chapterResult.data?.length || 0;
+      if (chapterResult.error?.code === "BULK_PARTIAL_FAILURE") {
+        results.chapters.errors = (chapterResult.error.details as any[])?.length || 0;
+        results.chapters.errorDetails = chapterResult.error.details || [];
+      }
+      
+      // Transform and create missions
+      const missionsToCreate = transformMissions(missionsData);
+      results.missions.total = missionsToCreate.length;
+      log.info(`Creating ${missionsToCreate.length} missions...`);
+      
+      const missionResult = await missionRepo.bulkCreateMissions(missionsToCreate);
+      if (missionResult.error && missionResult.error.code !== "BULK_PARTIAL_FAILURE") {
+        throw new Error(`Mission creation failed: ${missionResult.error.message}`);
+      }
+      
+      results.missions.created = missionResult.data?.length || 0;
+      if (missionResult.error?.code === "BULK_PARTIAL_FAILURE") {
+        results.missions.errors = (missionResult.error.details as any[])?.length || 0;
+        results.missions.errorDetails = missionResult.error.details || [];
+      }
+      
+      log.info("Mission data loading completed", results);
+    }
+
+    results.processingTime = Date.now() - startTime;
+    
+    return data({
+      message: "Data initialization completed",
+      results,
+      success: true,
+      processingTime: results.processingTime,
+    });
+    
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     log.error("Setup failed:", message);
 
     return data(
       {
-        message: "Blob initialization failed",
+        message: "Data initialization failed",
         error: message,
+        success: false,
+        processingTime: Date.now() - startTime,
       },
       {
         status: error instanceof Error && error.message.includes("Existing data conflict.") ? 409 : 500,
@@ -100,6 +195,12 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         All datasets
                       </Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="missions" id="missions" />
+                      <Label htmlFor="missions" className="font-normal">
+                        Missions only
+                      </Label>
+                    </div>
                   </RadioGroup>
                 </div>
               </div>
@@ -120,12 +221,183 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
       </div>
     );
   } else if ("error" in initdata) {
-    return <div>{initdata.error}</div>;
+    return (
+      <div className="space-y-6 max-w-2xl mx-auto">
+        <Alert variant="destructive">
+          <XCircle className="size-4" />
+          <AlertTitle>Initialization Failed</AlertTitle>
+          <AlertDescription>
+            {initdata.error}
+            {initdata.processingTime && (
+              <span className="ml-2 text-sm text-muted-foreground">
+                (Processing time: {initdata.processingTime}ms)
+              </span>
+            )}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
+  const getStatusIcon = (created: number, errors: number, total: number) => {
+    if (errors > 0) {
+      return <AlertTriangle className="size-4 text-yellow-500" />;
+    }
+    if (created === total && total > 0) {
+      return <CheckCircle className="size-4 text-green-500" />;
+    }
+    if (created === 0 && total > 0) {
+      return <XCircle className="size-4 text-red-500" />;
+    }
+    return <CheckCircle className="size-4 text-green-500" />;
+  };
+
+  const getStatusBadge = (created: number, errors: number, total: number) => {
+    if (errors > 0) {
+      return <Badge variant="destructive">Partial Success</Badge>;
+    }
+    if (created === total && total > 0) {
+      return <Badge variant="default">Success</Badge>;
+    }
+    if (created === 0 && total > 0) {
+      return <Badge variant="destructive">Failed</Badge>;
+    }
+    return <Badge variant="secondary">No Data</Badge>;
+  };
+
   return (
-    <div className="min-w-full">
-      <h2>Initialization Results</h2>
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <Alert variant={initdata.success ? "default" : "destructive"}>
+        {initdata.success ? (
+          <CheckCircle className="size-4" />
+        ) : (
+          <XCircle className="size-4" />
+        )}
+        <AlertTitle>
+          {initdata.success ? "Initialization Completed" : "Initialization Failed"}
+        </AlertTitle>
+        <AlertDescription>
+          {initdata.message}
+          {initdata.processingTime && (
+            <span className="ml-2 text-sm text-muted-foreground">
+              (Processing time: {initdata.processingTime}ms)
+            </span>
+          )}
+        </AlertDescription>
+      </Alert>
+
+      {initdata.results && (
+        <div className="grid gap-6">
+          {/* Summary Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Processing Summary</CardTitle>
+              <CardDescription>
+                Mode: {initdata.results.mode} | Dataset: {initdata.results.dataset}
+                {initdata.results.purge && " | Purged existing data"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Chapters Summary */}
+                {initdata.results.chapters && initdata.results.chapters.total > 0 && (
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium flex items-center gap-2">
+                        {getStatusIcon(
+                          initdata.results.chapters.created,
+                          initdata.results.chapters.errors,
+                          initdata.results.chapters.total
+                        )}
+                        Chapters
+                      </h3>
+                      {getStatusBadge(
+                        initdata.results.chapters.created,
+                        initdata.results.chapters.errors,
+                        initdata.results.chapters.total
+                      )}
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p>Total: {initdata.results.chapters.total}</p>
+                      <p className="text-green-600">Created: {initdata.results.chapters.created}</p>
+                      {initdata.results.chapters.errors > 0 && (
+                        <p className="text-red-600">Errors: {initdata.results.chapters.errors}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Missions Summary */}
+                {initdata.results.missions && initdata.results.missions.total > 0 && (
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium flex items-center gap-2">
+                        {getStatusIcon(
+                          initdata.results.missions.created,
+                          initdata.results.missions.errors,
+                          initdata.results.missions.total
+                        )}
+                        Missions
+                      </h3>
+                      {getStatusBadge(
+                        initdata.results.missions.created,
+                        initdata.results.missions.errors,
+                        initdata.results.missions.total
+                      )}
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p>Total: {initdata.results.missions.total}</p>
+                      <p className="text-green-600">Created: {initdata.results.missions.created}</p>
+                      {initdata.results.missions.errors > 0 && (
+                        <p className="text-red-600">Errors: {initdata.results.missions.errors}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Error Details */}
+          {((initdata.results.chapters?.errors > 0) || (initdata.results.missions?.errors > 0)) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="size-4 text-yellow-500" />
+                  Error Details
+                </CardTitle>
+                <CardDescription>
+                  Some items failed to process. Review the errors below.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {initdata.results.chapters?.errorDetails?.length > 0 && (
+                    <div>
+                      <h4 className="font-medium mb-2">Chapter Errors</h4>
+                      <div className="bg-muted rounded-lg p-3">
+                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
+                          {JSON.stringify(initdata.results.chapters.errorDetails, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+                  {initdata.results.missions?.errorDetails?.length > 0 && (
+                    <div>
+                      <h4 className="font-medium mb-2">Mission Errors</h4>
+                      <div className="bg-muted rounded-lg p-3">
+                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
+                          {JSON.stringify(initdata.results.missions.errorDetails, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
     </div>
   );
 }

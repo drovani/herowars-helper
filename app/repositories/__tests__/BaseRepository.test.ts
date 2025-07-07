@@ -4,10 +4,12 @@ import { BaseRepository } from '../BaseRepository'
 import type { CreateInput, UpdateInput } from '../types'
 
 vi.mock('loglevel', () => ({
-  error: vi.fn(),
-  warn: vi.fn(),
-  info: vi.fn(),
-  debug: vi.fn(),
+  default: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  }
 }))
 
 const mockSupabaseClient = {

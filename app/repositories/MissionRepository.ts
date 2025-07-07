@@ -305,4 +305,62 @@ export class MissionRepository extends BaseRepository<"mission"> {
   async bulkCreateMissions(missionData: MissionImportData[]): Promise<RepositoryResult<Mission[]>> {
     return this.bulkCreate(missionData)
   }
+
+  // Domain-based purge operations for admin setup
+  async purgeMissionDomain(): Promise<RepositoryResult<{ missions: number; chapters: number }>> {
+    try {
+      // Delete missions first (foreign key constraint)
+      const { count: missionCount, error: missionError } = await this.supabase
+        .from("mission")
+        .delete({ count: "exact" })
+        .neq("slug", "")  // Delete all missions (using neq with empty string to match all)
+
+      if (missionError) {
+        return {
+          data: null,
+          error: {
+            message: `Failed to purge missions: ${missionError.message}`,
+            code: missionError.code,
+            details: missionError.details,
+          },
+        }
+      }
+
+      // Delete chapters second
+      const { count: chapterCount, error: chapterError } = await this.supabase
+        .from("chapter")
+        .delete({ count: "exact" })
+        .neq("id", 0)  // Delete all chapters (using neq with 0 to match all)
+
+      if (chapterError) {
+        return {
+          data: null,
+          error: {
+            message: `Failed to purge chapters: ${chapterError.message}`,
+            code: chapterError.code,
+            details: chapterError.details,
+          },
+        }
+      }
+
+      // Return the count of deleted records
+      const purgeResults = {
+        missions: missionCount || 0,
+        chapters: chapterCount || 0,
+      }
+
+      return {
+        data: purgeResults,
+        error: null,
+      }
+    } catch (error) {
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred during purge",
+          details: error,
+        },
+      }
+    }
+  }
 }

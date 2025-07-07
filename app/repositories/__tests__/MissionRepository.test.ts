@@ -423,4 +423,142 @@ describe("MissionRepository", () => {
       expect(result.error).toBeNull()
     })
   })
+
+  describe("purgeMissionDomain", () => {
+    it("should purge both missions and chapters successfully", async () => {
+      // Mock mission delete with count
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          neq: vi.fn().mockResolvedValue({
+            count: 5,
+            error: null,
+          }),
+        }),
+      })
+
+      // Mock chapter delete with count
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          neq: vi.fn().mockResolvedValue({
+            count: 3,
+            error: null,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toEqual({
+        missions: 5,
+        chapters: 3,
+      })
+      expect(result.error).toBeNull()
+      expect(mockSupabase.from).toHaveBeenCalledWith("mission")
+      expect(mockSupabase.from).toHaveBeenCalledWith("chapter")
+    })
+
+    it("should handle mission delete errors", async () => {
+      const mockError = {
+        message: "Mission delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      }
+
+      mockSupabase.from.mockReturnValue({
+        delete: vi.fn().mockReturnValue({
+          neq: vi.fn().mockResolvedValue({
+            data: null,
+            error: mockError,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual({
+        message: "Failed to purge missions: Mission delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      })
+    })
+
+    it("should handle chapter delete errors", async () => {
+      const mockMissionDeleteResult = Array(5).fill({ slug: "mission-1" })
+      const mockChapterError = {
+        message: "Chapter delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      }
+
+      // Mock successful mission delete
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          neq: vi.fn().mockResolvedValue({
+            data: mockMissionDeleteResult,
+            error: null,
+          }),
+        }),
+      })
+
+      // Mock failed chapter delete
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          neq: vi.fn().mockResolvedValue({
+            data: null,
+            error: mockChapterError,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual({
+        message: "Failed to purge chapters: Chapter delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      })
+    })
+
+    it("should handle unexpected errors during purge", async () => {
+      mockSupabase.from.mockImplementation(() => {
+        throw new Error("Unexpected database error")
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toBeNull()
+      expect(result.error?.message).toBe("Unexpected database error")
+    })
+
+    it("should handle empty delete results", async () => {
+      // Mock empty delete results with count 0
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          neq: vi.fn().mockResolvedValue({
+            count: 0,
+            error: null,
+          }),
+        }),
+      })
+
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          neq: vi.fn().mockResolvedValue({
+            count: 0,
+            error: null,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toEqual({
+        missions: 0,
+        chapters: 0,
+      })
+      expect(result.error).toBeNull()
+    })
+  })
 })

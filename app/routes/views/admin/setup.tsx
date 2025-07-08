@@ -1,53 +1,51 @@
 import log from "loglevel";
-import { AlertCircle, RefreshCwIcon, CheckCircle, AlertTriangle, XCircle, ChevronDown } from "lucide-react";
+import { AlertCircle, AlertTriangle, CheckCircle, ChevronDown, RefreshCwIcon, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { data, useFetcher } from "react-router";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { Badge } from "~/components/ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { formatTitle } from "~/config/site";
-import { MissionRepository } from "~/repositories/MissionRepository";
+import chaptersAndMissionsData from "~/data/chapters-missions.json";
 import { createAdminClient } from "~/lib/supabase/admin-client";
-import { createClient } from "~/lib/supabase/client";
-import missionsData from "~/data/missions.json";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/setup";
 
-// Helper function to extract unique chapters from missions data
-function extractChapters(missions: typeof missionsData) {
-  const chaptersMap = new Map<number, string>();
-  
-  missions.forEach((mission) => {
-    if (!chaptersMap.has(mission.chapter)) {
-      chaptersMap.set(mission.chapter, mission.chapter_title);
-    }
-  });
-  
-  return Array.from(chaptersMap.entries()).map(([id, title]) => ({
-    id,
-    title,
+// Helper function to extract chapters from chapters-missions data
+function extractChapters(data: typeof chaptersAndMissionsData) {
+  return data.chapters.map((chapter) => ({
+    id: chapter.id,
+    title: chapter.title,
   }));
 }
 
 // Helper function to transform missions to database format
-function transformMissions(missions: typeof missionsData) {
-  return missions.map((mission) => ({
-    slug: mission.id,
-    name: mission.name,
-    chapter_id: mission.chapter,
-    hero_slug: mission.boss || null,
-    energy_cost: null, // Not in JSON data
-    level: null, // Not in JSON data
-  }));
+function transformMissions(data: typeof chaptersAndMissionsData) {
+  return data.missions.map((mission) => {
+    // Parse chapter_id and level from slug (e.g., "1-2" → chapter_id = 1, level = 2)
+    const [chapterIdStr, levelStr] = mission.slug.split('-');
+    const chapter_id = parseInt(chapterIdStr, 10);
+    const level = parseInt(levelStr, 10);
+
+    return {
+      slug: mission.slug,
+      name: mission.name,
+      chapter_id,
+      hero_slug: mission.hero_slug || null,
+      energy_cost: mission.energy_cost,
+      level,
+    };
+  });
 }
 
 export async function action({ request }: Route.ActionArgs) {
   const startTime = Date.now();
-  
+
   try {
     const formData = await request.formData();
     const mode = formData.get("mode")?.toString() || "basic";
@@ -73,14 +71,14 @@ export async function action({ request }: Route.ActionArgs) {
     };
 
     // Initialize mission repository with appropriate client
-    const missionRepo = mode === 'force' 
+    const missionRepo = mode === 'force'
       ? new MissionRepository(createAdminClient(request).supabase)
       : new MissionRepository(request);
 
     // Execute purge if requested
     if (purge) {
       log.info("Purging existing data...");
-      
+
       // Determine what to purge based on dataset
       if (!dataset || dataset === "missions" || dataset === "all") {
         // Purge mission domain (both missions and chapters)
@@ -88,59 +86,59 @@ export async function action({ request }: Route.ActionArgs) {
         if (purgeResult.error) {
           throw new Error(`Domain purge failed: ${purgeResult.error.message}`);
         }
-        
+
         if (purgeResult.data) {
           results.purged.missions = purgeResult.data.missions;
           results.purged.chapters = purgeResult.data.chapters;
         }
-        
+
         log.info(`Purged mission domain: ${results.purged.missions} missions, ${results.purged.chapters} chapters`);
       }
-      
+
       // Future: Add other domain purging here when heroes/equipment datasets are added
     }
 
     // Load missions data if dataset is empty (all) or "missions"
     if (!dataset || dataset === "missions") {
       log.info("Loading mission data...");
-      
+
       // Prepare data for initialization
-      const chaptersToCreate = extractChapters(missionsData);
-      const missionsToCreate = transformMissions(missionsData);
-      
+      const chaptersToCreate = extractChapters(chaptersAndMissionsData);
+      const missionsToCreate = transformMissions(chaptersAndMissionsData);
+
       results.chapters.total = chaptersToCreate.length;
       results.missions.total = missionsToCreate.length;
-      
+
       log.info(`Initializing ${chaptersToCreate.length} chapters and ${missionsToCreate.length} missions...`);
-      
+
       // Use the new initializeMissionData method
       const initResult = await missionRepo.initializeMissionData(
-        { 
-          chapters: chaptersToCreate, 
-          missions: missionsToCreate 
+        {
+          chapters: chaptersToCreate,
+          missions: missionsToCreate
         },
         options
       );
-      
+
       // Handle both successful and partial failure cases
       if (initResult.error && !['BULK_PARTIAL_FAILURE', 'BULK_PARTIAL_SUCCESS'].includes(initResult.error.code || '')) {
         throw new Error(`Mission data initialization failed: ${initResult.error.message}`);
       }
-      
+
       // Update results with detailed information
       if (initResult.data) {
         results.chapters.created = initResult.data.chapters?.length || 0;
         results.missions.created = initResult.data.missions?.length || 0;
       }
-      
+
       // Capture error and skip details from partial failures
       if (initResult.error?.details) {
         const details = initResult.error.details as any;
-        
+
         // Handle chapter-specific details
         if (details.chapters) {
           const chapterDetails = details.chapters;
-          
+
           // Handle chapter errors
           if (chapterDetails.errors && Array.isArray(chapterDetails.errors)) {
             chapterDetails.errors.forEach((errorItem: any) => {
@@ -151,7 +149,7 @@ export async function action({ request }: Route.ActionArgs) {
               });
             });
           }
-          
+
           // Handle skipped chapters
           if (chapterDetails.skipped && Array.isArray(chapterDetails.skipped)) {
             chapterDetails.skipped.forEach((skippedItem: any) => {
@@ -160,11 +158,11 @@ export async function action({ request }: Route.ActionArgs) {
             });
           }
         }
-        
+
         // Handle mission-specific details
         if (details.missions) {
           const missionDetails = details.missions;
-          
+
           // Handle mission errors
           if (missionDetails.errors && Array.isArray(missionDetails.errors)) {
             missionDetails.errors.forEach((errorItem: any) => {
@@ -175,7 +173,7 @@ export async function action({ request }: Route.ActionArgs) {
               });
             });
           }
-          
+
           // Handle skipped missions
           if (missionDetails.skipped && Array.isArray(missionDetails.skipped)) {
             missionDetails.skipped.forEach((skippedItem: any) => {
@@ -184,7 +182,7 @@ export async function action({ request }: Route.ActionArgs) {
             });
           }
         }
-        
+
         // Legacy support: Handle flat structure for backward compatibility
         if (details.errors && Array.isArray(details.errors)) {
           details.errors.forEach((errorItem: any) => {
@@ -206,7 +204,7 @@ export async function action({ request }: Route.ActionArgs) {
             }
           });
         }
-        
+
         // Legacy support: Handle flat skipped structure
         if (details.skipped && Array.isArray(details.skipped)) {
           details.skipped.forEach((skippedItem: any) => {
@@ -222,19 +220,19 @@ export async function action({ request }: Route.ActionArgs) {
           });
         }
       }
-      
+
       log.info("Mission data loading completed", results);
     }
 
     results.processingTime = Date.now() - startTime;
-    
+
     return data({
       message: "Data initialization completed",
       results,
       success: true,
       processingTime: results.processingTime,
     });
-    
+
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     log.error("Setup failed:", message);
@@ -258,14 +256,14 @@ export const meta = () => {
 };
 
 // Component for displaying expandable error and skipped details
-function DetailsSection({ 
-  skippedDetails, 
-  errorDetails, 
-  type 
-}: { 
-  skippedDetails?: any[], 
-  errorDetails?: any[], 
-  type: string 
+function DetailsSection({
+  skippedDetails,
+  errorDetails,
+  type
+}: {
+  skippedDetails?: any[],
+  errorDetails?: any[],
+  type: string
 }) {
   const [showSkipped, setShowSkipped] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
@@ -501,22 +499,22 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
 
       {/* Action buttons for next steps */}
       <div className="flex gap-4 justify-center">
-        <Button 
+        <Button
           onClick={() => {
             // Reset fetcher state to show form again
             fetcher.load(window.location.pathname);
-          }} 
+          }}
           variant="outline"
           className="flex items-center gap-2"
         >
           <RefreshCwIcon className="size-4" />
           Run Another Initialization
         </Button>
-        <Button 
+        <Button
           onClick={() => {
             // Reset fetcher state to show form again
             fetcher.load(window.location.pathname);
-          }} 
+          }}
           variant="secondary"
           className="flex items-center gap-2"
         >
@@ -532,14 +530,14 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
               <CardTitle>Processing Summary</CardTitle>
               <CardDescription>
                 Mode: {initdata.results.mode} | Dataset: {initdata.results.dataset}
-                {initdata.results.purgeRequested && initdata.results.purged && 
+                {initdata.results.purgeRequested && initdata.results.purged &&
                   ` | Purged: ${initdata.results.purged.missions} missions, ${initdata.results.purged.chapters} chapters`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Purge Summary */}
-                {initdata.results.purgeRequested && initdata.results.purged && 
+                {initdata.results.purgeRequested && initdata.results.purged &&
                   (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0) && (
                   <div className="border rounded-lg p-4 bg-orange-50 border-orange-200">
                     <div className="flex items-center justify-between mb-2">
@@ -586,11 +584,11 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         <p className="text-red-600">Errors: {initdata.results.chapters.errors}</p>
                       )}
                     </div>
-                    
+
                     {/* Expandable details for chapters */}
                     {(initdata.results.chapters.skippedDetails?.length > 0 || initdata.results.chapters.errorDetails?.length > 0) && (
                       <div className="mt-3 pt-3 border-t">
-                        <DetailsSection 
+                        <DetailsSection
                           skippedDetails={initdata.results.chapters.skippedDetails}
                           errorDetails={initdata.results.chapters.errorDetails}
                           type="chapters"
@@ -630,11 +628,11 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         <p className="text-red-600">Errors: {initdata.results.missions.errors}</p>
                       )}
                     </div>
-                    
+
                     {/* Expandable details for missions */}
                     {(initdata.results.missions.skippedDetails?.length > 0 || initdata.results.missions.errorDetails?.length > 0) && (
                       <div className="mt-3 pt-3 border-t">
-                        <DetailsSection 
+                        <DetailsSection
                           skippedDetails={initdata.results.missions.skippedDetails}
                           errorDetails={initdata.results.missions.errorDetails}
                           type="missions"

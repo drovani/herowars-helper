@@ -158,7 +158,7 @@ equipment: slug (PK), name, campaign_sources (string[])
 - `app/layouts/` - Layout components for different user types
 - `app/data/heroes.json` - Hero data with stats, skills, and equipment
 - `app/data/equipment.json` - Equipment data with stats and sources
-- `app/data/missions.json` - Mission data for campaign and event content
+- `app/data/chapters-missions.json` - Chapter and mission data for campaign and event content with normalized structure
 - `app/repositories/` - Database repositories (BaseRepository + specific implementations)
 - `app/services/` - Legacy service classes (being migrated to repositories)
 

@@ -1,6 +1,6 @@
 import log from "loglevel";
-import { AlertCircle, RefreshCwIcon, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
-import { useMemo } from "react";
+import { AlertCircle, RefreshCwIcon, CheckCircle, AlertTriangle, XCircle, ChevronDown } from "lucide-react";
+import { useMemo, useState } from "react";
 import { data, useFetcher } from "react-router";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
@@ -9,6 +9,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Badge } from "~/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { formatTitle } from "~/config/site";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { createAdminClient } from "~/lib/supabase/admin-client";
@@ -121,13 +122,106 @@ export async function action({ request }: Route.ActionArgs) {
         options
       );
       
-      if (initResult.error) {
+      // Handle both successful and partial failure cases
+      if (initResult.error && !['BULK_PARTIAL_FAILURE', 'BULK_PARTIAL_SUCCESS'].includes(initResult.error.code || '')) {
         throw new Error(`Mission data initialization failed: ${initResult.error.message}`);
       }
       
-      // Update results with successful operation
-      results.chapters.created = initResult.data?.chapters?.length || 0;
-      results.missions.created = initResult.data?.missions?.length || 0;
+      // Update results with detailed information
+      if (initResult.data) {
+        results.chapters.created = initResult.data.chapters?.length || 0;
+        results.missions.created = initResult.data.missions?.length || 0;
+      }
+      
+      // Capture error and skip details from partial failures
+      if (initResult.error?.details) {
+        const details = initResult.error.details as any;
+        
+        // Handle chapter-specific details
+        if (details.chapters) {
+          const chapterDetails = details.chapters;
+          
+          // Handle chapter errors
+          if (chapterDetails.errors && Array.isArray(chapterDetails.errors)) {
+            chapterDetails.errors.forEach((errorItem: any) => {
+              results.chapters.errors++;
+              results.chapters.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            });
+          }
+          
+          // Handle skipped chapters
+          if (chapterDetails.skipped && Array.isArray(chapterDetails.skipped)) {
+            chapterDetails.skipped.forEach((skippedItem: any) => {
+              results.chapters.skipped++;
+              results.chapters.skippedDetails.push(skippedItem);
+            });
+          }
+        }
+        
+        // Handle mission-specific details
+        if (details.missions) {
+          const missionDetails = details.missions;
+          
+          // Handle mission errors
+          if (missionDetails.errors && Array.isArray(missionDetails.errors)) {
+            missionDetails.errors.forEach((errorItem: any) => {
+              results.missions.errors++;
+              results.missions.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            });
+          }
+          
+          // Handle skipped missions
+          if (missionDetails.skipped && Array.isArray(missionDetails.skipped)) {
+            missionDetails.skipped.forEach((skippedItem: any) => {
+              results.missions.skipped++;
+              results.missions.skippedDetails.push(skippedItem);
+            });
+          }
+        }
+        
+        // Legacy support: Handle flat structure for backward compatibility
+        if (details.errors && Array.isArray(details.errors)) {
+          details.errors.forEach((errorItem: any) => {
+            // Determine if this is a chapter or mission error based on the data structure
+            if (errorItem.data && 'title' in errorItem.data) {
+              // Chapter error
+              results.chapters.errors++;
+              results.chapters.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            } else if (errorItem.data && ('name' in errorItem.data || 'slug' in errorItem.data)) {
+              // Mission error
+              results.missions.errors++;
+              results.missions.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            }
+          });
+        }
+        
+        // Legacy support: Handle flat skipped structure
+        if (details.skipped && Array.isArray(details.skipped)) {
+          details.skipped.forEach((skippedItem: any) => {
+            if (skippedItem && 'title' in skippedItem) {
+              // Skipped chapter
+              results.chapters.skipped++;
+              results.chapters.skippedDetails.push(skippedItem);
+            } else if (skippedItem && ('name' in skippedItem || 'slug' in skippedItem)) {
+              // Skipped mission
+              results.missions.skipped++;
+              results.missions.skippedDetails.push(skippedItem);
+            }
+          });
+        }
+      }
       
       log.info("Mission data loading completed", results);
     }
@@ -162,6 +256,82 @@ export async function action({ request }: Route.ActionArgs) {
 export const meta = () => {
   return [{ title: formatTitle('Data Setup - Admin') }];
 };
+
+// Component for displaying expandable error and skipped details
+function DetailsSection({ 
+  skippedDetails, 
+  errorDetails, 
+  type 
+}: { 
+  skippedDetails?: any[], 
+  errorDetails?: any[], 
+  type: string 
+}) {
+  const [showSkipped, setShowSkipped] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      {/* Skipped Details */}
+      {skippedDetails && skippedDetails.length > 0 && (
+        <Collapsible open={showSkipped} onOpenChange={setShowSkipped}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="w-full justify-between p-2 h-auto">
+              <span className="text-blue-600 text-xs">View {skippedDetails.length} skipped {type}</span>
+              <ChevronDown className={`size-3 transition-transform ${showSkipped ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-1">
+            <div className="bg-blue-50 border border-blue-200 rounded p-2 max-h-32 overflow-y-auto">
+              <div className="text-xs space-y-1">
+                {skippedDetails.map((item, index) => (
+                  <div key={index} className="text-blue-700">
+                    <span className="font-medium">
+                      {type === 'chapters' ? item.title : (item.name || item.slug)}
+                    </span>
+                    {type === 'chapters' && item.id && <span className="text-blue-500 ml-1">(ID: {item.id})</span>}
+                    {type === 'missions' && item.slug && <span className="text-blue-500 ml-1">({item.slug})</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* Error Details */}
+      {errorDetails && errorDetails.length > 0 && (
+        <Collapsible open={showErrors} onOpenChange={setShowErrors}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="w-full justify-between p-2 h-auto">
+              <span className="text-red-600 text-xs">View {errorDetails.length} error{errorDetails.length !== 1 ? 's' : ''}</span>
+              <ChevronDown className={`size-3 transition-transform ${showErrors ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-1">
+            <div className="bg-red-50 border border-red-200 rounded p-2 max-h-32 overflow-y-auto">
+              <div className="text-xs space-y-2">
+                {errorDetails.map((item, index) => (
+                  <div key={index} className="border-b border-red-200 pb-1 last:border-b-0">
+                    <div className="font-medium text-red-800">
+                      {type === 'chapters' ? item.record?.title : (item.record?.name || item.record?.slug)}
+                    </div>
+                    <div className="text-red-600 text-xs">
+                      {item.error?.message || 'Unknown error'}
+                    </div>
+                    {item.error?.code && (
+                      <div className="text-red-500 text-xs">Code: {item.error.code}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+    </div>
+  );
+}
 
 export default function AdminSetup({ actionData }: Route.ComponentProps) {
   const fetcher = useFetcher();
@@ -416,6 +586,17 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         <p className="text-red-600">Errors: {initdata.results.chapters.errors}</p>
                       )}
                     </div>
+                    
+                    {/* Expandable details for chapters */}
+                    {(initdata.results.chapters.skippedDetails?.length > 0 || initdata.results.chapters.errorDetails?.length > 0) && (
+                      <div className="mt-3 pt-3 border-t">
+                        <DetailsSection 
+                          skippedDetails={initdata.results.chapters.skippedDetails}
+                          errorDetails={initdata.results.chapters.errorDetails}
+                          type="chapters"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -449,50 +630,23 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         <p className="text-red-600">Errors: {initdata.results.missions.errors}</p>
                       )}
                     </div>
+                    
+                    {/* Expandable details for missions */}
+                    {(initdata.results.missions.skippedDetails?.length > 0 || initdata.results.missions.errorDetails?.length > 0) && (
+                      <div className="mt-3 pt-3 border-t">
+                        <DetailsSection 
+                          skippedDetails={initdata.results.missions.skippedDetails}
+                          errorDetails={initdata.results.missions.errorDetails}
+                          type="missions"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          {/* Error Details */}
-          {((initdata.results.chapters?.errors > 0) || (initdata.results.missions?.errors > 0)) && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="size-4 text-yellow-500" />
-                  Error Details
-                </CardTitle>
-                <CardDescription>
-                  Some items failed to process. Review the errors below.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {initdata.results.chapters?.errorDetails?.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Chapter Errors</h4>
-                      <div className="bg-muted rounded-lg p-3">
-                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
-                          {JSON.stringify(initdata.results.chapters.errorDetails, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                  {initdata.results.missions?.errorDetails?.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Mission Errors</h4>
-                      <div className="bg-muted rounded-lg p-3">
-                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
-                          {JSON.stringify(initdata.results.missions.errorDetails, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       )}
     </div>

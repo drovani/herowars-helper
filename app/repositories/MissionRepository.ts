@@ -467,6 +467,24 @@ export class MissionRepository extends BaseRepository<"mission"> {
         }
       }
 
+      // Check if we have partial success (skipped records)
+      if (chapterResult.error?.code === "BULK_PARTIAL_SUCCESS" || missionResult.error?.code === "BULK_PARTIAL_SUCCESS") {
+        return {
+          data: {
+            chapters: chapterResult.data || [],
+            missions: missionResult.data || [],
+          },
+          error: {
+            message: "Mission data initialization completed with partial success",
+            code: "BULK_PARTIAL_SUCCESS",
+            details: {
+              chapters: chapterResult.error?.details,
+              missions: missionResult.error?.details,
+            },
+          },
+        }
+      }
+
       return {
         data: {
           chapters: chapterResult.data || [],

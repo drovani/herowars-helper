@@ -1,0 +1,1059 @@
+{
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Ruled by Fire"
+    },
+    {
+      "id": 2,
+      "title": "Distorted Magic"
+    },
+    {
+      "id": 3,
+      "title": "Hardan's Plateau"
+    },
+    {
+      "id": 4,
+      "title": "Deadlands"
+    },
+    {
+      "id": 5,
+      "title": "Cadang Thicket"
+    },
+    {
+      "id": 6,
+      "title": "Chaos Realm"
+    },
+    {
+      "id": 7,
+      "title": "Split of Tribes"
+    },
+    {
+      "id": 8,
+      "title": "Blazing Heart"
+    },
+    {
+      "id": 9,
+      "title": "Archipelago"
+    },
+    {
+      "id": 10,
+      "title": "Cursed Waters"
+    },
+    {
+      "id": 11,
+      "title": "Nordland"
+    },
+    {
+      "id": 12,
+      "title": "Boundless Snow"
+    },
+    {
+      "id": 13,
+      "title": "Crystal Throne"
+    }
+  ],
+  "missions": [
+    {
+      "slug": "10-1",
+      "name": "Flying Dutchman",
+      "hero_slug": "heidi",
+      "energy_cost": 16
+    },
+    {
+      "slug": "10-10",
+      "name": "Sirens",
+      "hero_slug": "ginger",
+      "energy_cost": 16
+    },
+    {
+      "slug": "10-11",
+      "name": "Becalmed Waters",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-12",
+      "name": "Shallow Waters",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-13",
+      "name": "Sea Lane",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-14",
+      "name": "Dark Waters",
+      "energy_cost": 7
+    },
+    {
+      "slug": "10-15",
+      "name": "Kraken's Cave",
+      "hero_slug": "helios",
+      "energy_cost": 24
+    },
+    {
+      "slug": "10-2",
+      "name": "Shipwreck",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-3",
+      "name": "Rough Sea",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-4",
+      "name": "Outer Vortex",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-5",
+      "name": "Roaring Abyss",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-6",
+      "name": "Whirlpool",
+      "hero_slug": "peppy",
+      "energy_cost": 16
+    },
+    {
+      "slug": "10-7",
+      "name": "Salvation's Run",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-8",
+      "name": "Strait of Fortune",
+      "energy_cost": 8
+    },
+    {
+      "slug": "10-9",
+      "name": "Seaman's Song",
+      "energy_cost": 8
+    },
+    {
+      "slug": "1-1",
+      "name": "Ashen Road",
+      "hero_slug": "astaroth",
+      "energy_cost": 6
+    },
+    {
+      "slug": "1-10",
+      "name": "Marax the Titan's Domain",
+      "hero_slug": "mojo",
+      "energy_cost": 18
+    },
+    {
+      "slug": "11-1",
+      "name": "Longship Moorings",
+      "hero_slug": "lars",
+      "energy_cost": 20
+    },
+    {
+      "slug": "11-10",
+      "name": "Doomsdale",
+      "hero_slug": "krista",
+      "energy_cost": 20
+    },
+    {
+      "slug": "11-11",
+      "name": "Everfrost",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-12",
+      "name": "Cold Ridge",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-13",
+      "name": "Berserker Gorge",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-14",
+      "name": "Crystal Waters",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-15",
+      "name": "Gunar the Ferocious's Grotto",
+      "hero_slug": "helios",
+      "energy_cost": 30
+    },
+    {
+      "slug": "11-2",
+      "name": "Old Docks",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-3",
+      "name": "Jorn's Hut",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-4",
+      "name": "Worn Rut",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-5",
+      "name": "Mark of Doom",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-6",
+      "name": "Grimling Camp",
+      "hero_slug": "artemis",
+      "energy_cost": 20
+    },
+    {
+      "slug": "11-7",
+      "name": "Mountain Tunnel",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-8",
+      "name": "The Bear Corner",
+      "energy_cost": 10
+    },
+    {
+      "slug": "11-9",
+      "name": "Hunters' Dugouts",
+      "energy_cost": 10
+    },
+    {
+      "slug": "1-2",
+      "name": "Glades of Silence",
+      "energy_cost": 6
+    },
+    {
+      "slug": "12-1",
+      "name": "Glass Lake",
+      "hero_slug": "lars",
+      "energy_cost": 20
+    },
+    {
+      "slug": "12-10",
+      "name": "Runic Millstone",
+      "hero_slug": "krista",
+      "energy_cost": 20
+    },
+    {
+      "slug": "12-11",
+      "name": "Guardian Border",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-12",
+      "name": "Touch of the Frost",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-13",
+      "name": "Path of the Skalds",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-14",
+      "name": "The Dying Hearth",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-15",
+      "name": "Jarl's Estate",
+      "hero_slug": "helios",
+      "energy_cost": 30
+    },
+    {
+      "slug": "12-2",
+      "name": "Depths of Solitude",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-3",
+      "name": "A Slippery Path",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-4",
+      "name": "Ice Ridges",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-5",
+      "name": "Labyrinth of Past Hopes",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-6",
+      "name": "The Lost Wonder",
+      "hero_slug": "phobos",
+      "energy_cost": 20
+    },
+    {
+      "slug": "12-7",
+      "name": "Cliff Path",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-8",
+      "name": "Frigid Place",
+      "energy_cost": 10
+    },
+    {
+      "slug": "12-9",
+      "name": "Cold Fire",
+      "energy_cost": 10
+    },
+    {
+      "slug": "1-3",
+      "name": "Dry Dale",
+      "energy_cost": 6
+    },
+    {
+      "slug": "13-1",
+      "name": "Perilous Pass",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-10",
+      "name": "Valley of Geysers",
+      "hero_slug": "krista",
+      "energy_cost": 20
+    },
+    {
+      "slug": "13-11",
+      "name": "Fetid Springs",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-12",
+      "name": "Feast",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-13",
+      "name": "Distribution",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-14",
+      "name": "Crystal Bridge",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-15",
+      "name": "Escape from Winter",
+      "hero_slug": "helios",
+      "energy_cost": 24
+    },
+    {
+      "slug": "13-2",
+      "name": "Wolfsfang Cliff",
+      "hero_slug": "lars",
+      "energy_cost": 20
+    },
+    {
+      "slug": "13-3",
+      "name": "Stone Steps",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-4",
+      "name": "Unhappy Meeting",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-5",
+      "name": "Hangman's Crossing",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-6",
+      "name": "Stonemasons' Village",
+      "hero_slug": "peppy",
+      "energy_cost": 20
+    },
+    {
+      "slug": "13-7",
+      "name": "Thawed Snow",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-8",
+      "name": "Dangerous Ravine",
+      "energy_cost": 10
+    },
+    {
+      "slug": "13-9",
+      "name": "Warmer, Warmer",
+      "energy_cost": 10
+    },
+    {
+      "slug": "1-4",
+      "name": "Smoky Crossroads",
+      "energy_cost": 6
+    },
+    {
+      "slug": "1-5",
+      "name": "Merchant Camp",
+      "hero_slug": "ginger",
+      "energy_cost": 12
+    },
+    {
+      "slug": "1-6",
+      "name": "City Gate",
+      "energy_cost": 6
+    },
+    {
+      "slug": "1-7",
+      "name": "City on Fire",
+      "energy_cost": 6
+    },
+    {
+      "slug": "1-8",
+      "name": "Scorching Pavement",
+      "energy_cost": 6
+    },
+    {
+      "slug": "1-9",
+      "name": "Elder's House",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-1",
+      "name": "Wilheim",
+      "hero_slug": "thea",
+      "energy_cost": 12
+    },
+    {
+      "slug": "2-10",
+      "name": "Magic Thicket",
+      "hero_slug": "astaroth",
+      "energy_cost": 12
+    },
+    {
+      "slug": "2-11",
+      "name": "Marax' Trace",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-12",
+      "name": "Nameless Road",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-13",
+      "name": "Deadlands",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-14",
+      "name": "Seal of Fire",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-15",
+      "name": "Lava Fracture",
+      "hero_slug": "aurora",
+      "energy_cost": 10
+    },
+    {
+      "slug": "2-2",
+      "name": "Reaper's Cabin",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-3",
+      "name": "Outskirts",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-4",
+      "name": "Overgrown Path",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-5",
+      "name": "Thick Forest",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-6",
+      "name": "Outskirts of Wilheim",
+      "hero_slug": "galahad",
+      "energy_cost": 12
+    },
+    {
+      "slug": "2-7",
+      "name": "Monolith of Meron",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-8",
+      "name": "Secret Ford",
+      "energy_cost": 6
+    },
+    {
+      "slug": "2-9",
+      "name": "River of Oblivion",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-1",
+      "name": "Outpost",
+      "hero_slug": "phobos",
+      "energy_cost": 12
+    },
+    {
+      "slug": "3-10",
+      "name": "Sanctuary of The Ancestors",
+      "hero_slug": "fox",
+      "energy_cost": 12
+    },
+    {
+      "slug": "3-11",
+      "name": "Fir Valley",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-12",
+      "name": "Camp Approach",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-13",
+      "name": "Orcish Patrol",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-14",
+      "name": "Frontier Camp",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-15",
+      "name": "Leader's Tent",
+      "hero_slug": "mojo",
+      "energy_cost": 18
+    },
+    {
+      "slug": "3-2",
+      "name": "Rocky Wasteland",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-3",
+      "name": "Grog's Stairway",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-4",
+      "name": "Dusty Cliff",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-5",
+      "name": "Rotten Ravine",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-6",
+      "name": "Living Mountains",
+      "hero_slug": "keira",
+      "energy_cost": 12
+    },
+    {
+      "slug": "3-7",
+      "name": "Dilapidated Bridge",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-8",
+      "name": "Scorched Lands",
+      "energy_cost": 6
+    },
+    {
+      "slug": "3-9",
+      "name": "Road of Mourning",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-1",
+      "name": "Shepherds' Lands",
+      "hero_slug": "heidi",
+      "energy_cost": 12
+    },
+    {
+      "slug": "4-10",
+      "name": "Necropolis",
+      "hero_slug": "keira",
+      "energy_cost": 12
+    },
+    {
+      "slug": "4-11",
+      "name": "Granite of Silence",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-12",
+      "name": "Death Shroud",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-13",
+      "name": "In the Afterlife",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-14",
+      "name": "Atrium",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-15",
+      "name": "Gravehall Estate",
+      "hero_slug": "thea",
+      "energy_cost": 12
+    },
+    {
+      "slug": "4-2",
+      "name": "Dry Wind",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-3",
+      "name": "Edge of Dusk",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-4",
+      "name": "Surrounding Highway",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-5",
+      "name": "Trial by Darkness",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-6",
+      "name": "Burnt Canyon",
+      "hero_slug": "ginger",
+      "energy_cost": 12
+    },
+    {
+      "slug": "4-7",
+      "name": "Ashes and Coal",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-8",
+      "name": "At Worlds' End",
+      "energy_cost": 6
+    },
+    {
+      "slug": "4-9",
+      "name": "Bottomless Chasm",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-1",
+      "name": "Smagard Terraces",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-10",
+      "name": "Drowner's Bridge",
+      "hero_slug": "astaroth",
+      "energy_cost": 12
+    },
+    {
+      "slug": "5-11",
+      "name": "Uninvited Guest",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-12",
+      "name": "Enemy Hearth",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-13",
+      "name": "Halt",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-14",
+      "name": "violet Wilds",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-15",
+      "name": "Illwood",
+      "hero_slug": "mojo",
+      "energy_cost": 18
+    },
+    {
+      "slug": "5-2",
+      "name": "Obelisk",
+      "hero_slug": "galahad",
+      "energy_cost": 12
+    },
+    {
+      "slug": "5-3",
+      "name": "Emerald Dust",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-4",
+      "name": "Exit from Gravehall",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-5",
+      "name": "Blinding Light",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-6",
+      "name": "Flourishing Life",
+      "hero_slug": "aurora",
+      "energy_cost": 12
+    },
+    {
+      "slug": "5-7",
+      "name": "Poisonous Lashes",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-8",
+      "name": "Hemlock Thicket",
+      "energy_cost": 6
+    },
+    {
+      "slug": "5-9",
+      "name": "Dangerous Shores",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-1",
+      "name": "Backwater",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-10",
+      "name": "Ritual Circle",
+      "hero_slug": "daredevil",
+      "energy_cost": 12
+    },
+    {
+      "slug": "6-11",
+      "name": "Tarrot's Arches",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-12",
+      "name": "Eternal Night",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-13",
+      "name": "Game of Shadows",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-14",
+      "name": "Trapper's Nets",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-15",
+      "name": "Thorn Arches",
+      "hero_slug": "mojo",
+      "energy_cost": 18
+    },
+    {
+      "slug": "6-2",
+      "name": "Wretched Goosefoot",
+      "hero_slug": "fox",
+      "energy_cost": 12
+    },
+    {
+      "slug": "6-3",
+      "name": "Bogger",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-4",
+      "name": "Damp Area",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-5",
+      "name": "Mandrake Flowers",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-6",
+      "name": "Forlorn Churchyard",
+      "hero_slug": "heidi",
+      "energy_cost": 12
+    },
+    {
+      "slug": "6-7",
+      "name": "Frigid Place",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-8",
+      "name": "Misty Cliff",
+      "energy_cost": 6
+    },
+    {
+      "slug": "6-9",
+      "name": "Morth Chrone's Lands",
+      "energy_cost": 6
+    },
+    {
+      "slug": "7-1",
+      "name": "Toll Gate",
+      "hero_slug": "keira",
+      "energy_cost": 14
+    },
+    {
+      "slug": "7-10",
+      "name": "Titan Plains",
+      "hero_slug": "thea",
+      "energy_cost": 16
+    },
+    {
+      "slug": "7-11",
+      "name": "Battle of Santar",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-12",
+      "name": "Great Split",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-13",
+      "name": "Path of War",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-14",
+      "name": "Mortal Wound",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-15",
+      "name": "Burial Mound",
+      "hero_slug": "galahad",
+      "energy_cost": 16
+    },
+    {
+      "slug": "7-2",
+      "name": "Weapon Stands",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-3",
+      "name": "Gnawed Bones",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-4",
+      "name": "Torchlit Passage",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-5",
+      "name": "Training Fields",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-6",
+      "name": "Blood of the Earth",
+      "hero_slug": "astaroth",
+      "energy_cost": 16
+    },
+    {
+      "slug": "7-7",
+      "name": "Blood and Sweat",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-8",
+      "name": "Break of Times",
+      "energy_cost": 8
+    },
+    {
+      "slug": "7-9",
+      "name": "Bridge over the Chasm",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-1",
+      "name": "Fire-Worshippers' Capital",
+      "hero_slug": "daredevil",
+      "energy_cost": 16
+    },
+    {
+      "slug": "8-10",
+      "name": "Flaming Gates",
+      "hero_slug": "artemis",
+      "energy_cost": 16
+    },
+    {
+      "slug": "8-11",
+      "name": "Monolith of Pain",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-12",
+      "name": "Monolith of Groans",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-13",
+      "name": "Shore of Despair",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-14",
+      "name": "Lava River",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-15",
+      "name": "Furnace of Horror",
+      "hero_slug": "mojo",
+      "energy_cost": 24
+    },
+    {
+      "slug": "8-2",
+      "name": "Monolith of Guile",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-3",
+      "name": "Anthracite Palace",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-4",
+      "name": "Basalts",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-5",
+      "name": "Monolith of Deceit",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-6",
+      "name": "Soul of the Volcano",
+      "hero_slug": "phobos",
+      "energy_cost": 16
+    },
+    {
+      "slug": "8-7",
+      "name": "Monolith of Enmity",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-8",
+      "name": "Foundry",
+      "energy_cost": 8
+    },
+    {
+      "slug": "8-9",
+      "name": "Torture Chamber",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-1",
+      "name": "Shore",
+      "hero_slug": "aurora",
+      "energy_cost": 16
+    },
+    {
+      "slug": "9-10",
+      "name": "Pirate Den",
+      "hero_slug": "daredevil",
+      "energy_cost": 14
+    },
+    {
+      "slug": "9-11",
+      "name": "Secret Route",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-12",
+      "name": "Pariah's Mooring",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-13",
+      "name": "Warstream",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-14",
+      "name": "Dead Man's Strait",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-15",
+      "name": "Coral Reef",
+      "hero_slug": "fox",
+      "energy_cost": 16
+    },
+    {
+      "slug": "9-2",
+      "name": "Abandoned Lighthouse",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-3",
+      "name": "Sea Lanes",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-4",
+      "name": "Grig's Strand",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-5",
+      "name": "Mainland",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-6",
+      "name": "Treasure Island",
+      "hero_slug": "peppy",
+      "energy_cost": 16
+    },
+    {
+      "slug": "9-7",
+      "name": "Dunes",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-8",
+      "name": "Cape of Despair",
+      "energy_cost": 8
+    },
+    {
+      "slug": "9-9",
+      "name": "Transit Point",
+      "energy_cost": 8
+    }
+  ]
+}

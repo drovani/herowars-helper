@@ -140,7 +140,6 @@ export class MissionRepository extends BaseRepository<"mission"> {
   // Chapter operations
   async findAllChapters(): Promise<RepositoryResult<Chapter[]>> {
     try {
-      const chapterColumns: (keyof Chapter)[] = ["id", "title"]
       const { data, error } = await this.supabase
         .from("chapter")
         .select()
@@ -502,7 +501,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
       const { count: missionCount, error: missionError } = await this.supabase
         .from("mission")
         .delete({ count: "exact" })
-        .neq("slug", "")  // Delete all missions (using neq with empty string to match all)
+        .neq("slug", "NEVER_MATCH_THIS_VALUE")  // Delete all missions (PostgREST requires a filter, this effectively matches all records)
 
       if (missionError) {
         return {
@@ -519,7 +518,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
       const { count: chapterCount, error: chapterError } = await this.supabase
         .from("chapter")
         .delete({ count: "exact" })
-        .neq("id", 0)  // Delete all chapters (using neq with 0 to match all)
+        .neq("id", -1)  // Delete all chapters (PostgREST requires a filter, this effectively matches all positive IDs)
 
       if (chapterError) {
         return {

@@ -237,9 +237,13 @@ export class MissionRepository extends BaseRepository<"mission"> {
   }
 
   // Bulk operations for admin data loading
-  async bulkCreateChapters(chapterData: ChapterImportData[]): Promise<RepositoryResult<Chapter[]>> {
+  async bulkCreateChapters(
+    chapterData: ChapterImportData[], 
+    options: { skipExisting?: boolean } = {}
+  ): Promise<RepositoryResult<Chapter[]>> {
     try {
       const results: Chapter[] = []
+      const skipped: Chapter[] = []
       const errors: any[] = []
 
       for (const data of chapterData) {
@@ -254,6 +258,15 @@ export class MissionRepository extends BaseRepository<"mission"> {
             },
           })
           continue
+        }
+
+        // Check if skipExisting and record exists
+        if (options.skipExisting) {
+          const existing = await this.findChapterById(data.id)
+          if (existing.data) {
+            skipped.push(existing.data)
+            continue
+          }
         }
 
         const { data: created, error } = await this.supabase
@@ -276,13 +289,25 @@ export class MissionRepository extends BaseRepository<"mission"> {
         }
       }
 
+      // Determine result based on what happened
       if (errors.length > 0) {
         return {
           data: results,
           error: {
-            message: `Bulk create chapters completed with ${errors.length} errors`,
+            message: `Bulk create chapters completed with ${errors.length} errors, ${skipped.length} skipped`,
             code: "BULK_PARTIAL_FAILURE",
-            details: errors,
+            details: { errors, skipped },
+          },
+        }
+      }
+
+      if (skipped.length > 0) {
+        return {
+          data: results,
+          error: {
+            message: `Bulk create chapters completed: ${results.length} created, ${skipped.length} skipped`,
+            code: "BULK_PARTIAL_SUCCESS", 
+            details: { skipped },
           },
         }
       }
@@ -302,8 +327,11 @@ export class MissionRepository extends BaseRepository<"mission"> {
     }
   }
 
-  async bulkCreateMissions(missionData: MissionImportData[]): Promise<RepositoryResult<Mission[]>> {
-    return this.bulkCreate(missionData)
+  async bulkCreateMissions(
+    missionData: MissionImportData[], 
+    options: { skipExisting?: boolean } = {}
+  ): Promise<RepositoryResult<Mission[]>> {
+    return this.bulkCreate(missionData, { skipExisting: options.skipExisting })
   }
 
   // Domain-based purge operations for admin setup

@@ -119,7 +119,10 @@ export abstract class BaseRepository<T extends TableName> {
     }
   }
 
-  async create(input: CreateInput<T>): Promise<RepositoryResult<EntityRow<T>>> {
+  async create(
+    input: CreateInput<T>, 
+    options: { skipExisting?: boolean } = {}
+  ): Promise<RepositoryResult<EntityRow<T>>> {
     try {
       const validation = this.schema.safeParse(input)
       if (!validation.success) {
@@ -133,6 +136,23 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
+      // If skipExisting is true, check if record already exists
+      if (options.skipExisting) {
+        const primaryKeyValue = (input as any)[this.primaryKeyColumn]
+        if (primaryKeyValue) {
+          const existingRecord = await this.findById(primaryKeyValue)
+          if (existingRecord.data) {
+            // Record exists, return it as skipped
+            return {
+              data: existingRecord.data,
+              error: null,
+              skipped: true,
+            }
+          }
+        }
+      }
+
+      // Proceed with normal insert
       const { data, error } = await this.supabase
         .from(this.tableName)
         .insert(input as any)
@@ -154,6 +174,7 @@ export abstract class BaseRepository<T extends TableName> {
       return {
         data: data as EntityRow<T>,
         error: null,
+        skipped: false,
       }
     } catch (error) {
       log.error(`Unexpected error creating ${this.tableName}:`, error)
@@ -255,8 +276,9 @@ export abstract class BaseRepository<T extends TableName> {
     inputs: CreateInput<T>[],
     options: BulkOptions = {}
   ): Promise<RepositoryResult<EntityRow<T>[]>> {
-    const { batchSize = 100, onProgress } = options
+    const { batchSize = 100, onProgress, skipExisting = false } = options
     const results: EntityRow<T>[] = []
+    const skipped: EntityRow<T>[] = []
     const errors: RepositoryError[] = []
 
     try {
@@ -264,17 +286,21 @@ export abstract class BaseRepository<T extends TableName> {
         const batch = inputs.slice(i, i + batchSize)
         const batchResults = await Promise.allSettled(
           batch.map(async (input) => {
-            const result = await this.create(input)
+            const result = await this.create(input, { skipExisting })
             if (result.error) {
               throw result.error
             }
-            return result.data!
+            return result
           })
         )
 
         batchResults.forEach((result) => {
           if (result.status === "fulfilled") {
-            results.push(result.value)
+            if (result.value.skipped) {
+              skipped.push(result.value.data!)
+            } else {
+              results.push(result.value.data!)
+            }
           } else {
             errors.push({
               message: result.reason.message || "Unknown error in bulk create",
@@ -289,14 +315,27 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
+      // Determine result structure based on what happened
       if (errors.length > 0) {
-        log.warn(`Bulk create for ${this.tableName} completed with ${errors.length} errors`)
+        log.warn(`Bulk create for ${this.tableName} completed with ${errors.length} errors, ${skipped.length} skipped`)
         return {
           data: results,
           error: {
-            message: `Bulk operation completed with ${errors.length} errors`,
+            message: `Bulk operation completed with ${errors.length} errors, ${skipped.length} skipped`,
             code: "BULK_PARTIAL_FAILURE",
-            details: errors,
+            details: { errors, skipped },
+          },
+        }
+      }
+
+      if (skipped.length > 0) {
+        log.info(`Bulk create for ${this.tableName} completed: ${results.length} created, ${skipped.length} skipped`)
+        return {
+          data: results,
+          error: {
+            message: `Bulk operation completed: ${results.length} created, ${skipped.length} skipped`,
+            code: "BULK_PARTIAL_SUCCESS",
+            details: { skipped },
           },
         }
       }

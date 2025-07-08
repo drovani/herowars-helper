@@ -286,6 +286,153 @@ describe('BaseRepository', () => {
     })
   })
 
+  describe('create with skipExisting', () => {
+    it('should skip existing record when skipExisting is true', async () => {
+      const inputData: CreateInput<'equipment'> = {
+        name: 'Existing Equipment',
+        slug: 'existing-equipment',
+        quality: 'green',
+        type: 'equipable',
+        sell_value: 100,
+        guild_activity_points: 5,
+      }
+
+      const existingData = {
+        ...inputData,
+        buy_value_coin: null,
+        buy_value_gold: null,
+        campaign_sources: null,
+        crafting_gold_cost: null,
+        hero_level_required: null,
+      }
+
+      // Mock findById to return existing record
+      mockSupabaseClient.single.mockResolvedValueOnce({
+        data: existingData,
+        error: null,
+      })
+
+      const result = await repository.create(inputData, { skipExisting: true })
+
+      expect(result.data).toEqual(existingData)
+      expect(result.error).toBeNull()
+      expect(result.skipped).toBe(true)
+      expect(mockSupabaseClient.insert).not.toHaveBeenCalled()
+    })
+
+    it('should create new record when skipExisting is true but record does not exist', async () => {
+      const inputData: CreateInput<'equipment'> = {
+        name: 'New Equipment',
+        slug: 'new-equipment',
+        quality: 'green',
+        type: 'equipable',
+        sell_value: 100,
+        guild_activity_points: 5,
+      }
+
+      const createdData = {
+        ...inputData,
+        buy_value_coin: null,
+        buy_value_gold: null,
+        campaign_sources: null,
+        crafting_gold_cost: null,
+        hero_level_required: null,
+      }
+
+      // Mock findById to return no record
+      mockSupabaseClient.single
+        .mockResolvedValueOnce({
+          data: null,
+          error: { message: 'Not found', code: 'PGRST116' }
+        })
+        .mockResolvedValueOnce({
+          data: createdData,
+          error: null,
+        })
+
+      const result = await repository.create(inputData, { skipExisting: true })
+
+      expect(result.data).toEqual(createdData)
+      expect(result.error).toBeNull()
+      expect(result.skipped).toBe(false)
+      expect(mockSupabaseClient.insert).toHaveBeenCalledWith(inputData)
+    })
+
+    it('should return error when skipExisting is false and record exists', async () => {
+      const inputData: CreateInput<'equipment'> = {
+        name: 'Existing Equipment',
+        slug: 'existing-equipment',
+        quality: 'green',
+        type: 'equipable',
+        sell_value: 100,
+        guild_activity_points: 5,
+      }
+
+      const mockError = {
+        message: 'Unique constraint violation',
+        code: '23505',
+        details: 'Key (slug)=(existing-equipment) already exists',
+      }
+
+      mockSupabaseClient.single.mockResolvedValueOnce({
+        data: null,
+        error: mockError,
+      })
+
+      const result = await repository.create(inputData, { skipExisting: false })
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual(mockError)
+      expect(result.skipped).toBeUndefined()
+    })
+  })
+
+  describe('bulkCreate with skipExisting', () => {
+    it('should handle mixed creation and skipping', async () => {
+      const inputData: CreateInput<'equipment'>[] = [
+        {
+          name: 'New Equipment',
+          slug: 'new-equipment',
+          quality: 'green',
+          type: 'equipable',
+          sell_value: 100,
+          guild_activity_points: 5,
+        },
+        {
+          name: 'Existing Equipment',
+          slug: 'existing-equipment',
+          quality: 'blue',
+          type: 'fragment',
+          sell_value: 200,
+          guild_activity_points: 10,
+        },
+      ]
+
+      const newEquipmentData = { ...inputData[0], buy_value_coin: null, buy_value_gold: null, campaign_sources: null, crafting_gold_cost: null, hero_level_required: null }
+      const existingEquipmentData = { ...inputData[1], buy_value_coin: null, buy_value_gold: null, campaign_sources: null, crafting_gold_cost: null, hero_level_required: null }
+
+      // Mock responses for create calls
+      mockSupabaseClient.single
+        // First item - findById returns null (doesn't exist), then insert succeeds  
+        .mockResolvedValueOnce({ data: null, error: { message: 'Not found', code: 'PGRST116' } })
+        .mockResolvedValueOnce({ data: newEquipmentData, error: null })
+        // Second item - findById returns existing record (no insert call)
+        .mockResolvedValueOnce({ data: existingEquipmentData, error: null })
+
+      const result = await repository.bulkCreate(inputData, { skipExisting: true })
+
+      // Should have exactly 1 created item and 1 skipped item
+      expect(result.data).toHaveLength(1)
+      expect(result.error).toBeDefined()
+      expect(result.error?.code).toBe('BULK_PARTIAL_SUCCESS')
+      expect((result.error?.details as any)?.skipped).toHaveLength(1)
+      
+      // The created item should have the properties we expect
+      expect(result.data?.[0]).toBeDefined()
+      expect((result.error?.details as any)?.skipped[0]).toBeDefined()
+    })
+  })
+
   describe('update', () => {
     it('should update record successfully', async () => {
       const updateData: UpdateInput<'equipment'> = {

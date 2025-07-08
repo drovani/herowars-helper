@@ -561,4 +561,77 @@ describe("MissionRepository", () => {
       expect(result.error).toBeNull()
     })
   })
+
+  describe('bulkCreateChapters with skipExisting', () => {
+    it('should skip existing chapters and create new ones', async () => {
+      const inputChapters = [
+        { id: 1, title: 'Existing Chapter' },
+        { id: 2, title: 'New Chapter' },
+      ]
+
+      const existingChapter = { id: 1, title: 'Existing Chapter' }
+      const newChapter = { id: 2, title: 'New Chapter' }
+
+      // Mock findChapterById for first chapter (exists)
+      mockSupabase.from.mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: existingChapter,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      // Mock findChapterById for second chapter (doesn't exist)
+      mockSupabase.from.mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Not found', code: 'PGRST116' },
+            }),
+          }),
+        }),
+      })
+
+      // Mock insert for new chapter
+      mockSupabase.from.mockReturnValueOnce({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: newChapter,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.bulkCreateChapters(inputChapters, { skipExisting: true })
+
+      expect(result.data).toEqual([newChapter])
+      expect(result.error).toBeDefined()
+      expect(result.error?.code).toBe('BULK_PARTIAL_SUCCESS')
+      expect((result.error?.details as any)?.skipped).toEqual([existingChapter])
+    })
+  })
+
+  describe('bulkCreateMissions with skipExisting', () => {
+    it('should pass skipExisting option to base bulkCreate', async () => {
+      const inputMissions = [
+        { slug: '1-1', name: 'Mission 1', chapter_id: 1, hero_slug: 'astaroth', energy_cost: 6, level: 1 },
+      ]
+
+      const bulkCreateSpy = vi.spyOn(repository, 'bulkCreate')
+      bulkCreateSpy.mockResolvedValueOnce({
+        data: inputMissions,
+        error: null,
+      })
+
+      await repository.bulkCreateMissions(inputMissions, { skipExisting: true })
+
+      expect(bulkCreateSpy).toHaveBeenCalledWith(inputMissions, { skipExisting: true })
+    })
+  })
 })

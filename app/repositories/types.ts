@@ -35,11 +35,13 @@ export interface QueryOptions {
 export interface BulkOptions {
   batchSize?: number
   onProgress?: (completed: number, total: number) => void
+  skipExisting?: boolean
 }
 
 export interface RepositoryResult<T> {
   data: T | null
   error: RepositoryError | null
+  skipped?: boolean
 }
 
 export interface RepositoryError {

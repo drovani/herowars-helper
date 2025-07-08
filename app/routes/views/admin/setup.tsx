@@ -60,8 +60,8 @@ export async function action({ request }: Route.ActionArgs) {
     };
 
     const results: any = {
-      chapters: { created: 0, errors: 0, total: 0, errorDetails: [] },
-      missions: { created: 0, errors: 0, total: 0, errorDetails: [] },
+      chapters: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
+      missions: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
       purged: { missions: 0, chapters: 0, errors: 0, errorDetails: [] },
       processingTime: 0,
       mode,
@@ -104,15 +104,26 @@ export async function action({ request }: Route.ActionArgs) {
       results.chapters.total = chaptersToCreate.length;
       log.info(`Creating ${chaptersToCreate.length} chapters...`);
       
-      const chapterResult = await missionRepo.bulkCreateChapters(chaptersToCreate);
-      if (chapterResult.error && chapterResult.error.code !== "BULK_PARTIAL_FAILURE") {
+      const chapterResult = await missionRepo.bulkCreateChapters(chaptersToCreate, { 
+        skipExisting: options.skipExisting 
+      });
+      if (chapterResult.error && chapterResult.error.code !== "BULK_PARTIAL_FAILURE" && chapterResult.error.code !== "BULK_PARTIAL_SUCCESS") {
         throw new Error(`Chapter creation failed: ${chapterResult.error.message}`);
       }
       
       results.chapters.created = chapterResult.data?.length || 0;
-      if (chapterResult.error?.code === "BULK_PARTIAL_FAILURE") {
-        results.chapters.errors = (chapterResult.error.details as any[])?.length || 0;
-        results.chapters.errorDetails = chapterResult.error.details || [];
+      if (chapterResult.error) {
+        if (chapterResult.error.code === "BULK_PARTIAL_FAILURE") {
+          const details = chapterResult.error.details as any;
+          results.chapters.errors = details.errors?.length || 0;
+          results.chapters.skipped = details.skipped?.length || 0;
+          results.chapters.errorDetails = details.errors || [];
+          results.chapters.skippedDetails = details.skipped || [];
+        } else if (chapterResult.error.code === "BULK_PARTIAL_SUCCESS") {
+          const details = chapterResult.error.details as any;
+          results.chapters.skipped = details.skipped?.length || 0;
+          results.chapters.skippedDetails = details.skipped || [];
+        }
       }
       
       // Transform and create missions
@@ -120,15 +131,26 @@ export async function action({ request }: Route.ActionArgs) {
       results.missions.total = missionsToCreate.length;
       log.info(`Creating ${missionsToCreate.length} missions...`);
       
-      const missionResult = await missionRepo.bulkCreateMissions(missionsToCreate);
-      if (missionResult.error && missionResult.error.code !== "BULK_PARTIAL_FAILURE") {
+      const missionResult = await missionRepo.bulkCreateMissions(missionsToCreate, {
+        skipExisting: options.skipExisting
+      });
+      if (missionResult.error && missionResult.error.code !== "BULK_PARTIAL_FAILURE" && missionResult.error.code !== "BULK_PARTIAL_SUCCESS") {
         throw new Error(`Mission creation failed: ${missionResult.error.message}`);
       }
       
       results.missions.created = missionResult.data?.length || 0;
-      if (missionResult.error?.code === "BULK_PARTIAL_FAILURE") {
-        results.missions.errors = (missionResult.error.details as any[])?.length || 0;
-        results.missions.errorDetails = missionResult.error.details || [];
+      if (missionResult.error) {
+        if (missionResult.error.code === "BULK_PARTIAL_FAILURE") {
+          const details = missionResult.error.details as any;
+          results.missions.errors = details.errors?.length || 0;
+          results.missions.skipped = details.skipped?.length || 0;
+          results.missions.errorDetails = details.errors || [];
+          results.missions.skippedDetails = details.skipped || [];
+        } else if (missionResult.error.code === "BULK_PARTIAL_SUCCESS") {
+          const details = missionResult.error.details as any;
+          results.missions.skipped = details.skipped?.length || 0;
+          results.missions.skippedDetails = details.skipped || [];
+        }
       }
       
       log.info("Mission data loading completed", results);
@@ -284,27 +306,27 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
     );
   }
 
-  const getStatusIcon = (created: number, errors: number, total: number) => {
+  const getStatusIcon = (created: number, errors: number, skipped: number, total: number) => {
     if (errors > 0) {
       return <AlertTriangle className="size-4 text-yellow-500" />;
     }
-    if (created === total && total > 0) {
+    if (created + skipped === total && total > 0) {
       return <CheckCircle className="size-4 text-green-500" />;
     }
-    if (created === 0 && total > 0) {
+    if (created === 0 && skipped === 0 && total > 0) {
       return <XCircle className="size-4 text-red-500" />;
     }
     return <CheckCircle className="size-4 text-green-500" />;
   };
 
-  const getStatusBadge = (created: number, errors: number, total: number) => {
+  const getStatusBadge = (created: number, errors: number, skipped: number, total: number) => {
     if (errors > 0) {
       return <Badge variant="destructive">Partial Success</Badge>;
     }
-    if (created === total && total > 0) {
+    if (created + skipped === total && total > 0) {
       return <Badge variant="default">Success</Badge>;
     }
-    if (created === 0 && total > 0) {
+    if (created === 0 && skipped === 0 && total > 0) {
       return <Badge variant="destructive">Failed</Badge>;
     }
     return <Badge variant="secondary">No Data</Badge>;
@@ -396,6 +418,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         {getStatusIcon(
                           initdata.results.chapters.created,
                           initdata.results.chapters.errors,
+                          initdata.results.chapters.skipped,
                           initdata.results.chapters.total
                         )}
                         Chapters
@@ -403,12 +426,16 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                       {getStatusBadge(
                         initdata.results.chapters.created,
                         initdata.results.chapters.errors,
+                        initdata.results.chapters.skipped,
                         initdata.results.chapters.total
                       )}
                     </div>
                     <div className="text-sm space-y-1">
                       <p>Total: {initdata.results.chapters.total}</p>
                       <p className="text-green-600">Created: {initdata.results.chapters.created}</p>
+                      {initdata.results.chapters.skipped > 0 && (
+                        <p className="text-blue-600">Skipped: {initdata.results.chapters.skipped}</p>
+                      )}
                       {initdata.results.chapters.errors > 0 && (
                         <p className="text-red-600">Errors: {initdata.results.chapters.errors}</p>
                       )}
@@ -424,6 +451,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         {getStatusIcon(
                           initdata.results.missions.created,
                           initdata.results.missions.errors,
+                          initdata.results.missions.skipped,
                           initdata.results.missions.total
                         )}
                         Missions
@@ -431,12 +459,16 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                       {getStatusBadge(
                         initdata.results.missions.created,
                         initdata.results.missions.errors,
+                        initdata.results.missions.skipped,
                         initdata.results.missions.total
                       )}
                     </div>
                     <div className="text-sm space-y-1">
                       <p>Total: {initdata.results.missions.total}</p>
                       <p className="text-green-600">Created: {initdata.results.missions.created}</p>
+                      {initdata.results.missions.skipped > 0 && (
+                        <p className="text-blue-600">Skipped: {initdata.results.missions.skipped}</p>
+                      )}
                       {initdata.results.missions.errors > 0 && (
                         <p className="text-red-600">Errors: {initdata.results.missions.errors}</p>
                       )}

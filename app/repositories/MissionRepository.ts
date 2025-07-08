@@ -452,27 +452,18 @@ export class MissionRepository extends BaseRepository<"mission"> {
         })
       }
 
-      // Handle chapter errors
+      // Handle errors (allow partial success)
       if (chapterResult.error && chapterResult.error.code !== "BULK_PARTIAL_SUCCESS") {
         return {
           data: null,
-          error: {
-            message: `Chapter initialization failed: ${chapterResult.error.message}`,
-            code: chapterResult.error.code,
-            details: chapterResult.error.details,
-          },
+          error: chapterResult.error,
         }
       }
 
-      // Handle mission errors
       if (missionResult.error && missionResult.error.code !== "BULK_PARTIAL_SUCCESS") {
         return {
           data: null,
-          error: {
-            message: `Mission initialization failed: ${missionResult.error.message}`,
-            code: missionResult.error.code,
-            details: missionResult.error.details,
-          },
+          error: missionResult.error,
         }
       }
 
@@ -501,7 +492,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
       const { count: missionCount, error: missionError } = await this.supabase
         .from("mission")
         .delete({ count: "exact" })
-        .neq("slug", "NEVER_MATCH_THIS_VALUE")  // Delete all missions (PostgREST requires a filter, this effectively matches all records)
+        .gte("slug", "")  // Delete all missions (matches all slugs including empty strings)
 
       if (missionError) {
         return {
@@ -518,7 +509,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
       const { count: chapterCount, error: chapterError } = await this.supabase
         .from("chapter")
         .delete({ count: "exact" })
-        .neq("id", -1)  // Delete all chapters (PostgREST requires a filter, this effectively matches all positive IDs)
+        .gte("id", 0)  // Delete all chapters (matches all positive IDs including 0)
 
       if (chapterError) {
         return {

@@ -58,7 +58,15 @@ export abstract class BaseRepository<T extends TableName> {
       }
 
       if (options.orderBy) {
-        query = query.order(options.orderBy.column, { ascending: options.orderBy.ascending ?? true })
+        if (Array.isArray(options.orderBy)) {
+          // Handle multiple orderBy criteria
+          options.orderBy.forEach(order => {
+            query = query.order(order.column, { ascending: order.ascending ?? true })
+          })
+        } else {
+          // Handle single orderBy criteria
+          query = query.order(options.orderBy.column, { ascending: options.orderBy.ascending ?? true })
+        }
       }
 
       if (options.limit) {

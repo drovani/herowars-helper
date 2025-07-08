@@ -138,6 +138,28 @@ describe('BaseRepository', () => {
       expect(result.error).toBeNull()
     })
 
+    it('should apply multiple ordering criteria', async () => {
+      const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
+
+      // Mock the chain to return mockData on the final call
+      mockSupabaseClient.order.mockReturnValueOnce(mockSupabaseClient)
+      mockSupabaseClient.order.mockResolvedValueOnce({ data: mockData, error: null })
+
+      const result = await repository.findAll({ 
+        orderBy: [
+          { column: 'quality', ascending: true },
+          { column: 'name', ascending: false }
+        ]
+      })
+
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
+      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
+      expect(mockSupabaseClient.order).toHaveBeenCalledWith('quality', { ascending: true })
+      expect(mockSupabaseClient.order).toHaveBeenCalledWith('name', { ascending: false })
+      expect(result.data).toEqual(mockData)
+      expect(result.error).toBeNull()
+    })
+
     it('should apply limit', async () => {
       const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
 

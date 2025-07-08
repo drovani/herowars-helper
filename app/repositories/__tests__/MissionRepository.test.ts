@@ -14,6 +14,7 @@ const mockSupabaseClient = {
   limit: vi.fn().mockReturnThis(),
   range: vi.fn().mockReturnThis(),
   single: vi.fn().mockResolvedValue({ data: null, error: null }),
+  gte: vi.fn().mockReturnThis(),
 }
 
 vi.mock("~/lib/supabase/client", () => ({
@@ -48,13 +49,14 @@ describe("MissionRepository", () => {
   })
 
   describe("findByChapter", () => {
-    it("should find missions by chapter ID", async () => {
+    it("should find missions by chapter ID with proper sorting", async () => {
       const mockMissions = [
         { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
         { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
       ]
 
-      // Mock the final call in the chain - order is the last method called
+      // Mock the chain for multiple order calls
+      mockSupabase.order.mockReturnValueOnce(mockSupabase)
       mockSupabase.order.mockResolvedValueOnce({
         data: mockMissions,
         error: null,
@@ -65,6 +67,9 @@ describe("MissionRepository", () => {
       expect(result.data).toEqual(mockMissions)
       expect(result.error).toBeNull()
       expect(mockSupabase.from).toHaveBeenCalledWith("mission")
+      // Verify that ordering is applied correctly - chapter_id first, then level
+      expect(mockSupabase.order).toHaveBeenCalledWith('chapter_id', { ascending: true })
+      expect(mockSupabase.order).toHaveBeenCalledWith('level', { ascending: true })
     })
 
     it("should handle errors when finding missions by chapter", async () => {
@@ -74,7 +79,8 @@ describe("MissionRepository", () => {
         details: "Connection failed",
       }
 
-      // Mock the final call in the chain to return an error
+      // Mock the chain for multiple order calls with error on final call
+      mockSupabase.order.mockReturnValueOnce(mockSupabase)
       mockSupabase.order.mockResolvedValueOnce({
         data: null,
         error: mockError,
@@ -88,7 +94,7 @@ describe("MissionRepository", () => {
   })
 
   describe("findByHeroSlug", () => {
-    it("should find missions by hero slug", async () => {
+    it("should find missions by hero slug with proper sorting", async () => {
       const mockMissions = [
         { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
         { slug: "3-5", name: "Mission 3-5", chapter_id: 3, hero_slug: "astaroth", energy_cost: 8, level: 25 },
@@ -104,6 +110,9 @@ describe("MissionRepository", () => {
 
       expect(result.data).toEqual(mockMissions)
       expect(result.error).toBeNull()
+      // Verify that ordering is applied correctly - chapter_id first, then level
+      expect(mockSupabase.order).toHaveBeenCalledWith('chapter_id', { ascending: true })
+      expect(mockSupabase.order).toHaveBeenCalledWith('level', { ascending: true })
     })
   })
 

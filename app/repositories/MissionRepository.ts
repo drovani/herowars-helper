@@ -58,14 +58,20 @@ export class MissionRepository extends BaseRepository<"mission"> {
   async findByChapter(chapterId: number): Promise<RepositoryResult<Mission[]>> {
     return this.findAll({
       where: { chapter_id: chapterId },
-      orderBy: { column: "slug", ascending: true },
+      orderBy: [
+        { column: "chapter_id", ascending: true },
+        { column: "level", ascending: true }
+      ],
     })
   }
 
   async findByHeroSlug(heroSlug: string): Promise<RepositoryResult<Mission[]>> {
     return this.findAll({
       where: { hero_slug: heroSlug },
-      orderBy: { column: "slug", ascending: true },
+      orderBy: [
+        { column: "chapter_id", ascending: true },
+        { column: "level", ascending: true }
+      ],
     })
   }
 
@@ -107,7 +113,8 @@ export class MissionRepository extends BaseRepository<"mission"> {
         .from("mission")
         .select()
         .in("slug", data.campaign_sources)
-        .order("slug", { ascending: true })
+        .order("chapter_id", { ascending: true })
+        .order("level", { ascending: true })
 
       if (missionError) {
         return {
@@ -214,6 +221,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
           missions:mission(*)
         `)
         .eq("id", id)
+        .order("missions.level", { ascending: true })
         .single()
 
       if (error) {

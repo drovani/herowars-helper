@@ -27,7 +27,7 @@ export type ForeignKeyColumns<T extends TableName> = {
 
 export interface QueryOptions {
   where?: Record<string, unknown>
-  orderBy?: { column: string; ascending?: boolean }
+  orderBy?: { column: string; ascending?: boolean } | Array<{ column: string; ascending?: boolean }>
   limit?: number
   offset?: number
 }

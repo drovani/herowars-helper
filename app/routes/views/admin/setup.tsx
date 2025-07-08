@@ -62,14 +62,38 @@ export async function action({ request }: Route.ActionArgs) {
     const results: any = {
       chapters: { created: 0, errors: 0, total: 0, errorDetails: [] },
       missions: { created: 0, errors: 0, total: 0, errorDetails: [] },
+      purged: { missions: 0, chapters: 0, errors: 0, errorDetails: [] },
       processingTime: 0,
       mode,
       dataset: dataset || "all",
-      purge,
+      purgeRequested: purge,
     };
 
     // Initialize mission repository
     const missionRepo = new MissionRepository(request);
+
+    // Execute purge if requested
+    if (purge) {
+      log.info("Purging existing data...");
+      
+      // Determine what to purge based on dataset
+      if (!dataset || dataset === "missions" || dataset === "all") {
+        // Purge mission domain (both missions and chapters)
+        const purgeResult = await missionRepo.purgeMissionDomain();
+        if (purgeResult.error) {
+          throw new Error(`Domain purge failed: ${purgeResult.error.message}`);
+        }
+        
+        if (purgeResult.data) {
+          results.purged.missions = purgeResult.data.missions;
+          results.purged.chapters = purgeResult.data.chapters;
+        }
+        
+        log.info(`Purged mission domain: ${results.purged.missions} missions, ${results.purged.chapters} chapters`);
+      }
+      
+      // Future: Add other domain purging here when heroes/equipment datasets are added
+    }
 
     // Load missions data if dataset is empty (all) or "missions"
     if (!dataset || dataset === "missions") {
@@ -142,10 +166,31 @@ export const meta = () => {
 };
 
 export default function AdminSetup({ actionData }: Route.ComponentProps) {
-  const initdata = useMemo(() => actionData, [actionData]);
   const fetcher = useFetcher();
+  const initdata = useMemo(() => fetcher.data, [fetcher.data]);
 
-  if (initdata === undefined) {
+  // Handle fetcher loading states
+  if (fetcher.state === "submitting" || fetcher.state === "loading") {
+    return (
+      <div className="space-y-6 max-w-2xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>Initializing Data</CardTitle>
+            <CardDescription>Processing your request...</CardDescription>
+          </CardHeader>
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="flex items-center gap-3">
+              <RefreshCwIcon className="size-6 animate-spin" />
+              <span className="text-lg">Initializing...</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show form when idle with no data
+  if (fetcher.state === "idle" && !fetcher.data) {
     return (
       <div className="space-y-6 max-w-2xl mx-auto">
         <Card>
@@ -286,6 +331,31 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
         </AlertDescription>
       </Alert>
 
+      {/* Action buttons for next steps */}
+      <div className="flex gap-4 justify-center">
+        <Button 
+          onClick={() => {
+            // Reset fetcher state to show form again
+            fetcher.load(window.location.pathname);
+          }} 
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <RefreshCwIcon className="size-4" />
+          Run Another Initialization
+        </Button>
+        <Button 
+          onClick={() => {
+            // Reset fetcher state to show form again
+            fetcher.load(window.location.pathname);
+          }} 
+          variant="secondary"
+          className="flex items-center gap-2"
+        >
+          Back to Setup
+        </Button>
+      </div>
+
       {initdata.results && (
         <div className="grid gap-6">
           {/* Summary Card */}
@@ -294,11 +364,30 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
               <CardTitle>Processing Summary</CardTitle>
               <CardDescription>
                 Mode: {initdata.results.mode} | Dataset: {initdata.results.dataset}
-                {initdata.results.purge && " | Purged existing data"}
+                {initdata.results.purgeRequested && initdata.results.purged && 
+                  ` | Purged: ${initdata.results.purged.missions} missions, ${initdata.results.purged.chapters} chapters`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Purge Summary */}
+                {initdata.results.purgeRequested && initdata.results.purged && 
+                  (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0) && (
+                  <div className="border rounded-lg p-4 bg-orange-50 border-orange-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <AlertTriangle className="size-4 text-orange-500" />
+                        Purged Data
+                      </h3>
+                      <Badge variant="secondary">Domain Purged</Badge>
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p className="text-orange-700">Missions: {initdata.results.purged.missions}</p>
+                      <p className="text-orange-700">Chapters: {initdata.results.purged.chapters}</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Chapters Summary */}
                 {initdata.results.chapters && initdata.results.chapters.total > 0 && (
                   <div className="border rounded-lg p-4">

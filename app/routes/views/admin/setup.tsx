@@ -1,7 +1,7 @@
 import log from "loglevel";
 import { AlertCircle, AlertTriangle, CheckCircle, ChevronDown, RefreshCwIcon, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
-import { data, useFetcher } from "react-router";
+import { data, useFetcher, useNavigate } from "react-router";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -333,6 +333,7 @@ function DetailsSection({
 
 export default function AdminSetup({ actionData }: Route.ComponentProps) {
   const fetcher = useFetcher();
+  const navigate = useNavigate();
   const initdata = useMemo(() => fetcher.data, [fetcher.data]);
 
   // Handle fetcher loading states
@@ -512,13 +513,12 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
         </Button>
         <Button
           onClick={() => {
-            // Reset fetcher state to show form again
-            fetcher.load(window.location.pathname);
+            navigate("/admin");
           }}
           variant="secondary"
           className="flex items-center gap-2"
         >
-          Back to Setup
+          Back to Admin Dashboard
         </Button>
       </div>
 

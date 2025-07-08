@@ -1,4 +1,5 @@
 import { z } from "zod"
+import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "~/types/supabase"
 import { BaseRepository } from "./BaseRepository"
 import type { RepositoryResult } from "./types"
@@ -37,8 +38,14 @@ export type MissionImportData = MissionInsert
 export type ChapterImportData = ChapterInsert
 
 export class MissionRepository extends BaseRepository<"mission"> {
-  constructor(request: Request | null = null) {
-    super("mission", missionSchema, request, "slug")
+  constructor(requestOrSupabase: Request | SupabaseClient<Database> | null = null) {
+    if (requestOrSupabase && typeof requestOrSupabase === 'object' && 'from' in requestOrSupabase) {
+      // Custom supabase client provided (for admin operations)
+      super(requestOrSupabase, missionSchema, "mission", missionSchema, "slug")
+    } else {
+      // Request or null provided (standard operation)
+      super("mission", missionSchema, requestOrSupabase as Request | null, "slug")
+    }
   }
 
   protected getTableRelationships(): Record<string, boolean> {
@@ -332,6 +339,160 @@ export class MissionRepository extends BaseRepository<"mission"> {
     options: { skipExisting?: boolean } = {}
   ): Promise<RepositoryResult<Mission[]>> {
     return this.bulkCreate(missionData, { skipExisting: options.skipExisting })
+  }
+
+  // Upsert methods for force mode admin operations
+  async bulkUpsertChapters(chapterData: ChapterImportData[]): Promise<RepositoryResult<Chapter[]>> {
+    try {
+      const results: Chapter[] = []
+      const errors: any[] = []
+
+      for (const data of chapterData) {
+        const validation = chapterSchema.safeParse(data)
+        if (!validation.success) {
+          errors.push({
+            data,
+            error: {
+              message: "Validation failed",
+              code: "VALIDATION_ERROR",
+              details: validation.error.errors,
+            },
+          })
+          continue
+        }
+
+        const { data: upserted, error } = await this.supabase
+          .from("chapter")
+          .upsert(data, { 
+            onConflict: "id",
+            ignoreDuplicates: false 
+          })
+          .select()
+          .single()
+
+        if (error) {
+          errors.push({
+            data,
+            error: {
+              message: error.message,
+              code: error.code,
+              details: error.details,
+            },
+          })
+        } else {
+          results.push(upserted as Chapter)
+        }
+      }
+
+      if (errors.length > 0) {
+        return {
+          data: results,
+          error: {
+            message: `Bulk upsert chapters completed with ${errors.length} errors`,
+            code: "BULK_PARTIAL_FAILURE",
+            details: { errors },
+          },
+        }
+      }
+
+      return {
+        data: results,
+        error: null,
+      }
+    } catch (error) {
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  async bulkUpsertMissions(missionData: MissionImportData[]): Promise<RepositoryResult<Mission[]>> {
+    return this.bulkUpsert(missionData)
+  }
+
+  // Initialize mission data with different modes
+  async initializeMissionData(
+    missionData: { missions: MissionImportData[]; chapters: ChapterImportData[] },
+    options: { 
+      forceUpdate?: boolean;
+      skipExisting?: boolean;
+      failIfExists?: boolean;
+      purgeFirst?: boolean;
+    } = {}
+  ): Promise<RepositoryResult<{ missions: Mission[]; chapters: Chapter[] }>> {
+    try {
+      // Handle purge if requested
+      if (options.purgeFirst) {
+        const purgeResult = await this.purgeMissionDomain()
+        if (purgeResult.error) {
+          return {
+            data: null,
+            error: purgeResult.error,
+          }
+        }
+      }
+
+      let chapterResult: RepositoryResult<Chapter[]>
+      let missionResult: RepositoryResult<Mission[]>
+
+      if (options.forceUpdate) {
+        // Use upsert for force mode
+        chapterResult = await this.bulkUpsertChapters(missionData.chapters)
+        missionResult = await this.bulkUpsertMissions(missionData.missions)
+      } else {
+        // Use existing create logic for other modes
+        chapterResult = await this.bulkCreateChapters(missionData.chapters, { 
+          skipExisting: options.skipExisting 
+        })
+        missionResult = await this.bulkCreateMissions(missionData.missions, { 
+          skipExisting: options.skipExisting 
+        })
+      }
+
+      // Handle chapter errors
+      if (chapterResult.error && chapterResult.error.code !== "BULK_PARTIAL_SUCCESS") {
+        return {
+          data: null,
+          error: {
+            message: `Chapter initialization failed: ${chapterResult.error.message}`,
+            code: chapterResult.error.code,
+            details: chapterResult.error.details,
+          },
+        }
+      }
+
+      // Handle mission errors
+      if (missionResult.error && missionResult.error.code !== "BULK_PARTIAL_SUCCESS") {
+        return {
+          data: null,
+          error: {
+            message: `Mission initialization failed: ${missionResult.error.message}`,
+            code: missionResult.error.code,
+            details: missionResult.error.details,
+          },
+        }
+      }
+
+      return {
+        data: {
+          chapters: chapterResult.data || [],
+          missions: missionResult.data || [],
+        },
+        error: null,
+      }
+    } catch (error) {
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred during initialization",
+          details: error,
+        },
+      }
+    }
   }
 
   // Domain-based purge operations for admin setup

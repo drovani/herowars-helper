@@ -11,6 +11,8 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Badge } from "~/components/ui/badge";
 import { formatTitle } from "~/config/site";
 import { MissionRepository } from "~/repositories/MissionRepository";
+import { createAdminClient } from "~/lib/supabase/admin-client";
+import { createClient } from "~/lib/supabase/client";
 import missionsData from "~/data/missions.json";
 import type { Route } from "./+types/setup";
 
@@ -69,8 +71,10 @@ export async function action({ request }: Route.ActionArgs) {
       purgeRequested: purge,
     };
 
-    // Initialize mission repository
-    const missionRepo = new MissionRepository(request);
+    // Initialize mission repository with appropriate client
+    const missionRepo = mode === 'force' 
+      ? new MissionRepository(createAdminClient(request).supabase)
+      : new MissionRepository(request);
 
     // Execute purge if requested
     if (purge) {
@@ -99,59 +103,31 @@ export async function action({ request }: Route.ActionArgs) {
     if (!dataset || dataset === "missions") {
       log.info("Loading mission data...");
       
-      // Extract and create chapters first (foreign key dependency)
+      // Prepare data for initialization
       const chaptersToCreate = extractChapters(missionsData);
-      results.chapters.total = chaptersToCreate.length;
-      log.info(`Creating ${chaptersToCreate.length} chapters...`);
-      
-      const chapterResult = await missionRepo.bulkCreateChapters(chaptersToCreate, { 
-        skipExisting: options.skipExisting 
-      });
-      if (chapterResult.error && chapterResult.error.code !== "BULK_PARTIAL_FAILURE" && chapterResult.error.code !== "BULK_PARTIAL_SUCCESS") {
-        throw new Error(`Chapter creation failed: ${chapterResult.error.message}`);
-      }
-      
-      results.chapters.created = chapterResult.data?.length || 0;
-      if (chapterResult.error) {
-        if (chapterResult.error.code === "BULK_PARTIAL_FAILURE") {
-          const details = chapterResult.error.details as any;
-          results.chapters.errors = details.errors?.length || 0;
-          results.chapters.skipped = details.skipped?.length || 0;
-          results.chapters.errorDetails = details.errors || [];
-          results.chapters.skippedDetails = details.skipped || [];
-        } else if (chapterResult.error.code === "BULK_PARTIAL_SUCCESS") {
-          const details = chapterResult.error.details as any;
-          results.chapters.skipped = details.skipped?.length || 0;
-          results.chapters.skippedDetails = details.skipped || [];
-        }
-      }
-      
-      // Transform and create missions
       const missionsToCreate = transformMissions(missionsData);
+      
+      results.chapters.total = chaptersToCreate.length;
       results.missions.total = missionsToCreate.length;
-      log.info(`Creating ${missionsToCreate.length} missions...`);
       
-      const missionResult = await missionRepo.bulkCreateMissions(missionsToCreate, {
-        skipExisting: options.skipExisting
-      });
-      if (missionResult.error && missionResult.error.code !== "BULK_PARTIAL_FAILURE" && missionResult.error.code !== "BULK_PARTIAL_SUCCESS") {
-        throw new Error(`Mission creation failed: ${missionResult.error.message}`);
+      log.info(`Initializing ${chaptersToCreate.length} chapters and ${missionsToCreate.length} missions...`);
+      
+      // Use the new initializeMissionData method
+      const initResult = await missionRepo.initializeMissionData(
+        { 
+          chapters: chaptersToCreate, 
+          missions: missionsToCreate 
+        },
+        options
+      );
+      
+      if (initResult.error) {
+        throw new Error(`Mission data initialization failed: ${initResult.error.message}`);
       }
       
-      results.missions.created = missionResult.data?.length || 0;
-      if (missionResult.error) {
-        if (missionResult.error.code === "BULK_PARTIAL_FAILURE") {
-          const details = missionResult.error.details as any;
-          results.missions.errors = details.errors?.length || 0;
-          results.missions.skipped = details.skipped?.length || 0;
-          results.missions.errorDetails = details.errors || [];
-          results.missions.skippedDetails = details.skipped || [];
-        } else if (missionResult.error.code === "BULK_PARTIAL_SUCCESS") {
-          const details = missionResult.error.details as any;
-          results.missions.skipped = details.skipped?.length || 0;
-          results.missions.skippedDetails = details.skipped || [];
-        }
-      }
+      // Update results with successful operation
+      results.chapters.created = initResult.data?.chapters?.length || 0;
+      results.missions.created = initResult.data?.missions?.length || 0;
       
       log.info("Mission data loading completed", results);
     }

@@ -38,6 +38,16 @@ export interface BulkOptions {
   skipExisting?: boolean
 }
 
+export interface UpsertOptions {
+  onConflict?: string
+  ignoreDuplicates?: boolean
+}
+
+export interface BulkOperationOptions {
+  batchSize?: number
+  continueOnError?: boolean
+}
+
 export interface RepositoryResult<T> {
   data: T | null
   error: RepositoryError | null

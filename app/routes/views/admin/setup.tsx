@@ -166,10 +166,31 @@ export const meta = () => {
 };
 
 export default function AdminSetup({ actionData }: Route.ComponentProps) {
-  const initdata = useMemo(() => actionData, [actionData]);
   const fetcher = useFetcher();
+  const initdata = useMemo(() => fetcher.data, [fetcher.data]);
 
-  if (initdata === undefined) {
+  // Handle fetcher loading states
+  if (fetcher.state === "submitting" || fetcher.state === "loading") {
+    return (
+      <div className="space-y-6 max-w-2xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>Initializing Data</CardTitle>
+            <CardDescription>Processing your request...</CardDescription>
+          </CardHeader>
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="flex items-center gap-3">
+              <RefreshCwIcon className="size-6 animate-spin" />
+              <span className="text-lg">Initializing...</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show form when idle with no data
+  if (fetcher.state === "idle" && !fetcher.data) {
     return (
       <div className="space-y-6 max-w-2xl mx-auto">
         <Card>
@@ -313,7 +334,10 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
       {/* Action buttons for next steps */}
       <div className="flex gap-4 justify-center">
         <Button 
-          onClick={() => window.location.reload()} 
+          onClick={() => {
+            // Reset fetcher state to show form again
+            fetcher.load(window.location.pathname);
+          }} 
           variant="outline"
           className="flex items-center gap-2"
         >
@@ -321,7 +345,10 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
           Run Another Initialization
         </Button>
         <Button 
-          onClick={() => window.location.href = window.location.pathname} 
+          onClick={() => {
+            // Reset fetcher state to show form again
+            fetcher.load(window.location.pathname);
+          }} 
           variant="secondary"
           className="flex items-center gap-2"
         >

@@ -3,7 +3,7 @@ import invariant from "tiny-invariant";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/heroes.$slug";
+import type { Route } from "./+types/slug.json";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [

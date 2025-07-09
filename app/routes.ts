@@ -24,27 +24,27 @@ export default [
     route("account", "./routes/views/account/index.tsx", [index("./routes/views/account/profile.tsx")]),
   ]),
   route("protected", "./routes/views/public/protected.tsx"),
-  route("heroes", "./routes/heroes.tsx", [
-    index("./routes/heroes._index.tsx"),
-    route(":slug", "./routes/heroes.$slug.tsx"),
-    route(":slug.json", "./routes/heroes.$slug[.json].tsx"),
+  route("heroes", "./routes/views/heroes/layout.tsx", [
+    index("./routes/views/heroes/index.tsx"),
+    route(":slug", "./routes/views/heroes/slug.tsx"),
+    route(":slug.json", "./routes/views/heroes/slug.json.tsx"),
   ]),
-  route("titans", "./routes/titans.tsx", [index("./routes/titans._index.tsx")]),
-  route("equipment", "./routes/equipment.tsx", [
-    index("./routes/equipment._index.tsx"),
-    route(":slug", "./routes/equipment.$slug.tsx"),
+  route("titans", "./routes/views/titans/layout.tsx", [index("./routes/views/titans/index.tsx")]),
+  route("equipment", "./routes/views/equipment/layout.tsx", [
+    index("./routes/views/equipment/index.tsx"),
+    route(":slug", "./routes/views/equipment/slug.tsx"),
   ]),
-  route("missions", "./routes/missions.tsx", [
-    index("./routes/missions._index.tsx"),
-    route(":missionId", "./routes/missions.$missionId.tsx"),
+  route("missions", "./routes/views/missions/layout.tsx", [
+    index("./routes/views/missions/index.tsx"),
+    route(":slug", "./routes/views/missions/slug.tsx"),
   ]),
   layout("./layouts/ProtectedEditorLayout.tsx", [
-    route("heroes/:slug/edit", "./routes/heroes.$slug_.edit.tsx"),
-    route("equipment/:slug/edit", "./routes/equipment.$slug_.edit.tsx"),
-    route("equipment/new", "./routes/equipment.new.tsx"),
-    route("missions/:missionId/edit", "./routes/missions.$missionId_.edit.tsx"),
+    route("heroes/:slug/edit", "./routes/views/heroes/slug.edit.tsx"),
+    route("equipment/:slug/edit", "./routes/views/equipment/slug.edit.tsx"),
+    route("equipment/new", "./routes/views/equipment/new.tsx"),
+    route("missions/:slug/edit", "./routes/views/missions/slug.edit.tsx"),
   ]),
-  route("missions.json", "./routes/missions[.json].tsx"),
-  route("equipment.json", "./routes/equipment[.json].tsx"),
-  route("heroes.json", "./routes/heroes[.json].tsx"),
+  route("missions.json", "./routes/views/missions/json.tsx"),
+  route("equipment.json", "./routes/views/equipment/json.tsx"),
+  route("heroes.json", "./routes/views/heroes/json.tsx"),
 ] satisfies RouteConfig;

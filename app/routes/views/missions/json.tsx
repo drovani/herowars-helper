@@ -1,7 +1,7 @@
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/missions[.json]";
+import type { Route } from "./+types/json";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const missionRepo = new MissionRepository(request);

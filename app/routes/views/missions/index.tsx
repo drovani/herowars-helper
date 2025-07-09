@@ -7,7 +7,7 @@ import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { cn, getHeroImageUrl } from "~/lib/utils";
 import { MissionRepository, type Mission } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/missions._index";
+import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const missionRepo = new MissionRepository(request);

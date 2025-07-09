@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn, getEquipmentImageUrl } from "~/lib/utils";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import type { Route } from "./+types/equipment._index";
+import type { Route } from "./+types/index";
 
 export const loader = async (_: Route.LoaderArgs) => {
   const equipments = await EquipmentDataService.getAll();

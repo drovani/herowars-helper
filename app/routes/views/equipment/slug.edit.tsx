@@ -7,7 +7,7 @@ import EquipmentForm from "~/components/EquipmentForm";
 import { EquipmentMutationSchema, type EquipmentMutation } from "~/data/equipment.zod";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/equipment.$slug_.edit";
+import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [

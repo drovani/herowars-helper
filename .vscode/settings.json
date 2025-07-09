@@ -9,9 +9,9 @@
         },
         {
             "fileMatch": [
-                "chapters-missions.json"
+                "missions.json"
             ],
-            "url": "./app/data/chapters-missions-schema.json"
+            "url": "./app/data/missions-schema.json"
         },
         {
             "fileMatch": [

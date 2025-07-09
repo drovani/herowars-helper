@@ -11,12 +11,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { formatTitle } from "~/config/site";
-import chaptersAndMissionsData from "~/data/chapters-missions.json";
+import chaptersAndMissionsData from "~/data/missions.json";
 import { createAdminClient } from "~/lib/supabase/admin-client";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/setup";
 
-// Helper function to extract chapters from chapters-missions data
+// Helper function to extract chapters from missions data
 function extractChapters(data: typeof chaptersAndMissionsData) {
   return data.chapters.map((chapter) => ({
     id: chapter.id,

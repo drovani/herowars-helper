@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Schema for the new chapters-missions.json structure
+// Schema for the missions.json structure
 export const ChapterSchema = z.object({
   id: z.number().int("Chapter id must be an integer").positive("Chapter id must be positive"),
   title: z.string().min(1, "Chapter title cannot be empty"),

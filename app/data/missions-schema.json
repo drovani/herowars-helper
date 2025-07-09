@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Chapters and Missions Data Schema",
-  "description": "Schema for validating the structure of chapters-missions.json file containing Hero Wars chapter and mission data",
+  "description": "Schema for validating the structure of missions.json file containing Hero Wars chapter and mission data",
   "type": "object",
   "properties": {
     "chapters": {

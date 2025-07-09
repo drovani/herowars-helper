@@ -247,6 +247,7 @@ The project uses a comprehensive testing approach with **Vitest** for unit/integ
 #### Repository Testing Patterns
 - **Location**: `app/repositories/__tests__/`
 - **Mock Pattern**: Use `app/__tests__/mocks/supabase.ts` for Supabase client mocking
+- **Log Capturing**: Repository tests use loglevel's `methodFactory` to capture log output to in-memory arrays during tests, preventing console noise while preserving debugging capability
 - **Test Structure**: Mock createClient, test CRUD operations, validate error handling
 - **Example**: See `BaseRepository.test.ts` for patterns extending BaseRepository
 
@@ -263,6 +264,43 @@ The project uses a comprehensive testing approach with **Vitest** for unit/integ
 - **Auth Context**: Mock authentication state for component testing
 - **External APIs**: Use MSW for HTTP request mocking
 - **Browser APIs**: Mock matchMedia, IntersectionObserver, etc.
+
+#### Log Capturing Pattern for Repository Tests
+Repository tests use a standardized log capturing approach to prevent console noise during test execution:
+
+```typescript
+import log from 'loglevel'
+
+describe('RepositoryName', () => {
+  let capturedLogs: Array<{level: string, message: string, args: any[]}> = []
+  let originalMethodFactory: any
+
+  beforeEach(() => {
+    // Capture logs to in-memory array instead of console
+    capturedLogs = []
+    originalMethodFactory = log.methodFactory
+    log.methodFactory = function(methodName, _logLevel, _loggerName) {
+      return function(message, ...args) {
+        capturedLogs.push({level: methodName, message, args})
+        // Silent - don't output to console
+      }
+    }
+    log.rebuild()
+  })
+
+  afterEach(() => {
+    // Restore original logging behavior
+    log.methodFactory = originalMethodFactory
+    log.rebuild()
+  })
+})
+```
+
+This pattern:
+- Prevents log output during tests (clean test output)
+- Preserves logs in `capturedLogs` array for debugging
+- Automatically restores normal logging after each test
+- Should be applied to all repository tests
 
 ### End-to-End Testing (Playwright)
 - `npm run e2e` - Run all e2e tests
@@ -318,6 +356,7 @@ test('my test', async ({ page }) => {
 - **Hooks**: Test state changes, effects, and edge cases  
 - **Business Logic**: Test validation, permissions, and error handling
 - **Supabase Operations**: Mock the client and test query building and data transformation
+- **Repository Tests**: Use loglevel log capturing pattern to ensure clean test output - capture logs to in-memory arrays instead of console during tests
 - **E2E Tests**: Focus on user workflows, critical paths, and cross-browser compatibility
 - **Debug First**: When UI issues are reported, use Playwright's debugging tools to understand the problem before making changes
 

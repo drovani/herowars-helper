@@ -1,7 +1,7 @@
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
 import HeroDataService from "~/services/HeroDataService";
-import type { Route } from "./+types/heroes[.json]";
+import type { Route } from "./+types/json";
 
 export async function loader(_: Route.LoaderArgs) {
   const heroesJson = await HeroDataService.getAllAsJson();

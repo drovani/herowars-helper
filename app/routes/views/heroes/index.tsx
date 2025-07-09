@@ -9,7 +9,7 @@ import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
-import type { Route } from "./+types/heroes._index";
+import type { Route } from "./+types/index";
 
 export const loader = async (_: Route.LoaderArgs) => {
   const heroes = await HeroDataService.getAll();

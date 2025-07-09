@@ -13,7 +13,7 @@ import { generateSlug } from "~/lib/utils";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/equipment.$slug";
+import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [{ title: data?.equipment.name }];

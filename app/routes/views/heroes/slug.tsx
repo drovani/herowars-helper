@@ -13,7 +13,7 @@ import { buttonVariants } from "~/components/ui/button";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
-import type { Route } from "./+types/heroes.$slug";
+import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [{ title: data?.hero.name }];

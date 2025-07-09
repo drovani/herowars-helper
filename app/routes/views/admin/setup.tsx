@@ -72,7 +72,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     // Initialize mission repository with appropriate client
     const missionRepo = mode === 'force'
-      ? new MissionRepository(createAdminClient(request).supabase)
+      ? new MissionRepository(createAdminClient(request).supabase as any)
       : new MissionRepository(request);
 
     // Execute purge if requested

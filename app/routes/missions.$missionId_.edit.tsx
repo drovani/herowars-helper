@@ -8,14 +8,14 @@ import { ZodError } from "zod";
 import MissionForm from "~/components/MissionForm";
 import { Badge } from "~/components/ui/badge";
 import { MissionMutationSchema, type MissionMutation } from "~/data/mission.zod";
-import MissionDataService from "~/services/MissionDataService";
+import { MissionRepository, type Mission, type MissionUpdate } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/missions.$missionId_.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [
     { title: `Edit ${data?.mission.name}` },
     { name: "robots", content: "noindex" },
-    { rel: "canonical", href: `/missions/${data?.mission.id}` },
+    { rel: "canonical", href: `/missions/${data?.mission.slug}` },
     {
       name: "description",
       content: `Edit details for ${data?.mission.name} mission. Internal administrative page.`,
@@ -35,9 +35,20 @@ export const handle = {
   ],
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.missionId, "Missing mission ID param.");
-  const mission = await MissionDataService.getById(params.missionId);
+  
+  const missionRepo = new MissionRepository(request);
+  const missionResult = await missionRepo.findById(params.missionId);
+  
+  if (missionResult.error) {
+    throw data(null, {
+      status: 500,
+      statusText: "Failed to load mission",
+    });
+  }
+
+  const mission = missionResult.data;
   if (!mission) {
     throw data(null, {
       status: 404,
@@ -60,15 +71,25 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   invariant(params.missionId, "Missing mission ID param");
 
   const formData = await request.formData();
-  const data = JSON.parse(formData.get("mission") as string);
+  const missionData = JSON.parse(formData.get("mission") as string);
 
-  const updateResults = await MissionDataService.update(params.missionId, data as MissionMutation);
-  if (updateResults instanceof ZodError) {
-    log.error("Captured validation ZodError:", JSON.stringify(updateResults.format(), null, 2));
-    return data({ errors: updateResults.format() }, { status: 400 });
+  const missionRepo = new MissionRepository(request);
+  
+  // Convert MissionMutation format to Repository format
+  const updateData: MissionUpdate = {
+    name: missionData.name,
+    hero_slug: missionData.boss || null,
+    // Note: chapter_id and slug cannot be updated through this form
+  };
+
+  const updateResult = await missionRepo.update(params.missionId, updateData);
+  
+  if (updateResult.error) {
+    log.error("Mission update failed:", updateResult.error);
+    return data({ errors: { _form: [updateResult.error.message] } }, { status: 400 });
   }
 
-  return redirect(`/missions/${updateResults.id}`);
+  return redirect(`/missions/${updateResult.data?.slug}`);
 };
 
 export default function EditMission({ loaderData, actionData }: Route.ComponentProps) {
@@ -78,11 +99,11 @@ export default function EditMission({ loaderData, actionData }: Route.ComponentP
     const form = useForm<MissionMutation>({
       resolver: zodResolver(MissionMutationSchema),
       defaultValues: {
-        chapter: mission.chapter,
-        chapter_title: mission.chapter_title,
-        mission_number: mission.mission_number,
+        chapter: mission.chapter_id,
+        chapter_title: "", // This would need to be fetched from the chapter table
+        mission_number: parseInt(mission.slug.split('-')[1]), // Extract from slug
         name: mission.name,
-        boss: mission.boss || "",
+        boss: mission.hero_slug || "",
       },
     });
 
@@ -92,13 +113,12 @@ export default function EditMission({ loaderData, actionData }: Route.ComponentP
         <div className="flex items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              {mission.chapter}-{mission.mission_number}: {mission.name}
+              {mission.slug}: {mission.name}
             </h1>
             <div className="flex gap-2">
-              <Badge variant="secondary">Chapter {mission.chapter}</Badge>
-              <Badge variant="outline">{mission.chapter_title}</Badge>
-              {mission.boss && (
-                <Badge variant="default">Boss: {mission.boss}</Badge>
+              <Badge variant="secondary">Chapter {mission.chapter_id}</Badge>
+              {mission.hero_slug && (
+                <Badge variant="default">Boss: {mission.hero_slug}</Badge>
               )}
             </div>
           </div>

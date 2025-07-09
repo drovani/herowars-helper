@@ -10,11 +10,11 @@ export type AssignableRole = typeof ASSIGNABLE_ROLES[number];
  * This client has admin privileges and should ONLY be used server-side
  */
 export function createAdminClient() {
-  const supabaseUrl = process.env.VITE_SUPABASE_URL;
+  const supabaseUrl = process.env.VITE_SUPABASE_DATABASE_URL;
   const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing required environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY');
+    throw new Error('Missing required environment variables: VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY');
   }
 
   return createClient(supabaseUrl, supabaseServiceKey, {

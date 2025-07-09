@@ -36,6 +36,7 @@ The command will:
 - Show the generated commit message and description before merging
 - Perform the squash merge automatically
 - Confirm successful merge completion
+- Delete local branch for this PR, switch to `main` and pull the updates.
 
 ## Safety Note
 This command will permanently merge and close the PR. Use with caution and ensure you have reviewed the PR contents before running.

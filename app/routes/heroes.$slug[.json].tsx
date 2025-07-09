@@ -2,7 +2,7 @@ import { type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import HeroDataService from "~/services/HeroDataService";
-import MissionDataService from "~/services/MissionDataService";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/heroes.$slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -24,7 +24,7 @@ export const handle = {
   }),
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing hero slug param");
 
   const hero = await HeroDataService.getById(params.slug);
@@ -35,7 +35,14 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const campaignSources = await MissionDataService.getMissionsByBoss(hero.name);
+  const missionRepo = new MissionRepository(request);
+  const campaignSourcesResult = await missionRepo.findByHeroSlug(hero.name);
+  
+  if (campaignSourcesResult.error) {
+    throw new Response("Failed to load campaign sources", { status: 500 });
+  }
+  
+  const campaignSources = campaignSourcesResult.data || [];
   const equipmentSlugs: string[] = [];
   if (hero.items !== undefined) {
     for (const tier of Object.entries(hero.items)) {

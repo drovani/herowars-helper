@@ -20,6 +20,7 @@ issue [ISSUE_NUMBER]
 7. Ensures all code passes TypeScript type checking (`npm run tsc`)
 8. Creates a descriptive commit message following project conventions
 9. Pushes changes and creates a pull request linked to the original issue
+10. **Links the issue and PR** using GitHub CLI for proper tracking and automatic closure
 
 ## Examples
 ```bash
@@ -46,6 +47,7 @@ The command will:
 - Report test results and type checking status
 - Confirm successful commit and PR creation
 - Provide the PR URL for review
+- Confirm issue and PR linking with assignee and labels
 
 ## Implementation Steps
 1. **Issue Analysis**: Fetch and parse issue details to understand requirements
@@ -55,6 +57,10 @@ The command will:
 5. **Quality Checks**: Run linting and type checking to ensure code quality
 6. **Documentation**: Update documentation if the change affects user-facing features
 7. **Commit & PR**: Create meaningful commit message and pull request
+8. **Issue Linking**: Link the issue and PR using GitHub CLI commands:
+   - Add assignee to both issue and PR: `gh issue edit [ISSUE_NUMBER] --add-assignee [USERNAME]`
+   - Add appropriate labels to PR that are on the issue: `gh pr edit [PR_NUMBER] --add-label "enhancement"`
+   - Update PR description with "Resolves #[ISSUE_NUMBER]" for automatic closure
 
 ## Safety Notes
 - **ALWAYS** creates a new branch for changes (never commits directly to main)

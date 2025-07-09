@@ -6,7 +6,7 @@ import { ZodError } from "zod";
 import EquipmentForm from "~/components/EquipmentForm";
 import { EquipmentMutationSchema, type EquipmentMutation } from "~/data/equipment.zod";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import MissionDataService from "~/services/MissionDataService";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/equipment.$slug_.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -33,7 +33,7 @@ export const handle = {
   ],
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing equipment slug param.");
   const equipment = await EquipmentDataService.getById(params.slug);
   if (!equipment) {
@@ -43,7 +43,28 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const [allMissions, existingItems] = await Promise.all([MissionDataService.getAll(), EquipmentDataService.getAll()]);
+  const missionRepo = new MissionRepository(request);
+  const [missionsResult, existingItems] = await Promise.all([
+    missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
+    EquipmentDataService.getAll()
+  ]);
+
+  if (missionsResult.error) {
+    throw new Response("Failed to load missions", { status: 500 });
+  }
+
+  const missions = missionsResult.data || [];
+  
+  // Convert Mission[] to MissionRecord[] for compatibility with existing components
+  const allMissions = missions.map(mission => ({
+    id: mission.slug,
+    chapter: mission.chapter_id,
+    chapter_title: "", // We'd need to fetch this from chapters table
+    mission_number: parseInt(mission.slug.split('-')[1]),
+    name: mission.name,
+    boss: mission.hero_slug || undefined,
+    updated_on: new Date().toISOString()
+  }));
 
   return data(
     { existingItems, allMissions, equipment },

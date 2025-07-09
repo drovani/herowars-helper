@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { RequireEditor } from "~/components/auth/RequireRole";
 import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
-import { cn, parseSlugGetImageUrl } from "~/lib/utils";
+import { cn, getEquipmentImageUrl } from "~/lib/utils";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import type { Route } from "./+types/equipment._index";
 
@@ -53,7 +53,7 @@ export default function EquipmentIndex({ loaderData }: Route.ComponentProps) {
               <Card
                 className="bg-cover h-28 w-28 relative bg-center hover:scale-110 transition-all duration-500"
                 style={{
-                  backgroundImage: `url('${parseSlugGetImageUrl(equipment.slug)}')`,
+                  backgroundImage: `url('${getEquipmentImageUrl(equipment.slug)}')`,
                 }}
               >
                 <CardHeader

@@ -5,7 +5,7 @@ import { ZodError } from "zod";
 import EquipmentForm from "~/components/EquipmentForm";
 import { type EquipmentMutation, EquipmentMutationSchema } from "~/data/equipment.zod";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import MissionDataService from "~/services/MissionDataService";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/equipment.new";
 
 export const meta = (_: Route.MetaArgs) => {
@@ -19,8 +19,29 @@ export const handle = {
   }),
 };
 
-export const loader = async (_: Route.LoaderArgs) => {
-  const [allMissions, existingItems] = await Promise.all([MissionDataService.getAll(), EquipmentDataService.getAll()]);
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const missionRepo = new MissionRepository(request);
+  const [missionsResult, existingItems] = await Promise.all([
+    missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
+    EquipmentDataService.getAll()
+  ]);
+
+  if (missionsResult.error) {
+    throw new Response("Failed to load missions", { status: 500 });
+  }
+
+  const missions = missionsResult.data || [];
+  
+  // Convert Mission[] to MissionRecord[] for compatibility with existing components
+  const allMissions = missions.map(mission => ({
+    id: mission.slug,
+    chapter: mission.chapter_id,
+    chapter_title: "", // We'd need to fetch this from chapters table
+    mission_number: parseInt(mission.slug.split('-')[1]),
+    name: mission.name,
+    boss: mission.hero_slug || undefined,
+    updated_on: new Date().toISOString()
+  }));
 
   return { existingItems, allMissions };
 };

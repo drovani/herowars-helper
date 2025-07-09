@@ -51,7 +51,7 @@ A modern, production-ready template for building full-stack React applications w
 Create a `.env.local` file in the root directory:
 
 ```bash
-VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_DATABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Optional: For full user management functionality
@@ -187,11 +187,13 @@ npm run test:ui       # Run with UI interface
 ### End-to-End Testing (Playwright)
 
 ```bash
-npm run e2e           # Run all e2e tests
-npm run e2e:headed    # Run tests with browser UI visible
-npm run e2e:debug     # Run tests in debug mode (step through)
-npm run e2e:ui        # Run tests with Playwright UI
-npm run e2e:report    # View test results report
+npm run e2e              # Run all e2e tests
+npm run e2e:headed       # Run tests with browser UI visible
+npm run e2e:debug        # Run tests in debug mode (step through)
+npm run e2e:ui           # Run tests with Playwright UI
+npm run e2e:report       # View test results report
+npm run e2e:debug-tools  # Run tests tagged with @debug-tools
+npm run e2e:no-debug     # Run tests excluding @debug-tools
 ```
 
 **E2E Testing Features:**

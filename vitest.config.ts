@@ -10,11 +10,12 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./app/__tests__/setup.ts"],
     css: true,
+    exclude: ["e2e/**/*", "node_modules/**/*", ".netlify/**/*"],
     coverage: {
       provider: "v8",
       clean: false,
       reporter: [["json", { file: "test-coverage.json" }]],
-      reportsDirectory: "./app/data",
+      reportsDirectory: "./build",
       exclude: [
         "node_modules/",
         "app/__tests__/",

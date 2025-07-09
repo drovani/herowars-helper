@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '~/components/ui/collapsible'
 import { Progress } from '~/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import testCoverageData from '~/data/test-coverage.json'
 import { createClient } from '~/lib/supabase/client'
 
 interface CoverageFile {
@@ -45,22 +44,40 @@ export async function loader({ request }: { request: Request }) {
     throw new Response('Forbidden - Admin access required', { status: 403 })
   }
 
-  // Get file stats for coverage data timestamp
+  // Get file stats and coverage data from build directory
   const fs = await import('fs')
   const path = await import('path')
-  const coverageFilePath = path.resolve('app/data/test-coverage.json')
+  const coverageFilePath = path.resolve('build/test-coverage.json')
 
   let lastUpdated = new Date().toISOString()
+  let coverageData: CoverageData = {}
+  let hasError = false
+  let errorMessage = ''
+
   try {
     const stats = fs.statSync(coverageFilePath)
     lastUpdated = stats.mtime.toISOString()
+    
+    const fileContent = fs.readFileSync(coverageFilePath, 'utf8')
+    coverageData = JSON.parse(fileContent)
   } catch (error) {
-    // File doesn't exist or can't be read
+    hasError = true
+    if (error instanceof Error) {
+      if (error.message.includes('ENOENT')) {
+        errorMessage = 'No coverage data available. Run tests with coverage to generate this report.'
+      } else {
+        errorMessage = `Error reading coverage file: ${error.message}`
+      }
+    } else {
+      errorMessage = 'Unknown error reading coverage file'
+    }
   }
 
   return Response.json({
-    coverage: testCoverageData as CoverageData,
-    lastUpdated
+    coverage: coverageData,
+    lastUpdated,
+    hasError,
+    errorMessage
   })
 }
 
@@ -313,7 +330,12 @@ function FileDetails({ filePath, fileData }: { filePath: string; fileData: Cover
 
 export default function AdminTestCoverage() {
   const data = useLoaderData<typeof loader>()
-  const { coverage, lastUpdated } = data as { coverage: CoverageData; lastUpdated: string }
+  const { coverage, lastUpdated, hasError, errorMessage } = data as { 
+    coverage: CoverageData; 
+    lastUpdated: string; 
+    hasError?: boolean; 
+    errorMessage?: string; 
+  }
 
   // Filter state
   const [coverageFilter, setCoverageFilter] = useState<CoverageThreshold>('all')
@@ -373,8 +395,31 @@ export default function AdminTestCoverage() {
         </div>
       </div>
 
+      {/* Error handling */}
+      {hasError && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <XCircle className="size-5 text-destructive" />
+              Coverage Data Unavailable
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground mb-4">{errorMessage}</p>
+            <div className="space-y-2">
+              <p className="text-sm font-medium">To generate coverage data:</p>
+              <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-1">
+                <li>Run tests with coverage: <code className="bg-muted px-1 py-0.5 rounded">npm run test:coverage</code></li>
+                <li>Or run individual test: <code className="bg-muted px-1 py-0.5 rounded">npm test -- --coverage</code></li>
+                <li>Refresh this page to see the results</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Overall Summary */}
-      {summary && (
+      {!hasError && summary && (
         <Card>
           <CardHeader>
             <CardTitle>Overall Coverage Summary</CardTitle>
@@ -430,6 +475,7 @@ export default function AdminTestCoverage() {
       )}
 
       {/* Filters */}
+      {!hasError && (
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -543,8 +589,10 @@ export default function AdminTestCoverage() {
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* File-by-file breakdown */}
+      {!hasError && (
       <div>
         <h2 className="text-xl font-semibold mb-4">File Coverage Details</h2>
         {filteredFiles.length === 0 ? (
@@ -565,6 +613,7 @@ export default function AdminTestCoverage() {
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }

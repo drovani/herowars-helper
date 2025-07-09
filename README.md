@@ -51,7 +51,7 @@ A modern, production-ready template for building full-stack React applications w
 Create a `.env.local` file in the root directory:
 
 ```bash
-VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_DATABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Optional: For full user management functionality

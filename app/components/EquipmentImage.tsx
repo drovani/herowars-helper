@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { useState } from "react";
 import { type EquipmentRecord } from "~/data/equipment.zod";
-import { cn, parseSlugGetImageUrl } from "~/lib/utils";
+import { cn, parseEquipmentSlugGetImageUrl } from "~/lib/utils";
 
 const imageVariants = cva("relative", {
   variants: {
@@ -25,7 +25,7 @@ function EquipmentImage({ equipment, size = "default" }: Props) {
     <div className={cn(imageVariants({ size }))}>
       <img
         alt={`${equipment.name || "unknown"} icon`}
-        src={parseSlugGetImageUrl(equipment.slug)}
+        src={parseEquipmentSlugGetImageUrl(equipment.slug)}
         className={cn(
           status === "loaded" || status === "loading" ? "" : "hidden",
           size == "xs" ? "p-0.5 rounded-sm" : "p-1 rounded-lg"

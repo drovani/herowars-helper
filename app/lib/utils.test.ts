@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { generateSlug, parseSlugGetImageUrl, cn } from './utils'
+import { cn, generateSlug, parseEquipmentSlugGetImageUrl } from './utils'
 
 describe('Utility Functions', () => {
   describe('generateSlug', () => {
@@ -45,35 +45,35 @@ describe('Utility Functions', () => {
     })
   })
 
-  describe('parseSlugGetImageUrl', () => {
+  describe('parseEquipmentSlugGetImageUrl', () => {
     it('generates basic image URL with default extension', () => {
-      expect(parseSlugGetImageUrl('test-item')).toBe('/images/equipment/test-item.png')
-      expect(parseSlugGetImageUrl('another-slug')).toBe('/images/equipment/another-slug.png')
+      expect(parseEquipmentSlugGetImageUrl('test-item')).toBe('/images/equipment/test-item.png')
+      expect(parseEquipmentSlugGetImageUrl('another-slug')).toBe('/images/equipment/another-slug.png')
     })
 
     it('uses custom extension when provided', () => {
-      expect(parseSlugGetImageUrl('test-item', 'jpg')).toBe('/images/equipment/test-item.jpg')
-      expect(parseSlugGetImageUrl('test-item', 'svg')).toBe('/images/equipment/test-item.svg')
+      expect(parseEquipmentSlugGetImageUrl('test-item', 'jpg')).toBe('/images/equipment/test-item.jpg')
+      expect(parseEquipmentSlugGetImageUrl('test-item', 'svg')).toBe('/images/equipment/test-item.svg')
     })
 
     it('removes fragment suffix from slug', () => {
-      expect(parseSlugGetImageUrl('test-item-fragment')).toBe('/images/equipment/test-item.png')
-      expect(parseSlugGetImageUrl('complex-slug-fragment', 'jpg')).toBe('/images/equipment/complex-slug.jpg')
+      expect(parseEquipmentSlugGetImageUrl('test-item-fragment')).toBe('/images/equipment/test-item.png')
+      expect(parseEquipmentSlugGetImageUrl('complex-slug-fragment', 'jpg')).toBe('/images/equipment/complex-slug.jpg')
     })
 
     it('handles slug without fragment', () => {
-      expect(parseSlugGetImageUrl('normal-slug')).toBe('/images/equipment/normal-slug.png')
-      expect(parseSlugGetImageUrl('regular-item', 'gif')).toBe('/images/equipment/regular-item.gif')
+      expect(parseEquipmentSlugGetImageUrl('normal-slug')).toBe('/images/equipment/normal-slug.png')
+      expect(parseEquipmentSlugGetImageUrl('regular-item', 'gif')).toBe('/images/equipment/regular-item.gif')
     })
 
     it('handles empty slug', () => {
-      expect(parseSlugGetImageUrl('')).toBe('/images/equipment/.png')
-      expect(parseSlugGetImageUrl('', 'jpg')).toBe('/images/equipment/.jpg')
+      expect(parseEquipmentSlugGetImageUrl('')).toBe('/images/equipment/.png')
+      expect(parseEquipmentSlugGetImageUrl('', 'jpg')).toBe('/images/equipment/.jpg')
     })
 
     it('handles slug that is only fragment', () => {
-      expect(parseSlugGetImageUrl('-fragment')).toBe('/images/equipment/.png')
-      expect(parseSlugGetImageUrl('-fragment', 'svg')).toBe('/images/equipment/.svg')
+      expect(parseEquipmentSlugGetImageUrl('-fragment')).toBe('/images/equipment/.png')
+      expect(parseEquipmentSlugGetImageUrl('-fragment', 'svg')).toBe('/images/equipment/.svg')
     })
   })
 

@@ -13,7 +13,7 @@ export function createAdminClient(request: Request | null = null) {
     const headers = new Headers();
 
     const supabase = createServerClient<Database>(
-      process.env.VITE_SUPABASE_URL!,
+      process.env.VITE_SUPABASE_DATABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
       {
         cookies: {

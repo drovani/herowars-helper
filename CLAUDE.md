@@ -165,7 +165,7 @@ equipment: slug (PK), name, campaign_sources (string[])
 ## Environment Setup
 
 Required environment variables:
-- `VITE_SUPABASE_URL` - Supabase project URL
+- `VITE_SUPABASE_DATABASE_URL` - Supabase project URL
 - `VITE_SUPABASE_ANON_KEY` - Supabase anon public key
 
 Optional for full user management:

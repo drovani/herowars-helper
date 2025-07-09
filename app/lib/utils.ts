@@ -16,7 +16,7 @@ export function generateSlug(text: string | undefined, suffixToStrip?: string): 
   }
   return slug;
 }
-export function parseSlugGetImageUrl(slug: string, extension: string = "png"): string {
+export function parseEquipmentSlugGetImageUrl(slug: string, extension: string = "png"): string {
   const goodslug = slug.indexOf("-fragment") < 0 ? slug : slug.substring(0, slug.length - "-fragment".length);
   return `/images/equipment/${goodslug}.${extension}`;
 }

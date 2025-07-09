@@ -68,6 +68,35 @@ export const mockSupabaseClient = {
   single: vi.fn().mockResolvedValue({ data: null, error: null }),
 }
 
+// Factory function to create mock Supabase client
+export function createMockSupabaseClient() {
+  return {
+    auth: {
+      getSession: vi.fn().mockResolvedValue({ data: { session: mockSession }, error: null }),
+      getUser: vi.fn().mockResolvedValue({ data: { user: mockSession.user }, error: null }),
+      signInWithPassword: vi.fn().mockResolvedValue({ data: { session: mockSession, user: mockSession.user }, error: null }),
+      signUp: vi.fn().mockResolvedValue({ data: { session: mockSession, user: mockSession.user }, error: null }),
+      signOut: vi.fn().mockResolvedValue({ error: null }),
+      resetPasswordForEmail: vi.fn().mockResolvedValue({ error: null }),
+      onAuthStateChange: vi.fn().mockReturnValue({
+        data: { subscription: { unsubscribe: vi.fn() } }
+      }),
+      admin: mockAdminAuth,
+    },
+    from: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    range: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({ data: null, error: null }),
+    contains: vi.fn().mockReturnThis(),
+  }
+}
+
 // Mock the createClient function
 vi.mock('~/lib/supabase/client', () => ({
   createClient: vi.fn(() => ({ supabase: mockSupabaseClient, headers: undefined })),

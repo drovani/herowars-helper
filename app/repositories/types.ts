@@ -27,7 +27,7 @@ export type ForeignKeyColumns<T extends TableName> = {
 
 export interface QueryOptions {
   where?: Record<string, unknown>
-  orderBy?: { column: string; ascending?: boolean }
+  orderBy?: { column: string; ascending?: boolean } | Array<{ column: string; ascending?: boolean }>
   limit?: number
   offset?: number
 }
@@ -35,11 +35,23 @@ export interface QueryOptions {
 export interface BulkOptions {
   batchSize?: number
   onProgress?: (completed: number, total: number) => void
+  skipExisting?: boolean
+}
+
+export interface UpsertOptions {
+  onConflict?: string
+  ignoreDuplicates?: boolean
+}
+
+export interface BulkOperationOptions {
+  batchSize?: number
+  continueOnError?: boolean
 }
 
 export interface RepositoryResult<T> {
   data: T | null
   error: RepositoryError | null
+  skipped?: boolean
 }
 
 export interface RepositoryError {

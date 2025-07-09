@@ -11,7 +11,7 @@
             "fileMatch": [
                 "missions.json"
             ],
-            "url": "./app/data/mission-schema.json"
+            "url": "./app/data/missions-schema.json"
         },
         {
             "fileMatch": [

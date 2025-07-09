@@ -23,12 +23,28 @@ export abstract class BaseRepository<T extends TableName> {
   protected schema: ZodSchema<any>
   protected primaryKeyColumn: string
 
-  constructor(tableName: T, schema: ZodSchema<any>, request: Request | null = null, primaryKeyColumn: string = 'id') {
-    const { supabase } = createClient(request)
-    this.supabase = supabase
-    this.tableName = tableName
-    this.schema = schema
-    this.primaryKeyColumn = primaryKeyColumn
+  constructor(
+    tableNameOrSupabase: T | SupabaseClient<Database>,
+    schema: ZodSchema<any>,
+    requestOrTableName?: Request | T | null,
+    primaryKeyColumnOrSchema?: string | ZodSchema<any>,
+    primaryKeyColumn: string = 'id'
+  ) {
+    // Handle different constructor signatures
+    if (typeof tableNameOrSupabase === 'string') {
+      // First signature: (tableName, schema, request?, primaryKeyColumn?)
+      const { supabase } = createClient(requestOrTableName as Request | null)
+      this.supabase = supabase
+      this.tableName = tableNameOrSupabase
+      this.schema = schema
+      this.primaryKeyColumn = (primaryKeyColumnOrSchema as string) || 'id'
+    } else {
+      // Second signature: (supabase, tableName, schema, primaryKeyColumn?)
+      this.supabase = tableNameOrSupabase
+      this.tableName = requestOrTableName as T
+      this.schema = primaryKeyColumnOrSchema as ZodSchema<any>
+      this.primaryKeyColumn = primaryKeyColumn
+    }
   }
 
   async findAll(options: FindAllOptions = {}): Promise<RepositoryResult<EntityRow<T>[]>> {
@@ -42,7 +58,15 @@ export abstract class BaseRepository<T extends TableName> {
       }
 
       if (options.orderBy) {
-        query = query.order(options.orderBy.column, { ascending: options.orderBy.ascending ?? true })
+        if (Array.isArray(options.orderBy)) {
+          // Handle multiple orderBy criteria
+          options.orderBy.forEach(order => {
+            query = query.order(order.column, { ascending: order.ascending ?? true })
+          })
+        } else {
+          // Handle single orderBy criteria
+          query = query.order(options.orderBy.column, { ascending: options.orderBy.ascending ?? true })
+        }
       }
 
       if (options.limit) {
@@ -119,7 +143,10 @@ export abstract class BaseRepository<T extends TableName> {
     }
   }
 
-  async create(input: CreateInput<T>): Promise<RepositoryResult<EntityRow<T>>> {
+  async create(
+    input: CreateInput<T>, 
+    options: { skipExisting?: boolean } = {}
+  ): Promise<RepositoryResult<EntityRow<T>>> {
     try {
       const validation = this.schema.safeParse(input)
       if (!validation.success) {
@@ -133,6 +160,23 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
+      // If skipExisting is true, check if record already exists
+      if (options.skipExisting) {
+        const primaryKeyValue = (input as any)[this.primaryKeyColumn]
+        if (primaryKeyValue) {
+          const existingRecord = await this.findById(primaryKeyValue)
+          if (existingRecord.data) {
+            // Record exists, return it as skipped
+            return {
+              data: existingRecord.data,
+              error: null,
+              skipped: true,
+            }
+          }
+        }
+      }
+
+      // Proceed with normal insert
       const { data, error } = await this.supabase
         .from(this.tableName)
         .insert(input as any)
@@ -143,17 +187,14 @@ export abstract class BaseRepository<T extends TableName> {
         log.error(`Error creating ${this.tableName}:`, error)
         return {
           data: null,
-          error: {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-          },
+          error: this.handleError(error),
         }
       }
 
       return {
         data: data as EntityRow<T>,
         error: null,
+        skipped: false,
       }
     } catch (error) {
       log.error(`Unexpected error creating ${this.tableName}:`, error)
@@ -192,11 +233,7 @@ export abstract class BaseRepository<T extends TableName> {
         log.error(`Error updating ${this.tableName} with id ${id}:`, error)
         return {
           data: null,
-          error: {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-          },
+          error: this.handleError(error),
         }
       }
 
@@ -227,11 +264,7 @@ export abstract class BaseRepository<T extends TableName> {
         log.error(`Error deleting ${this.tableName} with id ${id}:`, error)
         return {
           data: null,
-          error: {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-          },
+          error: this.handleError(error),
         }
       }
 
@@ -255,8 +288,9 @@ export abstract class BaseRepository<T extends TableName> {
     inputs: CreateInput<T>[],
     options: BulkOptions = {}
   ): Promise<RepositoryResult<EntityRow<T>[]>> {
-    const { batchSize = 100, onProgress } = options
+    const { batchSize = 100, onProgress, skipExisting = false } = options
     const results: EntityRow<T>[] = []
+    const skipped: EntityRow<T>[] = []
     const errors: RepositoryError[] = []
 
     try {
@@ -264,17 +298,21 @@ export abstract class BaseRepository<T extends TableName> {
         const batch = inputs.slice(i, i + batchSize)
         const batchResults = await Promise.allSettled(
           batch.map(async (input) => {
-            const result = await this.create(input)
+            const result = await this.create(input, { skipExisting })
             if (result.error) {
               throw result.error
             }
-            return result.data!
+            return result
           })
         )
 
         batchResults.forEach((result) => {
           if (result.status === "fulfilled") {
-            results.push(result.value)
+            if (result.value.skipped) {
+              skipped.push(result.value.data!)
+            } else {
+              results.push(result.value.data!)
+            }
           } else {
             errors.push({
               message: result.reason.message || "Unknown error in bulk create",
@@ -289,8 +327,134 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
+      // Determine result structure based on what happened
       if (errors.length > 0) {
-        log.warn(`Bulk create for ${this.tableName} completed with ${errors.length} errors`)
+        log.warn(`Bulk create for ${this.tableName} completed with ${errors.length} errors, ${skipped.length} skipped`)
+        return {
+          data: results,
+          error: {
+            message: `Bulk operation completed with ${errors.length} errors, ${skipped.length} skipped`,
+            code: "BULK_PARTIAL_FAILURE",
+            details: { errors, skipped },
+          },
+        }
+      }
+
+      if (skipped.length > 0) {
+        log.info(`Bulk create for ${this.tableName} completed: ${results.length} created, ${skipped.length} skipped`)
+        return {
+          data: results,
+          error: {
+            message: `Bulk operation completed: ${results.length} created, ${skipped.length} skipped`,
+            code: "BULK_PARTIAL_SUCCESS",
+            details: { skipped },
+          },
+        }
+      }
+
+      return {
+        data: results,
+        error: null,
+      }
+    } catch (error) {
+      log.error(`Unexpected error in bulk create for ${this.tableName}:`, error)
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  async upsert(input: CreateInput<T>): Promise<RepositoryResult<EntityRow<T>>> {
+    try {
+      const validation = this.schema.safeParse(input)
+      if (!validation.success) {
+        return {
+          data: null,
+          error: {
+            message: "Validation failed",
+            code: "VALIDATION_ERROR",
+            details: validation.error.errors,
+          },
+        }
+      }
+
+      const { data, error } = await this.supabase
+        .from(this.tableName)
+        .upsert(input as any, { 
+          onConflict: this.primaryKeyColumn,
+          ignoreDuplicates: false 
+        })
+        .select()
+        .single()
+
+      if (error) {
+        log.error(`Error upserting ${this.tableName}:`, error)
+        return {
+          data: null,
+          error: this.handleError(error),
+        }
+      }
+
+      return {
+        data: data as EntityRow<T>,
+        error: null,
+      }
+    } catch (error) {
+      log.error(`Unexpected error upserting ${this.tableName}:`, error)
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  async bulkUpsert(
+    inputs: CreateInput<T>[],
+    options: BulkOptions = {}
+  ): Promise<RepositoryResult<EntityRow<T>[]>> {
+    const { batchSize = 100, onProgress } = options
+    const results: EntityRow<T>[] = []
+    const errors: RepositoryError[] = []
+
+    try {
+      for (let i = 0; i < inputs.length; i += batchSize) {
+        const batch = inputs.slice(i, i + batchSize)
+        const batchResults = await Promise.allSettled(
+          batch.map(async (input) => {
+            const result = await this.upsert(input)
+            if (result.error) {
+              throw result.error
+            }
+            return result.data!
+          })
+        )
+
+        batchResults.forEach((result) => {
+          if (result.status === "fulfilled") {
+            results.push(result.value)
+          } else {
+            errors.push({
+              message: result.reason.message || "Unknown error in bulk upsert",
+              code: result.reason.code,
+              details: result.reason,
+            })
+          }
+        })
+
+        if (onProgress) {
+          onProgress(Math.min(i + batchSize, inputs.length), inputs.length)
+        }
+      }
+
+      if (errors.length > 0) {
+        log.warn(`Bulk upsert for ${this.tableName} completed with ${errors.length} errors`)
         return {
           data: results,
           error: {
@@ -306,7 +470,7 @@ export abstract class BaseRepository<T extends TableName> {
         error: null,
       }
     } catch (error) {
-      log.error(`Unexpected error in bulk create for ${this.tableName}:`, error)
+      log.error(`Unexpected error in bulk upsert for ${this.tableName}:`, error)
       return {
         data: null,
         error: {
@@ -425,5 +589,39 @@ export abstract class BaseRepository<T extends TableName> {
     // This follows the open-closed principle - the base class is closed for modification
     // but open for extension via inheritance
     return {}
+  }
+
+  protected handleError(error: any): RepositoryError {
+    // Handle specific PostgreSQL error codes
+    if (error.code === '23505') {
+      return {
+        message: 'Unique constraint violation',
+        code: 'CONSTRAINT_VIOLATION',
+        details: error.message
+      }
+    }
+    
+    if (error.code === '42501') {
+      return {
+        message: 'Permission denied - check RLS policies',
+        code: 'PERMISSION_DENIED',
+        details: error.message
+      }
+    }
+    
+    if (error.code === 'PGRST116') {
+      return {
+        message: 'Not found',
+        code: 'NOT_FOUND',
+        details: error.message
+      }
+    }
+    
+    // Default error handling
+    return {
+      message: error.message || 'Database operation failed',
+      code: error.code || 'DATABASE_ERROR',
+      details: error.details || error.message
+    }
   }
 }

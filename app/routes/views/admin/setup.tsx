@@ -1,50 +1,51 @@
 import log from "loglevel";
-import { AlertCircle, RefreshCwIcon, CheckCircle, AlertTriangle, XCircle } from "lucide-react";
-import { useMemo } from "react";
-import { data, useFetcher } from "react-router";
+import { AlertCircle, AlertTriangle, CheckCircle, ChevronDown, RefreshCwIcon, XCircle } from "lucide-react";
+import { useMemo, useState } from "react";
+import { data, useFetcher, useNavigate } from "react-router";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
-import { Badge } from "~/components/ui/badge";
 import { formatTitle } from "~/config/site";
+import chaptersAndMissionsData from "~/data/missions.json";
+import { createAdminClient } from "~/lib/supabase/admin-client";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import missionsData from "~/data/missions.json";
 import type { Route } from "./+types/setup";
 
-// Helper function to extract unique chapters from missions data
-function extractChapters(missions: typeof missionsData) {
-  const chaptersMap = new Map<number, string>();
-  
-  missions.forEach((mission) => {
-    if (!chaptersMap.has(mission.chapter)) {
-      chaptersMap.set(mission.chapter, mission.chapter_title);
-    }
-  });
-  
-  return Array.from(chaptersMap.entries()).map(([id, title]) => ({
-    id,
-    title,
+// Helper function to extract chapters from missions data
+function extractChapters(data: typeof chaptersAndMissionsData) {
+  return data.chapters.map((chapter) => ({
+    id: chapter.id,
+    title: chapter.title,
   }));
 }
 
 // Helper function to transform missions to database format
-function transformMissions(missions: typeof missionsData) {
-  return missions.map((mission) => ({
-    slug: mission.id,
-    name: mission.name,
-    chapter_id: mission.chapter,
-    hero_slug: mission.boss || null,
-    energy_cost: null, // Not in JSON data
-    level: null, // Not in JSON data
-  }));
+function transformMissions(data: typeof chaptersAndMissionsData) {
+  return data.missions.map((mission) => {
+    // Parse chapter_id and level from slug (e.g., "1-2" → chapter_id = 1, level = 2)
+    const [chapterIdStr, levelStr] = mission.slug.split('-');
+    const chapter_id = parseInt(chapterIdStr, 10);
+    const level = parseInt(levelStr, 10);
+
+    return {
+      slug: mission.slug,
+      name: mission.name,
+      chapter_id,
+      hero_slug: mission.hero_slug || null,
+      energy_cost: mission.energy_cost,
+      level,
+    };
+  });
 }
 
 export async function action({ request }: Route.ActionArgs) {
   const startTime = Date.now();
-  
+
   try {
     const formData = await request.formData();
     const mode = formData.get("mode")?.toString() || "basic";
@@ -60,65 +61,178 @@ export async function action({ request }: Route.ActionArgs) {
     };
 
     const results: any = {
-      chapters: { created: 0, errors: 0, total: 0, errorDetails: [] },
-      missions: { created: 0, errors: 0, total: 0, errorDetails: [] },
+      chapters: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
+      missions: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
+      purged: { missions: 0, chapters: 0, errors: 0, errorDetails: [] },
       processingTime: 0,
       mode,
       dataset: dataset || "all",
-      purge,
+      purgeRequested: purge,
     };
 
-    // Initialize mission repository
-    const missionRepo = new MissionRepository(request);
+    // Initialize mission repository with appropriate client
+    const missionRepo = mode === 'force'
+      ? new MissionRepository(createAdminClient(request).supabase)
+      : new MissionRepository(request);
+
+    // Execute purge if requested
+    if (purge) {
+      log.info("Purging existing data...");
+
+      // Determine what to purge based on dataset
+      if (!dataset || dataset === "missions" || dataset === "all") {
+        // Purge mission domain (both missions and chapters)
+        const purgeResult = await missionRepo.purgeMissionDomain();
+        if (purgeResult.error) {
+          throw new Error(`Domain purge failed: ${purgeResult.error.message}`);
+        }
+
+        if (purgeResult.data) {
+          results.purged.missions = purgeResult.data.missions;
+          results.purged.chapters = purgeResult.data.chapters;
+        }
+
+        log.info(`Purged mission domain: ${results.purged.missions} missions, ${results.purged.chapters} chapters`);
+      }
+
+      // Future: Add other domain purging here when heroes/equipment datasets are added
+    }
 
     // Load missions data if dataset is empty (all) or "missions"
     if (!dataset || dataset === "missions") {
       log.info("Loading mission data...");
-      
-      // Extract and create chapters first (foreign key dependency)
-      const chaptersToCreate = extractChapters(missionsData);
+
+      // Prepare data for initialization
+      const chaptersToCreate = extractChapters(chaptersAndMissionsData);
+      const missionsToCreate = transformMissions(chaptersAndMissionsData);
+
       results.chapters.total = chaptersToCreate.length;
-      log.info(`Creating ${chaptersToCreate.length} chapters...`);
-      
-      const chapterResult = await missionRepo.bulkCreateChapters(chaptersToCreate);
-      if (chapterResult.error && chapterResult.error.code !== "BULK_PARTIAL_FAILURE") {
-        throw new Error(`Chapter creation failed: ${chapterResult.error.message}`);
-      }
-      
-      results.chapters.created = chapterResult.data?.length || 0;
-      if (chapterResult.error?.code === "BULK_PARTIAL_FAILURE") {
-        results.chapters.errors = (chapterResult.error.details as any[])?.length || 0;
-        results.chapters.errorDetails = chapterResult.error.details || [];
-      }
-      
-      // Transform and create missions
-      const missionsToCreate = transformMissions(missionsData);
       results.missions.total = missionsToCreate.length;
-      log.info(`Creating ${missionsToCreate.length} missions...`);
-      
-      const missionResult = await missionRepo.bulkCreateMissions(missionsToCreate);
-      if (missionResult.error && missionResult.error.code !== "BULK_PARTIAL_FAILURE") {
-        throw new Error(`Mission creation failed: ${missionResult.error.message}`);
+
+      log.info(`Initializing ${chaptersToCreate.length} chapters and ${missionsToCreate.length} missions...`);
+
+      // Use the new initializeMissionData method
+      const initResult = await missionRepo.initializeMissionData(
+        {
+          chapters: chaptersToCreate,
+          missions: missionsToCreate
+        },
+        options
+      );
+
+      // Handle both successful and partial failure cases
+      if (initResult.error && !['BULK_PARTIAL_FAILURE', 'BULK_PARTIAL_SUCCESS'].includes(initResult.error.code || '')) {
+        throw new Error(`Mission data initialization failed: ${initResult.error.message}`);
       }
-      
-      results.missions.created = missionResult.data?.length || 0;
-      if (missionResult.error?.code === "BULK_PARTIAL_FAILURE") {
-        results.missions.errors = (missionResult.error.details as any[])?.length || 0;
-        results.missions.errorDetails = missionResult.error.details || [];
+
+      // Update results with detailed information
+      if (initResult.data) {
+        results.chapters.created = initResult.data.chapters?.length || 0;
+        results.missions.created = initResult.data.missions?.length || 0;
       }
-      
+
+      // Capture error and skip details from partial failures
+      if (initResult.error?.details) {
+        const details = initResult.error.details as any;
+
+        // Handle chapter-specific details
+        if (details.chapters) {
+          const chapterDetails = details.chapters;
+
+          // Handle chapter errors
+          if (chapterDetails.errors && Array.isArray(chapterDetails.errors)) {
+            chapterDetails.errors.forEach((errorItem: any) => {
+              results.chapters.errors++;
+              results.chapters.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            });
+          }
+
+          // Handle skipped chapters
+          if (chapterDetails.skipped && Array.isArray(chapterDetails.skipped)) {
+            chapterDetails.skipped.forEach((skippedItem: any) => {
+              results.chapters.skipped++;
+              results.chapters.skippedDetails.push(skippedItem);
+            });
+          }
+        }
+
+        // Handle mission-specific details
+        if (details.missions) {
+          const missionDetails = details.missions;
+
+          // Handle mission errors
+          if (missionDetails.errors && Array.isArray(missionDetails.errors)) {
+            missionDetails.errors.forEach((errorItem: any) => {
+              results.missions.errors++;
+              results.missions.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            });
+          }
+
+          // Handle skipped missions
+          if (missionDetails.skipped && Array.isArray(missionDetails.skipped)) {
+            missionDetails.skipped.forEach((skippedItem: any) => {
+              results.missions.skipped++;
+              results.missions.skippedDetails.push(skippedItem);
+            });
+          }
+        }
+
+        // Legacy support: Handle flat structure for backward compatibility
+        if (details.errors && Array.isArray(details.errors)) {
+          details.errors.forEach((errorItem: any) => {
+            // Determine if this is a chapter or mission error based on the data structure
+            if (errorItem.data && 'title' in errorItem.data) {
+              // Chapter error
+              results.chapters.errors++;
+              results.chapters.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            } else if (errorItem.data && ('name' in errorItem.data || 'slug' in errorItem.data)) {
+              // Mission error
+              results.missions.errors++;
+              results.missions.errorDetails.push({
+                record: errorItem.data,
+                error: errorItem.error
+              });
+            }
+          });
+        }
+
+        // Legacy support: Handle flat skipped structure
+        if (details.skipped && Array.isArray(details.skipped)) {
+          details.skipped.forEach((skippedItem: any) => {
+            if (skippedItem && 'title' in skippedItem) {
+              // Skipped chapter
+              results.chapters.skipped++;
+              results.chapters.skippedDetails.push(skippedItem);
+            } else if (skippedItem && ('name' in skippedItem || 'slug' in skippedItem)) {
+              // Skipped mission
+              results.missions.skipped++;
+              results.missions.skippedDetails.push(skippedItem);
+            }
+          });
+        }
+      }
+
       log.info("Mission data loading completed", results);
     }
 
     results.processingTime = Date.now() - startTime;
-    
+
     return data({
       message: "Data initialization completed",
       results,
       success: true,
       processingTime: results.processingTime,
     });
-    
+
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     log.error("Setup failed:", message);
@@ -141,11 +255,109 @@ export const meta = () => {
   return [{ title: formatTitle('Data Setup - Admin') }];
 };
 
-export default function AdminSetup({ actionData }: Route.ComponentProps) {
-  const initdata = useMemo(() => actionData, [actionData]);
-  const fetcher = useFetcher();
+// Component for displaying expandable error and skipped details
+function DetailsSection({
+  skippedDetails,
+  errorDetails,
+  type
+}: {
+  skippedDetails?: any[],
+  errorDetails?: any[],
+  type: string
+}) {
+  const [showSkipped, setShowSkipped] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
 
-  if (initdata === undefined) {
+  return (
+    <div className="space-y-2">
+      {/* Skipped Details */}
+      {skippedDetails && skippedDetails.length > 0 && (
+        <Collapsible open={showSkipped} onOpenChange={setShowSkipped}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="w-full justify-between p-2 h-auto">
+              <span className="text-blue-600 text-xs">View {skippedDetails.length} skipped {type}</span>
+              <ChevronDown className={`size-3 transition-transform ${showSkipped ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-1">
+            <div className="bg-blue-50 border border-blue-200 rounded p-2 max-h-32 overflow-y-auto">
+              <div className="text-xs space-y-1">
+                {skippedDetails.map((item, index) => (
+                  <div key={index} className="text-blue-700">
+                    <span className="font-medium">
+                      {type === 'chapters' ? item.title : (item.name || item.slug)}
+                    </span>
+                    {type === 'chapters' && item.id && <span className="text-blue-500 ml-1">(ID: {item.id})</span>}
+                    {type === 'missions' && item.slug && <span className="text-blue-500 ml-1">({item.slug})</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* Error Details */}
+      {errorDetails && errorDetails.length > 0 && (
+        <Collapsible open={showErrors} onOpenChange={setShowErrors}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="w-full justify-between p-2 h-auto">
+              <span className="text-red-600 text-xs">View {errorDetails.length} error{errorDetails.length !== 1 ? 's' : ''}</span>
+              <ChevronDown className={`size-3 transition-transform ${showErrors ? 'rotate-180' : ''}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-1">
+            <div className="bg-red-50 border border-red-200 rounded p-2 max-h-32 overflow-y-auto">
+              <div className="text-xs space-y-2">
+                {errorDetails.map((item, index) => (
+                  <div key={index} className="border-b border-red-200 pb-1 last:border-b-0">
+                    <div className="font-medium text-red-800">
+                      {type === 'chapters' ? item.record?.title : (item.record?.name || item.record?.slug)}
+                    </div>
+                    <div className="text-red-600 text-xs">
+                      {item.error?.message || 'Unknown error'}
+                    </div>
+                    {item.error?.code && (
+                      <div className="text-red-500 text-xs">Code: {item.error.code}</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+    </div>
+  );
+}
+
+export default function AdminSetup({ actionData }: Route.ComponentProps) {
+  const fetcher = useFetcher();
+  const navigate = useNavigate();
+  const initdata = useMemo(() => fetcher.data, [fetcher.data]);
+
+  // Handle fetcher loading states
+  if (fetcher.state === "submitting" || fetcher.state === "loading") {
+    return (
+      <div className="space-y-6 max-w-2xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle>Initializing Data</CardTitle>
+            <CardDescription>Processing your request...</CardDescription>
+          </CardHeader>
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="flex items-center gap-3">
+              <RefreshCwIcon className="size-6 animate-spin" />
+              <span className="text-lg">Initializing...</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show form when idle with no data
+  if (fetcher.state === "idle" && !fetcher.data) {
     return (
       <div className="space-y-6 max-w-2xl mx-auto">
         <Card>
@@ -239,27 +451,27 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
     );
   }
 
-  const getStatusIcon = (created: number, errors: number, total: number) => {
+  const getStatusIcon = (created: number, errors: number, skipped: number, total: number) => {
     if (errors > 0) {
       return <AlertTriangle className="size-4 text-yellow-500" />;
     }
-    if (created === total && total > 0) {
+    if (created + skipped === total && total > 0) {
       return <CheckCircle className="size-4 text-green-500" />;
     }
-    if (created === 0 && total > 0) {
+    if (created === 0 && skipped === 0 && total > 0) {
       return <XCircle className="size-4 text-red-500" />;
     }
     return <CheckCircle className="size-4 text-green-500" />;
   };
 
-  const getStatusBadge = (created: number, errors: number, total: number) => {
+  const getStatusBadge = (created: number, errors: number, skipped: number, total: number) => {
     if (errors > 0) {
       return <Badge variant="destructive">Partial Success</Badge>;
     }
-    if (created === total && total > 0) {
+    if (created + skipped === total && total > 0) {
       return <Badge variant="default">Success</Badge>;
     }
-    if (created === 0 && total > 0) {
+    if (created === 0 && skipped === 0 && total > 0) {
       return <Badge variant="destructive">Failed</Badge>;
     }
     return <Badge variant="secondary">No Data</Badge>;
@@ -286,6 +498,30 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
         </AlertDescription>
       </Alert>
 
+      {/* Action buttons for next steps */}
+      <div className="flex gap-4 justify-center">
+        <Button
+          onClick={() => {
+            // Reset fetcher state to show form again
+            fetcher.load(window.location.pathname);
+          }}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <RefreshCwIcon className="size-4" />
+          Run Another Initialization
+        </Button>
+        <Button
+          onClick={() => {
+            navigate("/admin");
+          }}
+          variant="secondary"
+          className="flex items-center gap-2"
+        >
+          Back to Admin Dashboard
+        </Button>
+      </div>
+
       {initdata.results && (
         <div className="grid gap-6">
           {/* Summary Card */}
@@ -294,11 +530,30 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
               <CardTitle>Processing Summary</CardTitle>
               <CardDescription>
                 Mode: {initdata.results.mode} | Dataset: {initdata.results.dataset}
-                {initdata.results.purge && " | Purged existing data"}
+                {initdata.results.purgeRequested && initdata.results.purged &&
+                  ` | Purged: ${initdata.results.purged.missions} missions, ${initdata.results.purged.chapters} chapters`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Purge Summary */}
+                {initdata.results.purgeRequested && initdata.results.purged &&
+                  (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0) && (
+                  <div className="border rounded-lg p-4 bg-orange-50 border-orange-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <AlertTriangle className="size-4 text-orange-500" />
+                        Purged Data
+                      </h3>
+                      <Badge variant="secondary">Domain Purged</Badge>
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p className="text-orange-700">Missions: {initdata.results.purged.missions}</p>
+                      <p className="text-orange-700">Chapters: {initdata.results.purged.chapters}</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Chapters Summary */}
                 {initdata.results.chapters && initdata.results.chapters.total > 0 && (
                   <div className="border rounded-lg p-4">
@@ -307,6 +562,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         {getStatusIcon(
                           initdata.results.chapters.created,
                           initdata.results.chapters.errors,
+                          initdata.results.chapters.skipped,
                           initdata.results.chapters.total
                         )}
                         Chapters
@@ -314,16 +570,31 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                       {getStatusBadge(
                         initdata.results.chapters.created,
                         initdata.results.chapters.errors,
+                        initdata.results.chapters.skipped,
                         initdata.results.chapters.total
                       )}
                     </div>
                     <div className="text-sm space-y-1">
                       <p>Total: {initdata.results.chapters.total}</p>
                       <p className="text-green-600">Created: {initdata.results.chapters.created}</p>
+                      {initdata.results.chapters.skipped > 0 && (
+                        <p className="text-blue-600">Skipped: {initdata.results.chapters.skipped}</p>
+                      )}
                       {initdata.results.chapters.errors > 0 && (
                         <p className="text-red-600">Errors: {initdata.results.chapters.errors}</p>
                       )}
                     </div>
+
+                    {/* Expandable details for chapters */}
+                    {(initdata.results.chapters.skippedDetails?.length > 0 || initdata.results.chapters.errorDetails?.length > 0) && (
+                      <div className="mt-3 pt-3 border-t">
+                        <DetailsSection
+                          skippedDetails={initdata.results.chapters.skippedDetails}
+                          errorDetails={initdata.results.chapters.errorDetails}
+                          type="chapters"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -335,6 +606,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         {getStatusIcon(
                           initdata.results.missions.created,
                           initdata.results.missions.errors,
+                          initdata.results.missions.skipped,
                           initdata.results.missions.total
                         )}
                         Missions
@@ -342,60 +614,37 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                       {getStatusBadge(
                         initdata.results.missions.created,
                         initdata.results.missions.errors,
+                        initdata.results.missions.skipped,
                         initdata.results.missions.total
                       )}
                     </div>
                     <div className="text-sm space-y-1">
                       <p>Total: {initdata.results.missions.total}</p>
                       <p className="text-green-600">Created: {initdata.results.missions.created}</p>
+                      {initdata.results.missions.skipped > 0 && (
+                        <p className="text-blue-600">Skipped: {initdata.results.missions.skipped}</p>
+                      )}
                       {initdata.results.missions.errors > 0 && (
                         <p className="text-red-600">Errors: {initdata.results.missions.errors}</p>
                       )}
                     </div>
+
+                    {/* Expandable details for missions */}
+                    {(initdata.results.missions.skippedDetails?.length > 0 || initdata.results.missions.errorDetails?.length > 0) && (
+                      <div className="mt-3 pt-3 border-t">
+                        <DetailsSection
+                          skippedDetails={initdata.results.missions.skippedDetails}
+                          errorDetails={initdata.results.missions.errorDetails}
+                          type="missions"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          {/* Error Details */}
-          {((initdata.results.chapters?.errors > 0) || (initdata.results.missions?.errors > 0)) && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="size-4 text-yellow-500" />
-                  Error Details
-                </CardTitle>
-                <CardDescription>
-                  Some items failed to process. Review the errors below.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {initdata.results.chapters?.errorDetails?.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Chapter Errors</h4>
-                      <div className="bg-muted rounded-lg p-3">
-                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
-                          {JSON.stringify(initdata.results.chapters.errorDetails, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                  {initdata.results.missions?.errorDetails?.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-2">Mission Errors</h4>
-                      <div className="bg-muted rounded-lg p-3">
-                        <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
-                          {JSON.stringify(initdata.results.missions.errorDetails, null, 2)}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       )}
     </div>

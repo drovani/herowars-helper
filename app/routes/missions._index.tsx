@@ -12,7 +12,10 @@ import type { Route } from "./+types/missions._index";
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const missionRepo = new MissionRepository(request);
   const missionsResult = await missionRepo.findAll({
-    orderBy: { column: "slug", ascending: true }
+    orderBy: [
+      { column: "chapter_id", ascending: true },
+      { column: "level", ascending: true }
+    ]
   });
 
   if (missionsResult.error) {

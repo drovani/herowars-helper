@@ -18,13 +18,13 @@ import type {
 } from "./types"
 
 export abstract class BaseRepository<T extends TableName> {
-  protected supabase: SupabaseClient<Database>
+  protected supabase: SupabaseClient<any>
   protected tableName: T
   protected schema: ZodSchema<any>
   protected primaryKeyColumn: string
 
   constructor(
-    tableNameOrSupabase: T | SupabaseClient<Database>,
+    tableNameOrSupabase: T | SupabaseClient<any>,
     schema: ZodSchema<any>,
     requestOrTableName?: Request | T | null,
     primaryKeyColumnOrSchema?: string | ZodSchema<any>,
@@ -34,13 +34,13 @@ export abstract class BaseRepository<T extends TableName> {
     if (typeof tableNameOrSupabase === 'string') {
       // First signature: (tableName, schema, request?, primaryKeyColumn?)
       const { supabase } = createClient(requestOrTableName as Request | null)
-      this.supabase = supabase
+      this.supabase = supabase as unknown as SupabaseClient<any>
       this.tableName = tableNameOrSupabase
       this.schema = schema
       this.primaryKeyColumn = (primaryKeyColumnOrSchema as string) || 'id'
     } else {
       // Second signature: (supabase, tableName, schema, primaryKeyColumn?)
-      this.supabase = tableNameOrSupabase
+      this.supabase = tableNameOrSupabase as unknown as SupabaseClient<any>
       this.tableName = requestOrTableName as T
       this.schema = primaryKeyColumnOrSchema as ZodSchema<any>
       this.primaryKeyColumn = primaryKeyColumn
@@ -49,7 +49,7 @@ export abstract class BaseRepository<T extends TableName> {
 
   async findAll(options: FindAllOptions = {}): Promise<RepositoryResult<EntityRow<T>[]>> {
     try {
-      let query = this.supabase.from(this.tableName).select(this.buildSelectClause(options.include))
+      let query = (this.supabase as any).from(this.tableName).select(this.buildSelectClause(options.include))
 
       if (options.where) {
         Object.entries(options.where).forEach(([key, value]) => {
@@ -109,7 +109,7 @@ export abstract class BaseRepository<T extends TableName> {
 
   async findById(id: IdType, options: FindByIdOptions = {}): Promise<RepositoryResult<EntityRow<T>>> {
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await (this.supabase as any)
         .from(this.tableName)
         .select(this.buildSelectClause(options.include))
         .eq(this.primaryKeyColumn as any, id)
@@ -177,7 +177,7 @@ export abstract class BaseRepository<T extends TableName> {
       }
 
       // Proceed with normal insert
-      const { data, error } = await this.supabase
+      const { data, error } = await (this.supabase as any)
         .from(this.tableName)
         .insert(input as any)
         .select()
@@ -222,7 +222,7 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
-      const { data, error } = await this.supabase
+      const { data, error } = await (this.supabase as any)
         .from(this.tableName)
         .update(input as any)
         .eq(this.primaryKeyColumn as any, id)
@@ -255,7 +255,7 @@ export abstract class BaseRepository<T extends TableName> {
 
   async delete(id: IdType): Promise<RepositoryResult<boolean>> {
     try {
-      const { error } = await this.supabase
+      const { error } = await (this.supabase as any)
         .from(this.tableName)
         .delete()
         .eq(this.primaryKeyColumn as any, id)
@@ -382,7 +382,7 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
-      const { data, error } = await this.supabase
+      const { data, error } = await (this.supabase as any)
         .from(this.tableName)
         .upsert(input as any, { 
           onConflict: this.primaryKeyColumn,

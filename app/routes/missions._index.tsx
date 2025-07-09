@@ -5,7 +5,7 @@ import { Link } from "react-router";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { cn, generateSlug } from "~/lib/utils";
+import { cn, getHeroImageUrl } from "~/lib/utils";
 import { MissionRepository, type Mission } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/missions._index";
 
@@ -72,10 +72,6 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBoss, setSelectedBoss] = useState<string | null>(null);
 
-  const getBossImageUrl = (bossName: string) => {
-    return `/images/heroes/${generateSlug(bossName)}.png`;
-  };
-
   // Filter missions based on search criteria
   const filteredMissionsByChapter = useMemo(() => {
     const lowercaseQuery = searchQuery.toLowerCase();
@@ -129,7 +125,7 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
               <SelectGroup>
                 <SelectItem value="all">All Heroes</SelectItem>
                 {uniqueBosses.map((boss) => (
-                  <SelectItem key={boss} value={boss}>
+                  <SelectItem key={boss} value={boss} className="capitalize">
                     {boss}
                   </SelectItem>
                 ))}
@@ -156,7 +152,7 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
                     {mission.hero_slug && (
                       <div className="absolute inset-0">
                         <img
-                          src={getBossImageUrl(mission.hero_slug)}
+                          src={getHeroImageUrl(mission.hero_slug)}
                           alt={mission.hero_slug}
                           className="object-cover w-full h-full opacity-50"
                         />

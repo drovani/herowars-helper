@@ -5,9 +5,9 @@ import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
 import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
-import { generateSlug } from "~/lib/utils";
+import { generateSlug, getHeroImageUrl } from "~/lib/utils";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import { MissionRepository, type Mission } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/missions.$missionId";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -110,9 +110,6 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [navigate, prevMission, nextMission]);
-  const getBossImageUrl = (bossName: string) => {
-    return `/images/heroes/${generateSlug(bossName)}.png`;
-  };
 
   return (
     <div className="space-y-6">
@@ -135,13 +132,13 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
             <div className="relative w-16 h-16 mx-auto">
               <Link to={`/heroes/${generateSlug(mission.hero_slug)}`} viewTransition>
                 <img
-                  src={getBossImageUrl(mission.hero_slug)}
+                  src={getHeroImageUrl(mission.hero_slug)}
                   alt={mission.hero_slug}
                   className="w-full h-full object-cover rounded-lg"
                 />
               </Link>
             </div>
-            <p className="mt-1 text-sm font-medium">Boss: {mission.hero_slug}</p>
+            <p className="mt-1 text-sm font-medium capitalize">Boss: {mission.hero_slug}</p>
           </div>
         )}
       </div>

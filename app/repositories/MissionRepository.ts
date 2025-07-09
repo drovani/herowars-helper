@@ -38,7 +38,7 @@ export type MissionImportData = MissionInsert
 export type ChapterImportData = ChapterInsert
 
 export class MissionRepository extends BaseRepository<"mission"> {
-  constructor(requestOrSupabase: Request | SupabaseClient<Database> | null = null) {
+  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
     if (requestOrSupabase && typeof requestOrSupabase === 'object' && 'from' in requestOrSupabase) {
       // Custom supabase client provided (for admin operations)
       super(requestOrSupabase, missionSchema, "mission", missionSchema, "slug")

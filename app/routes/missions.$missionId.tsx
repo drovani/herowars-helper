@@ -6,8 +6,8 @@ import EquipmentImage from "~/components/EquipmentImage";
 import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import { MissionRepository, type Mission } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/missions.$missionId";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -141,7 +141,7 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
                 />
               </Link>
             </div>
-            <p className="mt-1 text-sm font-medium">Boss: {mission.hero_slug}</p>
+            <p className="mt-1 text-sm font-medium capitalize">Boss: {mission.hero_slug}</p>
           </div>
         )}
       </div>

@@ -129,7 +129,7 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
               <SelectGroup>
                 <SelectItem value="all">All Heroes</SelectItem>
                 {uniqueBosses.map((boss) => (
-                  <SelectItem key={boss} value={boss}>
+                  <SelectItem key={boss} value={boss} className="capitalize">
                     {boss}
                   </SelectItem>
                 ))}

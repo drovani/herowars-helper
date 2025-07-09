@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest"
+import log from "loglevel"
 import { MissionRepository } from "../MissionRepository"
 
 // Mock the supabase client
@@ -28,11 +29,31 @@ vi.mock("~/lib/supabase/client", () => ({
 describe("MissionRepository", () => {
   let repository: MissionRepository
   let mockSupabase: any
+  let capturedLogs: Array<{level: string, message: string, args: any[]}> = []
+  let originalMethodFactory: any
 
   beforeEach(() => {
     vi.clearAllMocks()
+    
+    // Capture logs to in-memory array instead of console
+    capturedLogs = []
+    originalMethodFactory = log.methodFactory
+    log.methodFactory = function(methodName, _logLevel, _loggerName) {
+      return function(message, ...args) {
+        capturedLogs.push({level: methodName, message, args})
+        // Silent - don't output to console
+      }
+    }
+    log.rebuild()
+    
     repository = new MissionRepository()
     mockSupabase = (repository as any).supabase
+  })
+
+  afterEach(() => {
+    // Restore original logging behavior
+    log.methodFactory = originalMethodFactory
+    log.rebuild()
   })
 
   describe("constructor", () => {
@@ -649,4 +670,5 @@ describe("MissionRepository", () => {
       expect(bulkCreateSpy).toHaveBeenCalledWith(inputMissions, { skipExisting: true })
     })
   })
+
 })

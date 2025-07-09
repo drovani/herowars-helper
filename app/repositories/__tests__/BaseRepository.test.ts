@@ -1,16 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest'
 import { z } from 'zod'
+import log from 'loglevel'
 import { BaseRepository } from '../BaseRepository'
 import type { CreateInput, UpdateInput } from '../types'
-
-vi.mock('loglevel', () => ({
-  default: {
-    error: vi.fn(),
-    warn: vi.fn(),
-    info: vi.fn(),
-    debug: vi.fn(),
-  }
-}))
 
 const mockSupabaseClient = {
   from: vi.fn().mockReturnThis(),
@@ -55,10 +47,30 @@ class TestEquipmentRepository extends BaseRepository<'equipment'> {
 
 describe('BaseRepository', () => {
   let repository: TestEquipmentRepository
+  let capturedLogs: Array<{level: string, message: string, args: any[]}> = []
+  let originalMethodFactory: any
 
   beforeEach(() => {
     vi.clearAllMocks()
+    
+    // Capture logs to in-memory array instead of console
+    capturedLogs = []
+    originalMethodFactory = log.methodFactory
+    log.methodFactory = function(methodName, _logLevel, _loggerName) {
+      return function(message, ...args) {
+        capturedLogs.push({level: methodName, message, args})
+        // Silent - don't output to console
+      }
+    }
+    log.rebuild()
+    
     repository = new TestEquipmentRepository()
+  })
+
+  afterEach(() => {
+    // Restore original logging behavior
+    log.methodFactory = originalMethodFactory
+    log.rebuild()
   })
 
   describe('findAll', () => {
@@ -878,6 +890,30 @@ describe('BaseRepository', () => {
       const result = (repository as any).buildSelectClause(include)
       expect(result).toContain('equipment_stats(*)')
       expect(result).toContain('required_items(*)')
+    })
+  })
+
+  describe('log capturing', () => {
+    it('should capture error logs instead of outputting to console', async () => {
+      // Simulate a database error that would trigger log.error
+      const mockError = {
+        message: 'Database connection failed',
+        code: 'CONNECTION_ERROR',
+        details: 'Connection timeout',
+      }
+
+      mockSupabaseClient.select.mockResolvedValueOnce({
+        data: null,
+        error: mockError,
+      })
+
+      await repository.findAll()
+
+      // Verify that the error was captured in our log array
+      expect(capturedLogs).toHaveLength(1)
+      expect(capturedLogs[0].level).toBe('error')
+      expect(capturedLogs[0].message).toContain('Error finding all equipment')
+      expect(capturedLogs[0].args).toEqual([mockError])
     })
   })
 })

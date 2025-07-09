@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Chapters and Missions Data Schema",
+  "description": "Schema for validating the structure of missions.json file containing Hero Wars chapter and mission data",
+  "type": "object",
+  "properties": {
+    "chapters": {
+      "type": "array",
+      "description": "Array of game chapters",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Unique chapter identifier"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Display name of the chapter"
+          }
+        },
+        "required": ["id", "title"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "missions": {
+      "type": "array",
+      "description": "Array of game missions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "pattern": "^[0-9]+-[0-9]+$",
+            "description": "Mission identifier in format 'chapter-level' (e.g., '1-2')"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Display name of the mission"
+          },
+          "hero_slug": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Slug of the boss hero for this mission (optional)"
+          },
+          "energy_cost": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Energy cost required to attempt this mission"
+          }
+        },
+        "required": ["slug", "name", "energy_cost"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["chapters", "missions"],
+  "additionalProperties": false
+}

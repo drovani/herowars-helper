@@ -14,6 +14,9 @@ const mockSupabaseClient = {
   limit: vi.fn().mockReturnThis(),
   range: vi.fn().mockReturnThis(),
   single: vi.fn().mockResolvedValue({ data: null, error: null }),
+  gte: vi.fn().mockReturnThis(),
+  neq: vi.fn().mockReturnThis(),
+  upsert: vi.fn().mockReturnThis(),
 }
 
 vi.mock("~/lib/supabase/client", () => ({
@@ -48,13 +51,14 @@ describe("MissionRepository", () => {
   })
 
   describe("findByChapter", () => {
-    it("should find missions by chapter ID", async () => {
+    it("should find missions by chapter ID with proper sorting", async () => {
       const mockMissions = [
         { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
         { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
       ]
 
-      // Mock the final call in the chain - order is the last method called
+      // Mock the chain for multiple order calls - first order returns this, second resolves
+      mockSupabase.order.mockReturnValueOnce(mockSupabase)
       mockSupabase.order.mockResolvedValueOnce({
         data: mockMissions,
         error: null,
@@ -65,6 +69,8 @@ describe("MissionRepository", () => {
       expect(result.data).toEqual(mockMissions)
       expect(result.error).toBeNull()
       expect(mockSupabase.from).toHaveBeenCalledWith("mission")
+      expect(mockSupabase.select).toHaveBeenCalledWith("*")
+      expect(mockSupabase.eq).toHaveBeenCalledWith("chapter_id", 1)
     })
 
     it("should handle errors when finding missions by chapter", async () => {
@@ -74,7 +80,8 @@ describe("MissionRepository", () => {
         details: "Connection failed",
       }
 
-      // Mock the final call in the chain to return an error
+      // Mock the chain for multiple order calls with error on final call
+      mockSupabase.order.mockReturnValueOnce(mockSupabase)
       mockSupabase.order.mockResolvedValueOnce({
         data: null,
         error: mockError,
@@ -88,13 +95,14 @@ describe("MissionRepository", () => {
   })
 
   describe("findByHeroSlug", () => {
-    it("should find missions by hero slug", async () => {
+    it("should find missions by hero slug with proper sorting", async () => {
       const mockMissions = [
         { slug: "1-1", name: "Mission 1", chapter_id: 1, hero_slug: "astaroth", energy_cost: 6, level: 1 },
         { slug: "3-5", name: "Mission 3-5", chapter_id: 3, hero_slug: "astaroth", energy_cost: 8, level: 25 },
       ]
 
-      // Mock the final call in the chain - order is the last method called
+      // Mock the chain for multiple order calls - first order returns this, second resolves
+      mockSupabase.order.mockReturnValueOnce(mockSupabase)
       mockSupabase.order.mockResolvedValueOnce({
         data: mockMissions,
         error: null,
@@ -104,6 +112,9 @@ describe("MissionRepository", () => {
 
       expect(result.data).toEqual(mockMissions)
       expect(result.error).toBeNull()
+      expect(mockSupabase.from).toHaveBeenCalledWith("mission")
+      expect(mockSupabase.select).toHaveBeenCalledWith("*")
+      expect(mockSupabase.eq).toHaveBeenCalledWith("hero_slug", "astaroth")
     })
   })
 
@@ -165,13 +176,15 @@ describe("MissionRepository", () => {
         }),
       })
 
-      // Then mock the mission query
+      // Then mock the mission query with multiple order calls
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           in: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({
-              data: mockMissions,
-              error: null,
+            order: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockMissions,
+                error: null,
+              }),
             }),
           }),
         }),
@@ -314,9 +327,11 @@ describe("MissionRepository", () => {
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockChapterWithMissions,
-              error: null,
+            order: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockChapterWithMissions,
+                error: null,
+              }),
             }),
           }),
         }),
@@ -421,6 +436,217 @@ describe("MissionRepository", () => {
 
       expect(result.data).toEqual(mockCreatedMissions)
       expect(result.error).toBeNull()
+    })
+  })
+
+  describe("purgeMissionDomain", () => {
+    it("should purge both missions and chapters successfully", async () => {
+      // Mock mission delete with count
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          gte: vi.fn().mockResolvedValue({
+            count: 5,
+            error: null,
+          }),
+        }),
+      })
+
+      // Mock chapter delete with count
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          gte: vi.fn().mockResolvedValue({
+            count: 3,
+            error: null,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toEqual({
+        missions: 5,
+        chapters: 3,
+      })
+      expect(result.error).toBeNull()
+      expect(mockSupabase.from).toHaveBeenCalledWith("mission")
+      expect(mockSupabase.from).toHaveBeenCalledWith("chapter")
+    })
+
+    it("should handle mission delete errors", async () => {
+      const mockError = {
+        message: "Mission delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      }
+
+      mockSupabase.from.mockReturnValue({
+        delete: vi.fn().mockReturnValue({
+          gte: vi.fn().mockResolvedValue({
+            data: null,
+            error: mockError,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual({
+        message: "Failed to purge missions: Mission delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      })
+    })
+
+    it("should handle chapter delete errors", async () => {
+      const mockMissionDeleteResult = Array(5).fill({ slug: "mission-1" })
+      const mockChapterError = {
+        message: "Chapter delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      }
+
+      // Mock successful mission delete
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          gte: vi.fn().mockResolvedValue({
+            data: mockMissionDeleteResult,
+            error: null,
+          }),
+        }),
+      })
+
+      // Mock failed chapter delete
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          gte: vi.fn().mockResolvedValue({
+            data: null,
+            error: mockChapterError,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toBeNull()
+      expect(result.error).toEqual({
+        message: "Failed to purge chapters: Chapter delete failed",
+        code: "DELETE_ERROR",
+        details: "Database constraint violation",
+      })
+    })
+
+    it("should handle unexpected errors during purge", async () => {
+      mockSupabase.from.mockImplementation(() => {
+        throw new Error("Unexpected database error")
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toBeNull()
+      expect(result.error?.message).toBe("Unexpected database error")
+    })
+
+    it("should handle empty delete results", async () => {
+      // Mock empty delete results with count 0
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          gte: vi.fn().mockResolvedValue({
+            count: 0,
+            error: null,
+          }),
+        }),
+      })
+
+      mockSupabase.from.mockReturnValueOnce({
+        delete: vi.fn().mockReturnValue({
+          gte: vi.fn().mockResolvedValue({
+            count: 0,
+            error: null,
+          }),
+        }),
+      })
+
+      const result = await repository.purgeMissionDomain()
+
+      expect(result.data).toEqual({
+        missions: 0,
+        chapters: 0,
+      })
+      expect(result.error).toBeNull()
+    })
+  })
+
+  describe('bulkCreateChapters with skipExisting', () => {
+    it('should skip existing chapters and create new ones', async () => {
+      const inputChapters = [
+        { id: 1, title: 'Existing Chapter' },
+        { id: 2, title: 'New Chapter' },
+      ]
+
+      const existingChapter = { id: 1, title: 'Existing Chapter' }
+      const newChapter = { id: 2, title: 'New Chapter' }
+
+      // Mock findChapterById for first chapter (exists)
+      mockSupabase.from.mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: existingChapter,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      // Mock findChapterById for second chapter (doesn't exist)
+      mockSupabase.from.mockReturnValueOnce({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Not found', code: 'PGRST116' },
+            }),
+          }),
+        }),
+      })
+
+      // Mock insert for new chapter
+      mockSupabase.from.mockReturnValueOnce({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: newChapter,
+              error: null,
+            }),
+          }),
+        }),
+      })
+
+      const result = await repository.bulkCreateChapters(inputChapters, { skipExisting: true })
+
+      expect(result.data).toEqual([newChapter])
+      expect(result.error).toBeDefined()
+      expect(result.error?.code).toBe('BULK_PARTIAL_SUCCESS')
+      expect((result.error?.details as any)?.skipped).toEqual([existingChapter])
+    })
+  })
+
+  describe('bulkCreateMissions with skipExisting', () => {
+    it('should pass skipExisting option to base bulkCreate', async () => {
+      const inputMissions = [
+        { slug: '1-1', name: 'Mission 1', chapter_id: 1, hero_slug: 'astaroth', energy_cost: 6, level: 1 },
+      ]
+
+      const bulkCreateSpy = vi.spyOn(repository, 'bulkCreate')
+      bulkCreateSpy.mockResolvedValueOnce({
+        data: inputMissions,
+        error: null,
+      })
+
+      await repository.bulkCreateMissions(inputMissions, { skipExisting: true })
+
+      expect(bulkCreateSpy).toHaveBeenCalledWith(inputMissions, { skipExisting: true })
     })
   })
 })

@@ -12,6 +12,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      VITE_SUPABASE_DATABASE_URL: "https://mock-project.supabase.co"
+      VITE_SUPABASE_ANON_KEY: "mock-anon-key-for-testing"
 
     steps:
       - name: Checkout repository

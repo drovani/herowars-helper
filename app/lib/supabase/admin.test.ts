@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createAdminClient, adminUserOperations, ASSIGNABLE_ROLES } from './admin';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { adminUserOperations, ASSIGNABLE_ROLES, createAdminClient } from './admin';
 
 // Mock environment variables
 const mockEnv = {
-  VITE_SUPABASE_URL: 'https://test.supabase.co',
+  VITE_SUPABASE_DATABASE_URL: 'https://test.supabase.co',
   VITE_SUPABASE_SERVICE_ROLE_KEY: 'service-role-key'
 };
 
@@ -64,7 +64,7 @@ describe('createAdminClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Set up environment variables
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -77,28 +77,28 @@ describe('createAdminClient', () => {
     expect(client).toBeDefined();
   });
 
-  it('should throw error when VITE_SUPABASE_URL is missing', () => {
-    delete process.env.VITE_SUPABASE_URL;
-    
+  it('should throw error when VITE_SUPABASE_DATABASE_URL is missing', () => {
+    delete process.env.VITE_SUPABASE_DATABASE_URL;
+
     expect(() => createAdminClient()).toThrow(
-      'Missing required environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
+      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
     );
   });
 
   it('should throw error when VITE_SUPABASE_SERVICE_ROLE_KEY is missing', () => {
     delete process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
-    
+
     expect(() => createAdminClient()).toThrow(
-      'Missing required environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
+      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
     );
   });
 
   it('should throw error when both environment variables are missing', () => {
-    delete process.env.VITE_SUPABASE_URL;
+    delete process.env.VITE_SUPABASE_DATABASE_URL;
     delete process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
-    
+
     expect(() => createAdminClient()).toThrow(
-      'Missing required environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
+      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
     );
   });
 });
@@ -106,7 +106,7 @@ describe('createAdminClient', () => {
 describe('adminUserOperations.getAllUsers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -117,7 +117,7 @@ describe('adminUserOperations.getAllUsers', () => {
     });
 
     const result = await adminUserOperations.getAllUsers();
-    
+
     expect(mockAdminAuth.listUsers).toHaveBeenCalledOnce();
     expect(result).toEqual(mockUsers);
   });
@@ -138,7 +138,7 @@ describe('adminUserOperations.getAllUsers', () => {
 describe('adminUserOperations.updateUserRoles', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -150,7 +150,7 @@ describe('adminUserOperations.updateUserRoles', () => {
     });
 
     const result = await adminUserOperations.updateUserRoles('user-123', ['admin']);
-    
+
     expect(mockAdminAuth.updateUserById).toHaveBeenCalledWith('user-123', {
       app_metadata: { roles: ['user', 'admin'] }
     });
@@ -165,7 +165,7 @@ describe('adminUserOperations.updateUserRoles', () => {
     });
 
     await adminUserOperations.updateUserRoles('user-123', ['editor']);
-    
+
     expect(mockAdminAuth.updateUserById).toHaveBeenCalledWith('user-123', {
       app_metadata: { roles: ['user', 'editor'] }
     });
@@ -179,7 +179,7 @@ describe('adminUserOperations.updateUserRoles', () => {
     });
 
     await adminUserOperations.updateUserRoles('user-123', ['user', 'admin']);
-    
+
     expect(mockAdminAuth.updateUserById).toHaveBeenCalledWith('user-123', {
       app_metadata: { roles: ['user', 'admin'] }
     });
@@ -205,7 +205,7 @@ describe('adminUserOperations.updateUserRoles', () => {
     });
 
     await adminUserOperations.updateUserRoles('user-123', ['admin', 'editor']);
-    
+
     expect(mockAdminAuth.updateUserById).toHaveBeenCalledWith('user-123', {
       app_metadata: { roles: ['user', 'admin', 'editor'] }
     });
@@ -227,7 +227,7 @@ describe('adminUserOperations.updateUserRoles', () => {
 describe('adminUserOperations.getUserById', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -238,7 +238,7 @@ describe('adminUserOperations.getUserById', () => {
     });
 
     const result = await adminUserOperations.getUserById('user-123');
-    
+
     expect(mockAdminAuth.getUserById).toHaveBeenCalledWith('user-123');
     expect(result).toEqual(mockUser);
   });
@@ -259,7 +259,7 @@ describe('adminUserOperations.getUserById', () => {
 describe('adminUserOperations.disableUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -271,7 +271,7 @@ describe('adminUserOperations.disableUser', () => {
     });
 
     const result = await adminUserOperations.disableUser('user-123');
-    
+
     expect(mockAdminAuth.updateUserById).toHaveBeenCalledWith('user-123', {
       ban_duration: '87600h'
     });
@@ -294,7 +294,7 @@ describe('adminUserOperations.disableUser', () => {
 describe('adminUserOperations.enableUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -306,7 +306,7 @@ describe('adminUserOperations.enableUser', () => {
     });
 
     const result = await adminUserOperations.enableUser('user-123');
-    
+
     expect(mockAdminAuth.updateUserById).toHaveBeenCalledWith('user-123', {
       ban_duration: 'none'
     });
@@ -329,7 +329,7 @@ describe('adminUserOperations.enableUser', () => {
 describe('adminUserOperations.createUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -356,7 +356,7 @@ describe('adminUserOperations.createUser', () => {
     });
 
     const result = await adminUserOperations.createUser('new@example.com', 'password123');
-    
+
     expect(mockAdminAuth.createUser).toHaveBeenCalledWith({
       email: 'new@example.com',
       password: 'password123',
@@ -402,7 +402,7 @@ describe('adminUserOperations.createUser', () => {
     });
 
     const result = await adminUserOperations.createUser('new@example.com', 'password123');
-    
+
     expect(mockAdminAuth.createUser).toHaveBeenCalledWith({
       email: 'new@example.com',
       password: 'password123',
@@ -483,7 +483,7 @@ describe('adminUserOperations.createUser', () => {
 describe('adminUserOperations.deleteUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.VITE_SUPABASE_URL = mockEnv.VITE_SUPABASE_URL;
+    process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
     process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
   });
 
@@ -503,7 +503,7 @@ describe('adminUserOperations.deleteUser', () => {
     });
 
     const result = await adminUserOperations.deleteUser('user-123');
-    
+
     expect(mockAdminAuth.getUserById).toHaveBeenCalledWith('user-123');
     expect(mockAdminAuth.deleteUser).toHaveBeenCalledWith('user-123');
     expect(result).toEqual({ success: true });

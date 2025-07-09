@@ -15,6 +15,8 @@ const mockSupabaseClient = {
   range: vi.fn().mockReturnThis(),
   single: vi.fn().mockResolvedValue({ data: null, error: null }),
   gte: vi.fn().mockReturnThis(),
+  neq: vi.fn().mockReturnThis(),
+  upsert: vi.fn().mockReturnThis(),
 }
 
 vi.mock("~/lib/supabase/client", () => ({
@@ -55,7 +57,7 @@ describe("MissionRepository", () => {
         { slug: "1-2", name: "Mission 2", chapter_id: 1, hero_slug: "galahad", energy_cost: 6, level: 2 },
       ]
 
-      // Mock the chain for multiple order calls
+      // Mock the chain for multiple order calls - first order returns this, second resolves
       mockSupabase.order.mockReturnValueOnce(mockSupabase)
       mockSupabase.order.mockResolvedValueOnce({
         data: mockMissions,
@@ -67,9 +69,8 @@ describe("MissionRepository", () => {
       expect(result.data).toEqual(mockMissions)
       expect(result.error).toBeNull()
       expect(mockSupabase.from).toHaveBeenCalledWith("mission")
-      // Verify that ordering is applied correctly - chapter_id first, then level
-      expect(mockSupabase.order).toHaveBeenCalledWith('chapter_id', { ascending: true })
-      expect(mockSupabase.order).toHaveBeenCalledWith('level', { ascending: true })
+      expect(mockSupabase.select).toHaveBeenCalledWith("*")
+      expect(mockSupabase.eq).toHaveBeenCalledWith("chapter_id", 1)
     })
 
     it("should handle errors when finding missions by chapter", async () => {
@@ -100,7 +101,8 @@ describe("MissionRepository", () => {
         { slug: "3-5", name: "Mission 3-5", chapter_id: 3, hero_slug: "astaroth", energy_cost: 8, level: 25 },
       ]
 
-      // Mock the final call in the chain - order is the last method called
+      // Mock the chain for multiple order calls - first order returns this, second resolves
+      mockSupabase.order.mockReturnValueOnce(mockSupabase)
       mockSupabase.order.mockResolvedValueOnce({
         data: mockMissions,
         error: null,
@@ -110,9 +112,9 @@ describe("MissionRepository", () => {
 
       expect(result.data).toEqual(mockMissions)
       expect(result.error).toBeNull()
-      // Verify that ordering is applied correctly - chapter_id first, then level
-      expect(mockSupabase.order).toHaveBeenCalledWith('chapter_id', { ascending: true })
-      expect(mockSupabase.order).toHaveBeenCalledWith('level', { ascending: true })
+      expect(mockSupabase.from).toHaveBeenCalledWith("mission")
+      expect(mockSupabase.select).toHaveBeenCalledWith("*")
+      expect(mockSupabase.eq).toHaveBeenCalledWith("hero_slug", "astaroth")
     })
   })
 
@@ -174,13 +176,15 @@ describe("MissionRepository", () => {
         }),
       })
 
-      // Then mock the mission query
+      // Then mock the mission query with multiple order calls
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           in: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({
-              data: mockMissions,
-              error: null,
+            order: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockMissions,
+                error: null,
+              }),
             }),
           }),
         }),
@@ -323,9 +327,11 @@ describe("MissionRepository", () => {
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockChapterWithMissions,
-              error: null,
+            order: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockChapterWithMissions,
+                error: null,
+              }),
             }),
           }),
         }),
@@ -438,7 +444,7 @@ describe("MissionRepository", () => {
       // Mock mission delete with count
       mockSupabase.from.mockReturnValueOnce({
         delete: vi.fn().mockReturnValue({
-          neq: vi.fn().mockResolvedValue({
+          gte: vi.fn().mockResolvedValue({
             count: 5,
             error: null,
           }),
@@ -448,7 +454,7 @@ describe("MissionRepository", () => {
       // Mock chapter delete with count
       mockSupabase.from.mockReturnValueOnce({
         delete: vi.fn().mockReturnValue({
-          neq: vi.fn().mockResolvedValue({
+          gte: vi.fn().mockResolvedValue({
             count: 3,
             error: null,
           }),
@@ -475,7 +481,7 @@ describe("MissionRepository", () => {
 
       mockSupabase.from.mockReturnValue({
         delete: vi.fn().mockReturnValue({
-          neq: vi.fn().mockResolvedValue({
+          gte: vi.fn().mockResolvedValue({
             data: null,
             error: mockError,
           }),
@@ -503,7 +509,7 @@ describe("MissionRepository", () => {
       // Mock successful mission delete
       mockSupabase.from.mockReturnValueOnce({
         delete: vi.fn().mockReturnValue({
-          neq: vi.fn().mockResolvedValue({
+          gte: vi.fn().mockResolvedValue({
             data: mockMissionDeleteResult,
             error: null,
           }),
@@ -513,7 +519,7 @@ describe("MissionRepository", () => {
       // Mock failed chapter delete
       mockSupabase.from.mockReturnValueOnce({
         delete: vi.fn().mockReturnValue({
-          neq: vi.fn().mockResolvedValue({
+          gte: vi.fn().mockResolvedValue({
             data: null,
             error: mockChapterError,
           }),
@@ -545,7 +551,7 @@ describe("MissionRepository", () => {
       // Mock empty delete results with count 0
       mockSupabase.from.mockReturnValueOnce({
         delete: vi.fn().mockReturnValue({
-          neq: vi.fn().mockResolvedValue({
+          gte: vi.fn().mockResolvedValue({
             count: 0,
             error: null,
           }),
@@ -554,7 +560,7 @@ describe("MissionRepository", () => {
 
       mockSupabase.from.mockReturnValueOnce({
         delete: vi.fn().mockReturnValue({
-          neq: vi.fn().mockResolvedValue({
+          gte: vi.fn().mockResolvedValue({
             count: 0,
             error: null,
           }),

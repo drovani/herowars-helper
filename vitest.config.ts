@@ -15,7 +15,7 @@ export default defineConfig({
       provider: "v8",
       clean: false,
       reporter: [["json", { file: "test-coverage.json" }]],
-      reportsDirectory: "./app/data",
+      reportsDirectory: "./build",
       exclude: [
         "node_modules/",
         "app/__tests__/",

@@ -4,7 +4,7 @@ export function createClient(request: Request | null = null) {
   if (request != null && typeof process !== "undefined") {
     const headers = new Headers();
 
-    const supabase = createServerClient(process.env.VITE_SUPABASE_DATABASE_URL!, process.env.VITE_SUPABASE_ANON_KEY!, {
+    const supabase = createServerClient(process.env.SUPABASE_DATABASE_URL!, process.env.SUPABASE_ANON_KEY!, {
       cookies: {
         getAll() {
           return parseCookieHeader(request?.headers?.get("Cookie") ?? "") as {

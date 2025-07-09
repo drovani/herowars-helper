@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cn, generateSlug, parseEquipmentSlugGetImageUrl } from './utils'
+import { cn, generateSlug, getEquipmentImageUrl, getHeroImageUrl } from './utils'
 
 describe('Utility Functions', () => {
   describe('generateSlug', () => {
@@ -45,35 +45,72 @@ describe('Utility Functions', () => {
     })
   })
 
-  describe('parseEquipmentSlugGetImageUrl', () => {
+  describe('getEquipmentImageUrl', () => {
     it('generates basic image URL with default extension', () => {
-      expect(parseEquipmentSlugGetImageUrl('test-item')).toBe('/images/equipment/test-item.png')
-      expect(parseEquipmentSlugGetImageUrl('another-slug')).toBe('/images/equipment/another-slug.png')
+      expect(getEquipmentImageUrl('test-item')).toBe('/images/equipment/test-item.png')
+      expect(getEquipmentImageUrl('another-slug')).toBe('/images/equipment/another-slug.png')
     })
 
     it('uses custom extension when provided', () => {
-      expect(parseEquipmentSlugGetImageUrl('test-item', 'jpg')).toBe('/images/equipment/test-item.jpg')
-      expect(parseEquipmentSlugGetImageUrl('test-item', 'svg')).toBe('/images/equipment/test-item.svg')
+      expect(getEquipmentImageUrl('test-item', 'jpg')).toBe('/images/equipment/test-item.jpg')
+      expect(getEquipmentImageUrl('test-item', 'svg')).toBe('/images/equipment/test-item.svg')
     })
 
     it('removes fragment suffix from slug', () => {
-      expect(parseEquipmentSlugGetImageUrl('test-item-fragment')).toBe('/images/equipment/test-item.png')
-      expect(parseEquipmentSlugGetImageUrl('complex-slug-fragment', 'jpg')).toBe('/images/equipment/complex-slug.jpg')
+      expect(getEquipmentImageUrl('test-item-fragment')).toBe('/images/equipment/test-item.png')
+      expect(getEquipmentImageUrl('complex-slug-fragment', 'jpg')).toBe('/images/equipment/complex-slug.jpg')
     })
 
     it('handles slug without fragment', () => {
-      expect(parseEquipmentSlugGetImageUrl('normal-slug')).toBe('/images/equipment/normal-slug.png')
-      expect(parseEquipmentSlugGetImageUrl('regular-item', 'gif')).toBe('/images/equipment/regular-item.gif')
+      expect(getEquipmentImageUrl('normal-slug')).toBe('/images/equipment/normal-slug.png')
+      expect(getEquipmentImageUrl('regular-item', 'gif')).toBe('/images/equipment/regular-item.gif')
     })
 
     it('handles empty slug', () => {
-      expect(parseEquipmentSlugGetImageUrl('')).toBe('/images/equipment/.png')
-      expect(parseEquipmentSlugGetImageUrl('', 'jpg')).toBe('/images/equipment/.jpg')
+      expect(getEquipmentImageUrl('')).toBe('/images/equipment/.png')
+      expect(getEquipmentImageUrl('', 'jpg')).toBe('/images/equipment/.jpg')
     })
 
     it('handles slug that is only fragment', () => {
-      expect(parseEquipmentSlugGetImageUrl('-fragment')).toBe('/images/equipment/.png')
-      expect(parseEquipmentSlugGetImageUrl('-fragment', 'svg')).toBe('/images/equipment/.svg')
+      expect(getEquipmentImageUrl('-fragment')).toBe('/images/equipment/.png')
+      expect(getEquipmentImageUrl('-fragment', 'svg')).toBe('/images/equipment/.svg')
+    })
+  })
+
+  describe('getHeroImageUrl', () => {
+    it('generates basic image URL with default extension', () => {
+      expect(getHeroImageUrl('test-hero')).toBe('/images/heroes/test-hero.png')
+      expect(getHeroImageUrl('another-hero')).toBe('/images/heroes/another-hero.png')
+    })
+
+    it('uses custom extension when provided', () => {
+      expect(getHeroImageUrl('test-hero', 'jpg')).toBe('/images/heroes/test-hero.jpg')
+      expect(getHeroImageUrl('test-hero', 'svg')).toBe('/images/heroes/test-hero.svg')
+    })
+
+    it('handles complex hero slugs', () => {
+      expect(getHeroImageUrl('dark-star')).toBe('/images/heroes/dark-star.png')
+      expect(getHeroImageUrl('judge-of-the-eternal-flame', 'jpg')).toBe('/images/heroes/judge-of-the-eternal-flame.jpg')
+    })
+
+    it('handles empty slug', () => {
+      expect(getHeroImageUrl('')).toBe('/images/heroes/.png')
+      expect(getHeroImageUrl('', 'jpg')).toBe('/images/heroes/.jpg')
+    })
+
+    it('does not remove fragment suffix like equipment function', () => {
+      expect(getHeroImageUrl('hero-fragment')).toBe('/images/heroes/hero-fragment.png')
+      expect(getHeroImageUrl('test-hero-fragment', 'svg')).toBe('/images/heroes/test-hero-fragment.svg')
+    })
+
+    it('handles numeric slugs', () => {
+      expect(getHeroImageUrl('123')).toBe('/images/heroes/123.png')
+      expect(getHeroImageUrl('hero-123', 'gif')).toBe('/images/heroes/hero-123.gif')
+    })
+
+    it('handles special characters in slug', () => {
+      expect(getHeroImageUrl('hero-with-numbers-123')).toBe('/images/heroes/hero-with-numbers-123.png')
+      expect(getHeroImageUrl('underscore_hero')).toBe('/images/heroes/underscore_hero.png')
     })
   })
 

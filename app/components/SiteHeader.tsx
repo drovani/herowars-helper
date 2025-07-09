@@ -31,22 +31,23 @@ function SiteHeader({
                 const result = match.handle.breadcrumb(match);
                 const crumbs = Array.isArray(result) ? result : [result];
                 const nodes: React.ReactNode[] = [];
-                for (const crumb of crumbs) {
+                for (let crumbIndex = 0; crumbIndex < crumbs.length; crumbIndex++) {
+                  const crumb = crumbs[crumbIndex];
                   if (crumb.href) {
                     nodes.push(
-                      <BreadcrumbLink key={crumb.title} asChild>
+                      <BreadcrumbLink key={`${index}-${crumbIndex}-link`} asChild>
                         <Link to={crumb.href}>{crumb.title}</Link>
                       </BreadcrumbLink>
                     );
                   } else {
-                    nodes.push(<BreadcrumbItem key={crumb.title}>{crumb.title}</BreadcrumbItem>);
+                    nodes.push(<BreadcrumbItem key={`${index}-${crumbIndex}-item`}>{crumb.title}</BreadcrumbItem>);
                   }
-                  nodes.push(<BreadcrumbSeparator key={`${crumb.title}-after`} />);
+                  nodes.push(<BreadcrumbSeparator key={`${index}-${crumbIndex}-separator`} />);
                 }
                 if (index + 1 >= breadcrumbs.length) {
                   nodes.pop();
                 }
-                return nodes;
+                return <React.Fragment key={index}>{nodes}</React.Fragment>;
               })}
             </BreadcrumbList>
           </Breadcrumb>

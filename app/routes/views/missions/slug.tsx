@@ -5,10 +5,10 @@ import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
 import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
-import { generateSlug } from "~/lib/utils";
+import { generateSlug, getHeroImageUrl } from "~/lib/utils";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import { MissionRepository, type Mission } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/missions.$missionId";
+import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   if (!data) {
@@ -31,10 +31,10 @@ export const handle = {
 };
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
-  const missionId = params.missionId;
+  const slug = params.slug;
 
-  if (!missionId) {
-    throw new Response("Missing missionId parameter", { status: 400 });
+  if (!slug) {
+    throw new Response("Missing slug parameter", { status: 400 });
   }
 
   const missionRepo = new MissionRepository(request);
@@ -42,7 +42,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   // Find the mission
   const [missionsResult, missionResult] = await Promise.all([
     missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
-    missionRepo.findById(missionId)
+    missionRepo.findById(slug)
   ]);
 
   if (missionsResult.error) {
@@ -57,7 +57,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const mission = missionResult.data;
 
   if (!mission) {
-    throw new Response(`Mission ${missionId} not found`, { status: 404 });
+    throw new Response(`Mission ${slug} not found`, { status: 404 });
   }
 
   // Get chapter title
@@ -66,10 +66,10 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   // Get equipment that can be found in this mission
   const allEquipment = await EquipmentDataService.getAll();
-  const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(missionId));
+  const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(slug));
 
   // Get previous and next missions for navigation
-  const missionIndex = missions.findIndex((m) => m.slug === missionId);
+  const missionIndex = missions.findIndex((m) => m.slug === slug);
   const prevMission = missionIndex > 0 ? missions[missionIndex - 1] : null;
   const nextMission = missionIndex < missions.length - 1 ? missions[missionIndex + 1] : null;
 
@@ -110,9 +110,6 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [navigate, prevMission, nextMission]);
-  const getBossImageUrl = (bossName: string) => {
-    return `/images/heroes/${generateSlug(bossName)}.png`;
-  };
 
   return (
     <div className="space-y-6">
@@ -135,13 +132,13 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
             <div className="relative w-16 h-16 mx-auto">
               <Link to={`/heroes/${generateSlug(mission.hero_slug)}`} viewTransition>
                 <img
-                  src={getBossImageUrl(mission.hero_slug)}
+                  src={getHeroImageUrl(mission.hero_slug)}
                   alt={mission.hero_slug}
                   className="w-full h-full object-cover rounded-lg"
                 />
               </Link>
             </div>
-            <p className="mt-1 text-sm font-medium">Boss: {mission.hero_slug}</p>
+            <p className="mt-1 text-sm font-medium capitalize">Boss: {mission.hero_slug}</p>
           </div>
         )}
       </div>

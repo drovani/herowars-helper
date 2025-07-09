@@ -9,7 +9,7 @@ import MissionForm from "~/components/MissionForm";
 import { Badge } from "~/components/ui/badge";
 import { MissionMutationSchema, type MissionMutation } from "~/data/mission.zod";
 import { MissionRepository, type Mission, type MissionUpdate } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/missions.$missionId_.edit";
+import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [
@@ -26,7 +26,7 @@ export const meta = ({ data }: Route.MetaArgs) => {
 export const handle = {
   breadcrumb: (matches: UIMatch<Route.ComponentProps["loaderData"], unknown>) => [
     {
-      href: `/missions/${matches.params.missionId}`,
+      href: `/missions/${matches.params.slug}`,
       title: matches.data?.mission?.name || "Mission",
     },
     {
@@ -36,10 +36,10 @@ export const handle = {
 };
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
-  invariant(params.missionId, "Missing mission ID param.");
+  invariant(params.slug, "Missing slug param.");
   
   const missionRepo = new MissionRepository(request);
-  const missionResult = await missionRepo.findById(params.missionId);
+  const missionResult = await missionRepo.findById(params.slug);
   
   if (missionResult.error) {
     throw data(null, {
@@ -52,7 +52,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   if (!mission) {
     throw data(null, {
       status: 404,
-      statusText: `Mission with ID ${params.missionId} not found.`,
+      statusText: `Mission with slug ${params.slug} not found.`,
     });
   }
 
@@ -68,7 +68,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 };
 
 export const action = async ({ params, request }: Route.ActionArgs) => {
-  invariant(params.missionId, "Missing mission ID param");
+  invariant(params.slug, "Missing slug param");
 
   const formData = await request.formData();
   const missionData = JSON.parse(formData.get("mission") as string);
@@ -82,7 +82,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     // Note: chapter_id and slug cannot be updated through this form
   };
 
-  const updateResult = await missionRepo.update(params.missionId, updateData);
+  const updateResult = await missionRepo.update(params.slug, updateData);
   
   if (updateResult.error) {
     log.error("Mission update failed:", updateResult.error);

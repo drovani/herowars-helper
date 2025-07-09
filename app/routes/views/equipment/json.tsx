@@ -1,7 +1,7 @@
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
 import EquipmentDataService from "~/services/EquipmentDataService";
-import type { Route } from "./+types/equipment[.json]";
+import type { Route } from "./+types/json";
 
 export async function loader(_: Route.LoaderArgs) {
   const equipmentJson = await EquipmentDataService.getAllAsJson();

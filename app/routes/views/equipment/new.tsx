@@ -6,7 +6,7 @@ import EquipmentForm from "~/components/EquipmentForm";
 import { type EquipmentMutation, EquipmentMutationSchema } from "~/data/equipment.zod";
 import EquipmentDataService from "~/services/EquipmentDataService";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/equipment.new";
+import type { Route } from "./+types/new";
 
 export const meta = (_: Route.MetaArgs) => {
   return [{ title: "Create new equipment" }];

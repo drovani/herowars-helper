@@ -458,8 +458,8 @@ describe("EquipmentRepository", () => {
 
       // Mock the join query response - equipment_required_item with inner join on equipment
       const mockJoinResponse = [
-        { base_slug: "brothers", equipment: mockBrothersEquipment },
-        { base_slug: "another-item", equipment: mockAnotherEquipment },
+        { base_slug: "brothers", quantity: 5, equipment: mockBrothersEquipment },
+        { base_slug: "another-item", quantity: 3, equipment: mockAnotherEquipment },
       ];
 
       mockSupabase.from.mockReturnValue({
@@ -473,7 +473,10 @@ describe("EquipmentRepository", () => {
 
       const result = await repository.findEquipmentThatRequires("brothers-fragment");
 
-      expect(result.data).toEqual([mockBrothersEquipment, mockAnotherEquipment]);
+      expect(result.data).toEqual([
+        { equipment: mockBrothersEquipment, quantity: 5 },
+        { equipment: mockAnotherEquipment, quantity: 3 },
+      ]);
       expect(result.error).toBeNull();
       expect(mockSupabase.from).toHaveBeenCalledWith("equipment_required_item");
     });

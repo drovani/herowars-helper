@@ -307,16 +307,16 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
             <div className="flex gap-4 flex-wrap">
               {requiredFor.map((item) => (
                 <Link
-                  key={item.slug}
-                  to={`/equipment/${item.slug}`}
+                  key={item.equipment.slug}
+                  to={`/equipment/${item.equipment.slug}`}
                   className="flex items-center gap-2 group"
                   viewTransition
                 >
-                  <EquipmentImage equipment={item} size="sm" />
+                  <EquipmentImage equipment={item.equipment} size="sm" />
                   <div>
-                    <div className="group-hover:underline whitespace-nowrap">{item.name}</div>
+                    <div className="group-hover:underline whitespace-nowrap">{item.equipment.name}</div>
                     <div className="text-sm text-muted-foreground whitespace-nowrap">
-                      Requires {"crafting" in item ? item.crafting?.required_items[equipment.slug] : 0}x
+                      Requires {item.quantity}x
                     </div>
                   </div>
                 </Link>

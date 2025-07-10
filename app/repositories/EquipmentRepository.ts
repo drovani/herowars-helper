@@ -204,11 +204,11 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   async findEquipmentThatRequires(
     slug: string
-  ): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+  ): Promise<RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; quantity: number }>>> {
     try {
       const { data, error } = await this.supabase
         .from("equipment_required_item")
-        .select("base_slug, equipment!inner(*)")
+        .select("base_slug, quantity, equipment!equipment_required_item_base_slug_fkey(*)")
         .eq("required_slug", slug);
 
       if (error) {
@@ -219,11 +219,14 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         };
       }
 
-      // Extract equipment records from the joined data
-      const equipmentRecords = data?.map((item) => (item as any).equipment) || [];
+      // Extract equipment records with quantities from the joined data
+      const equipmentWithQuantities = data?.map((item: any) => ({
+        equipment: item.equipment,
+        quantity: item.quantity,
+      })) || [];
 
       return {
-        data: equipmentRecords,
+        data: equipmentWithQuantities,
         error: null,
       };
     } catch (error) {

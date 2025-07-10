@@ -11,8 +11,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/component
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { formatTitle } from "~/config/site";
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import equipmentsData from "~/data/equipments.json";
 import chaptersAndMissionsData from "~/data/missions.json";
 import { createAdminClient } from "~/lib/supabase/admin-client";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/setup";
 
@@ -43,6 +46,16 @@ function transformMissions(data: typeof chaptersAndMissionsData) {
   });
 }
 
+// Helper function to transform equipment data to expected format
+function transformEquipments(data: typeof equipmentsData): EquipmentRecord[] {
+  return data as EquipmentRecord[];
+}
+
+// Helper function to get a subset of equipment for testing
+function getEquipmentSubset(data: typeof equipmentsData, limit: number = 10): EquipmentRecord[] {
+  return data.slice(0, limit) as EquipmentRecord[];
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const startTime = Date.now();
 
@@ -63,17 +76,22 @@ export async function action({ request }: Route.ActionArgs) {
     const results: any = {
       chapters: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
       missions: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
-      purged: { missions: 0, chapters: 0, errors: 0, errorDetails: [] },
+      equipment: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
+      purged: { missions: 0, chapters: 0, equipment: 0, stats: 0, required_items: 0, errors: 0, errorDetails: [] },
       processingTime: 0,
       mode,
       dataset: dataset || "all",
       purgeRequested: purge,
     };
 
-    // Initialize mission repository with appropriate client
+    // Initialize repositories with appropriate client
     const missionRepo = mode === 'force'
       ? new MissionRepository(createAdminClient(request).supabase as any)
       : new MissionRepository(request);
+
+    const equipmentRepo = mode === 'force'
+      ? new EquipmentRepository(createAdminClient(request).supabase as any)
+      : new EquipmentRepository(request);
 
     // Execute purge if requested
     if (purge) {
@@ -224,6 +242,101 @@ export async function action({ request }: Route.ActionArgs) {
       log.info("Mission data loading completed", results);
     }
 
+    // Load equipment data if dataset is empty (all) or "equipment"
+    if (!dataset || dataset === "equipment") {
+      log.info("Loading equipment data...");
+
+      try {
+        // Prepare data for initialization
+        const equipmentsToCreate = transformEquipments(equipmentsData);
+        results.equipment.total = equipmentsToCreate.length;
+
+        log.info(`Initializing ${equipmentsToCreate.length} equipment items...`);
+
+        // Validate a sample of the data first
+        if (equipmentsToCreate.length > 0) {
+          const sample = equipmentsToCreate[0];
+          log.info("Sample equipment data:", sample);
+        }
+
+        // Use the initializeFromJSON method
+        const equipmentInitResult = await equipmentRepo.initializeFromJSON(equipmentsToCreate);
+
+        log.info("Equipment init result:", {
+          hasData: !!equipmentInitResult.data,
+          hasError: !!equipmentInitResult.error,
+          errorCode: equipmentInitResult.error?.code,
+          errorMessage: equipmentInitResult.error?.message
+        });
+
+        // Handle both successful and partial failure cases
+        if (equipmentInitResult.error && !['BULK_PARTIAL_FAILURE', 'BULK_PARTIAL_SUCCESS'].includes(equipmentInitResult.error.code || '')) {
+          log.error("Equipment initialization failed with error:", equipmentInitResult.error);
+          throw new Error(`Equipment data initialization failed: ${equipmentInitResult.error.message}`);
+        }
+
+        // Update results with detailed information
+        if (equipmentInitResult.data) {
+          results.equipment.created = equipmentInitResult.data.equipment?.length || 0;
+          log.info(`Equipment created: ${results.equipment.created}`);
+        }
+
+        // Handle partial failures/success for equipment
+        if (equipmentInitResult.error?.details) {
+          const details = equipmentInitResult.error.details as any;
+          log.info("Processing equipment error details:", details);
+
+          if (Array.isArray(details.errors)) {
+            log.info(`Found ${details.errors.length} equipment errors`);
+            details.errors.forEach((errorItem: any, index: number) => {
+              results.equipment.errors++;
+
+              // Log first few errors for debugging
+              if (index < 3) {
+                log.error(`Equipment error ${index + 1}:`, {
+                  record: errorItem.data,
+                  error: errorItem.error
+                });
+              }
+
+              // Enhance error details with more debugging information
+              const enhancedError = {
+                ...errorItem.error,
+                // Preserve any additional debugging data
+                inputData: errorItem.error?.inputData || errorItem.data,
+                batchIndex: errorItem.error?.batchIndex,
+                // If we have database-specific error details, include them
+                supabaseDetails: errorItem.error?.details
+              };
+
+              results.equipment.errorDetails.push({
+                record: errorItem.data || errorItem.error?.inputData,
+                error: enhancedError
+              });
+            });
+          }
+
+          if (Array.isArray(details.skipped)) {
+            log.info(`Found ${details.skipped.length} equipment skipped`);
+            details.skipped.forEach((skippedItem: any) => {
+              results.equipment.skipped++;
+              results.equipment.skippedDetails.push(skippedItem);
+            });
+          }
+        }
+
+        log.info("Equipment data loading completed", {
+          total: results.equipment.total,
+          created: results.equipment.created,
+          errors: results.equipment.errors,
+          skipped: results.equipment.skipped
+        });
+      } catch (error) {
+        log.error("Equipment data loading failed:", error);
+        throw error;
+      }
+    }
+
     results.processingTime = Date.now() - startTime;
 
     return data({
@@ -289,6 +402,7 @@ function DetailsSection({
                     </span>
                     {type === 'chapters' && item.id && <span className="text-blue-500 ml-1">(ID: {item.id})</span>}
                     {type === 'missions' && item.slug && <span className="text-blue-500 ml-1">({item.slug})</span>}
+                    {type === 'equipment' && item.slug && <span className="text-blue-500 ml-1">({item.slug})</span>}
                   </div>
                 ))}
               </div>
@@ -307,18 +421,83 @@ function DetailsSection({
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="space-y-1">
-            <div className="bg-red-50 border border-red-200 rounded p-2 max-h-32 overflow-y-auto">
-              <div className="text-xs space-y-2">
+            <div className="bg-red-50 border border-red-200 rounded p-2 max-h-64 overflow-y-auto">
+              <div className="text-xs space-y-3">
                 {errorDetails.map((item, index) => (
-                  <div key={index} className="border-b border-red-200 pb-1 last:border-b-0">
-                    <div className="font-medium text-red-800">
-                      {type === 'chapters' ? item.record?.title : (item.record?.name || item.record?.slug)}
+                  <div key={index} className="border-b border-red-200 pb-2 last:border-b-0">
+                    {/* Item identifier */}
+                    <div className="font-medium text-red-800 mb-1">
+                      {type === 'chapters' ? item.record?.title : (item.record?.name || item.record?.slug || 'Unknown item')}
+                      {item.record?.slug && item.record?.name && (
+                        <span className="text-red-600 font-normal ml-1">({item.record.slug})</span>
+                      )}
                     </div>
-                    <div className="text-red-600 text-xs">
-                      {item.error?.message || 'Unknown error'}
+
+                    {/* Error message */}
+                    <div className="text-red-600 text-xs mb-1">
+                      <strong>Error:</strong> {item.error?.message || 'Unknown error'}
                     </div>
+
+                    {/* Error code */}
                     {item.error?.code && (
-                      <div className="text-red-500 text-xs">Code: {item.error.code}</div>
+                      <div className="text-red-500 text-xs mb-1">
+                        <strong>Code:</strong> {item.error.code}
+                      </div>
+                    )}
+
+                    {/* Batch index for debugging */}
+                    {item.error?.batchIndex !== undefined && (
+                      <div className="text-red-500 text-xs mb-1">
+                        <strong>Item #:</strong> {item.error.batchIndex + 1}
+                      </div>
+                    )}
+
+                    {/* Equipment-specific details */}
+                    {type === 'equipment' && item.record && (
+                      <div className="text-red-700 text-xs space-y-1">
+                        {item.record.type && (
+                          <div><strong>Type:</strong> {item.record.type}</div>
+                        )}
+                        {item.record.quality && (
+                          <div><strong>Quality:</strong> {item.record.quality}</div>
+                        )}
+                        {item.record.buy_value_gold !== undefined && (
+                          <div><strong>Gold Value:</strong> {item.record.buy_value_gold}</div>
+                        )}
+                        {item.record.sell_value !== undefined && (
+                          <div><strong>Sell Value:</strong> {item.record.sell_value}</div>
+                        )}
+                        {item.record.guild_activity_points !== undefined && (
+                          <div><strong>Guild Points:</strong> {item.record.guild_activity_points}</div>
+                        )}
+                        {item.record.hero_level_required !== undefined && (
+                          <div><strong>Hero Level:</strong> {item.record.hero_level_required}</div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Raw error details for debugging */}
+                    {item.error?.details && (
+                      <details className="mt-2">
+                        <summary className="text-red-500 text-xs cursor-pointer hover:text-red-700">
+                          Show Raw Error Details
+                        </summary>
+                        <pre className="text-xs text-red-600 mt-1 p-1 bg-red-100 rounded overflow-x-auto">
+                          {JSON.stringify(item.error.details, null, 2)}
+                        </pre>
+                      </details>
+                    )}
+
+                    {/* Input data that caused the error */}
+                    {item.error?.inputData && (
+                      <details className="mt-2">
+                        <summary className="text-red-500 text-xs cursor-pointer hover:text-red-700">
+                          Show Input Data
+                        </summary>
+                        <pre className="text-xs text-red-600 mt-1 p-1 bg-red-100 rounded overflow-x-auto">
+                          {JSON.stringify(item.error.inputData, null, 2)}
+                        </pre>
+                      </details>
                     )}
                   </div>
                 ))}
@@ -413,6 +592,12 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         Missions only
                       </Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="equipment" id="equipment" />
+                      <Label htmlFor="equipment" className="font-normal">
+                        Equipment only
+                      </Label>
+                    </div>
                   </RadioGroup>
                 </div>
               </div>
@@ -478,7 +663,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       <Alert variant={initdata.success ? "default" : "destructive"}>
         {initdata.success ? (
           <CheckCircle className="size-4" />
@@ -535,7 +720,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {/* Purge Summary */}
                 {initdata.results.purgeRequested && initdata.results.purged &&
                   (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0) && (
@@ -636,6 +821,50 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                           skippedDetails={initdata.results.missions.skippedDetails}
                           errorDetails={initdata.results.missions.errorDetails}
                           type="missions"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Equipment Summary */}
+                {initdata.results.equipment && initdata.results.equipment.total > 0 && (
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium flex items-center gap-2">
+                        {getStatusIcon(
+                          initdata.results.equipment.created,
+                          initdata.results.equipment.errors,
+                          initdata.results.equipment.skipped,
+                          initdata.results.equipment.total
+                        )}
+                        Equipment
+                      </h3>
+                      {getStatusBadge(
+                        initdata.results.equipment.created,
+                        initdata.results.equipment.errors,
+                        initdata.results.equipment.skipped,
+                        initdata.results.equipment.total
+                      )}
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p>Total: {initdata.results.equipment.total}</p>
+                      <p className="text-green-600">Created: {initdata.results.equipment.created}</p>
+                      {initdata.results.equipment.skipped > 0 && (
+                        <p className="text-blue-600">Skipped: {initdata.results.equipment.skipped}</p>
+                      )}
+                      {initdata.results.equipment.errors > 0 && (
+                        <p className="text-red-600">Errors: {initdata.results.equipment.errors}</p>
+                      )}
+                    </div>
+
+                    {/* Expandable details for equipment */}
+                    {(initdata.results.equipment.skippedDetails?.length > 0 || initdata.results.equipment.errorDetails?.length > 0) && (
+                      <div className="mt-3 pt-3 border-t">
+                        <DetailsSection
+                          skippedDetails={initdata.results.equipment.skippedDetails}
+                          errorDetails={initdata.results.equipment.errorDetails}
+                          type="equipment"
                         />
                       </div>
                     )}

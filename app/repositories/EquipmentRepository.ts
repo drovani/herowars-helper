@@ -3,7 +3,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
-import { EQUIPMENT_QUALITIES, EquipmentMutationSchema, EquipmentTableSchema, type EquipmentRecord, isEquipable } from "~/data/equipment.zod";
+import { EQUIPMENT_QUALITIES, EquipmentTableSchema, isEquipable, type EquipmentRecord } from "~/data/equipment.zod";
 import type { Database } from "~/types/supabase";
 import { BaseRepository } from "./BaseRepository";
 import type { FindAllOptions, RepositoryResult } from "./types";
@@ -240,7 +240,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   async findEquipmentRequiredFor(
     slugOrEquipment: string | Database["public"]["Tables"]["equipment"]["Row"]
-  ): Promise<RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; quantity: number }>>> {
+  ): Promise<
+    RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; quantity: number }>>
+  > {
     try {
       let equipment: Database["public"]["Tables"]["equipment"]["Row"];
 
@@ -279,13 +281,13 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
           const equipmentResult = await this.findById(requiredItem.required_slug);
           return {
             equipment: equipmentResult.data!,
-            quantity: requiredItem.quantity
+            quantity: requiredItem.quantity,
           };
         })
       );
 
       // Filter out any failed results
-      const validRequiredItems = requiredItemsWithEquipment.filter(item => item.equipment !== null);
+      const validRequiredItems = requiredItemsWithEquipment.filter((item) => item.equipment !== null);
 
       return {
         data: validRequiredItems,
@@ -648,7 +650,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       guild_activity_points: jsonEquipment.guild_activity_points,
       hero_level_required: isEquipable(jsonEquipment) ? jsonEquipment.hero_level_required : null,
       campaign_sources: jsonEquipment.campaign_sources || null,
-      crafting_gold_cost: ("crafting" in jsonEquipment && jsonEquipment.crafting?.gold_cost) ? jsonEquipment.crafting.gold_cost : null,
+      crafting_gold_cost:
+        "crafting" in jsonEquipment && jsonEquipment.crafting?.gold_cost ? jsonEquipment.crafting.gold_cost : null,
     };
   }
 
@@ -746,9 +749,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   > {
     try {
       // Transform all data
-      const equipmentData = jsonData.map(item => EquipmentRepository.transformEquipmentFromJSON(item))
-      const statsData = jsonData.flatMap(item => EquipmentRepository.transformStatsFromJSON(item))
-      const requiredItemsData = jsonData.flatMap(item => EquipmentRepository.transformRequiredItemsFromJSON(item))
+      const equipmentData = jsonData.map((item) => EquipmentRepository.transformEquipmentFromJSON(item));
+      const statsData = jsonData.flatMap((item) => EquipmentRepository.transformStatsFromJSON(item));
+      const requiredItemsData = jsonData.flatMap((item) => EquipmentRepository.transformRequiredItemsFromJSON(item));
 
       // Bulk create equipment first with skipExisting to handle duplicates
       const equipmentResult = await this.bulkCreate(equipmentData, { skipExisting: true });
@@ -867,17 +870,19 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     }
   }
 
-  async purgeEquipmentDomain(): Promise<RepositoryResult<{
-    equipment: number;
-    stats: number;
-    required_items: number;
-  }>> {
+  async purgeEquipmentDomain(): Promise<
+    RepositoryResult<{
+      equipment: number;
+      stats: number;
+      required_items: number;
+    }>
+  > {
     try {
       // Count existing records before deletion
       const [equipmentCount, statsCount, requiredItemsCount] = await Promise.all([
         this.supabase.from("equipment").select("slug", { count: "exact", head: true }),
         this.supabase.from("equipment_stat").select("equipment_slug", { count: "exact", head: true }),
-        this.supabase.from("equipment_required_item").select("base_slug", { count: "exact", head: true })
+        this.supabase.from("equipment_required_item").select("base_slug", { count: "exact", head: true }),
       ]);
 
       // Delete in proper order (dependent tables first)

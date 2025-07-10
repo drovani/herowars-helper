@@ -3,7 +3,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
-import { EQUIPMENT_QUALITIES, EquipmentMutationSchema, type EquipmentRecord, isEquipable } from "~/data/equipment.zod";
+import { EQUIPMENT_QUALITIES, EquipmentMutationSchema, EquipmentTableSchema, type EquipmentRecord, isEquipable } from "~/data/equipment.zod";
 import type { Database } from "~/types/supabase";
 import { BaseRepository } from "./BaseRepository";
 import type { FindAllOptions, RepositoryResult } from "./types";
@@ -48,10 +48,10 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
     if (requestOrSupabase && typeof requestOrSupabase === "object" && "from" in requestOrSupabase) {
       // Custom supabase client provided (for admin operations)
-      super(requestOrSupabase, EquipmentMutationSchema, "equipment", EquipmentMutationSchema, "slug");
+      super(requestOrSupabase, EquipmentTableSchema, "equipment", EquipmentTableSchema, "slug");
     } else {
       // Request or null provided (standard operation)
-      super("equipment", EquipmentMutationSchema, requestOrSupabase as Request | null, "slug");
+      super("equipment", EquipmentTableSchema, requestOrSupabase as Request | null, "slug");
     }
   }
 
@@ -240,7 +240,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   async findEquipmentRequiredFor(
     slugOrEquipment: string | Database["public"]["Tables"]["equipment"]["Row"]
-  ): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+  ): Promise<RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; quantity: number }>>> {
     try {
       let equipment: Database["public"]["Tables"]["equipment"]["Row"];
 
@@ -273,16 +273,22 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         };
       }
 
-      // Get the actual equipment records for the required items
-      const requiredSlugs = requiredItemsResult.data.map((item) => item.required_slug);
-      const equipmentPromises = requiredSlugs.map((slug) => this.findById(slug));
-      const equipmentResults = await Promise.all(equipmentPromises);
+      // Get the actual equipment records for the required items with quantities
+      const requiredItemsWithEquipment = await Promise.all(
+        requiredItemsResult.data.map(async (requiredItem) => {
+          const equipmentResult = await this.findById(requiredItem.required_slug);
+          return {
+            equipment: equipmentResult.data!,
+            quantity: requiredItem.quantity
+          };
+        })
+      );
 
-      // Filter out any failed results and extract the data
-      const equipmentRecords = equipmentResults.filter((result) => result.data !== null).map((result) => result.data!);
+      // Filter out any failed results
+      const validRequiredItems = requiredItemsWithEquipment.filter(item => item.equipment !== null);
 
       return {
-        data: equipmentRecords,
+        data: validRequiredItems,
         error: null,
       };
     } catch (error) {
@@ -642,8 +648,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       guild_activity_points: jsonEquipment.guild_activity_points,
       hero_level_required: isEquipable(jsonEquipment) ? jsonEquipment.hero_level_required : null,
       campaign_sources: jsonEquipment.campaign_sources || null,
-      crafting_gold_cost:
-        "crafting" in jsonEquipment && jsonEquipment.crafting ? jsonEquipment.crafting.gold_cost : null,
+      crafting_gold_cost: ("crafting" in jsonEquipment && jsonEquipment.crafting?.gold_cost) ? jsonEquipment.crafting.gold_cost : null,
     };
   }
 
@@ -740,56 +745,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     }>
   > {
     try {
-      log.info(`Starting initializeFromJSON with ${jsonData.length} equipment items`);
-
       // Transform all data
-      log.info("Transforming equipment data...");
-      const equipmentData = jsonData.map((item, index) => {
-        try {
-          return EquipmentRepository.transformEquipmentFromJSON(item);
-        } catch (error) {
-          log.error(`Error transforming equipment item ${index}:`, { item, error });
-          throw error;
-        }
-      });
+      const equipmentData = jsonData.map(item => EquipmentRepository.transformEquipmentFromJSON(item))
+      const statsData = jsonData.flatMap(item => EquipmentRepository.transformStatsFromJSON(item))
+      const requiredItemsData = jsonData.flatMap(item => EquipmentRepository.transformRequiredItemsFromJSON(item))
 
-      log.info("Transforming stats data...");
-      const statsData = jsonData.flatMap((item, index) => {
-        try {
-          return EquipmentRepository.transformStatsFromJSON(item);
-        } catch (error) {
-          log.error(`Error transforming stats for item ${index}:`, { item, error });
-          throw error;
-        }
-      });
-
-      log.info("Transforming required items data...");
-      const requiredItemsData = jsonData.flatMap((item, index) => {
-        try {
-          return EquipmentRepository.transformRequiredItemsFromJSON(item);
-        } catch (error) {
-          log.error(`Error transforming required items for item ${index}:`, { item, error });
-          throw error;
-        }
-      });
-
-      log.info(
-        `Transformation complete. Equipment: ${equipmentData.length}, Stats: ${statsData.length}, Required items: ${requiredItemsData.length}`
-      );
-
-      // Bulk create equipment first
-      log.info("Starting bulk create equipment...");
-      const equipmentResult = await this.bulkCreate(equipmentData);
-
-      log.info("Equipment bulk create result:", {
-        hasData: !!equipmentResult.data,
-        hasError: !!equipmentResult.error,
-        errorCode: equipmentResult.error?.code,
-        dataLength: equipmentResult.data?.length || 0,
-      });
+      // Bulk create equipment first with skipExisting to handle duplicates
+      const equipmentResult = await this.bulkCreate(equipmentData, { skipExisting: true });
 
       if (equipmentResult.error) {
-        log.error("Equipment bulk create failed:", equipmentResult.error);
         return {
           data: null,
           error: equipmentResult.error,
@@ -899,6 +863,41 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
           message: error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
+      };
+    }
+  }
+
+  async purgeEquipmentDomain(): Promise<RepositoryResult<{
+    equipment: number;
+    stats: number;
+    required_items: number;
+  }>> {
+    try {
+      // Count existing records before deletion
+      const [equipmentCount, statsCount, requiredItemsCount] = await Promise.all([
+        this.supabase.from("equipment").select("slug", { count: "exact", head: true }),
+        this.supabase.from("equipment_stat").select("equipment_slug", { count: "exact", head: true }),
+        this.supabase.from("equipment_required_item").select("base_slug", { count: "exact", head: true })
+      ]);
+
+      // Delete in proper order (dependent tables first)
+      await this.supabase.from("equipment_stat").delete().neq("equipment_slug", "");
+      await this.supabase.from("equipment_required_item").delete().neq("base_slug", "");
+      await this.supabase.from("equipment").delete().neq("slug", "");
+
+      return {
+        data: {
+          equipment: equipmentCount.count || 0,
+          stats: statsCount.count || 0,
+          required_items: requiredItemsCount.count || 0,
+        },
+        error: null,
+      };
+    } catch (error) {
+      log.error("Error purging equipment domain:", error);
+      return {
+        data: null,
+        error: this.handleError(error),
       };
     }
   }

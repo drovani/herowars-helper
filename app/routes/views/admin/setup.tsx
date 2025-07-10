@@ -113,7 +113,21 @@ export async function action({ request }: Route.ActionArgs) {
         log.info(`Purged mission domain: ${results.purged.missions} missions, ${results.purged.chapters} chapters`);
       }
 
-      // Future: Add other domain purging here when heroes/equipment datasets are added
+      if (!dataset || dataset === "equipment" || dataset === "all") {
+        // Purge equipment domain (equipment, stats, and required items)
+        const equipmentPurgeResult = await equipmentRepo.purgeEquipmentDomain();
+        if (equipmentPurgeResult.error) {
+          throw new Error(`Equipment domain purge failed: ${equipmentPurgeResult.error.message}`);
+        }
+
+        if (equipmentPurgeResult.data) {
+          results.purged.equipment = equipmentPurgeResult.data.equipment;
+          results.purged.stats = equipmentPurgeResult.data.stats;
+          results.purged.required_items = equipmentPurgeResult.data.required_items;
+        }
+
+        log.info(`Purged equipment domain: ${results.purged.equipment} equipment, ${results.purged.stats} stats, ${results.purged.required_items} required items`);
+      }
     }
 
     // Load missions data if dataset is empty (all) or "missions"
@@ -251,73 +265,40 @@ export async function action({ request }: Route.ActionArgs) {
         const equipmentsToCreate = transformEquipments(equipmentsData);
         results.equipment.total = equipmentsToCreate.length;
 
-        log.info(`Initializing ${equipmentsToCreate.length} equipment items...`);
-
-        // Validate a sample of the data first
-        if (equipmentsToCreate.length > 0) {
-          const sample = equipmentsToCreate[0];
-          log.info("Sample equipment data:", sample);
-        }
-
         // Use the initializeFromJSON method
         const equipmentInitResult = await equipmentRepo.initializeFromJSON(equipmentsToCreate);
 
-        log.info("Equipment init result:", {
-          hasData: !!equipmentInitResult.data,
-          hasError: !!equipmentInitResult.error,
-          errorCode: equipmentInitResult.error?.code,
-          errorMessage: equipmentInitResult.error?.message
-        });
-
         // Handle both successful and partial failure cases
         if (equipmentInitResult.error && !['BULK_PARTIAL_FAILURE', 'BULK_PARTIAL_SUCCESS'].includes(equipmentInitResult.error.code || '')) {
-          log.error("Equipment initialization failed with error:", equipmentInitResult.error);
           throw new Error(`Equipment data initialization failed: ${equipmentInitResult.error.message}`);
         }
 
         // Update results with detailed information
         if (equipmentInitResult.data) {
           results.equipment.created = equipmentInitResult.data.equipment?.length || 0;
-          log.info(`Equipment created: ${results.equipment.created}`);
         }
 
         // Handle partial failures/success for equipment
         if (equipmentInitResult.error?.details) {
           const details = equipmentInitResult.error.details as any;
-          log.info("Processing equipment error details:", details);
 
           if (Array.isArray(details.errors)) {
-            log.info(`Found ${details.errors.length} equipment errors`);
-            details.errors.forEach((errorItem: any, index: number) => {
+            details.errors.forEach((errorItem: any) => {
               results.equipment.errors++;
-
-              // Log first few errors for debugging
-              if (index < 3) {
-                log.error(`Equipment error ${index + 1}:`, {
-                  record: errorItem.data,
-                  error: errorItem.error
-                });
-              }
-
-              // Enhance error details with more debugging information
-              const enhancedError = {
-                ...errorItem.error,
-                // Preserve any additional debugging data
-                inputData: errorItem.error?.inputData || errorItem.data,
-                batchIndex: errorItem.error?.batchIndex,
-                // If we have database-specific error details, include them
-                supabaseDetails: errorItem.error?.details
-              };
-
               results.equipment.errorDetails.push({
-                record: errorItem.data || errorItem.error?.inputData,
-                error: enhancedError
+                record: errorItem.inputData || null,
+                error: {
+                  message: errorItem.message,
+                  code: errorItem.code,
+                  details: errorItem.details,
+                  inputData: errorItem.inputData,
+                  batchIndex: errorItem.batchIndex
+                }
               });
             });
           }
 
           if (Array.isArray(details.skipped)) {
-            log.info(`Found ${details.skipped.length} equipment skipped`);
             details.skipped.forEach((skippedItem: any) => {
               results.equipment.skipped++;
               results.equipment.skippedDetails.push(skippedItem);
@@ -325,12 +306,6 @@ export async function action({ request }: Route.ActionArgs) {
           }
         }
 
-        log.info("Equipment data loading completed", {
-          total: results.equipment.total,
-          created: results.equipment.created,
-          errors: results.equipment.errors,
-          skipped: results.equipment.skipped
-        });
       } catch (error) {
         log.error("Equipment data loading failed:", error);
         throw error;
@@ -716,14 +691,14 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
               <CardDescription>
                 Mode: {initdata.results.mode} | Dataset: {initdata.results.dataset}
                 {initdata.results.purgeRequested && initdata.results.purged &&
-                  ` | Purged: ${initdata.results.purged.missions} missions, ${initdata.results.purged.chapters} chapters`}
+                  ` | Purged: ${initdata.results.purged.missions} missions, ${initdata.results.purged.chapters} chapters, ${initdata.results.purged.equipment} equipment`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4">
                 {/* Purge Summary */}
                 {initdata.results.purgeRequested && initdata.results.purged &&
-                  (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0) && (
+                  (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0 || initdata.results.purged.equipment > 0) && (
                   <div className="border rounded-lg p-4 bg-orange-50 border-orange-200">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium flex items-center gap-2">
@@ -733,8 +708,11 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                       <Badge variant="secondary">Domain Purged</Badge>
                     </div>
                     <div className="text-sm space-y-1">
-                      <p className="text-orange-700">Missions: {initdata.results.purged.missions}</p>
-                      <p className="text-orange-700">Chapters: {initdata.results.purged.chapters}</p>
+                      {initdata.results.purged.missions > 0 && <p className="text-orange-700">Missions: {initdata.results.purged.missions}</p>}
+                      {initdata.results.purged.chapters > 0 && <p className="text-orange-700">Chapters: {initdata.results.purged.chapters}</p>}
+                      {initdata.results.purged.equipment > 0 && <p className="text-orange-700">Equipment: {initdata.results.purged.equipment}</p>}
+                      {initdata.results.purged.stats > 0 && <p className="text-orange-700">Equipment Stats: {initdata.results.purged.stats}</p>}
+                      {initdata.results.purged.required_items > 0 && <p className="text-orange-700">Required Items: {initdata.results.purged.required_items}</p>}
                     </div>
                   </div>
                 )}

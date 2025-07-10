@@ -11,7 +11,7 @@
     "supabase:types": "supabase gen types typescript --local > app/types/supabase.ts",
     "db:diff": "supabase db diff -f",
     "db:reset": "supabase db reset",
-    "db:status": "supabase db status",
+    "db:status": "supabase status",
     "db:start": "supabase db start",
     "test": "vitest",
     "test:run": "vitest run",

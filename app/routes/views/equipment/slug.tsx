@@ -254,20 +254,20 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
         <Card>
           <CardHeader>
             <CardTitle>Crafting Requirements</CardTitle>
-            {"crafting" in equipment && equipment.crafting?.gold_cost && (
+            {equipment.crafting_gold_cost && (
               <CardDescription className="flex items-center gap-1">
                 <img src="/images/gold.webp" alt="Gold cost" className="w-6 h-6" />
-                {equipment.crafting.gold_cost.toLocaleString()} gold
+                {equipment.crafting_gold_cost.toLocaleString()} gold
               </CardDescription>
             )}
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap items-center gap-4">
-              {requiredEquipment.map((item, index) => (
+              {requiredEquipment.map((requiredItem, index) => (
                 <EquipmentItem
-                  key={item?.slug || `missing-${index}`}
-                  item={item}
-                  quantity={"crafting" in equipment ? equipment.crafting?.required_items[item?.slug || ""] || 0 : 0}
+                  key={requiredItem?.equipment?.slug || `missing-${index}`}
+                  item={requiredItem?.equipment}
+                  quantity={requiredItem?.quantity || 0}
                 />
               ))}
             </div>

@@ -1,6 +1,6 @@
 import { type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import HeroDataService from "~/services/HeroDataService";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/slug.json";
@@ -49,7 +49,15 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
       equipmentSlugs.push(...tier[1]);
     }
   }
-  const equipmentUsed = await EquipmentDataService.getAll(equipmentSlugs);
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentUsedResult = await equipmentRepo.findAll();
+  
+  if (equipmentUsedResult.error) {
+    throw new Response("Failed to load equipment", { status: 500 });
+  }
+  
+  // Filter to only the equipment used by this hero
+  const equipmentUsed = equipmentUsedResult.data?.filter(eq => equipmentSlugs.includes(eq.slug)) || [];
   const allHeroes = await HeroDataService.getAll();
 
   const currentIndex = allHeroes.findIndex((h) => h.slug === hero.slug);

@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Separator } from "~/components/ui/separator";
 import type { EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import HeroDataService from "~/services/HeroDataService";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/slug";
@@ -29,26 +29,44 @@ export const handle = {
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing equipment slug param");
 
+  const equipmentRepo = new EquipmentRepository(request);
+  
   // Get main equipment details
-  const equipment = await EquipmentDataService.getById(params.slug);
+  const equipmentResult = await equipmentRepo.findById(params.slug);
 
-  if (!equipment) {
+  if (equipmentResult.error || !equipmentResult.data) {
     throw new Response(null, {
       status: 404,
       statusText: `Equipment with id ${params.slug} not found.`,
     });
   }
 
-  const sortedEquipment = await EquipmentDataService.getAll();
+  const equipment = equipmentResult.data;
+
+  // Get all equipment for navigation
+  const sortedEquipmentResult = await equipmentRepo.findAll();
+  if (sortedEquipmentResult.error) {
+    throw new Response("Failed to load equipment list", { status: 500 });
+  }
+  
+  const sortedEquipment = sortedEquipmentResult.data || [];
   const currentIndex = sortedEquipment.findIndex((e) => e.slug === equipment.slug);
   const prevEquipment = currentIndex > 0 ? sortedEquipment[currentIndex - 1] : null;
   const nextEquipment = currentIndex < sortedEquipment.length ? sortedEquipment[currentIndex + 1] : null;
 
-  const requiredFor = await EquipmentDataService.getEquipmentThatRequires(equipment.slug);
-  const requiredEquipment = await EquipmentDataService.getEquipmentRequiredFor(equipment);
-  let requiredEquipmentRaw = await EquipmentDataService.getEquipmentRequiredForRaw(equipment);
+  // Get equipment relationships
+  const [requiredForResult, requiredEquipmentResult, requiredEquipmentRawResult] = await Promise.all([
+    equipmentRepo.findEquipmentThatRequires(equipment.slug),
+    equipmentRepo.findEquipmentRequiredFor(equipment),
+    equipmentRepo.findEquipmentRequiredForRaw(equipment)
+  ]);
 
-  if ("crafting" in equipment && equipment.crafting?.gold_cost === requiredEquipmentRaw?.gold_cost) {
+  const requiredFor = requiredForResult.data || [];
+  const requiredEquipment = requiredEquipmentResult.data || [];
+  let requiredEquipmentRaw = requiredEquipmentRawResult.data;
+
+  // Hide raw materials if they're the same as direct crafting cost
+  if (equipment.crafting_gold_cost === requiredEquipmentRaw?.gold_cost) {
     requiredEquipmentRaw = null;
   }
 

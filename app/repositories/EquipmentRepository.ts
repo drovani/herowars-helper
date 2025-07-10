@@ -3,7 +3,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js"
 import log from "loglevel"
-import { EquipmentMutationSchema, type EquipmentRecord, isEquipable } from "~/data/equipment.zod"
+import { EquipmentMutationSchema, type EquipmentRecord, isEquipable, EQUIPMENT_QUALITIES } from "~/data/equipment.zod"
 import type { Database } from "~/types/supabase"
 import { BaseRepository } from "./BaseRepository"
 import type { RepositoryResult } from "./types"
@@ -36,19 +36,23 @@ export interface EquipmentWithFullDetails {
   required_items: EquipmentRequiredItem[]
 }
 
+export interface EquipmentRequirements {
+  gold_cost: number
+  required_items: {
+    equipment: Database["public"]["Tables"]["equipment"]["Row"]
+    quantity: number
+  }[]
+}
+
 export class EquipmentRepository extends BaseRepository<'equipment'> {
-  constructor(request?: Request | null) {
-    super('equipment', EquipmentMutationSchema, request, 'slug')
-  }
-
-  // Alternative constructor for direct Supabase client injection
-  static withSupabaseClient(supabase: SupabaseClient<Database>) {
-    return new EquipmentRepository().withSupabaseClient(supabase)
-  }
-
-  private withSupabaseClient(supabase: SupabaseClient<Database>): EquipmentRepository {
-    this.supabase = supabase
-    return this
+  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
+    if (requestOrSupabase && typeof requestOrSupabase === 'object' && 'from' in requestOrSupabase) {
+      // Custom supabase client provided (for admin operations)
+      super(requestOrSupabase, EquipmentMutationSchema, "equipment", EquipmentMutationSchema, "slug")
+    } else {
+      // Request or null provided (standard operation)
+      super("equipment", EquipmentMutationSchema, requestOrSupabase as Request | null, "slug")
+    }
   }
 
   protected getTableRelationships(): Record<string, boolean> {
@@ -145,6 +149,329 @@ export class EquipmentRepository extends BaseRepository<'equipment'> {
       }
     } catch (error) {
       log.error(`Unexpected error finding equipment by campaign source ${missionSlug}:`, error)
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  // Core replacement methods for EquipmentDataService
+  async findEquipableEquipment(): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+    try {
+      const { data, error } = await this.supabase
+        .from('equipment')
+        .select('*')
+        .eq('type', 'equipable')
+        .order('name')
+
+      if (error) {
+        log.error('Error finding equipable equipment:', error)
+        return {
+          data: null,
+          error: this.handleError(error),
+        }
+      }
+
+      // Apply custom quality sorting
+      const sortedData = data ? this.sortByQuality(data) : []
+
+      return {
+        data: sortedData,
+        error: null,
+      }
+    } catch (error) {
+      log.error('Unexpected error finding equipable equipment:', error)
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  async findEquipmentThatRequires(slug: string): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+    try {
+      const { data, error } = await this.supabase
+        .from('equipment_required_item')
+        .select('base_slug, equipment!inner(*)')
+        .eq('required_slug', slug)
+
+      if (error) {
+        log.error(`Error finding equipment that requires ${slug}:`, error)
+        return {
+          data: null,
+          error: this.handleError(error),
+        }
+      }
+
+      // Extract equipment records from the joined data
+      const equipmentRecords = data?.map(item => (item as any).equipment) || []
+
+      return {
+        data: equipmentRecords,
+        error: null,
+      }
+    } catch (error) {
+      log.error(`Unexpected error finding equipment that requires ${slug}:`, error)
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  async findEquipmentRequiredFor(slugOrEquipment: string | Database["public"]["Tables"]["equipment"]["Row"]): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+    try {
+      let equipment: Database["public"]["Tables"]["equipment"]["Row"]
+      
+      if (typeof slugOrEquipment === 'string') {
+        const equipmentResult = await this.findById(slugOrEquipment)
+        if (equipmentResult.error || !equipmentResult.data) {
+          return {
+            data: [],
+            error: equipmentResult.error,
+          }
+        }
+        equipment = equipmentResult.data
+      } else {
+        equipment = slugOrEquipment
+      }
+
+      // Find required items for this equipment
+      const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(equipment.slug)
+      if (requiredItemsResult.error) {
+        return {
+          data: null,
+          error: requiredItemsResult.error,
+        }
+      }
+
+      if (!requiredItemsResult.data || requiredItemsResult.data.length === 0) {
+        return {
+          data: [],
+          error: null,
+        }
+      }
+
+      // Get the actual equipment records for the required items
+      const requiredSlugs = requiredItemsResult.data.map(item => item.required_slug)
+      const equipmentPromises = requiredSlugs.map(slug => this.findById(slug))
+      const equipmentResults = await Promise.all(equipmentPromises)
+
+      // Filter out any failed results and extract the data
+      const equipmentRecords = equipmentResults
+        .filter(result => result.data !== null)
+        .map(result => result.data!)
+
+      return {
+        data: equipmentRecords,
+        error: null,
+      }
+    } catch (error) {
+      log.error('Unexpected error finding equipment required for:', error)
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  async findEquipmentRequiredForRaw(equipment: Database["public"]["Tables"]["equipment"]["Row"]): Promise<RepositoryResult<EquipmentRequirements | null>> {
+    try {
+      const baseItems: EquipmentRequirements = { gold_cost: 0, required_items: [] }
+
+      // Get required items for this equipment
+      const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(equipment.slug)
+      if (requiredItemsResult.error) {
+        return {
+          data: null,
+          error: requiredItemsResult.error,
+        }
+      }
+
+      if (!requiredItemsResult.data || requiredItemsResult.data.length === 0) {
+        return {
+          data: null,
+          error: null,
+        }
+      }
+
+      // Add crafting gold cost
+      baseItems.gold_cost += equipment.crafting_gold_cost || 0
+
+      // Process each required item
+      for (const requiredItem of requiredItemsResult.data) {
+        const componentResult = await this.findById(requiredItem.required_slug)
+        if (componentResult.error || !componentResult.data) {
+          continue
+        }
+
+        const component = componentResult.data
+
+        // Check if this component also has crafting requirements (recursive)
+        if (component.crafting_gold_cost && component.crafting_gold_cost > 0) {
+          const rawsResult = await this.findEquipmentRequiredForRaw(component)
+          if (rawsResult.error || !rawsResult.data) {
+            continue
+          }
+          
+          const raws = rawsResult.data
+          baseItems.gold_cost += raws.gold_cost * requiredItem.quantity
+          this.combineEquipmentRequirements(baseItems.required_items, raws.required_items, requiredItem.quantity)
+        } else {
+          // This is a raw component
+          const found = baseItems.required_items.find(ri => ri.equipment.slug === component.slug)
+          if (found) {
+            found.quantity += requiredItem.quantity
+          } else {
+            baseItems.required_items.push({ equipment: component, quantity: requiredItem.quantity })
+          }
+        }
+      }
+
+      return {
+        data: baseItems,
+        error: null,
+      }
+    } catch (error) {
+      log.error('Unexpected error finding equipment required for raw:', error)
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
+      }
+    }
+  }
+
+  // Helper methods
+  private sortByQuality(records: Database["public"]["Tables"]["equipment"]["Row"][]): Database["public"]["Tables"]["equipment"]["Row"][] {
+    return records.sort((l, r) =>
+      EQUIPMENT_QUALITIES.indexOf(l.quality) !== EQUIPMENT_QUALITIES.indexOf(r.quality)
+        ? EQUIPMENT_QUALITIES.indexOf(l.quality) - EQUIPMENT_QUALITIES.indexOf(r.quality)
+        : l.name.localeCompare(r.name)
+    )
+  }
+
+  private combineEquipmentRequirements(
+    target: EquipmentRequirements["required_items"],
+    source: EquipmentRequirements["required_items"],
+    qty: number
+  ): void {
+    for (const req of source) {
+      const found = target.find(t => t.equipment.slug === req.equipment.slug)
+      if (found) {
+        found.quantity += req.quantity * qty
+      } else {
+        target.push({ ...req, quantity: req.quantity * qty })
+      }
+    }
+  }
+
+  // JSON export functionality
+  async getAllAsJson(ids?: string[]): Promise<RepositoryResult<EquipmentRecord[]>> {
+    try {
+      let equipmentResult: RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
+      
+      if (ids && ids.length > 0) {
+        // Get specific equipment by IDs
+        const equipmentPromises = ids.map(id => this.findById(id))
+        const equipmentResults = await Promise.all(equipmentPromises)
+        
+        // Filter out any failed results and extract the data
+        const equipmentRecords = equipmentResults
+          .filter(result => result.data !== null)
+          .map(result => result.data!)
+        
+        equipmentResult = {
+          data: equipmentRecords,
+          error: null,
+        }
+      } else {
+        // Get all equipment
+        equipmentResult = await this.findAll()
+      }
+
+      if (equipmentResult.error) {
+        return {
+          data: null,
+          error: equipmentResult.error,
+        }
+      }
+
+      // Transform database records back to JSON format
+      const jsonRecords: EquipmentRecord[] = []
+      
+      for (const equipment of equipmentResult.data!) {
+        // Get stats and required items for this equipment
+        const [statsResult, requiredItemsResult] = await Promise.all([
+          this.findStatsByEquipmentSlug(equipment.slug),
+          this.findRequiredItemsByEquipmentSlug(equipment.slug)
+        ])
+
+        // Build the JSON record - use any type to handle the flexible EquipmentRecord structure
+        const jsonRecord: any = {
+          slug: equipment.slug,
+          name: equipment.name,
+          quality: equipment.quality,
+          type: equipment.type,
+          buy_value_gold: equipment.buy_value_gold || 0,
+          buy_value_coin: equipment.buy_value_coin || 0,
+          sell_value: equipment.sell_value,
+          guild_activity_points: equipment.guild_activity_points,
+          updated_on: new Date().toISOString(),
+        }
+
+        // Add campaign_sources if present
+        if (equipment.campaign_sources && equipment.campaign_sources.length > 0) {
+          jsonRecord.campaign_sources = equipment.campaign_sources
+        }
+
+        // Add stats for equipable items
+        if (equipment.type === 'equipable' && statsResult.data && statsResult.data.length > 0) {
+          jsonRecord.stats = {}
+          for (const stat of statsResult.data) {
+            jsonRecord.stats[stat.stat] = stat.value
+          }
+          jsonRecord.hero_level_required = equipment.hero_level_required || 1
+        }
+
+        // Add crafting info if it has required items
+        if (requiredItemsResult.data && requiredItemsResult.data.length > 0) {
+          jsonRecord.crafting = {
+            gold_cost: equipment.crafting_gold_cost || 0,
+            required_items: {}
+          }
+          for (const required of requiredItemsResult.data) {
+            jsonRecord.crafting.required_items[required.required_slug] = required.quantity
+          }
+        }
+
+        jsonRecords.push(jsonRecord as EquipmentRecord)
+      }
+
+      // Sort using the same logic as the original service
+      const sortedRecords = this.sortByQuality(jsonRecords as unknown as Database["public"]["Tables"]["equipment"]["Row"][]) as unknown as EquipmentRecord[]
+
+      return {
+        data: sortedRecords,
+        error: null,
+      }
+    } catch (error) {
+      log.error('Unexpected error getting all equipment as JSON:', error)
       return {
         data: null,
         error: {

@@ -1,12 +1,18 @@
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import type { Route } from "./+types/json";
 
-export async function loader(_: Route.LoaderArgs) {
-  const equipmentJson = await EquipmentDataService.getAllAsJson();
+export async function loader({ request }: Route.LoaderArgs) {
+  const equipmentRepository = new EquipmentRepository(request);
+  const equipmentResult = await equipmentRepository.getAllAsJson();
 
-  const file = createReadableStreamFromReadable(Readable.from(equipmentJson));
+  if (equipmentResult.error) {
+    throw new Response("Failed to load equipment", { status: 500 });
+  }
+
+  const equipmentJson = JSON.stringify(equipmentResult.data, null, 2);
+  const file = createReadableStreamFromReadable(Readable.from([equipmentJson]));
 
   return new Response(file, {
     headers: {

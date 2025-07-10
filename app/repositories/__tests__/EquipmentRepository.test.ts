@@ -13,7 +13,7 @@ describe('EquipmentRepository', () => {
 
   beforeEach(() => {
     mockSupabase = createMockSupabaseClient()
-    repository = EquipmentRepository.withSupabaseClient(mockSupabase as any)
+    repository = new EquipmentRepository(mockSupabase as any)
   })
 
   describe('constructor', () => {
@@ -23,7 +23,7 @@ describe('EquipmentRepository', () => {
     })
 
     it('should create repository with Supabase client', () => {
-      const repo = EquipmentRepository.withSupabaseClient(mockSupabase as any)
+      const repo = new EquipmentRepository(mockSupabase as any)
       expect(repo).toBeInstanceOf(EquipmentRepository)
     })
   })

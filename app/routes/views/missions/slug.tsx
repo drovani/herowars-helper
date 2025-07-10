@@ -7,7 +7,7 @@ import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug, getHeroImageUrl } from "~/lib/utils";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -65,8 +65,14 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const chapterTitle = chapterResult.data?.title || `Chapter ${mission.chapter_id}`;
 
   // Get equipment that can be found in this mission
-  const allEquipment = await EquipmentDataService.getAll();
-  const equipmentInMission = allEquipment.filter((equipment) => equipment.campaign_sources?.includes(slug));
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentInMissionResult = await equipmentRepo.findByCampaignSource(slug);
+  
+  if (equipmentInMissionResult.error) {
+    throw new Response("Failed to load equipment for mission", { status: 500 });
+  }
+  
+  const equipmentInMission = equipmentInMissionResult.data || [];
 
   // Get previous and next missions for navigation
   const missionIndex = missions.findIndex((m) => m.slug === slug);

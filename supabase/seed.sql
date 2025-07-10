@@ -18,7 +18,8 @@ INSERT INTO
     aud,
     confirmation_token,
     email_change_token_new,
-    recovery_token
+    recovery_token,
+    email_change
   )
 VALUES
   (
@@ -34,6 +35,7 @@ VALUES
     false,
     'authenticated',
     'authenticated',
+    '',
     '',
     '',
     ''

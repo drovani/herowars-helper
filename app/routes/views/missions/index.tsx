@@ -174,7 +174,7 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
                     >
                       <CardTitle className="text-sm truncate">
                         {mission.name}
-                        {mission.hero_slug && <span className="block text-xs opacity-75">{mission.hero_slug}</span>}
+                        {mission.hero_slug && <span className="block text-xs opacity-75 capitalize">{mission.hero_slug}</span>}
                       </CardTitle>
                     </CardHeader>
                   </Card>

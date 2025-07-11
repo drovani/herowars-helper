@@ -379,6 +379,87 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     }
   }
 
+  async findRawComponentOf(
+    slug: string
+  ): Promise<RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; totalQuantity: number }>>> {
+    try {
+      const finalProducts: Map<string, { equipment: Database["public"]["Tables"]["equipment"]["Row"]; totalQuantity: number }> = new Map();
+
+      // Recursive helper function
+      const traverse = async (componentSlug: string, multiplier: number = 1, path: string[] = []): Promise<void> => {
+        // Prevent circular dependencies by checking current path
+        if (path.includes(componentSlug)) {
+          return;
+        }
+
+        const newPath = [...path, componentSlug];
+
+        // Find what equipment requires this component
+        const requiredForResult = await this.findEquipmentThatRequires(componentSlug);
+        if (requiredForResult.error) {
+          // Propagate database errors up with the full error structure
+          const error = new Error(requiredForResult.error.message);
+          (error as any).code = requiredForResult.error.code;
+          (error as any).details = requiredForResult.error.details;
+          throw error;
+        }
+        
+        if (!requiredForResult.data?.length) {
+          // No equipment requires this - it might be a final product
+          return;
+        }
+
+        for (const { equipment, quantity } of requiredForResult.data) {
+          const newMultiplier = multiplier * quantity;
+
+          // Check if this equipment is used in other recipes
+          const nextLevelResult = await this.findEquipmentThatRequires(equipment.slug);
+          
+          if (nextLevelResult.error) {
+            // Propagate database errors up with the full error structure
+            const error = new Error(nextLevelResult.error.message);
+            (error as any).code = nextLevelResult.error.code;
+            (error as any).details = nextLevelResult.error.details;
+            throw error;
+          }
+
+          if (!nextLevelResult.data?.length) {
+            // This is a final product - add to results
+            const existing = finalProducts.get(equipment.slug);
+            if (existing) {
+              existing.totalQuantity += newMultiplier;
+            } else {
+              finalProducts.set(equipment.slug, {
+                equipment,
+                totalQuantity: newMultiplier
+              });
+            }
+          } else {
+            // This equipment is used in other recipes - continue traversing
+            await traverse(equipment.slug, newMultiplier, newPath);
+          }
+        }
+      };
+
+      await traverse(slug);
+
+      return {
+        data: Array.from(finalProducts.values()),
+        error: null
+      };
+    } catch (error) {
+      log.error(`Unexpected error finding raw component of ${slug}:`, error);
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+          code: (error as any).code,
+          details: (error as any).details || error,
+        },
+      };
+    }
+  }
+
   // Helper methods
   private sortByQuality(
     records: Database["public"]["Tables"]["equipment"]["Row"][]
@@ -426,7 +507,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         };
       } else {
         // Get all equipment
-        equipmentResult = await this.findAll();
+        equipmentResult = await this.findAll({});
       }
 
       if (equipmentResult.error) {

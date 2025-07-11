@@ -188,7 +188,7 @@ export default function AdminUsers() {
 
   const handleRoleChange = (userId: string, roles: string[]) => {
     if (!hasServiceRole) {
-      setMessage("Service role not configured. Please add VITE_SUPABASE_SERVICE_ROLE_KEY to your environment variables.");
+      setMessage("Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.");
       return;
     }
 
@@ -228,7 +228,7 @@ export default function AdminUsers() {
 
   const handleUserStatusChange = (userId: string, isEnabled: boolean) => {
     if (!hasServiceRole) {
-      setMessage("Service role not configured. Please add VITE_SUPABASE_SERVICE_ROLE_KEY to your environment variables.");
+      setMessage("Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.");
       return;
     }
 
@@ -252,7 +252,7 @@ export default function AdminUsers() {
 
   const handleDeleteUser = (userId: string) => {
     if (!hasServiceRole) {
-      setMessage("Service role not configured. Please add VITE_SUPABASE_SERVICE_ROLE_KEY to your environment variables.");
+      setMessage("Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.");
       return;
     }
 
@@ -711,7 +711,7 @@ export default function AdminUsers() {
                   🔧 Configuration Required
                 </p>
                 <p className="text-sm text-gray-600">
-                  Add <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">VITE_SUPABASE_SERVICE_ROLE_KEY</code> to your environment variables to enable full user management.
+                  Add <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">SUPABASE_SERVICE_ROLE_KEY</code> to your environment variables to enable full user management.
                 </p>
               </div>
             )}

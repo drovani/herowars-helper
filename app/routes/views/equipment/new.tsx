@@ -1,10 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { redirect, type UIMatch } from "react-router";
+import { redirect, type UIMatch, data } from "react-router";
 import { ZodError } from "zod";
 import EquipmentForm from "~/components/EquipmentForm";
 import { type EquipmentMutation, EquipmentMutationSchema } from "~/data/equipment.zod";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/new";
 
@@ -21,16 +21,22 @@ export const handle = {
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const missionRepo = new MissionRepository(request);
-  const [missionsResult, existingItems] = await Promise.all([
+  const equipmentRepo = new EquipmentRepository(request);
+  const [missionsResult, existingItemsResult] = await Promise.all([
     missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
-    EquipmentDataService.getAll()
+    equipmentRepo.findAll()
   ]);
 
   if (missionsResult.error) {
     throw new Response("Failed to load missions", { status: 500 });
   }
 
+  if (existingItemsResult.error) {
+    throw new Response("Failed to load existing equipment", { status: 500 });
+  }
+
   const missions = missionsResult.data || [];
+  const existingItems = existingItemsResult.data || [];
   
   // Convert Mission[] to MissionRecord[] for compatibility with existing components
   const allMissions = missions.map(mission => ({
@@ -53,12 +59,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
   try {
     const validated = EquipmentMutationSchema.parse(data);
 
-    const createResult = await EquipmentDataService.create(validated);
+    const equipmentRepo = new EquipmentRepository(request);
+    const createResult = await equipmentRepo.create(validated);
 
-    if (createResult instanceof ZodError) {
-      return data({ errors: createResult.format() }, { status: 400 });
+    if (createResult.error) {
+      return data({ errors: { _errors: [createResult.error.message] } }, { status: 400 });
     }
-    return redirect(`/equipment/${createResult.slug}`);
+
+    return redirect(`/equipment/${createResult.data!.slug}`);
 
   } catch (error) {
     if (error instanceof ZodError) {

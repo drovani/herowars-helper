@@ -4,7 +4,7 @@ import { adminUserOperations, ASSIGNABLE_ROLES, createAdminClient } from './admi
 // Mock environment variables
 const mockEnv = {
   VITE_SUPABASE_DATABASE_URL: 'https://test.supabase.co',
-  VITE_SUPABASE_SERVICE_ROLE_KEY: 'service-role-key'
+  SUPABASE_SERVICE_ROLE_KEY: 'service-role-key'
 };
 
 // Mock user data
@@ -65,7 +65,7 @@ describe('createAdminClient', () => {
     vi.clearAllMocks();
     // Set up environment variables
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   afterEach(() => {
@@ -81,24 +81,24 @@ describe('createAdminClient', () => {
     delete process.env.VITE_SUPABASE_DATABASE_URL;
 
     expect(() => createAdminClient()).toThrow(
-      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
+      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
     );
   });
 
-  it('should throw error when VITE_SUPABASE_SERVICE_ROLE_KEY is missing', () => {
-    delete process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+  it('should throw error when SUPABASE_SERVICE_ROLE_KEY is missing', () => {
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     expect(() => createAdminClient()).toThrow(
-      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
+      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
     );
   });
 
   it('should throw error when both environment variables are missing', () => {
     delete process.env.VITE_SUPABASE_DATABASE_URL;
-    delete process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     expect(() => createAdminClient()).toThrow(
-      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_SERVICE_ROLE_KEY'
+      'Missing required environment variables: VITE_SUPABASE_DATABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
     );
   });
 });
@@ -107,7 +107,7 @@ describe('adminUserOperations.getAllUsers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   it('should successfully fetch all users', async () => {
@@ -139,7 +139,7 @@ describe('adminUserOperations.updateUserRoles', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   it('should successfully update user roles with valid roles', async () => {
@@ -228,7 +228,7 @@ describe('adminUserOperations.getUserById', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   it('should successfully fetch user by ID', async () => {
@@ -260,7 +260,7 @@ describe('adminUserOperations.disableUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   it('should successfully disable user', async () => {
@@ -295,7 +295,7 @@ describe('adminUserOperations.enableUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   it('should successfully enable user', async () => {
@@ -330,7 +330,7 @@ describe('adminUserOperations.createUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   it('should successfully create user with email and password', async () => {
@@ -484,7 +484,7 @@ describe('adminUserOperations.deleteUser', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITE_SUPABASE_DATABASE_URL = mockEnv.VITE_SUPABASE_DATABASE_URL;
-    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY = mockEnv.VITE_SUPABASE_SERVICE_ROLE_KEY;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = mockEnv.SUPABASE_SERVICE_ROLE_KEY;
   });
 
   it('should successfully delete disabled user', async () => {

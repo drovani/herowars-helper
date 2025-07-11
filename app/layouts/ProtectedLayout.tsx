@@ -1,11 +1,9 @@
-import log from "loglevel";
 import { Outlet } from "react-router";
 import { UnauthorizedAccess } from "~/components/auth/UnauthorizedAccess";
 import { useAuth } from "~/contexts/AuthContext";
 
 export default function ProtectedLayout({ roles = [] }: { roles?: string[] }) {
   const { isAuthenticated, user, isLoading } = useAuth();
-  log.debug("ProtectedLayout", { isAuthenticated, user, isLoading });
 
   // Show loading state while auth is initializing
   if (isLoading) {

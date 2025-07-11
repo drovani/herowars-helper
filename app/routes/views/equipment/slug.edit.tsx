@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 import { ZodError } from "zod";
 import EquipmentForm from "~/components/EquipmentForm";
 import { EquipmentMutationSchema, type EquipmentMutation } from "~/data/equipment.zod";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/slug.edit";
 
@@ -35,8 +35,11 @@ export const handle = {
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing equipment slug param.");
-  const equipment = await EquipmentDataService.getById(params.slug);
-  if (!equipment) {
+  
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentResult = await equipmentRepo.findById(params.slug);
+  
+  if (equipmentResult.error || !equipmentResult.data) {
     throw new Response(null, {
       status: 404,
       statusText: `Equipment with slug ${params.slug} not found.`,
@@ -44,16 +47,21 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
 
   const missionRepo = new MissionRepository(request);
-  const [missionsResult, existingItems] = await Promise.all([
+  const [missionsResult, existingItemsResult] = await Promise.all([
     missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
-    EquipmentDataService.getAll()
+    equipmentRepo.findAll()
   ]);
 
   if (missionsResult.error) {
     throw new Response("Failed to load missions", { status: 500 });
   }
 
+  if (existingItemsResult.error) {
+    throw new Response("Failed to load existing equipment", { status: 500 });
+  }
+
   const missions = missionsResult.data || [];
+  const existingItems = existingItemsResult.data || [];
   
   // Convert Mission[] to MissionRecord[] for compatibility with existing components
   const allMissions = missions.map(mission => ({
@@ -67,7 +75,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }));
 
   return data(
-    { existingItems, allMissions, equipment },
+    { existingItems, allMissions, equipment: equipmentResult.data },
     {
       headers: {
         "Cache-Control": "no-store, must-revalidate",
@@ -81,18 +89,19 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   invariant(params.slug, "Missing equipment slug param");
 
   const formData = await request.formData();
-  const data = JSON.parse(formData.get("equipment") as string);
+  const formDataObject = JSON.parse(formData.get("equipment") as string);
 
   try {
-    const validated = EquipmentMutationSchema.parse(data);
+    const validated = EquipmentMutationSchema.parse(formDataObject);
 
-    const updateResults = await EquipmentDataService.update(params.slug, validated);
+    const equipmentRepo = new EquipmentRepository(request);
+    const updateResult = await equipmentRepo.update(params.slug, validated);
 
-    if (updateResults instanceof ZodError) {
-      return data({ errors: updateResults.format() }, { stats: 400 });
-    } else {
-      return redirect(`/equipment/${updateResults.slug}`);
+    if (updateResult.error) {
+      return data({ errors: { _errors: [updateResult.error.message] } }, { status: 400 });
     }
+
+    return redirect(`/equipment/${updateResult.data!.slug}`);
   } catch (error) {
     if (error instanceof ZodError) {
       return data({ errors: error.format() }, { status: 400 });

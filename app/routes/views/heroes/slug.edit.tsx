@@ -8,7 +8,7 @@ import { ZodError } from "zod";
 import HeroForm from "~/components/HeroForm";
 import { Badge } from "~/components/ui/badge";
 import { HeroMutationSchema, type HeroMutation } from "~/data/hero.zod";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import HeroDataService from "~/services/HeroDataService";
 import type { Route } from "./+types/slug.edit";
 
@@ -36,7 +36,7 @@ export const handle = {
   ],
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing hero slug param.");
   const hero = await HeroDataService.getById(params.slug);
   if (!hero) {
@@ -46,10 +46,15 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     });
   }
 
-  const equipment = await EquipmentDataService.getEquipableEquipment();
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentResult = await equipmentRepo.findEquipableEquipment();
+
+  if (equipmentResult.error) {
+    throw new Response("Failed to load equipment", { status: 500 });
+  }
 
   return data(
-    { hero, equipment },
+    { hero, equipment: equipmentResult.data },
     {
       headers: {
         "Cache-Control": "no-store, must-revalidate",

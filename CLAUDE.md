@@ -40,7 +40,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - NEVER ignore the output of the system or the tests - Logs and messages often contain CRITICAL information.
 - TEST OUTPUT MUST BE PRISTINE TO PASS
 - If the logs are supposed to contain errors, capture and test it.
-- NO EXCEPTIONS POLICY: Under no circumstances should you mark any test type as "not applicable". Every project, regardless of size or complexity, MUST have unit tests, integration tests, AND end-to-end tests. If you believe a test type doesn't apply, you need the human to say exactly "I AUTHORIZE YOU TO SKIP WRITING TESTS THIS TIME"
+- NO EXCEPTIONS POLICY: Under no circumstances should you mark any test type as "not applicable". Every project, regardless of size or complexity, MUST have unit tests AND integration tests. If you believe a test type doesn't apply, you need the human to say exactly "I AUTHORIZE YOU TO SKIP WRITING TESTS THIS TIME"
 
 ## We practice TDD. That means:
 
@@ -231,7 +231,7 @@ Optional for full user management:
 
 ## Testing Framework
 
-The project uses a comprehensive testing approach with **Vitest** for unit/integration tests and **Playwright** for end-to-end testing:
+The project uses **Vitest** for unit and integration testing:
 
 ### Unit & Integration Testing (Vitest)
 - `npm test` - Run tests in watch mode
@@ -302,63 +302,12 @@ This pattern:
 - Automatically restores normal logging after each test
 - Should be applied to all repository tests
 
-### End-to-End Testing (Playwright)
-- `npm run e2e` - Run all e2e tests
-- `npm run e2e:headed` - Run tests with browser UI visible
-- `npm run e2e:debug` - Run tests in debug mode (step through)
-- `npm run e2e:ui` - Run tests with Playwright UI
-- `npm run e2e:report` - View test results report
-- `npm run e2e:debug-tools` - Run tests tagged with @debug-tools
-- `npm run e2e:no-debug` - Run tests excluding @debug-tools
-
-#### E2E Testing Features
-- **DOM Snapshots**: Automatic HTML and screenshot capture at key test steps
-- **Console Error Tracking**: Monitor and capture all browser console messages, errors, and warnings
-- **Debug Reports**: Generate comprehensive JSON reports with all captured debugging data
-- **Network Monitoring**: Wait for network idle states and track async operations
-- **Responsive Testing**: Test across different viewport sizes and devices
-- **Multi-Browser Support**: Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari
-
-#### E2E Test Structure
-- Test files: `e2e/**/*.spec.ts`
-- Debug utilities: `e2e/utils/debug-helpers.ts`
-- Configuration: `playwright.config.ts`
-- Documentation: `e2e/README.md`
-
-#### Debugging UI Issues with Playwright
-When encountering wonky or unintuitive UI behavior or regressions:
-
-1. **Run example debug test**: `npm run e2e e2e/example-debug.spec.ts`
-2. **Use headed mode**: `npm run e2e:headed` to see browser interactions
-3. **Step through with debugger**: `npm run e2e:debug` for interactive debugging
-4. **Check console errors**: Review `playwright-report/debug-reports/` for JavaScript errors
-5. **Analyze DOM snapshots**: Compare HTML structure in `playwright-report/snapshots/`
-6. **Test responsive behavior**: Verify UI works across different screen sizes
-
-#### E2E Debug Helper Usage
-```typescript
-import { createDebugHelper } from './utils/debug-helpers';
-
-test('my test', async ({ page }) => {
-  const debug = createDebugHelper(page, 'test-name');
-  
-  await page.goto('/');
-  await debug.takeDOMSnapshot('step-name');
-  await debug.waitForNetworkIdle();
-  await debug.logPageState();
-  await debug.assertNoConsoleErrors();
-  await debug.generateDebugReport();
-});
-```
-
 ### Testing Guidelines
 - **Components**: Test rendering, interactions, props, and accessibility
 - **Hooks**: Test state changes, effects, and edge cases  
 - **Business Logic**: Test validation, permissions, and error handling
 - **Supabase Operations**: Mock the client and test query building and data transformation
 - **Repository Tests**: Use loglevel log capturing pattern to ensure clean test output - capture logs to in-memory arrays instead of console during tests
-- **E2E Tests**: Focus on user workflows, critical paths, and cross-browser compatibility
-- **Debug First**: When UI issues are reported, use Playwright's debugging tools to understand the problem before making changes
 
 ## Tailwind CSS Guidelines
 

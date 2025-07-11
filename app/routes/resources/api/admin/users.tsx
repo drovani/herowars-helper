@@ -83,13 +83,6 @@ export async function action({ request }: { request: Request }) {
     const action = formData.get("action") as string;
     const userId = formData.get("userId") as string;
 
-    // Debug logging
-    log.debug('API Debug:', {
-      action,
-      userId,
-      allFormData: Object.fromEntries(formData.entries())
-    });
-
     if (!action) {
       return new Response(JSON.stringify({ error: "Missing action parameter" }), {
         status: 400,

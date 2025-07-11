@@ -286,7 +286,7 @@ export async function action({ request }: Route.ActionArgs) {
             details.errors.forEach((errorItem: any) => {
               results.equipment.errors++;
               results.equipment.errorDetails.push({
-                record: errorItem.inputData || null,
+                record: errorItem.inputData || errorItem.data || null,
                 error: {
                   message: errorItem.message,
                   code: errorItem.code,

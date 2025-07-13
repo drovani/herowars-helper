@@ -31,20 +31,31 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   const equipmentRepo = new EquipmentRepository(request);
 
-  // Get main equipment details
-  const equipmentResult = await equipmentRepo.findById(params.slug);
+  // Get main equipment details in both formats
+  const [equipmentJsonResult, equipmentDbResult] = await Promise.all([
+    equipmentRepo.getAllAsJson([params.slug]),
+    equipmentRepo.findById(params.slug)
+  ]);
 
-  if (equipmentResult.error || !equipmentResult.data) {
+  if (equipmentJsonResult.error || !equipmentJsonResult.data || equipmentJsonResult.data.length === 0) {
     throw new Response(null, {
       status: 404,
       statusText: `Equipment with id ${params.slug} not found.`,
     });
   }
 
-  const equipment = equipmentResult.data;
+  if (equipmentDbResult.error || !equipmentDbResult.data) {
+    throw new Response(null, {
+      status: 404,
+      statusText: `Equipment with id ${params.slug} not found.`,
+    });
+  }
+
+  const equipment = equipmentJsonResult.data[0];
+  const equipmentDb = equipmentDbResult.data;
 
   // Get all equipment for navigation
-  const sortedEquipmentResult = await equipmentRepo.findAll();
+  const sortedEquipmentResult = await equipmentRepo.getAllAsJson();
   if (sortedEquipmentResult.error) {
     throw new Response("Failed to load equipment list", { status: 500 });
   }
@@ -57,8 +68,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   // Get equipment relationships
   const [requiredForResult, requiredEquipmentResult, requiredEquipmentRawResult, rawComponentOfResult] = await Promise.all([
     equipmentRepo.findEquipmentThatRequires(equipment.slug),
-    equipmentRepo.findEquipmentRequiredFor(equipment),
-    equipmentRepo.findEquipmentRequiredForRaw(equipment),
+    equipmentRepo.findEquipmentRequiredFor(equipmentDb),
+    equipmentRepo.findEquipmentRequiredForRaw(equipmentDb),
     equipmentRepo.findRawComponentOf(equipment.slug)
   ]);
 
@@ -181,11 +192,11 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
               <div>Buy Value:</div>
               <div className={`flex items-center gap-2 ${equipment.buy_value_gold === 0 && "opacity-40"}`}>
                 <img src="/images/gold.webp" alt="Gold" className="w-6 h-6" />
-                <span>{equipment.buy_value_gold.toLocaleString()}</span>
+                <span>{(equipment.buy_value_gold ?? 0).toLocaleString()}</span>
               </div>
               <div className={`flex items-center gap-2 ${equipment.buy_value_coin === 0 && "opacity-40"}`}>
                 <img src="/images/arena-coin.png" alt="Arena Coin" className="w-6 h-6 rounded-full" />
-                <span>{equipment.buy_value_coin.toLocaleString()}</span>
+                <span>{(equipment.buy_value_coin ?? 0).toLocaleString()}</span>
               </div>
             </div>
             <div className="text-sm space-y-2">
@@ -270,7 +281,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
               {requiredEquipment.map((requiredItem, index) => (
                 <EquipmentItem
                   key={requiredItem?.equipment?.slug || `missing-${index}`}
-                  item={requiredItem?.equipment}
+                  item={requiredItem?.equipment as EquipmentRecord}
                   quantity={requiredItem?.quantity || 0}
                 />
               ))}

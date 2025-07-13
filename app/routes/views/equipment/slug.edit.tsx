@@ -37,9 +37,9 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing equipment slug param.");
   
   const equipmentRepo = new EquipmentRepository(request);
-  const equipmentResult = await equipmentRepo.findById(params.slug);
+  const equipmentResult = await equipmentRepo.getAllAsJson([params.slug]);
   
-  if (equipmentResult.error || !equipmentResult.data) {
+  if (equipmentResult.error || !equipmentResult.data || equipmentResult.data.length === 0) {
     throw new Response(null, {
       status: 404,
       statusText: `Equipment with slug ${params.slug} not found.`,
@@ -49,7 +49,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const missionRepo = new MissionRepository(request);
   const [missionsResult, existingItemsResult] = await Promise.all([
     missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
-    equipmentRepo.findAll()
+    equipmentRepo.getAllAsJson()
   ]);
 
   if (missionsResult.error) {
@@ -75,7 +75,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }));
 
   return data(
-    { existingItems, allMissions, equipment: equipmentResult.data },
+    { existingItems, allMissions, equipment: equipmentResult.data[0] },
     {
       headers: {
         "Cache-Control": "no-store, must-revalidate",

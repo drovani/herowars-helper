@@ -155,7 +155,7 @@ export abstract class BaseRepository<T extends TableName> {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validation.error.errors,
+            details: validation.error.issues,
           },
         }
       }
@@ -217,7 +217,7 @@ export abstract class BaseRepository<T extends TableName> {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validation.error.errors,
+            details: validation.error.issues,
           },
         }
       }
@@ -401,7 +401,7 @@ export abstract class BaseRepository<T extends TableName> {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validation.error.errors,
+            details: validation.error.issues,
           },
         }
       }

@@ -47,14 +47,14 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
 
   const equipmentRepo = new EquipmentRepository(request);
-  const equipmentResult = await equipmentRepo.findEquipableEquipment();
+  const equipmentResult = await equipmentRepo.getAllAsJson();
 
   if (equipmentResult.error) {
     throw new Response("Failed to load equipment", { status: 500 });
   }
 
   return data(
-    { hero, equipment: equipmentResult.data },
+    { hero, equipment: equipmentResult.data?.filter(eq => eq.type === "equipable") || [] },
     {
       headers: {
         "Cache-Control": "no-store, must-revalidate",

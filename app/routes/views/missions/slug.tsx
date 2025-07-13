@@ -66,13 +66,15 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   // Get equipment that can be found in this mission
   const equipmentRepo = new EquipmentRepository(request);
-  const equipmentInMissionResult = await equipmentRepo.findByCampaignSource(slug);
+  const allEquipmentResult = await equipmentRepo.getAllAsJson();
   
-  if (equipmentInMissionResult.error) {
+  if (allEquipmentResult.error) {
     throw new Response("Failed to load equipment for mission", { status: 500 });
   }
   
-  const equipmentInMission = equipmentInMissionResult.data || [];
+  const equipmentInMission = allEquipmentResult.data?.filter(eq => 
+    eq.campaign_sources?.includes(slug)
+  ) || [];
 
   // Get previous and next missions for navigation
   const missionIndex = missions.findIndex((m) => m.slug === slug);

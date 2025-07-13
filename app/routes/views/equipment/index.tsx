@@ -51,7 +51,7 @@ export default function EquipmentIndex({ loaderData }: Route.ComponentProps) {
         </div>
       </RequireEditor>
 
-      {equipments.length ? (
+      {equipments?.length ? (
         <div className="gap-2 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {equipments.map((equipment) => (
             <Link to={`/equipment/${equipment.slug}`} key={equipment.slug} viewTransition>

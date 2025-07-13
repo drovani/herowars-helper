@@ -14,13 +14,13 @@ import type { Route } from "./+types/index";
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroes = await HeroDataService.getAll();
   const equipmentRepo = new EquipmentRepository(request);
-  const equipmentResult = await equipmentRepo.findEquipableEquipment();
+  const equipmentResult = await equipmentRepo.getAllAsJson();
 
   if (equipmentResult.error) {
     throw new Response("Failed to load equipment", { status: 500 });
   }
 
-  return { heroes, equipment: equipmentResult.data };
+  return { heroes, equipment: equipmentResult.data?.filter(eq => eq.type === "equipable") || [] };
 };
 
 export default function HeroesIndex({ loaderData }: Route.ComponentProps) {

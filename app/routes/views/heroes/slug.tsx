@@ -64,7 +64,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     }
   }
   const equipmentRepo = new EquipmentRepository(request);
-  const equipmentUsedResult = await equipmentRepo.findAll();
+  const equipmentUsedResult = await equipmentRepo.getAllAsJson();
   
   if (equipmentUsedResult.error) {
     throw new Response("Failed to load equipment", { status: 500 });

@@ -24,7 +24,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const equipmentRepo = new EquipmentRepository(request);
   const [missionsResult, existingItemsResult] = await Promise.all([
     missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
-    equipmentRepo.findAll()
+    equipmentRepo.getAllAsJson()
   ]);
 
   if (missionsResult.error) {

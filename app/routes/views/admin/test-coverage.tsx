@@ -1,5 +1,5 @@
-import { CheckCircle, ChevronDown, ChevronRight, ExternalLink, FileText, XCircle, Filter, Blocks, Navigation, Anchor, Wrench, TestTube, Cog } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { Anchor, Blocks, CheckCircle, ChevronDown, ChevronRight, Cog, ExternalLink, FileText, Filter, Navigation, TestTube, Wrench, XCircle } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { useLoaderData } from 'react-router'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -57,7 +57,7 @@ export async function loader({ request }: { request: Request }) {
   try {
     const stats = fs.statSync(coverageFilePath)
     lastUpdated = stats.mtime.toISOString()
-    
+
     const fileContent = fs.readFileSync(coverageFilePath, 'utf8')
     coverageData = JSON.parse(fileContent)
   } catch (error) {
@@ -104,7 +104,7 @@ function getCoverageThreshold(pct: number): CoverageThreshold {
 }
 
 function getFileType(filePath: string): FileType {
-  const cleanPath = filePath.replace(/^\/.*\/inavord-react-router\//, '')
+  const cleanPath = filePath.replace(/^\/.*\/herowars-helper\//, '')
   if (cleanPath.startsWith('app/components/')) return 'components'
   if (cleanPath.startsWith('app/routes/')) return 'routes'
   if (cleanPath.startsWith('app/hooks/')) return 'hooks'
@@ -127,20 +127,20 @@ function getFileTypeIcon(fileType: FileType) {
 
 function getCoverageIssues(fileData: CoverageFile): CoverageIssue[] {
   const issues: CoverageIssue[] = []
-  
+
   const uncoveredFunctions = Object.values(fileData.f).filter(count => count === 0).length
-  const uncoveredBranches = Object.values(fileData.b).reduce((sum, branches) => 
+  const uncoveredBranches = Object.values(fileData.b).reduce((sum, branches) =>
     sum + branches.filter(count => count === 0).length, 0)
   const uncoveredStatements = Object.values(fileData.s).filter(count => count === 0).length
-  
+
   const totalFunctions = Object.keys(fileData.f).length
   const totalBranches = Object.values(fileData.b).reduce((sum, branches) => sum + branches.length, 0)
   const totalStatements = Object.keys(fileData.s).length
-  
+
   if (uncoveredFunctions > 0) issues.push('uncovered-functions')
   if (uncoveredBranches > 0) issues.push('uncovered-branches')
   if (uncoveredStatements > 0) issues.push('uncovered-statements')
-  
+
   // Mixed coverage: has some covered and some uncovered code
   const hasCoveredCode = (
     (totalFunctions > uncoveredFunctions) ||
@@ -148,17 +148,17 @@ function getCoverageIssues(fileData: CoverageFile): CoverageIssue[] {
     (totalStatements > uncoveredStatements)
   )
   const hasUncoveredCode = uncoveredFunctions > 0 || uncoveredBranches > 0 || uncoveredStatements > 0
-  
+
   if (hasCoveredCode && hasUncoveredCode) {
     issues.push('mixed-coverage')
   }
-  
+
   return issues
 }
 
 function FileDetails({ filePath, fileData }: { filePath: string; fileData: CoverageFile }) {
   const [isOpen, setIsOpen] = useState(false)
-  
+
   // Get file type and icon
   const fileType = getFileType(filePath)
   const FileTypeIcon = getFileTypeIcon(fileType)
@@ -179,9 +179,9 @@ function FileDetails({ filePath, fileData }: { filePath: string; fileData: Cover
 
   // Helper function to open file in VS Code
   const openInVSCode = (lineNumber?: number) => {
-    const cleanPath = filePath.replace(/^\/.*\/inavord-react-router\//, '')
+    const cleanPath = filePath.replace(/^\/.*\/herowars-helper\//, '')
     // For local development, assume the project is in the current working directory
-    const fullPath = `${window.location.origin.includes('localhost') ? '/home/drovani/inavord-react-router' : ''}/${cleanPath}`
+    const fullPath = `${window.location.origin.includes('localhost') ? '/home/drovani/herowars-helper' : ''}/${cleanPath}`
     const uri = lineNumber
       ? `vscode://file${fullPath}:${lineNumber}`
       : `vscode://file${fullPath}`
@@ -190,11 +190,11 @@ function FileDetails({ filePath, fileData }: { filePath: string; fileData: Cover
 
   // Helper function to open file on GitHub
   const openOnGitHub = (lineNumber?: number) => {
-    const cleanPath = filePath.replace(/^\/.*\/inavord-react-router\//, '')
+    const cleanPath = filePath.replace(/^\/.*\/herowars-helper\//, '')
     // Update this with your actual GitHub repository URL
     const githubUrl = lineNumber
-      ? `https://github.com/drovani/inavord-react-router/blob/main/${cleanPath}#L${lineNumber}`
-      : `https://github.com/drovani/inavord-react-router/blob/main/${cleanPath}`
+      ? `https://github.com/drovani/herowars-helper/blob/main/${cleanPath}#L${lineNumber}`
+      : `https://github.com/drovani/herowars-helper/blob/main/${cleanPath}`
     window.open(githubUrl, '_blank')
   }
 
@@ -207,7 +207,7 @@ function FileDetails({ filePath, fileData }: { filePath: string; fileData: Cover
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {isOpen ? <ChevronDown className="size-4 flex-shrink-0" /> : <ChevronRight className="size-4 flex-shrink-0" />}
                 <FileTypeIcon className="size-4 flex-shrink-0" />
-                <CardTitle className="text-sm font-mono truncate">{filePath.replace(/^\/.*\/inavord-react-router\//, '')}</CardTitle>
+                <CardTitle className="text-sm font-mono truncate">{filePath.replace(/^\/.*\/herowars-helper\//, '')}</CardTitle>
               </div>
               <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 <Button
@@ -330,11 +330,11 @@ function FileDetails({ filePath, fileData }: { filePath: string; fileData: Cover
 
 export default function AdminTestCoverage() {
   const data = useLoaderData<typeof loader>()
-  const { coverage, lastUpdated, hasError, errorMessage } = data as { 
-    coverage: CoverageData; 
-    lastUpdated: string; 
-    hasError?: boolean; 
-    errorMessage?: string; 
+  const { coverage, lastUpdated, hasError, errorMessage } = data as {
+    coverage: CoverageData;
+    lastUpdated: string;
+    hasError?: boolean;
+    errorMessage?: string;
   }
 
   // Filter state
@@ -350,30 +350,30 @@ export default function AdminTestCoverage() {
   const filteredFiles = useMemo(() => {
     return allFiles.filter(([filePath, fileData]) => {
       const file = fileData as CoverageFile
-      
+
       // Calculate statement coverage percentage
       const totalStatements = Object.keys(file.s).length
       const coveredStatements = Object.values(file.s).filter(count => count > 0).length
       const statementPct = totalStatements > 0 ? (coveredStatements / totalStatements) * 100 : 0
-      
+
       // Coverage threshold filter
       if (coverageFilter !== 'all') {
         const threshold = getCoverageThreshold(statementPct)
         if (threshold !== coverageFilter) return false
       }
-      
+
       // File type filter
       if (fileTypeFilter !== 'all') {
         const fileType = getFileType(filePath)
         if (fileType !== fileTypeFilter) return false
       }
-      
+
       // Coverage issues filter
       if (issueFilter !== 'all') {
         const issues = getCoverageIssues(file)
         if (!issues.includes(issueFilter)) return false
       }
-      
+
       return true
     })
   }, [allFiles, coverageFilter, fileTypeFilter, issueFilter])
@@ -500,7 +500,7 @@ export default function AdminTestCoverage() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">File Type</label>
               <Select value={fileTypeFilter} onValueChange={(value: FileType) => setFileTypeFilter(value)}>
@@ -548,7 +548,7 @@ export default function AdminTestCoverage() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Coverage Issues</label>
               <Select value={issueFilter} onValueChange={(value: CoverageIssue) => setIssueFilter(value)}>
@@ -565,13 +565,13 @@ export default function AdminTestCoverage() {
               </Select>
             </div>
           </div>
-          
+
           {/* Filter results summary */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <p className="text-sm text-muted-foreground">
               Showing {filteredFiles.length} of {allFiles.length} files
             </p>
-            
+
             {(coverageFilter !== 'all' || fileTypeFilter !== 'all' || issueFilter !== 'all') && (
               <Button
                 variant="outline"

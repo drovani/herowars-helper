@@ -214,7 +214,8 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(+e.target.value)}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
                       className="pl-10"
                     />
                     <img
@@ -239,7 +240,8 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(+e.target.value)}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
                       className="pl-10"
                     />
                     <img
@@ -266,7 +268,7 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                       <Input
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(+e.target.value)}
+                        onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
                         className="pl-10"
                       />
                       <img
@@ -292,7 +294,7 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                       <Input
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(+e.target.value)}
+                        onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
                         className="pl-10"
                       />
                       <img

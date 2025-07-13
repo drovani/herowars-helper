@@ -63,7 +63,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findAll(
-    options: FindAllOptions
+    options: FindAllOptions = {}
   ): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
     const { data, error } = await super.findAll(options);
     if (!options?.orderBy && data) {
@@ -403,7 +403,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
           (error as any).details = requiredForResult.error.details;
           throw error;
         }
-        
+
         if (!requiredForResult.data?.length) {
           // No equipment requires this - it might be a final product
           return;
@@ -414,7 +414,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
           // Check if this equipment is used in other recipes
           const nextLevelResult = await this.findEquipmentThatRequires(equipment.slug);
-          
+
           if (nextLevelResult.error) {
             // Propagate database errors up with the full error structure
             const error = new Error(nextLevelResult.error.message);

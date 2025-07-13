@@ -1,16 +1,26 @@
-CREATE OR REPLACE FUNCTION public.has_editorial_role()
- RETURNS boolean
- LANGUAGE sql
- STABLE
-AS $function$SELECT (auth.jwt() -> 'app_metadata' -> 'roles')::jsonb ?| array['editor', 'admin'];$function$;
+CREATE
+OR REPLACE FUNCTION public.has_editorial_role () RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER
+SET
+    search_path = '' AS $$
+BEGIN
+    RETURN auth.uid() IS NOT NULL
+        AND (
+            auth.jwt() ->> 'app_metadata' IS NOT NULL
+            AND (
+                auth.jwt() -> 'app_metadata' -> 'roles' ? 'editor'
+                OR auth.jwt() -> 'app_metadata' -> 'roles' ? 'admin'
+            )
+        );
+END;
+$$;
 
-CREATE OR REPLACE FUNCTION update_policies_with_summary(
+CREATE
+OR REPLACE FUNCTION update_policies_with_summary (
     table_names text[],
     operations text[] DEFAULT ARRAY['SELECT', 'INSERT', 'UPDATE', 'DELETE']
-)
-RETURNS TABLE(action text, count integer)
-LANGUAGE plpgsql
-AS $$
+) RETURNS TABLE (action text, count integer) LANGUAGE plpgsql SECURITY DEFINER
+SET
+    search_path = '' AS $$
 DECLARE
     table_name text;
     operation text;
@@ -18,6 +28,11 @@ DECLARE
     policies_deleted integer := 0;
     policies_created integer := 0;
 BEGIN
+    -- Security check: Only allow admin users to run this function
+    IF NOT public.has_editorial_role() THEN
+        RAISE EXCEPTION 'Permission denied. Only admin users can manage RLS policies.';
+    END IF;
+
     -- Drop existing policies
     FOREACH table_name IN ARRAY table_names
     LOOP
@@ -83,6 +98,23 @@ BEGIN
         ('Policies deleted', policies_deleted),
         ('Policies created', policies_created);
 END $$;
+
+-- Restrict function access to service_role only
+-- Regular users cannot execute this dangerous function
+REVOKE ALL ON FUNCTION update_policies_with_summary (text[], text[])
+FROM
+    PUBLIC;
+
+REVOKE ALL ON FUNCTION update_policies_with_summary (text[], text[])
+FROM
+    anon;
+
+REVOKE ALL ON FUNCTION update_policies_with_summary (text[], text[])
+FROM
+    authenticated;
+
+GRANT
+EXECUTE ON FUNCTION update_policies_with_summary (text[], text[]) TO service_role;
 
 -- Optionally, run this query to update policies for specific tables
 -- Combined query that shows both policy summary and tables without policies

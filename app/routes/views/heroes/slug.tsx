@@ -11,7 +11,7 @@ import HeroStoneSources from "~/components/hero/HeroStoneSources";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import HeroDataService from "~/services/HeroDataService";
 import type { Route } from "./+types/slug";
 
@@ -63,7 +63,15 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
       equipmentSlugs.push(...itemSlugs);
     }
   }
-  const equipmentUsed = await EquipmentDataService.getAll(equipmentSlugs);
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentUsedResult = await equipmentRepo.getAllAsJson();
+  
+  if (equipmentUsedResult.error) {
+    throw new Response("Failed to load equipment", { status: 500 });
+  }
+  
+  // Filter to only the equipment used by this hero
+  const equipmentUsed = equipmentUsedResult.data?.filter(eq => equipmentSlugs.includes(eq.slug)) || [];
   const allHeroes = await HeroDataService.getAll();
 
   const currentIndex = allHeroes.findIndex((h) => h.slug === hero.slug);

@@ -38,7 +38,7 @@ export interface IChangeTracked extends z.infer<typeof ChangeTrackedSchema> {}
 export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
   implements DataService<TRecord, TMutation>
 {
-  protected abstract mutationSchema: z.ZodType<TRecord, z.ZodTypeDef, TMutation>;
+  protected abstract mutationSchema: z.ZodType<any, any, any>;
   protected recordName: string;
 
   protected localRecordsCache: Map<string, TRecord> = new Map();
@@ -105,18 +105,18 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
     try {
       const parseResults = this.mutationSchema.safeParse(record);
       if (!parseResults.success) {
-        return parseResults.error;
+        return parseResults.error as ZodError<TMutation>;
       }
 
-      const id = this.getRecordId(parseResults.data);
+      const id = this.getRecordId(parseResults.data as TRecord | TMutation);
       const existing = await this.getById(id);
 
       if (existing) {
         throw new Error(`${this.recordName} record with id ${id} already exists.`);
       }
 
-      this.localRecordsCache.set(id, parseResults.data);
-      return parseResults.data;
+      this.localRecordsCache.set(id, parseResults.data as TRecord);
+      return parseResults.data as TRecord;
     } catch (error) {
       log.error(`Failed to create ${this.recordName} record:`, error);
       if (error instanceof Error) {
@@ -130,7 +130,7 @@ export abstract class BaseDataService<TRecord extends IChangeTracked, TMutation>
     try {
       const parseResults = this.mutationSchema.safeParse(mutation);
       if (!parseResults.success) {
-        return parseResults.error;
+        return parseResults.error as ZodError<TMutation>;
       }
 
       const newId = this.getRecordId(parseResults.data);

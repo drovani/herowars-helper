@@ -4,7 +4,7 @@ import heroJson from "~/data/heroes.json";
 import { BaseDataService } from "./BaseDataService";
 
 class HeroDataService extends BaseDataService<HeroRecord, HeroMutation> {
-  protected mutationSchema = HeroMutationSchema as unknown as z.ZodType<HeroRecord, z.ZodTypeDef, HeroMutation>;
+  protected mutationSchema = HeroMutationSchema as any;
 
   constructor() {
     super("heroes", "Hero", heroJson as HeroRecord[]);

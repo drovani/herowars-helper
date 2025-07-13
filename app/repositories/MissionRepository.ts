@@ -268,7 +268,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
             error: {
               message: "Validation failed",
               code: "VALIDATION_ERROR",
-              details: validation.error.errors,
+              details: validation.error.issues,
             },
           })
           continue
@@ -362,7 +362,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
             error: {
               message: "Validation failed",
               code: "VALIDATION_ERROR",
-              details: validation.error.errors,
+              details: validation.error.issues,
             },
           })
           continue

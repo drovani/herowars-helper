@@ -7,15 +7,20 @@ import { Input } from "~/components/ui/input";
 import { ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import HeroDataService from "~/services/HeroDataService";
 import type { Route } from "./+types/index";
 
-export const loader = async (_: Route.LoaderArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroes = await HeroDataService.getAll();
-  const equipment = await EquipmentDataService.getEquipableEquipment();
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentResult = await equipmentRepo.getAllAsJson();
 
-  return { heroes, equipment };
+  if (equipmentResult.error) {
+    throw new Response("Failed to load equipment", { status: 500 });
+  }
+
+  return { heroes, equipment: equipmentResult.data?.filter(eq => eq.type === "equipable") || [] };
 };
 
 export default function HeroesIndex({ loaderData }: Route.ComponentProps) {

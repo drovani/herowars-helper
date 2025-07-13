@@ -155,7 +155,7 @@ export abstract class BaseRepository<T extends TableName> {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validation.error.errors,
+            details: validation.error.issues,
           },
         }
       }
@@ -217,7 +217,7 @@ export abstract class BaseRepository<T extends TableName> {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validation.error.errors,
+            details: validation.error.issues,
           },
         }
       }
@@ -297,10 +297,16 @@ export abstract class BaseRepository<T extends TableName> {
       for (let i = 0; i < inputs.length; i += batchSize) {
         const batch = inputs.slice(i, i + batchSize)
         const batchResults = await Promise.allSettled(
-          batch.map(async (input) => {
+          batch.map(async (input, batchIndex) => {
             const result = await this.create(input, { skipExisting })
             if (result.error) {
-              throw result.error
+              // Attach the input data to the error for debugging
+              const errorWithData = {
+                ...result.error,
+                inputData: input,
+                batchIndex: i + batchIndex
+              }
+              throw errorWithData
             }
             return result
           })
@@ -314,10 +320,28 @@ export abstract class BaseRepository<T extends TableName> {
               results.push(result.value.data!)
             }
           } else {
+            // Extract more detailed error information
+            const errorMsg = result.reason?.message || 
+                           result.reason?.error?.message || 
+                           result.reason?.details || 
+                           "Unknown error in bulk create"
+            const errorCode = result.reason?.code || 
+                            result.reason?.error?.code || 
+                            'UNKNOWN_ERROR'
+            
             errors.push({
-              message: result.reason.message || "Unknown error in bulk create",
-              code: result.reason.code,
+              message: errorMsg,
+              code: errorCode,
               details: result.reason,
+            })
+            
+            // Log detailed error for debugging
+            log.error(`Bulk create error for ${this.tableName}:`, {
+              message: errorMsg,
+              code: errorCode,
+              inputData: result.reason?.inputData,
+              batchIndex: result.reason?.batchIndex,
+              reason: result.reason
             })
           }
         })
@@ -377,7 +401,7 @@ export abstract class BaseRepository<T extends TableName> {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validation.error.errors,
+            details: validation.error.issues,
           },
         }
       }

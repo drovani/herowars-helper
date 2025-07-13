@@ -5,13 +5,18 @@ import { RequireEditor } from "~/components/auth/RequireRole";
 import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn, getEquipmentImageUrl } from "~/lib/utils";
-import EquipmentDataService from "~/services/EquipmentDataService";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import type { Route } from "./+types/index";
 
-export const loader = async (_: Route.LoaderArgs) => {
-  const equipments = await EquipmentDataService.getAll();
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const equipmentRepository = new EquipmentRepository(request);
+  const equipmentResult = await equipmentRepository.findAll();
 
-  return { equipments };
+  if (equipmentResult.error) {
+    throw new Response("Failed to load equipment", { status: 500 });
+  }
+
+  return { equipments: equipmentResult.data };
 };
 
 const cardVariants = cva("p-1 bottom-0 absolute w-full text-center", {
@@ -46,7 +51,7 @@ export default function EquipmentIndex({ loaderData }: Route.ComponentProps) {
         </div>
       </RequireEditor>
 
-      {equipments.length ? (
+      {equipments?.length ? (
         <div className="gap-2 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
           {equipments.map((equipment) => (
             <Link to={`/equipment/${equipment.slug}`} key={equipment.slug} viewTransition>

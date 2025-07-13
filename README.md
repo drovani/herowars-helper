@@ -167,7 +167,7 @@ All routes are centrally configured in `app/routes.ts` with URL preservation:
 
 ## 🧪 Testing
 
-This project includes comprehensive testing with **Vitest** for unit/integration tests and **Playwright** for end-to-end testing.
+This project includes comprehensive testing with **Vitest** for unit and integration tests.
 
 ### Unit & Integration Testing
 
@@ -183,51 +183,6 @@ npm run test:ui       # Run with UI interface
 - **Integration Tests** - API routes, auth flows
 - **Mocking** - Supabase client, external APIs
 - **Coverage** - Comprehensive test coverage tracking
-
-### End-to-End Testing (Playwright)
-
-```bash
-npm run e2e              # Run all e2e tests
-npm run e2e:headed       # Run tests with browser UI visible
-npm run e2e:debug        # Run tests in debug mode (step through)
-npm run e2e:ui           # Run tests with Playwright UI
-npm run e2e:report       # View test results report
-npm run e2e:debug-tools  # Run tests tagged with @debug-tools
-npm run e2e:no-debug     # Run tests excluding @debug-tools
-```
-
-**E2E Testing Features:**
-- **DOM Snapshots** - Automatic HTML and screenshot capture
-- **Console Error Tracking** - Monitor browser console messages and errors
-- **Debug Reports** - Comprehensive JSON reports with debugging data
-- **Network Monitoring** - Wait for async operations and network idle states
-- **Responsive Testing** - Test across different viewport sizes and devices
-- **Multi-Browser Support** - Chrome, Firefox, Safari, Mobile (Pixel 7, iPhone 15)
-
-**Debugging UI Issues:**
-When encountering UI problems or regressions:
-
-1. **See it live**: `npm run e2e:headed` - Watch tests run in real browser
-2. **Step through**: `npm run e2e:debug` - Interactive debugging with breakpoints
-3. **Check console**: Review `playwright-report/debug-reports/` for JavaScript errors
-4. **Compare DOM**: Analyze `playwright-report/snapshots/` for HTML structure changes
-5. **Test responsive**: Verify UI works across different screen sizes
-
-**Example Debug Usage:**
-```typescript
-import { createDebugHelper } from './e2e/utils/debug-helpers';
-
-test('debug UI issue', async ({ page }) => {
-  const debug = createDebugHelper(page, 'issue-name');
-  
-  await page.goto('/problematic-page');
-  await debug.takeDOMSnapshot('initial-state');
-  await debug.waitForNetworkIdle();
-  await debug.logPageState();
-  await debug.assertNoConsoleErrors();
-  await debug.generateDebugReport();
-});
-```
 
 ## 🚀 Deployment
 

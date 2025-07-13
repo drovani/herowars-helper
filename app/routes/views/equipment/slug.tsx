@@ -87,9 +87,11 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const missionRepo = new MissionRepository(request);
   const missionSourcesResult = await missionRepo.findByCampaignSource(equipment.slug);
 
+
   if (missionSourcesResult.error) {
     throw new Response("Failed to load mission sources", { status: 500 });
   }
+
 
   const missionSources = missionSourcesResult.data || [];
 
@@ -254,7 +256,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                   </Badge>
                   <span>{mission.name}</span>
                   {mission.hero_slug && (
-                    <Badge variant="secondary" className="ml-auto">
+                    <Badge variant="secondary" className="ml-auto capitalize">
                       {mission.hero_slug}
                     </Badge>
                   )}

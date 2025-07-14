@@ -781,4 +781,268 @@ export class HeroRepository extends BaseRepository<'hero'> {
       }
     }
   }
+
+  /**
+   * Purge all hero-related data from the database
+   * This includes heroes, artifacts, skins, glyphs, and equipment slots
+   */
+  async purgeHeroDomain(): Promise<RepositoryResult<{ heroes: number }>> {
+    try {
+      log.info('Starting hero domain purge...');
+
+      // Delete in correct order to respect foreign key constraints
+      const deleteResults = await Promise.all([
+        this.supabase.from('hero_equipment_slot').delete().neq('id', '00000000-0000-0000-0000-000000000000'),
+        this.supabase.from('hero_glyph').delete().neq('id', '00000000-0000-0000-0000-000000000000'),
+        this.supabase.from('hero_skin').delete().neq('id', '00000000-0000-0000-0000-000000000000'),
+        this.supabase.from('hero_artifact').delete().neq('id', '00000000-0000-0000-0000-000000000000'),
+      ]);
+
+      // Check for errors in the related table deletions
+      for (const result of deleteResults) {
+        if (result.error) {
+          log.error('Failed to purge hero related data:', result.error);
+          return {
+            data: null,
+            error: {
+              message: `Failed to purge hero related data: ${result.error.message}`,
+              code: 'PURGE_RELATED_FAILED',
+              details: result.error
+            }
+          };
+        }
+      }
+
+      // Now delete all heroes
+      const heroDeleteResult = await this.supabase
+        .from('hero')
+        .delete()
+        .neq('slug', '__nonexistent__');
+
+      if (heroDeleteResult.error) {
+        log.error('Failed to purge heroes:', heroDeleteResult.error);
+        return {
+          data: null,
+          error: {
+            message: `Failed to purge heroes: ${heroDeleteResult.error.message}`,
+            code: 'PURGE_HEROES_FAILED',
+            details: heroDeleteResult.error
+          }
+        };
+      }
+
+      const heroCount = heroDeleteResult.count || 0;
+      log.info(`Successfully purged ${heroCount} heroes and all related data`);
+
+      return {
+        data: { heroes: heroCount },
+        error: null
+      };
+
+    } catch (error) {
+      log.error('Hero domain purge failed:', error);
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : 'Unknown error during hero domain purge',
+          code: 'PURGE_DOMAIN_ERROR',
+          details: error
+        }
+      };
+    }
+  }
+
+  /**
+   * Initialize hero data from JSON files
+   * Transforms JSON hero data and loads it into the database using bulk operations
+   */
+  async initializeFromJSON(heroesJsonData: any[]): Promise<RepositoryResult<{ heroes: CompleteHero[] }>> {
+    try {
+      log.info(`Starting hero data initialization from JSON (${heroesJsonData.length} heroes)...`);
+
+      const createdHeroes: CompleteHero[] = [];
+      const errors: any[] = [];
+      const skipped: any[] = [];
+
+      // Process each hero individually for better error handling
+      for (let i = 0; i < heroesJsonData.length; i++) {
+        const heroJson = heroesJsonData[i];
+        
+        try {
+          // Transform JSON hero to database format
+          const transformedHero = this.transformJsonHeroToDatabase(heroJson);
+          
+          // Create hero with all related data
+          const createResult = await this.createWithAllData(transformedHero);
+          
+          if (createResult.error) {
+            if (createResult.error.code === 'UNIQUE_VIOLATION' || createResult.error.message?.includes('already exists')) {
+              skipped.push({
+                slug: heroJson.slug,
+                name: heroJson.name,
+                reason: 'Already exists'
+              });
+            } else {
+              errors.push({
+                inputData: heroJson,
+                message: createResult.error.message,
+                code: createResult.error.code,
+                batchIndex: i,
+                details: createResult.error.details
+              });
+            }
+          } else if (createResult.data) {
+            createdHeroes.push(createResult.data);
+          }
+          
+        } catch (transformError) {
+          errors.push({
+            inputData: heroJson,
+            message: transformError instanceof Error ? transformError.message : 'Data transformation failed',
+            code: 'TRANSFORM_ERROR',
+            batchIndex: i,
+            details: transformError
+          });
+        }
+      }
+
+      log.info(`Hero initialization completed: ${createdHeroes.length} created, ${skipped.length} skipped, ${errors.length} errors`);
+
+      // Determine result status
+      if (errors.length > 0 && createdHeroes.length === 0) {
+        return {
+          data: null,
+          error: {
+            message: `Hero initialization failed: ${errors.length} errors, no heroes created`,
+            code: 'BULK_INITIALIZATION_FAILED',
+            details: { errors, skipped }
+          }
+        };
+      } else if (errors.length > 0 || skipped.length > 0) {
+        return {
+          data: { heroes: createdHeroes },
+          error: {
+            message: `Hero initialization partially successful: ${createdHeroes.length} created, ${errors.length} errors, ${skipped.length} skipped`,
+            code: 'BULK_PARTIAL_SUCCESS',
+            details: { errors, skipped }
+          }
+        };
+      } else {
+        return {
+          data: { heroes: createdHeroes },
+          error: null
+        };
+      }
+
+    } catch (error) {
+      log.error('Hero JSON initialization failed:', error);
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : 'Unknown error during hero JSON initialization',
+          code: 'JSON_INIT_ERROR',
+          details: error
+        }
+      };
+    }
+  }
+
+  /**
+   * Transform JSON hero data to database format for createWithAllData
+   */
+  private transformJsonHeroToDatabase(heroJson: any): CreateHeroWithData {
+    const createData: CreateHeroWithData = {
+      hero: {
+        slug: heroJson.slug,
+        name: heroJson.name,
+        class: heroJson.class,
+        faction: heroJson.faction,
+        main_stat: heroJson.main_stat,
+        attack_type: heroJson.attack_type || [],
+        stone_source: heroJson.stone_source || [],
+        order_rank: heroJson.order_rank || 0,
+      },
+      artifacts: [],
+      skins: [],
+      glyphs: [],
+      equipmentSlots: []
+    };
+
+    // Transform artifacts
+    if (heroJson.artifacts) {
+      if (heroJson.artifacts.weapon) {
+        createData.artifacts!.push({
+          hero_slug: heroJson.slug,
+          artifact_type: 'weapon',
+          name: heroJson.artifacts.weapon.name,
+          team_buff: heroJson.artifacts.weapon.team_buff,
+          team_buff_secondary: heroJson.artifacts.weapon.team_buff_secondary || null
+        });
+      }
+      if (heroJson.artifacts.book) {
+        createData.artifacts!.push({
+          hero_slug: heroJson.slug,
+          artifact_type: 'book',
+          name: heroJson.artifacts.book,
+          team_buff: null,
+          team_buff_secondary: null
+        });
+      }
+      if (heroJson.artifacts.ring !== undefined) {
+        createData.artifacts!.push({
+          hero_slug: heroJson.slug,
+          artifact_type: 'ring',
+          name: null,
+          team_buff: null,
+          team_buff_secondary: null
+        });
+      }
+    }
+
+    // Transform skins
+    if (heroJson.skins && Array.isArray(heroJson.skins)) {
+      createData.skins = heroJson.skins.map((skin: any) => ({
+        hero_slug: heroJson.slug,
+        name: skin.name,
+        stat_type: skin.stat,
+        stat_value: 0, // JSON doesn't include values, use 0 as default
+        has_plus: skin.has_plus || false,
+        source: skin.source || null
+      }));
+    }
+
+    // Transform glyphs
+    if (heroJson.glyphs && Array.isArray(heroJson.glyphs)) {
+      heroJson.glyphs.forEach((glyphStat: string | null, index: number) => {
+        if (glyphStat !== null) {
+          createData.glyphs!.push({
+            hero_slug: heroJson.slug,
+            position: index + 1,
+            stat_type: glyphStat,
+            stat_value: 0 // JSON doesn't include values, use 0 as default
+          });
+        }
+      });
+    }
+
+    // Transform equipment items
+    if (heroJson.items) {
+      for (const [quality, equipmentArray] of Object.entries(heroJson.items)) {
+        if (Array.isArray(equipmentArray)) {
+          equipmentArray.forEach((equipmentSlug: string | null, slotIndex: number) => {
+            if (equipmentSlug) {
+              createData.equipmentSlots!.push({
+                hero_slug: heroJson.slug,
+                quality: quality,
+                slot_position: slotIndex + 1,
+                equipment_slug: equipmentSlug
+              });
+            }
+          });
+        }
+      }
+    }
+
+    return createData;
+  }
 }

@@ -33,7 +33,7 @@ describe('HeroRepository', () => {
     log.rebuild()
 
     // Create repository with mocked supabase client
-    repository = new HeroRepository(mockSupabaseClient)
+    repository = new HeroRepository(mockSupabaseClient as any)
   })
 
   afterEach(() => {

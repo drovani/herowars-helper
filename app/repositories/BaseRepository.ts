@@ -2,7 +2,6 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import log from "loglevel"
 import type { ZodSchema } from "zod"
 import { createClient } from "~/lib/supabase/client"
-import type { Database } from "~/types/supabase"
 import type {
   BulkOptions,
   CreateInput,
@@ -49,7 +48,7 @@ export abstract class BaseRepository<T extends TableName> {
 
   async findAll(options: FindAllOptions = {}): Promise<RepositoryResult<EntityRow<T>[]>> {
     try {
-      let query = (this.supabase as any).from(this.tableName).select(this.buildSelectClause(options.include))
+      let query = (this.supabase).from(this.tableName).select(this.buildSelectClause(options.include))
 
       if (options.where) {
         Object.entries(options.where).forEach(([key, value]) => {
@@ -144,7 +143,7 @@ export abstract class BaseRepository<T extends TableName> {
   }
 
   async create(
-    input: CreateInput<T>, 
+    input: CreateInput<T>,
     options: { skipExisting?: boolean } = {}
   ): Promise<RepositoryResult<EntityRow<T>>> {
     try {
@@ -177,7 +176,7 @@ export abstract class BaseRepository<T extends TableName> {
       }
 
       // Proceed with normal insert
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from(this.tableName)
         .insert(input as any)
         .select()
@@ -222,7 +221,7 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from(this.tableName)
         .update(input as any)
         .eq(this.primaryKeyColumn as any, id)
@@ -255,7 +254,7 @@ export abstract class BaseRepository<T extends TableName> {
 
   async delete(id: IdType): Promise<RepositoryResult<boolean>> {
     try {
-      const { error } = await (this.supabase as any)
+      const { error } = await (this.supabase)
         .from(this.tableName)
         .delete()
         .eq(this.primaryKeyColumn as any, id)
@@ -321,20 +320,20 @@ export abstract class BaseRepository<T extends TableName> {
             }
           } else {
             // Extract more detailed error information
-            const errorMsg = result.reason?.message || 
-                           result.reason?.error?.message || 
-                           result.reason?.details || 
+            const errorMsg = result.reason?.message ||
+                           result.reason?.error?.message ||
+                           result.reason?.details ||
                            "Unknown error in bulk create"
-            const errorCode = result.reason?.code || 
-                            result.reason?.error?.code || 
+            const errorCode = result.reason?.code ||
+                            result.reason?.error?.code ||
                             'UNKNOWN_ERROR'
-            
+
             errors.push({
               message: errorMsg,
               code: errorCode,
               details: result.reason,
             })
-            
+
             // Log detailed error for debugging
             log.error(`Bulk create error for ${this.tableName}:`, {
               message: errorMsg,
@@ -406,11 +405,11 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from(this.tableName)
-        .upsert(input as any, { 
+        .upsert(input as any, {
           onConflict: this.primaryKeyColumn,
-          ignoreDuplicates: false 
+          ignoreDuplicates: false
         })
         .select()
         .single()
@@ -624,7 +623,7 @@ export abstract class BaseRepository<T extends TableName> {
         details: error.message
       }
     }
-    
+
     if (error.code === '42501') {
       return {
         message: 'Permission denied - check RLS policies',
@@ -632,7 +631,7 @@ export abstract class BaseRepository<T extends TableName> {
         details: error.message
       }
     }
-    
+
     if (error.code === 'PGRST116') {
       return {
         message: 'Not found',
@@ -640,7 +639,7 @@ export abstract class BaseRepository<T extends TableName> {
         details: error.message
       }
     }
-    
+
     // Default error handling
     return {
       message: error.message || 'Database operation failed',

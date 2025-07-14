@@ -1,25 +1,25 @@
 // ABOUTME: Repository for managing hero data in the Hero Wars Helper application
 // ABOUTME: Extends BaseRepository to provide hero-specific query methods and complex relationship loading
 
-import { z } from 'zod'
-import log from 'loglevel'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import log from 'loglevel'
+import { z } from 'zod'
 import { BaseRepository } from './BaseRepository'
 import type {
+  BulkOptions,
+  CompleteHero,
+  CreateHeroWithData,
+  CreateInput,
   Hero,
   HeroArtifact,
-  HeroSkin,
-  HeroGlyph,
   HeroEquipmentSlot,
-  CompleteHero,
+  HeroGlyph,
+  HeroSkin,
   HeroWithArtifacts,
-  HeroWithSkins,
-  HeroWithGlyphs,
   HeroWithEquipment,
-  CreateHeroWithData,
+  HeroWithGlyphs,
+  HeroWithSkins,
   RepositoryResult,
-  CreateInput,
-  BulkOptions,
 } from './types'
 
 // Hero validation schema for the main hero table
@@ -58,7 +58,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
   // Hero-specific query methods
   async findByClass(heroClass: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select('*')
         .eq('class', heroClass)
@@ -90,7 +90,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async findByFaction(faction: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select('*')
         .eq('faction', faction)
@@ -122,7 +122,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async findByMainStat(mainStat: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select('*')
         .eq('main_stat', mainStat)
@@ -154,7 +154,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async findByAttackType(attackType: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select('*')
         .contains('attack_type', [attackType])
@@ -187,7 +187,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
   // Complex hero data loading with relationships
   async findWithAllData(slug: string): Promise<RepositoryResult<CompleteHero>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select(`
           *,
@@ -239,7 +239,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async findWithArtifacts(slug: string): Promise<RepositoryResult<HeroWithArtifacts>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select(`
           *,
@@ -281,7 +281,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async findWithSkins(slug: string): Promise<RepositoryResult<HeroWithSkins>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select(`
           *,
@@ -323,7 +323,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async findWithGlyphs(slug: string): Promise<RepositoryResult<HeroWithGlyphs>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select(`
           *,
@@ -365,7 +365,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async findWithEquipment(slug: string): Promise<RepositoryResult<HeroWithEquipment>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select(`
           *,
@@ -408,7 +408,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
   // Equipment relationship queries
   async findHeroesUsingEquipment(equipmentSlug: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero')
         .select(`
           *,
@@ -451,7 +451,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
 
   async getHeroEquipmentByQuality(heroSlug: string, quality: string): Promise<RepositoryResult<HeroEquipmentSlot[]>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const { data, error } = await (this.supabase)
         .from('hero_equipment_slot')
         .select('*')
         .eq('hero_slug', heroSlug)
@@ -573,7 +573,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
     try {
       for (let i = 0; i < artifacts.length; i += batchSize) {
         const batch = artifacts.slice(i, i + batchSize)
-        const { data, error } = await (this.supabase as any)
+        const { data, error } = await (this.supabase)
           .from('hero_artifact')
           .insert(batch)
           .select()
@@ -628,7 +628,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
     try {
       for (let i = 0; i < skins.length; i += batchSize) {
         const batch = skins.slice(i, i + batchSize)
-        const { data, error } = await (this.supabase as any)
+        const { data, error } = await (this.supabase)
           .from('hero_skin')
           .insert(batch)
           .select()
@@ -683,7 +683,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
     try {
       for (let i = 0; i < glyphs.length; i += batchSize) {
         const batch = glyphs.slice(i, i + batchSize)
-        const { data, error } = await (this.supabase as any)
+        const { data, error } = await (this.supabase)
           .from('hero_glyph')
           .insert(batch)
           .select()
@@ -738,7 +738,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
     try {
       for (let i = 0; i < equipmentSlots.length; i += batchSize) {
         const batch = equipmentSlots.slice(i, i + batchSize)
-        const { data, error } = await (this.supabase as any)
+        const { data, error } = await (this.supabase)
           .from('hero_equipment_slot')
           .insert(batch)
           .select()
@@ -867,14 +867,14 @@ export class HeroRepository extends BaseRepository<'hero'> {
       // Process each hero individually for better error handling
       for (let i = 0; i < heroesJsonData.length; i++) {
         const heroJson = heroesJsonData[i];
-        
+
         try {
           // Transform JSON hero to database format
           const transformedHero = this.transformJsonHeroToDatabase(heroJson);
-          
+
           // Create hero with all related data
           const createResult = await this.createWithAllData(transformedHero);
-          
+
           if (createResult.error) {
             if (createResult.error.code === 'UNIQUE_VIOLATION' || createResult.error.message?.includes('already exists')) {
               skipped.push({
@@ -894,7 +894,7 @@ export class HeroRepository extends BaseRepository<'hero'> {
           } else if (createResult.data) {
             createdHeroes.push(createResult.data);
           }
-          
+
         } catch (transformError) {
           errors.push({
             inputData: heroJson,

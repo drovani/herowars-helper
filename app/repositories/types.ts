@@ -77,3 +77,43 @@ export type UpdateInput<T extends TableName> = TablesUpdate<T>
 export type EntityRow<T extends TableName> = Tables<T>
 
 export type IdType = string | number
+
+// Hero-specific repository types
+export type Hero = Tables<'hero'>
+export type HeroArtifact = Tables<'hero_artifact'>
+export type HeroSkin = Tables<'hero_skin'>
+export type HeroGlyph = Tables<'hero_glyph'>
+export type HeroEquipmentSlot = Tables<'hero_equipment_slot'>
+
+// Complex hero data with relationships
+export interface CompleteHero extends Hero {
+  artifacts: HeroArtifact[]
+  skins: HeroSkin[]
+  glyphs: HeroGlyph[]
+  equipmentSlots: HeroEquipmentSlot[]
+}
+
+export interface HeroWithArtifacts extends Hero {
+  artifacts: HeroArtifact[]
+}
+
+export interface HeroWithSkins extends Hero {
+  skins: HeroSkin[]
+}
+
+export interface HeroWithGlyphs extends Hero {
+  glyphs: HeroGlyph[]
+}
+
+export interface HeroWithEquipment extends Hero {
+  equipmentSlots: HeroEquipmentSlot[]
+}
+
+// Hero repository input types for complex data structures
+export interface CreateHeroWithData {
+  hero: CreateInput<'hero'>
+  artifacts?: CreateInput<'hero_artifact'>[]
+  skins?: CreateInput<'hero_skin'>[]
+  glyphs?: CreateInput<'hero_glyph'>[]
+  equipmentSlots?: CreateInput<'hero_equipment_slot'>[]
+}

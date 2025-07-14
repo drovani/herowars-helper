@@ -34,6 +34,8 @@ This command reads a markdown instruction file and follows the steps outlined wi
 - Maintain git history for each phase completion
 
 ### Integration with Development Workflow
+- **ALWAYS** make a new branch before making any file changes 
+- **NEVER** try to reset the linked database; only reset the local database with `npx supabase db reset`
 - Run `npm run tsc` after each task's code changes
 - Execute relevant tests for modified areas
 - Update todo tracking using TodoWrite tool

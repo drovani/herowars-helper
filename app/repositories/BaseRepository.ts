@@ -221,7 +221,7 @@ export abstract class BaseRepository<T extends TableName> {
         }
       }
 
-      const { data, error } = await (this.supabase)
+      const { data, error } = await (this.supabase as any)
         .from(this.tableName)
         .update(input as any)
         .eq(this.primaryKeyColumn as any, id)
@@ -254,7 +254,7 @@ export abstract class BaseRepository<T extends TableName> {
 
   async delete(id: IdType): Promise<RepositoryResult<boolean>> {
     try {
-      const { error } = await (this.supabase)
+      const { error } = await (this.supabase as any)
         .from(this.tableName)
         .delete()
         .eq(this.primaryKeyColumn as any, id)

@@ -130,12 +130,6 @@ Files to examine and understand before starting
 - [ ] Feature flags configured if needed
 - [ ] Monitoring alerts updated
 
-## Rollback Plan
-### If Migration Fails
-1. Revert to previous commit: `git checkout [commit-hash]`
-2. Restore service files from backup
-3. Update imports back to original state
-
 ### Backup Strategy
 - [ ] Create feature branch before starting
 - [ ] Commit working state before major changes
@@ -154,6 +148,8 @@ Files to examine and understand before starting
 - PR creation and link display
 - Update TodoWrite with completion status
 - Commit progress with descriptive messages
+- CLAUDE.md and README.md updated as appropriate reflecting latest updates
+- /app/routes/views/public/index.tsx updated `recentUpdates` array with user-relevant line item
 ```
 
 ### Plan Requirements

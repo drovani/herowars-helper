@@ -72,7 +72,10 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 ### Repository Development Commands
 - `npm run tsc` - TypeScript checking (run after repository changes)
 - `npm run supabase:types` - Regenerate database types after schema changes
-- `npm test` - Run repository tests with mocked Supabase client
+- `npm run test` - Run repository tests with mocked Supabase client in watch mode
+- `npm run test:run` - Run repository tests with mocked Supabase client as a one-time execution
+- `npm run test:coverage` - Run repository tests with mocked Supabase client and generate test coverage JSON report
+
 
 ## Architecture
 

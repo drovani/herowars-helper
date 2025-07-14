@@ -72,6 +72,10 @@ export const navigation: NavigationGroup[] = [
     ],
   },
   {
+    name: "Player Tools",
+    items: [{ name: "Hero Roster", icon: UsersRoundIcon }],
+  },
+  {
     name: "Guild Coordination Tools",
     items: [
       { name: "Guild Roster", icon: UsersRoundIcon },

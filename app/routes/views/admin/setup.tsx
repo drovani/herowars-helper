@@ -12,11 +12,15 @@ import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { formatTitle } from "~/config/site";
 import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
 import equipmentsData from "~/data/equipments.json";
 import chaptersAndMissionsData from "~/data/missions.json";
+import heroesData from "~/data/heroes.json";
 import { createAdminClient } from "~/lib/supabase/admin-client";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
 import type { Route } from "./+types/setup";
 
 // Helper function to extract chapters from missions data
@@ -77,7 +81,8 @@ export async function action({ request }: Route.ActionArgs) {
       chapters: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
       missions: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
       equipment: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
-      purged: { missions: 0, chapters: 0, equipment: 0, stats: 0, required_items: 0, errors: 0, errorDetails: [] },
+      heroes: { created: 0, errors: 0, skipped: 0, total: 0, errorDetails: [], skippedDetails: [] },
+      purged: { missions: 0, chapters: 0, equipment: 0, heroes: 0, stats: 0, required_items: 0, errors: 0, errorDetails: [] },
       processingTime: 0,
       mode,
       dataset: dataset || "all",
@@ -92,6 +97,10 @@ export async function action({ request }: Route.ActionArgs) {
     const equipmentRepo = mode === 'force'
       ? new EquipmentRepository(createAdminClient(request).supabase as any)
       : new EquipmentRepository(request);
+
+    const heroRepo = mode === 'force'
+      ? new HeroRepository(createAdminClient(request).supabase as any)
+      : new HeroRepository(request);
 
     // Execute purge if requested
     if (purge) {
@@ -127,6 +136,20 @@ export async function action({ request }: Route.ActionArgs) {
         }
 
         log.info(`Purged equipment domain: ${results.purged.equipment} equipment, ${results.purged.stats} stats, ${results.purged.required_items} required items`);
+      }
+
+      if (!dataset || dataset === "heroes" || dataset === "all") {
+        // Purge hero domain (heroes and all related data)
+        const heroPurgeResult = await heroRepo.purgeHeroDomain();
+        if (heroPurgeResult.error) {
+          throw new Error(`Hero domain purge failed: ${heroPurgeResult.error.message}`);
+        }
+
+        if (heroPurgeResult.data) {
+          results.purged.heroes = heroPurgeResult.data.heroes || 0;
+        }
+
+        log.info(`Purged hero domain: ${results.purged.heroes} heroes`);
       }
     }
 
@@ -312,6 +335,64 @@ export async function action({ request }: Route.ActionArgs) {
       }
     }
 
+    // Load hero data if dataset is empty (all) or "heroes"
+    if (!dataset || dataset === "heroes") {
+      log.info("Loading hero data...");
+
+      try {
+        // Get hero data from JSON file
+        const heroesFromJson = heroesData as any[];
+        results.heroes.total = heroesFromJson.length;
+
+        log.info(`Initializing ${heroesFromJson.length} heroes...`);
+
+        // Use the repository's bulk import capabilities
+        const heroInitResult = await heroRepo.initializeFromJSON(heroesFromJson);
+
+        // Handle both successful and partial failure cases
+        if (heroInitResult.error && !['BULK_PARTIAL_FAILURE', 'BULK_PARTIAL_SUCCESS'].includes(heroInitResult.error.code || '')) {
+          throw new Error(`Hero data initialization failed: ${heroInitResult.error.message}`);
+        }
+
+        // Update results with detailed information
+        if (heroInitResult.data) {
+          results.heroes.created = heroInitResult.data.heroes?.length || 0;
+        }
+
+        // Handle partial failures/success for heroes
+        if (heroInitResult.error?.details) {
+          const details = heroInitResult.error.details as any;
+
+          if (Array.isArray(details.errors)) {
+            details.errors.forEach((errorItem: any) => {
+              results.heroes.errors++;
+              results.heroes.errorDetails.push({
+                record: errorItem.inputData || errorItem.data || null,
+                error: {
+                  message: errorItem.message,
+                  code: errorItem.code,
+                  details: errorItem.details,
+                  inputData: errorItem.inputData,
+                  batchIndex: errorItem.batchIndex
+                }
+              });
+            });
+          }
+
+          if (Array.isArray(details.skipped)) {
+            details.skipped.forEach((skippedItem: any) => {
+              results.heroes.skipped++;
+              results.heroes.skippedDetails.push(skippedItem);
+            });
+          }
+        }
+
+      } catch (error) {
+        log.error("Hero data loading failed:", error);
+        throw error;
+      }
+    }
+
     results.processingTime = Date.now() - startTime;
 
     return data({
@@ -378,6 +459,7 @@ function DetailsSection({
                     {type === 'chapters' && item.id && <span className="text-blue-500 ml-1">(ID: {item.id})</span>}
                     {type === 'missions' && item.slug && <span className="text-blue-500 ml-1">({item.slug})</span>}
                     {type === 'equipment' && item.slug && <span className="text-blue-500 ml-1">({item.slug})</span>}
+                    {type === 'heroes' && item.slug && <span className="text-blue-500 ml-1">({item.slug})</span>}
                   </div>
                 ))}
               </div>
@@ -447,6 +529,27 @@ function DetailsSection({
                         )}
                         {item.record.hero_level_required !== undefined && (
                           <div><strong>Hero Level:</strong> {item.record.hero_level_required}</div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Hero-specific details */}
+                    {type === 'heroes' && item.record && (
+                      <div className="text-red-700 text-xs space-y-1">
+                        {item.record.class && (
+                          <div><strong>Class:</strong> {item.record.class}</div>
+                        )}
+                        {item.record.faction && (
+                          <div><strong>Faction:</strong> {item.record.faction}</div>
+                        )}
+                        {item.record.main_stat && (
+                          <div><strong>Main Stat:</strong> {item.record.main_stat}</div>
+                        )}
+                        {item.record.attack_type && (
+                          <div><strong>Attack Type:</strong> {Array.isArray(item.record.attack_type) ? item.record.attack_type.join(', ') : item.record.attack_type}</div>
+                        )}
+                        {item.record.order_rank !== undefined && (
+                          <div><strong>Order Rank:</strong> {item.record.order_rank}</div>
                         )}
                       </div>
                     )}
@@ -573,6 +676,12 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                         Equipment only
                       </Label>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="heroes" id="heroes" />
+                      <Label htmlFor="heroes" className="font-normal">
+                        Heroes only
+                      </Label>
+                    </div>
                   </RadioGroup>
                 </div>
               </div>
@@ -691,14 +800,14 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
               <CardDescription>
                 Mode: {initdata.results.mode} | Dataset: {initdata.results.dataset}
                 {initdata.results.purgeRequested && initdata.results.purged &&
-                  ` | Purged: ${initdata.results.purged.missions} missions, ${initdata.results.purged.chapters} chapters, ${initdata.results.purged.equipment} equipment`}
+                  ` | Purged: ${initdata.results.purged.missions} missions, ${initdata.results.purged.chapters} chapters, ${initdata.results.purged.equipment} equipment, ${initdata.results.purged.heroes} heroes`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4">
                 {/* Purge Summary */}
                 {initdata.results.purgeRequested && initdata.results.purged &&
-                  (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0 || initdata.results.purged.equipment > 0) && (
+                  (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0 || initdata.results.purged.equipment > 0 || initdata.results.purged.heroes > 0) && (
                   <div className="border rounded-lg p-4 bg-orange-50 border-orange-200">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium flex items-center gap-2">
@@ -711,6 +820,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                       {initdata.results.purged.missions > 0 && <p className="text-orange-700">Missions: {initdata.results.purged.missions}</p>}
                       {initdata.results.purged.chapters > 0 && <p className="text-orange-700">Chapters: {initdata.results.purged.chapters}</p>}
                       {initdata.results.purged.equipment > 0 && <p className="text-orange-700">Equipment: {initdata.results.purged.equipment}</p>}
+                      {initdata.results.purged.heroes > 0 && <p className="text-orange-700">Heroes: {initdata.results.purged.heroes}</p>}
                       {initdata.results.purged.stats > 0 && <p className="text-orange-700">Equipment Stats: {initdata.results.purged.stats}</p>}
                       {initdata.results.purged.required_items > 0 && <p className="text-orange-700">Required Items: {initdata.results.purged.required_items}</p>}
                     </div>
@@ -843,6 +953,50 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                           skippedDetails={initdata.results.equipment.skippedDetails}
                           errorDetails={initdata.results.equipment.errorDetails}
                           type="equipment"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Heroes Summary */}
+                {initdata.results.heroes && initdata.results.heroes.total > 0 && (
+                  <div className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium flex items-center gap-2">
+                        {getStatusIcon(
+                          initdata.results.heroes.created,
+                          initdata.results.heroes.errors,
+                          initdata.results.heroes.skipped,
+                          initdata.results.heroes.total
+                        )}
+                        Heroes
+                      </h3>
+                      {getStatusBadge(
+                        initdata.results.heroes.created,
+                        initdata.results.heroes.errors,
+                        initdata.results.heroes.skipped,
+                        initdata.results.heroes.total
+                      )}
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p>Total: {initdata.results.heroes.total}</p>
+                      <p className="text-green-600">Created: {initdata.results.heroes.created}</p>
+                      {initdata.results.heroes.skipped > 0 && (
+                        <p className="text-blue-600">Skipped: {initdata.results.heroes.skipped}</p>
+                      )}
+                      {initdata.results.heroes.errors > 0 && (
+                        <p className="text-red-600">Errors: {initdata.results.heroes.errors}</p>
+                      )}
+                    </div>
+
+                    {/* Expandable details for heroes */}
+                    {(initdata.results.heroes.skippedDetails?.length > 0 || initdata.results.heroes.errorDetails?.length > 0) && (
+                      <div className="mt-3 pt-3 border-t">
+                        <DetailsSection
+                          skippedDetails={initdata.results.heroes.skippedDetails}
+                          errorDetails={initdata.results.heroes.errorDetails}
+                          type="heroes"
                         />
                       </div>
                     )}

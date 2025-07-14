@@ -8,11 +8,12 @@ import { ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import HeroDataService from "~/services/HeroDataService";
+import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
 import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const heroes = await HeroDataService.getAll();
+  const heroService = createDatabaseHeroService(request);
+  const heroes = await heroService.getAll();
   const equipmentRepo = new EquipmentRepository(request);
   const equipmentResult = await equipmentRepo.getAllAsJson();
 

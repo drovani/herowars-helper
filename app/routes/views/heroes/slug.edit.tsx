@@ -9,7 +9,7 @@ import HeroForm from "~/components/HeroForm";
 import { Badge } from "~/components/ui/badge";
 import { HeroMutationSchema, type HeroMutation } from "~/data/hero.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import HeroDataService from "~/services/HeroDataService";
+import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
 import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -38,7 +38,8 @@ export const handle = {
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing hero slug param.");
-  const hero = await HeroDataService.getById(params.slug);
+  const heroService = createDatabaseHeroService(request);
+  const hero = await heroService.getById(params.slug);
   if (!hero) {
     throw data(null, {
       status: 404,
@@ -78,7 +79,8 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     },
   };
 
-  const updateResults = await HeroDataService.update(params.slug, dustedData as HeroMutation);
+  const heroService = createDatabaseHeroService(request);
+  const updateResults = await heroService.update(params.slug, dustedData as HeroMutation);
   if (updateResults instanceof ZodError) {
     log.error("Captured validation ZodError:", JSON.stringify(updateResults.format(), null, 2));
     return data({ errors: updateResults.format() }, { status: 400 });

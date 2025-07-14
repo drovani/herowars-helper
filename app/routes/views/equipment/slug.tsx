@@ -12,7 +12,7 @@ import type { EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import HeroDataService from "~/services/HeroDataService";
+import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -95,7 +95,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   const missionSources = missionSourcesResult.data || [];
 
-  const heroesUsingItem = await HeroDataService.getHeroesUsingItem(equipment.slug);
+  const heroService = createDatabaseHeroService(request);
+  const heroesUsingItem = await heroService.getHeroesUsingItem(equipment.slug);
 
   return {
     equipment,

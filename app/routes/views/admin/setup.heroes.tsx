@@ -349,7 +349,7 @@ export default function AdminHeroSetup() {
                   </AlertDescription>
                 </Alert>
                 
-                {actionData.results && (
+                {actionData.success && 'results' in actionData && actionData.results && (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     <div className="text-center">
                       <div className="text-xl font-semibold text-green-600">{actionData.results.heroes}</div>
@@ -374,7 +374,7 @@ export default function AdminHeroSetup() {
                   </div>
                 )}
                 
-                {actionData.results?.errors && actionData.results.errors.length > 0 && (
+                {actionData.success && 'results' in actionData && actionData.results?.errors && actionData.results.errors.length > 0 && (
                   <Alert variant="destructive">
                     <AlertDescription>
                       Some operations had warnings:
@@ -390,7 +390,7 @@ export default function AdminHeroSetup() {
             ) : (
               <Alert variant="destructive">
                 <AlertDescription>
-                  Import failed: {actionData.error}
+                  Import failed: {'error' in actionData ? actionData.error : 'Unknown error'}
                 </AlertDescription>
               </Alert>
             )}

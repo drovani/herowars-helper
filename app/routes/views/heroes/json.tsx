@@ -1,10 +1,11 @@
 import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
-import HeroDataService from "~/services/HeroDataService";
+import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
 import type { Route } from "./+types/json";
 
-export async function loader(_: Route.LoaderArgs) {
-  const heroesJson = await HeroDataService.getAllAsJson();
+export async function loader({ request }: Route.LoaderArgs) {
+  const heroService = createDatabaseHeroService(request);
+  const heroesJson = await heroService.getAllAsJson();
 
   const file = createReadableStreamFromReadable(Readable.from(heroesJson));
 

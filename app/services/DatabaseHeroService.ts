@@ -5,7 +5,7 @@ import type { z, ZodError } from "zod";
 import log from "loglevel";
 import { HeroMutationSchema, type HeroMutation, type HeroRecord } from "~/data/hero.zod";
 import { HeroRepository } from "~/repositories/HeroRepository";
-import type { DataService, IChangeTracked } from "./BaseDataService";
+import type { DataService, IChangeTracked } from "./types";
 import type { CompleteHero } from "~/repositories/types";
 
 interface DatabaseHeroServiceOptions {

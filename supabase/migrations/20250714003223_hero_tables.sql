@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "public"."hero" (
   "main_stat" "text" NOT NULL,
   "attack_type" "text"[] NOT NULL,
   "stone_source" "text"[] NOT NULL,
-  "order_rank" smallint NOT NULL,
+  "order_rank" NUMERIC(3,1) NOT NULL,
   "updated_on" "timestamptz" DEFAULT NOW(),
   CONSTRAINT "hero_pkey" PRIMARY KEY ("slug"),
   CONSTRAINT "hero_name_key" UNIQUE ("name"),

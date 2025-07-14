@@ -170,7 +170,6 @@ export const adminUserOperations = {
       throw new Error(`Failed to create user: ${error.message || 'Database error'}`);
     }
 
-    log.info('User created successfully:', data.user?.id);
     return data.user;
   },
 
@@ -199,7 +198,6 @@ export const adminUserOperations = {
       throw new Error(`Failed to delete user: ${error.message}`);
     }
 
-    log.info('User deleted successfully:', userId);
     return { success: true };
   }
 };

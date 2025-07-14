@@ -12,15 +12,13 @@ import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { formatTitle } from "~/config/site";
 import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { HeroRecord } from "~/data/hero.zod";
 import equipmentsData from "~/data/equipments.json";
-import chaptersAndMissionsData from "~/data/missions.json";
 import heroesData from "~/data/heroes.json";
+import chaptersAndMissionsData from "~/data/missions.json";
 import { createAdminClient } from "~/lib/supabase/admin-client";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { MissionRepository } from "~/repositories/MissionRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
-import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
+import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/setup";
 
 // Helper function to extract chapters from missions data
@@ -104,8 +102,6 @@ export async function action({ request }: Route.ActionArgs) {
 
     // Execute purge if requested
     if (purge) {
-      log.info("Purging existing data...");
-
       // Determine what to purge based on dataset
       if (!dataset || dataset === "missions" || dataset === "all") {
         // Purge mission domain (both missions and chapters)
@@ -119,7 +115,6 @@ export async function action({ request }: Route.ActionArgs) {
           results.purged.chapters = purgeResult.data.chapters;
         }
 
-        log.info(`Purged mission domain: ${results.purged.missions} missions, ${results.purged.chapters} chapters`);
       }
 
       if (!dataset || dataset === "equipment" || dataset === "all") {
@@ -135,7 +130,6 @@ export async function action({ request }: Route.ActionArgs) {
           results.purged.required_items = equipmentPurgeResult.data.required_items;
         }
 
-        log.info(`Purged equipment domain: ${results.purged.equipment} equipment, ${results.purged.stats} stats, ${results.purged.required_items} required items`);
       }
 
       if (!dataset || dataset === "heroes" || dataset === "all") {
@@ -149,13 +143,11 @@ export async function action({ request }: Route.ActionArgs) {
           results.purged.heroes = heroPurgeResult.data.heroes || 0;
         }
 
-        log.info(`Purged hero domain: ${results.purged.heroes} heroes`);
       }
     }
 
     // Load missions data if dataset is empty (all) or "missions"
     if (!dataset || dataset === "missions") {
-      log.info("Loading mission data...");
 
       // Prepare data for initialization
       const chaptersToCreate = extractChapters(chaptersAndMissionsData);
@@ -163,8 +155,6 @@ export async function action({ request }: Route.ActionArgs) {
 
       results.chapters.total = chaptersToCreate.length;
       results.missions.total = missionsToCreate.length;
-
-      log.info(`Initializing ${chaptersToCreate.length} chapters and ${missionsToCreate.length} missions...`);
 
       // Use the new initializeMissionData method
       const initResult = await missionRepo.initializeMissionData(
@@ -276,13 +266,10 @@ export async function action({ request }: Route.ActionArgs) {
         }
       }
 
-      log.info("Mission data loading completed", results);
     }
 
     // Load equipment data if dataset is empty (all) or "equipment"
     if (!dataset || dataset === "equipment") {
-      log.info("Loading equipment data...");
-
       try {
         // Prepare data for initialization
         const equipmentsToCreate = transformEquipments(equipmentsData);
@@ -337,14 +324,10 @@ export async function action({ request }: Route.ActionArgs) {
 
     // Load hero data if dataset is empty (all) or "heroes"
     if (!dataset || dataset === "heroes") {
-      log.info("Loading hero data...");
-
       try {
         // Get hero data from JSON file
         const heroesFromJson = heroesData as any[];
         results.heroes.total = heroesFromJson.length;
-
-        log.info(`Initializing ${heroesFromJson.length} heroes...`);
 
         // Use the repository's bulk import capabilities
         const heroInitResult = await heroRepo.initializeFromJSON(heroesFromJson);
@@ -808,24 +791,24 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                 {/* Purge Summary */}
                 {initdata.results.purgeRequested && initdata.results.purged &&
                   (initdata.results.purged.missions > 0 || initdata.results.purged.chapters > 0 || initdata.results.purged.equipment > 0 || initdata.results.purged.heroes > 0) && (
-                  <div className="border rounded-lg p-4 bg-orange-50 border-orange-200">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium flex items-center gap-2">
-                        <AlertTriangle className="size-4 text-orange-500" />
-                        Purged Data
-                      </h3>
-                      <Badge variant="secondary">Domain Purged</Badge>
+                    <div className="border rounded-lg p-4 bg-orange-50 border-orange-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-medium flex items-center gap-2">
+                          <AlertTriangle className="size-4 text-orange-500" />
+                          Purged Data
+                        </h3>
+                        <Badge variant="secondary">Domain Purged</Badge>
+                      </div>
+                      <div className="text-sm space-y-1">
+                        {initdata.results.purged.missions > 0 && <p className="text-orange-700">Missions: {initdata.results.purged.missions}</p>}
+                        {initdata.results.purged.chapters > 0 && <p className="text-orange-700">Chapters: {initdata.results.purged.chapters}</p>}
+                        {initdata.results.purged.equipment > 0 && <p className="text-orange-700">Equipment: {initdata.results.purged.equipment}</p>}
+                        {initdata.results.purged.heroes > 0 && <p className="text-orange-700">Heroes: {initdata.results.purged.heroes}</p>}
+                        {initdata.results.purged.stats > 0 && <p className="text-orange-700">Equipment Stats: {initdata.results.purged.stats}</p>}
+                        {initdata.results.purged.required_items > 0 && <p className="text-orange-700">Required Items: {initdata.results.purged.required_items}</p>}
+                      </div>
                     </div>
-                    <div className="text-sm space-y-1">
-                      {initdata.results.purged.missions > 0 && <p className="text-orange-700">Missions: {initdata.results.purged.missions}</p>}
-                      {initdata.results.purged.chapters > 0 && <p className="text-orange-700">Chapters: {initdata.results.purged.chapters}</p>}
-                      {initdata.results.purged.equipment > 0 && <p className="text-orange-700">Equipment: {initdata.results.purged.equipment}</p>}
-                      {initdata.results.purged.heroes > 0 && <p className="text-orange-700">Heroes: {initdata.results.purged.heroes}</p>}
-                      {initdata.results.purged.stats > 0 && <p className="text-orange-700">Equipment Stats: {initdata.results.purged.stats}</p>}
-                      {initdata.results.purged.required_items > 0 && <p className="text-orange-700">Required Items: {initdata.results.purged.required_items}</p>}
-                    </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Chapters Summary */}
                 {initdata.results.chapters && initdata.results.chapters.total > 0 && (

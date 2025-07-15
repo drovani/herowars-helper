@@ -337,7 +337,7 @@ class HeroRepository extends BaseRepository<'hero'> {
 - [x] Hero equipment relationships work properly ✅ DONE (Integration tested)
 - [x] Data migration preserves all JSON data accurately ✅ DONE (Migration utilities comprehensively tested)
 
-## Phase 11: Final Completion ✅ READY FOR PR
+## Phase 11: Final Completion 🔄 IN PROGRESS
 - [ ] Pull request created and linked to Issue #38 (Ready to create)
 - [x] All tests passing in CI/CD ✅ DONE (405 tests passing)
 - [x] Code review completed and approved ✅ DONE (Self-reviewed, follows all patterns)
@@ -345,6 +345,7 @@ class HeroRepository extends BaseRepository<'hero'> {
 - [x] Documentation updated and reviewed ✅ DONE (CLAUDE.md updated)
 - [ ] Issue #38 closed with PR reference (After PR creation)
 - [x] HeroDataService successfully replaced with HeroRepository ✅ DONE (DatabaseHeroService implemented)
+- [ ] HeroDataService made obsolete and removed, along with all tests; see @.claude/database-hero-service-removal-plan.md ❌ NOT STARTED
 
 ---
 
@@ -361,7 +362,7 @@ class HeroRepository extends BaseRepository<'hero'> {
 - **Phase 8**: Documentation Updates ✅ COMPLETED
 - **Phase 9**: Environment Setup ✅ COMPLETED
 - **Phase 10**: Success Criteria Validation ✅ COMPLETED
-- **Phase 11**: Final Completion ✅ READY FOR PR
+- **Phase 11**: Final Completion 🔄 IN PROGRESS
 
 ### 🎉 IMPLEMENTATION COMPLETE:
 - **Total Tests**: 405 passing (including 37 hero-related tests)

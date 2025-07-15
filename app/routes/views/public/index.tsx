@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import type { Route } from "./+types/index";
 
 const recentUpdates = {
-  asof: new Date("2025-01-15"),
+  asof: new Date("2025-07-15"),
   updates: [
     "Completed Hero Repository migration - all hero data now uses database instead of JSON files",
     "Added equipment database for gray, green, blue, violet, and orange items with crafting trees",

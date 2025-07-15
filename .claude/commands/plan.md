@@ -18,7 +18,23 @@ Generate a comprehensive implementation plan for the requested changes that is f
 
 ## Command Instructions
 
-When this command is used, research the request, examine the code base to gain more context, and create a detailed markdown implementation plan in `.claude/` folder with the following structure that is fully compatible with the continue command:
+When this command is used, research the request, examine the code base to gain more context, and create a detailed markdown implementation plan in `docs/plans/` folder with the following structure that is fully compatible with the continue command:
+
+### File Naming Convention
+- **For GitHub Issues**: `i{issue_number}-{short-description}.md`
+  - Example: `i39-hero-repo-cleanup.md`
+  - Example: `i42-auth-improvements.md`
+- **For Pull Requests**: `pr{pull_request_number}-{short-description}.md`
+  - Example: `pr15-add-dark-mode.md`
+- **For General Tasks**: `{short-description}.md`
+  - Example: `typescript-fixes.md`
+  - Example: `user-profile-feature.md`
+
+The `{short-description}` should be:
+- 3-15 characters long
+- Use kebab-case (lowercase with hyphens)
+- Clearly describe the main task/feature
+- Be specific enough to identify the work
 
 ### Required Plan Structure
 
@@ -180,4 +196,6 @@ Plans should account for:
 - Generating commits with descriptive messages following project patterns
 - Following TDD approach (write tests first, then implementation)
 
-The plan should be comprehensive enough that the continue command can execute it step-by-step without additional clarification, with full progress tracking and documentation. When creating the final markdown file, please keep the filename to 15 characters or less.
+The plan should be comprehensive enough that the continue command can execute it step-by-step without additional clarification, with full progress tracking and documentation. 
+
+**IMPORTANT**: Always follow the File Naming Convention specified above. The filename must include the appropriate prefix (i{number}- for issues, pr{number}- for PRs) and a descriptive short-description that clearly identifies the work being planned. 

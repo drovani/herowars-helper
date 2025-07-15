@@ -8,12 +8,32 @@ import { ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { transformCompleteHeroToRecord, transformBasicHeroToRecord, sortHeroRecords } from "~/lib/hero-transformations";
 import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const heroService = createDatabaseHeroService(request);
-  const heroes = await heroService.getAll();
+  const heroRepo = new HeroRepository(request);
+  const heroesResult = await heroRepo.findAll();
+  
+  if (heroesResult.error) {
+    throw new Response("Failed to load heroes", { status: 500 });
+  }
+
+  // Transform heroes to HeroRecord format
+  const heroes = heroesResult.data ? await Promise.all(
+    heroesResult.data.map(async (hero) => {
+      const completeHeroResult = await heroRepo.findWithAllData(hero.slug);
+      if (completeHeroResult.data) {
+        return transformCompleteHeroToRecord(completeHeroResult.data);
+      }
+      // Fallback to basic hero if complete data is not available
+      return transformBasicHeroToRecord(hero);
+    })
+  ) : [];
+
+  const sortedHeroes = sortHeroRecords(heroes);
+
   const equipmentRepo = new EquipmentRepository(request);
   const equipmentResult = await equipmentRepo.getAllAsJson();
 
@@ -21,7 +41,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     throw new Response("Failed to load equipment", { status: 500 });
   }
 
-  return { heroes, equipment: equipmentResult.data?.filter(eq => eq.type === "equipable") || [] };
+  return { heroes: sortedHeroes, equipment: equipmentResult.data?.filter(eq => eq.type === "equipable") || [] };
 };
 
 export default function HeroesIndex({ loaderData }: Route.ComponentProps) {

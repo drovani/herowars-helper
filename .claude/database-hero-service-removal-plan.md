@@ -59,47 +59,47 @@ Based on analysis of current usage patterns:
 - **Estimated Time**: 3-4 phases, 8-10 tasks total
 - **Benefit**: Proper repository pattern usage, eliminated service layer complexity
 
-## Phase 1: Create Data Transformation Utilities ❌ NOT STARTED
+## Phase 1: Create Data Transformation Utilities ✅ COMPLETED
 
-### 1.1 Create Reusable Transformation Functions ❌ NOT STARTED
-- [ ] Create `app/lib/hero-transformations.ts` for data transformation utilities
-- [ ] Extract `transformCompleteHeroToRecord()` as standalone function
-- [ ] Extract validation functions (validateHeroClass, validateHeroFaction, etc.)
-- [ ] Extract artifact/skin/glyph/equipment transformation functions
-- [ ] Create JSON stringify utility with empty array removal
-- [ ] Export all transformation functions for route usage
+### 1.1 Create Reusable Transformation Functions ✅ COMPLETED
+- [x] Create `app/lib/hero-transformations.ts` for data transformation utilities
+- [x] Extract `transformCompleteHeroToRecord()` as standalone function
+- [x] Extract validation functions (validateHeroClass, validateHeroFaction, etc.)
+- [x] Extract artifact/skin/glyph/equipment transformation functions
+- [x] Create JSON stringify utility with empty array removal
+- [x] Export all transformation functions for route usage
 
-### 1.2 Follow Existing Patterns ❌ NOT STARTED
-- [ ] Study `app/repositories/MissionRepository.ts` and `app/repositories/EquipmentRepository.ts` for patterns
-- [ ] Study existing route files that use repositories directly
-- [ ] Identify data transformation patterns used elsewhere in codebase
-- [ ] Ensure transformation utilities follow project conventions
-- [ ] Add proper TypeScript types for transformation functions
+### 1.2 Follow Existing Patterns ✅ COMPLETED
+- [x] Study `app/repositories/MissionRepository.ts` and `app/repositories/EquipmentRepository.ts` for patterns
+- [x] Study existing route files that use repositories directly
+- [x] Identify data transformation patterns used elsewhere in codebase
+- [x] Ensure transformation utilities follow project conventions
+- [x] Add proper TypeScript types for transformation functions
 
-## Phase 2: Refactor Route Loaders to Use Repository Pattern ❌ NOT STARTED
+## Phase 2: Refactor Route Loaders to Use Repository Pattern ✅ COMPLETED
 
-### 2.1 Update Heroes Index Route (`app/routes/views/heroes/index.tsx`) ❌ NOT STARTED
-- [ ] Replace `createDatabaseHeroService(request)` with `new HeroRepository(request)`
-- [ ] Use `repository.findAll()` instead of `heroService.getAll()`
-- [ ] Transform repository results using transformation utilities in loader
-- [ ] Remove service-layer patterns and use repository directly
-- [ ] Update imports to use HeroRepository and transformation functions
+### 2.1 Update Heroes Index Route (`app/routes/views/heroes/index.tsx`) ✅ COMPLETED
+- [x] Replace `createDatabaseHeroService(request)` with `new HeroRepository(request)`
+- [x] Use `repository.findAll()` instead of `heroService.getAll()`
+- [x] Transform repository results using transformation utilities in loader
+- [x] Remove service-layer patterns and use repository directly
+- [x] Update imports to use HeroRepository and transformation functions
 
-### 2.2 Update Heroes JSON Route (`app/routes/views/heroes/json.tsx`) ❌ NOT STARTED
-- [ ] Replace service with `new HeroRepository(request)`
-- [ ] Use `repository.findAll()` and JSON transformation utility
-- [ ] Apply proper JSON formatting with empty array removal
-- [ ] Ensure same JSON output format as before
-- [ ] Remove DatabaseHeroService dependency
+### 2.2 Update Heroes JSON Route (`app/routes/views/heroes/json.tsx`) ✅ COMPLETED
+- [x] Replace service with `new HeroRepository(request)`
+- [x] Use `repository.findAll()` and JSON transformation utility
+- [x] Apply proper JSON formatting with empty array removal
+- [x] Ensure same JSON output format as before
+- [x] Remove DatabaseHeroService dependency
 
-### 2.3 Update Hero Detail Routes ❌ NOT STARTED
-- [ ] Update `app/routes/views/heroes/slug.tsx` - Use `repository.findWithAllData()`
-- [ ] Update `app/routes/views/heroes/slug.json.tsx` - Use repository + JSON transform
-- [ ] Update `app/routes/views/heroes/slug.edit.tsx` - Use repository for CRUD operations
-- [ ] Apply data transformations in route loaders using utility functions
-- [ ] Maintain exact same data format for components
+### 2.3 Update Hero Detail Routes ✅ COMPLETED
+- [x] Update `app/routes/views/heroes/slug.tsx` - Use `repository.findWithAllData()`
+- [x] Update `app/routes/views/heroes/slug.json.tsx` - Use repository + JSON transform
+- [x] Update `app/routes/views/heroes/slug.edit.tsx` - Use repository for CRUD operations
+- [x] Apply data transformations in route loaders using utility functions
+- [x] Maintain exact same data format for components
 
-### 2.4 Update Equipment Route Hero Usage ❌ NOT STARTED
+### 2.4 Update Equipment Route Hero Usage 🔄 IN PROGRESS
 - [ ] Update `app/routes/views/equipment/slug.tsx` - Use `repository.findHeroesUsingEquipment()`
 - [ ] Apply hero data transformations where needed
 - [ ] Remove DatabaseHeroService import and usage

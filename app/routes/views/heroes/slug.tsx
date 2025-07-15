@@ -12,7 +12,8 @@ import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { createDatabaseHeroService } from "~/services/DatabaseHeroService";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { transformCompleteHeroToRecord, transformBasicHeroToRecord, sortHeroRecords } from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -29,14 +30,17 @@ export const handle = {
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing hero slug param");
 
-  const heroService = createDatabaseHeroService(request);
-  const hero = await heroService.getById(params.slug);
-  if (!hero) {
+  const heroRepo = new HeroRepository(request);
+  const heroResult = await heroRepo.findWithAllData(params.slug);
+  
+  if (heroResult.error || !heroResult.data) {
     throw new Response(null, {
       status: 404,
       statusText: `Hero with slug ${params.slug} not found.`,
     });
   }
+
+  const hero = transformCompleteHeroToRecord(heroResult.data);
 
   const missionRepo = new MissionRepository(request);
   const campaignSourcesResult = await missionRepo.findByHeroSlug(hero.name);
@@ -73,11 +77,27 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   
   // Filter to only the equipment used by this hero
   const equipmentUsed = equipmentUsedResult.data?.filter(eq => equipmentSlugs.includes(eq.slug)) || [];
-  const allHeroes = await heroService.getAll();
+  
+  // Get all heroes for navigation
+  const allHeroesResult = await heroRepo.findAll();
+  if (allHeroesResult.error) {
+    throw new Response("Failed to load heroes for navigation", { status: 500 });
+  }
 
-  const currentIndex = allHeroes.findIndex((h) => h.slug === hero.slug);
-  const prevHero = currentIndex > 0 ? allHeroes[currentIndex - 1] : null;
-  const nextHero = currentIndex < allHeroes.length - 1 ? allHeroes[currentIndex + 1] : null;
+  const allHeroes = allHeroesResult.data ? await Promise.all(
+    allHeroesResult.data.map(async (h) => {
+      const completeHeroResult = await heroRepo.findWithAllData(h.slug);
+      if (completeHeroResult.data) {
+        return transformCompleteHeroToRecord(completeHeroResult.data);
+      }
+      return transformBasicHeroToRecord(h);
+    })
+  ) : [];
+
+  const sortedHeroes = sortHeroRecords(allHeroes);
+  const currentIndex = sortedHeroes.findIndex((h) => h.slug === hero.slug);
+  const prevHero = currentIndex > 0 ? sortedHeroes[currentIndex - 1] : null;
+  const nextHero = currentIndex < sortedHeroes.length - 1 ? sortedHeroes[currentIndex + 1] : null;
 
   return { hero, prevHero, nextHero, campaignSources, equipmentUsed };
 };

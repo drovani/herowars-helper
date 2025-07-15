@@ -14,23 +14,17 @@ import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
-  const heroesResult = await heroRepo.findAll();
+  
+  // Use bulk loading for better performance
+  const heroesResult = await heroRepo.findAllWithRelationships();
   
   if (heroesResult.error) {
     throw new Response("Failed to load heroes", { status: 500 });
   }
 
-  // Transform heroes to HeroRecord format
-  const heroes = heroesResult.data ? await Promise.all(
-    heroesResult.data.map(async (hero) => {
-      const completeHeroResult = await heroRepo.findWithAllData(hero.slug);
-      if (completeHeroResult.data) {
-        return transformCompleteHeroToRecord(completeHeroResult.data);
-      }
-      // Fallback to basic hero if complete data is not available
-      return transformBasicHeroToRecord(hero);
-    })
-  ) : [];
+  // Transform heroes to HeroRecord format - now using bulk loaded data
+  const heroes = heroesResult.data ? 
+    heroesResult.data.map(hero => transformCompleteHeroToRecord(hero)) : [];
 
   const sortedHeroes = sortHeroRecords(heroes);
 

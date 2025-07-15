@@ -130,9 +130,11 @@ describe('HeroRepository', () => {
       ]
 
       mockSupabaseClient.from.mockReturnValue({
-        select: () => Promise.resolve({
-          data: heroesData,
-          error: null,
+        select: () => ({
+          order: () => Promise.resolve({
+            data: heroesData,
+            error: null,
+          }),
         }),
       })
 

@@ -55,7 +55,68 @@ export class HeroRepository extends BaseRepository<'hero'> {
     }
   }
 
+  /**
+   * Find all heroes with optional pagination support
+   * @param options Optional limit and offset for pagination
+   * @returns Paginated list of heroes
+   * @throws {RepositoryError} When database query fails
+   * @example
+   * const result = await repository.findAll({ limit: 20, offset: 0 });
+   */
+  async findAll(options: {
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<RepositoryResult<Hero[]>> {
+    const { limit, offset } = options;
+    
+    try {
+      let query = this.supabase
+        .from('hero')
+        .select('*')
+        .order('order_rank');
+
+      if (limit !== undefined) {
+        query = query.limit(limit);
+      }
+      if (offset !== undefined) {
+        query = query.range(offset, offset + (limit || 50) - 1);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        log.error('Error finding all heroes:', error);
+        return {
+          data: null,
+          error: this.handleError(error),
+        };
+      }
+
+      return {
+        data: data as Hero[],
+        error: null,
+      };
+    } catch (error) {
+      log.error('Unexpected error finding all heroes:', error);
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error,
+        },
+      };
+    }
+  }
+
   // Hero-specific query methods
+  /**
+   * Find heroes by class (Tank, Damage, Support, Control)
+   * @param heroClass The hero class to filter by
+   * @returns Heroes matching the specified class
+   * @throws {RepositoryError} When database query fails
+   * @example
+   * const result = await repository.findByClass('Tank');
+   */
   async findByClass(heroClass: string): Promise<RepositoryResult<Hero[]>> {
     try {
       const { data, error } = await (this.supabase)
@@ -88,6 +149,14 @@ export class HeroRepository extends BaseRepository<'hero'> {
     }
   }
 
+  /**
+   * Find heroes by faction (Eternity, Chaos, Order, etc.)
+   * @param faction The faction to filter by
+   * @returns Heroes matching the specified faction
+   * @throws {RepositoryError} When database query fails
+   * @example
+   * const result = await repository.findByFaction('Eternity');
+   */
   async findByFaction(faction: string): Promise<RepositoryResult<Hero[]>> {
     try {
       const { data, error } = await (this.supabase)
@@ -120,6 +189,14 @@ export class HeroRepository extends BaseRepository<'hero'> {
     }
   }
 
+  /**
+   * Find heroes by main stat (strength, agility, intelligence)
+   * @param mainStat The main stat to filter by
+   * @returns Heroes matching the specified main stat
+   * @throws {RepositoryError} When database query fails
+   * @example
+   * const result = await repository.findByMainStat('strength');
+   */
   async findByMainStat(mainStat: string): Promise<RepositoryResult<Hero[]>> {
     try {
       const { data, error } = await (this.supabase)
@@ -152,6 +229,14 @@ export class HeroRepository extends BaseRepository<'hero'> {
     }
   }
 
+  /**
+   * Find heroes by attack type (physical, magical, pure)
+   * @param attackType The attack type to filter by
+   * @returns Heroes matching the specified attack type
+   * @throws {RepositoryError} When database query fails
+   * @example
+   * const result = await repository.findByAttackType('physical');
+   */
   async findByAttackType(attackType: string): Promise<RepositoryResult<Hero[]>> {
     try {
       const { data, error } = await (this.supabase)
@@ -184,7 +269,90 @@ export class HeroRepository extends BaseRepository<'hero'> {
     }
   }
 
+  /**
+   * Bulk load all heroes with complete relationship data
+   * @param options Optional pagination and filtering options
+   * @returns All heroes with artifacts, skins, glyphs, and equipment slots loaded
+   * @throws {RepositoryError} When database query fails
+   * @example
+   * const result = await repository.findAllWithRelationships({ limit: 50 });
+   */
+  async findAllWithRelationships(options: {
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<RepositoryResult<CompleteHero[]>> {
+    const { limit, offset } = options;
+    
+    try {
+      let query = this.supabase
+        .from('hero')
+        .select(`
+          *,
+          hero_artifact!hero_artifact_hero_slug_fkey(*),
+          hero_skin!hero_skin_hero_slug_fkey(*),
+          hero_glyph!hero_glyph_hero_slug_fkey(*),
+          hero_equipment_slot!hero_equipment_slot_hero_slug_fkey(*)
+        `)
+        .order('order_rank');
+
+      if (limit !== undefined) {
+        query = query.limit(limit);
+      }
+      if (offset !== undefined) {
+        query = query.range(offset, offset + (limit || 50) - 1);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        log.error('Error bulk loading heroes with relationships:', error);
+        return {
+          data: null,
+          error: this.handleError(error),
+        };
+      }
+
+      const completeHeroes: CompleteHero[] = data.map((hero: any) => ({
+        ...hero,
+        artifacts: hero.hero_artifact || [],
+        skins: hero.hero_skin || [],
+        glyphs: (hero.hero_glyph || []).sort((a: HeroGlyph, b: HeroGlyph) => a.position - b.position),
+        equipmentSlots: hero.hero_equipment_slot || [],
+      }));
+
+      // Clean up raw relationship data
+      completeHeroes.forEach((hero: any) => {
+        delete hero.hero_artifact;
+        delete hero.hero_skin;
+        delete hero.hero_glyph;
+        delete hero.hero_equipment_slot;
+      });
+
+      return {
+        data: completeHeroes,
+        error: null,
+      };
+    } catch (error) {
+      log.error('Unexpected error bulk loading heroes with relationships:', error);
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error,
+        },
+      };
+    }
+  }
+
   // Complex hero data loading with relationships
+  /**
+   * Loads a single hero with all related data (artifacts, skins, glyphs, equipment slots)
+   * @param slug The unique slug identifier for the hero
+   * @returns Hero with all relationships loaded
+   * @throws {RepositoryError} When hero not found or database query fails
+   * @example
+   * const result = await repository.findWithAllData('astaroth');
+   */
   async findWithAllData(slug: string): Promise<RepositoryResult<CompleteHero>> {
     try {
       const { data, error } = await (this.supabase)
@@ -483,6 +651,35 @@ export class HeroRepository extends BaseRepository<'hero'> {
   }
 
   // Bulk operations for complex hero data
+  /**
+   * Creates a hero with all related data in a single transaction
+   * @param heroData Complete hero data including hero, artifacts, skins, glyphs, and equipment slots
+   * @returns Created hero with all relationships loaded
+   * @throws {RepositoryError} When validation fails or database constraints violated
+   * @example
+   * const result = await repository.createWithAllData({
+   *   hero: {
+   *     slug: 'astaroth',
+   *     name: 'Astaroth',
+   *     class: 'Tank',
+   *     faction: 'Chaos',
+   *     main_stat: 'strength',
+   *     attack_type: ['physical'],
+   *     stone_source: ['campaign'],
+   *     order_rank: 1
+   *   },
+   *   artifacts: [{
+   *     hero_slug: 'astaroth',
+   *     artifact_type: 'weapon',
+   *     name: 'Doom Bringer',
+   *     team_buff: 'magic_attack',
+   *     team_buff_secondary: null
+   *   }],
+   *   skins: [],
+   *   glyphs: [],
+   *   equipmentSlots: []
+   * });
+   */
   async createWithAllData(heroData: CreateHeroWithData): Promise<RepositoryResult<CompleteHero>> {
     try {
       // Start transaction - create hero first
@@ -562,6 +759,18 @@ export class HeroRepository extends BaseRepository<'hero'> {
   }
 
   // Bulk operations for individual relationship tables
+  /**
+   * Creates multiple hero artifacts in batches for optimal performance
+   * @param artifacts Array of artifact data to create
+   * @param options Bulk operation options including batch size and progress callback
+   * @returns Array of created artifacts with partial success handling
+   * @throws {RepositoryError} When all batches fail
+   * @example
+   * const result = await repository.bulkCreateArtifacts([
+   *   { hero_slug: 'astaroth', artifact_type: 'weapon', name: 'Doom Bringer', team_buff: 'magic_attack', team_buff_secondary: null },
+   *   { hero_slug: 'galahad', artifact_type: 'weapon', name: 'Lion\'s Mane', team_buff: 'armor', team_buff_secondary: null }
+   * ], { batchSize: 50, onProgress: (current, total) => console.log(`${current}/${total}`) });
+   */
   async bulkCreateArtifacts(
     artifacts: CreateInput<'hero_artifact'>[],
     options: BulkOptions = {}
@@ -855,6 +1064,13 @@ export class HeroRepository extends BaseRepository<'hero'> {
   /**
    * Initialize hero data from JSON files
    * Transforms JSON hero data and loads it into the database using bulk operations
+   * @param heroesJsonData Array of hero data in JSON format from data/heroes.json
+   * @returns Result containing created heroes with full relationship data
+   * @throws {RepositoryError} When transformation fails or database operations fail
+   * @example
+   * const jsonData = await import('../data/heroes.json');
+   * const result = await repository.initializeFromJSON(jsonData.default);
+   * console.log(`Created ${result.data?.heroes.length} heroes`);
    */
   async initializeFromJSON(heroesJsonData: any[]): Promise<RepositoryResult<{ heroes: CompleteHero[] }>> {
     try {
@@ -948,7 +1164,148 @@ export class HeroRepository extends BaseRepository<'hero'> {
   }
 
   /**
+   * Transform JSON artifact data to database format
+   * @param heroSlug The hero slug for the artifacts
+   * @param artifacts Raw artifact data from JSON
+   * @returns Array of artifact data ready for database insertion
+   */
+  private transformJsonArtifacts(heroSlug: string, artifacts: any): CreateInput<'hero_artifact'>[] {
+    const artifactData: CreateInput<'hero_artifact'>[] = [];
+    
+    if (!artifacts) {
+      return artifactData;
+    }
+
+    if (artifacts.weapon) {
+      artifactData.push({
+        hero_slug: heroSlug,
+        artifact_type: 'weapon',
+        name: artifacts.weapon.name,
+        team_buff: artifacts.weapon.team_buff,
+        team_buff_secondary: artifacts.weapon.team_buff_secondary || null
+      });
+    }
+
+    if (artifacts.book) {
+      artifactData.push({
+        hero_slug: heroSlug,
+        artifact_type: 'book',
+        name: artifacts.book,
+        team_buff: null,
+        team_buff_secondary: null
+      });
+    }
+
+    if (artifacts.ring !== undefined) {
+      artifactData.push({
+        hero_slug: heroSlug,
+        artifact_type: 'ring',
+        name: null,
+        team_buff: null,
+        team_buff_secondary: null
+      });
+    }
+
+    return artifactData;
+  }
+
+  /**
+   * Transform JSON skin data to database format
+   * @param heroSlug The hero slug for the skins
+   * @param skins Raw skin data from JSON
+   * @returns Array of skin data ready for database insertion
+   */
+  private transformJsonSkins(heroSlug: string, skins: any): CreateInput<'hero_skin'>[] {
+    if (!skins || !Array.isArray(skins)) {
+      return [];
+    }
+
+    return skins.map((skin: any) => ({
+      hero_slug: heroSlug,
+      name: skin.name,
+      stat_type: skin.stat,
+      stat_value: 0, // JSON doesn't include values, use 0 as default
+      has_plus: skin.has_plus || false,
+      source: skin.source || null
+    }));
+  }
+
+  /**
+   * Transform JSON glyph data to database format
+   * @param heroSlug The hero slug for the glyphs
+   * @param glyphs Raw glyph data from JSON (array with nulls for empty slots)
+   * @returns Array of glyph data ready for database insertion
+   */
+  private transformJsonGlyphs(heroSlug: string, glyphs: any): CreateInput<'hero_glyph'>[] {
+    if (!glyphs || !Array.isArray(glyphs)) {
+      return [];
+    }
+
+    const glyphData: CreateInput<'hero_glyph'>[] = [];
+    
+    glyphs.forEach((glyphStat: string | null, index: number) => {
+      if (glyphStat !== null) {
+        glyphData.push({
+          hero_slug: heroSlug,
+          position: index + 1,
+          stat_type: glyphStat,
+          stat_value: 0 // JSON doesn't include values, use 0 as default
+        });
+      }
+    });
+
+    return glyphData;
+  }
+
+  /**
+   * Transform JSON equipment items to database format
+   * @param heroSlug The hero slug for the equipment slots
+   * @param items Raw equipment items from JSON organized by quality
+   * @returns Array of equipment slot data ready for database insertion
+   */
+  private transformJsonEquipmentSlots(heroSlug: string, items: any): CreateInput<'hero_equipment_slot'>[] {
+    if (!items) {
+      return [];
+    }
+
+    const equipmentSlotData: CreateInput<'hero_equipment_slot'>[] = [];
+    
+    for (const [quality, equipmentArray] of Object.entries(items)) {
+      if (Array.isArray(equipmentArray)) {
+        equipmentArray.forEach((equipmentSlug: string | null, slotIndex: number) => {
+          if (equipmentSlug) {
+            equipmentSlotData.push({
+              hero_slug: heroSlug,
+              quality: quality,
+              slot_position: slotIndex + 1,
+              equipment_slug: equipmentSlug
+            });
+          }
+        });
+      }
+    }
+
+    return equipmentSlotData;
+  }
+
+  /**
    * Transform JSON hero data to database format for createWithAllData
+   * @param heroJson Raw hero data from JSON files (heroes.json format)
+   * @returns Transformed hero data ready for database insertion
+   * @throws {Error} When required fields are missing or invalid
+   * @example
+   * const jsonHero = {
+   *   slug: 'astaroth',
+   *   name: 'Astaroth',
+   *   class: 'Tank',
+   *   faction: 'Chaos',
+   *   main_stat: 'strength',
+   *   artifacts: { weapon: { name: 'Doom Bringer', team_buff: 'magic_attack' } },
+   *   skins: [{ name: 'Demonic', stat: 'health', has_plus: true }],
+   *   glyphs: ['health', 'armor', null, null, 'strength'],
+   *   items: { white: ['item1', 'item2', null, null, null, null] }
+   * };
+   * const dbFormat = repository.transformJsonHeroToDatabase(jsonHero);
    */
   private transformJsonHeroToDatabase(heroJson: any): CreateHeroWithData {
     const createData: CreateHeroWithData = {
@@ -969,79 +1326,16 @@ export class HeroRepository extends BaseRepository<'hero'> {
     };
 
     // Transform artifacts
-    if (heroJson.artifacts) {
-      if (heroJson.artifacts.weapon) {
-        createData.artifacts!.push({
-          hero_slug: heroJson.slug,
-          artifact_type: 'weapon',
-          name: heroJson.artifacts.weapon.name,
-          team_buff: heroJson.artifacts.weapon.team_buff,
-          team_buff_secondary: heroJson.artifacts.weapon.team_buff_secondary || null
-        });
-      }
-      if (heroJson.artifacts.book) {
-        createData.artifacts!.push({
-          hero_slug: heroJson.slug,
-          artifact_type: 'book',
-          name: heroJson.artifacts.book,
-          team_buff: null,
-          team_buff_secondary: null
-        });
-      }
-      if (heroJson.artifacts.ring !== undefined) {
-        createData.artifacts!.push({
-          hero_slug: heroJson.slug,
-          artifact_type: 'ring',
-          name: null,
-          team_buff: null,
-          team_buff_secondary: null
-        });
-      }
-    }
+    createData.artifacts = this.transformJsonArtifacts(heroJson.slug, heroJson.artifacts);
 
     // Transform skins
-    if (heroJson.skins && Array.isArray(heroJson.skins)) {
-      createData.skins = heroJson.skins.map((skin: any) => ({
-        hero_slug: heroJson.slug,
-        name: skin.name,
-        stat_type: skin.stat,
-        stat_value: 0, // JSON doesn't include values, use 0 as default
-        has_plus: skin.has_plus || false,
-        source: skin.source || null
-      }));
-    }
+    createData.skins = this.transformJsonSkins(heroJson.slug, heroJson.skins);
 
     // Transform glyphs
-    if (heroJson.glyphs && Array.isArray(heroJson.glyphs)) {
-      heroJson.glyphs.forEach((glyphStat: string | null, index: number) => {
-        if (glyphStat !== null) {
-          createData.glyphs!.push({
-            hero_slug: heroJson.slug,
-            position: index + 1,
-            stat_type: glyphStat,
-            stat_value: 0 // JSON doesn't include values, use 0 as default
-          });
-        }
-      });
-    }
+    createData.glyphs = this.transformJsonGlyphs(heroJson.slug, heroJson.glyphs);
 
     // Transform equipment items
-    if (heroJson.items) {
-      for (const [quality, equipmentArray] of Object.entries(heroJson.items)) {
-        if (Array.isArray(equipmentArray)) {
-          equipmentArray.forEach((equipmentSlug: string | null, slotIndex: number) => {
-            if (equipmentSlug) {
-              createData.equipmentSlots!.push({
-                hero_slug: heroJson.slug,
-                quality: quality,
-                slot_position: slotIndex + 1,
-                equipment_slug: equipmentSlug
-              });
-            }
-          });
-        }
-      }
-    }
+    createData.equipmentSlots = this.transformJsonEquipmentSlots(heroJson.slug, heroJson.items);
 
     return createData;
   }

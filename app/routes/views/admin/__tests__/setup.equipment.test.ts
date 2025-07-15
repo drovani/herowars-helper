@@ -87,14 +87,6 @@ vi.mock('~/repositories/HeroRepository', () => ({
   }))
 }))
 
-// Mock the DatabaseHeroService to avoid import issues
-vi.mock('~/services/DatabaseHeroService', () => ({
-  createDatabaseHeroService: vi.fn(() => ({
-    getAll: vi.fn(),
-    getById: vi.fn(),
-    isInitialized: vi.fn(() => true)
-  }))
-}))
 
 describe('Admin Setup - Equipment Import', () => {
   let capturedLogs: Array<{level: string, message: string, args: any[]}> = []

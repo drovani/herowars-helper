@@ -144,7 +144,6 @@ equipment: slug (PK), name, campaign_sources (string[])
 - **MissionRepository**: ✅ Implemented in (Issue [#37](https://github.com/drovani/herowars-helper/issues/37))
 - **EquipmentRepository**: ✅ Implemented in (Issue [#36](https://github.com/drovani/herowars-helper/issues/36))
 - **HeroRepository**: ✅ Implemented in (Issue [#38](https://github.com/drovani/herowars-helper/issues/38))
-- **Legacy Services**: Hero services migrated to repositories; EquipmentDataService and MissionDataService still in use
 
 ### Navigation System
 - **Dynamic Navigation**: Role-based menu items defined in `app/data/navigation.ts`

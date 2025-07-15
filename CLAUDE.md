@@ -130,6 +130,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Legacy**: Service classes in `app/services/` work with JSON data
 - **New**: Repository classes in `app/repositories/` work with Supabase database
 - **Data Mismatch**: JSON missions uses compound IDs ("1-1"), which the DB calls slug fields
+- **Migration Status**: Hero services fully migrated; Equipment and Mission services still in use for specific legacy operations
 
 ### Database Schema Quick Reference
 ```sql
@@ -144,6 +145,7 @@ equipment: slug (PK), name, campaign_sources (string[])
 - **MissionRepository**: ✅ Implemented in (Issue [#37](https://github.com/drovani/herowars-helper/issues/37))
 - **EquipmentRepository**: ✅ Implemented in (Issue [#36](https://github.com/drovani/herowars-helper/issues/36))
 - **HeroRepository**: ✅ Implemented in (Issue [#38](https://github.com/drovani/herowars-helper/issues/38))
+- **Repository Migration**: ✅ Complete - All hero routes migrated from legacy services (Issue [#39](https://github.com/drovani/herowars-helper/issues/39))
 
 ### Navigation System
 - **Dynamic Navigation**: Role-based menu items defined in `app/data/navigation.ts`

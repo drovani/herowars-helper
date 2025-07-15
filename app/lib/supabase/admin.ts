@@ -92,7 +92,7 @@ export const adminUserOperations = {
     // Set ban for 10 years (87600 hours)
     const { data, error } = await supabase.auth.admin.updateUserById(userId, {
       ban_duration: '87600h'
-    } as any);
+    });
 
     if (error) {
       throw new Error(`Failed to disable user: ${error.message}`);
@@ -109,7 +109,7 @@ export const adminUserOperations = {
 
     const { data, error } = await supabase.auth.admin.updateUserById(userId, {
       ban_duration: 'none'
-    } as any);
+    });
 
     if (error) {
       throw new Error(`Failed to enable user: ${error.message}`);
@@ -170,7 +170,6 @@ export const adminUserOperations = {
       throw new Error(`Failed to create user: ${error.message || 'Database error'}`);
     }
 
-    log.info('User created successfully:', data.user?.id);
     return data.user;
   },
 
@@ -199,7 +198,6 @@ export const adminUserOperations = {
       throw new Error(`Failed to delete user: ${error.message}`);
     }
 
-    log.info('User deleted successfully:', userId);
     return { success: true };
   }
 };

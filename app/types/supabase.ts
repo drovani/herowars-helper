@@ -7,6 +7,31 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       chapter: {
@@ -125,6 +150,198 @@ export type Database = {
           },
         ]
       }
+      hero: {
+        Row: {
+          attack_type: string[]
+          class: string
+          faction: string
+          main_stat: string
+          name: string
+          order_rank: number
+          slug: string
+          stone_source: string[]
+          updated_on: string | null
+        }
+        Insert: {
+          attack_type: string[]
+          class: string
+          faction: string
+          main_stat: string
+          name: string
+          order_rank: number
+          slug: string
+          stone_source: string[]
+          updated_on?: string | null
+        }
+        Update: {
+          attack_type?: string[]
+          class?: string
+          faction?: string
+          main_stat?: string
+          name?: string
+          order_rank?: number
+          slug?: string
+          stone_source?: string[]
+          updated_on?: string | null
+        }
+        Relationships: []
+      }
+      hero_artifact: {
+        Row: {
+          artifact_type: string
+          created_at: string | null
+          hero_slug: string
+          id: string
+          name: string | null
+          team_buff: string | null
+          team_buff_secondary: string | null
+        }
+        Insert: {
+          artifact_type: string
+          created_at?: string | null
+          hero_slug: string
+          id?: string
+          name?: string | null
+          team_buff?: string | null
+          team_buff_secondary?: string | null
+        }
+        Update: {
+          artifact_type?: string
+          created_at?: string | null
+          hero_slug?: string
+          id?: string
+          name?: string | null
+          team_buff?: string | null
+          team_buff_secondary?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_artifact_hero_slug_fkey"
+            columns: ["hero_slug"]
+            isOneToOne: false
+            referencedRelation: "hero"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      hero_equipment_slot: {
+        Row: {
+          created_at: string | null
+          equipment_slug: string | null
+          hero_slug: string
+          id: string
+          quality: string
+          slot_position: number
+        }
+        Insert: {
+          created_at?: string | null
+          equipment_slug?: string | null
+          hero_slug: string
+          id?: string
+          quality: string
+          slot_position: number
+        }
+        Update: {
+          created_at?: string | null
+          equipment_slug?: string | null
+          hero_slug?: string
+          id?: string
+          quality?: string
+          slot_position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_equipment_slot_equipment_slug_fkey"
+            columns: ["equipment_slug"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "hero_equipment_slot_hero_slug_fkey"
+            columns: ["hero_slug"]
+            isOneToOne: false
+            referencedRelation: "hero"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      hero_glyph: {
+        Row: {
+          created_at: string | null
+          hero_slug: string
+          id: string
+          position: number
+          stat_type: string
+          stat_value: number
+        }
+        Insert: {
+          created_at?: string | null
+          hero_slug: string
+          id?: string
+          position: number
+          stat_type: string
+          stat_value: number
+        }
+        Update: {
+          created_at?: string | null
+          hero_slug?: string
+          id?: string
+          position?: number
+          stat_type?: string
+          stat_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_glyph_hero_slug_fkey"
+            columns: ["hero_slug"]
+            isOneToOne: false
+            referencedRelation: "hero"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      hero_skin: {
+        Row: {
+          created_at: string | null
+          has_plus: boolean | null
+          hero_slug: string
+          id: string
+          name: string
+          source: string | null
+          stat_type: string
+          stat_value: number
+        }
+        Insert: {
+          created_at?: string | null
+          has_plus?: boolean | null
+          hero_slug: string
+          id?: string
+          name: string
+          source?: string | null
+          stat_type: string
+          stat_value: number
+        }
+        Update: {
+          created_at?: string | null
+          has_plus?: boolean | null
+          hero_slug?: string
+          id?: string
+          name?: string
+          source?: string | null
+          stat_type?: string
+          stat_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hero_skin_hero_slug_fkey"
+            columns: ["hero_slug"]
+            isOneToOne: false
+            referencedRelation: "hero"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       mission: {
         Row: {
           chapter_id: number
@@ -171,6 +388,17 @@ export type Database = {
           quality: string
           slug: string
           name: string
+        }[]
+      }
+      has_editorial_role: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      update_policies_with_summary: {
+        Args: { table_names: string[]; operations?: string[] }
+        Returns: {
+          action: string
+          count: number
         }[]
       }
     }
@@ -290,10 +518,14 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
-      equipment_quality: ["gray", "green", "blue", "violet", "orange", "red"],
+      equipment_quality: ["gray", "green", "blue", "violet", "orange"],
       equipment_type: ["equipable", "fragment", "recipe"],
     },
   },
 } as const
+

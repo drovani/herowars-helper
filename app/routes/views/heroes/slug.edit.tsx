@@ -9,7 +9,8 @@ import HeroForm from "~/components/HeroForm";
 import { Badge } from "~/components/ui/badge";
 import { HeroMutationSchema, type HeroMutation } from "~/data/hero.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import HeroDataService from "~/services/HeroDataService";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -38,13 +39,17 @@ export const handle = {
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing hero slug param.");
-  const hero = await HeroDataService.getById(params.slug);
-  if (!hero) {
+  const heroRepo = new HeroRepository(request);
+  const heroResult = await heroRepo.findWithAllData(params.slug);
+  
+  if (heroResult.error || !heroResult.data) {
     throw data(null, {
       status: 404,
       statusText: `Hero with slug ${params.slug} not found.`,
     });
   }
+
+  const hero = transformCompleteHeroToRecord(heroResult.data);
 
   const equipmentRepo = new EquipmentRepository(request);
   const equipmentResult = await equipmentRepo.getAllAsJson();
@@ -68,23 +73,40 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   invariant(params.slug, "Missing hero slug param");
 
   const formData = await request.formData();
-  const data = JSON.parse(formData.get("hero") as string);
+  const formDataObj = JSON.parse(formData.get("hero") as string);
   const dustedData = {
-    ...data,
-    glyphs: data.glyphs.map((glyph: string | null | undefined) => glyph || undefined),
+    ...formDataObj,
+    glyphs: formDataObj.glyphs.map((glyph: string | null | undefined) => glyph || undefined),
     artifact: {
-      ...data.artifact,
+      ...formDataObj.artifact,
       ring: null,
     },
   };
 
-  const updateResults = await HeroDataService.update(params.slug, dustedData as HeroMutation);
-  if (updateResults instanceof ZodError) {
-    log.error("Captured validation ZodError:", JSON.stringify(updateResults.format(), null, 2));
-    return data({ errors: updateResults.format() }, { status: 400 });
+  // Validate the data
+  const parseResults = HeroMutationSchema.safeParse(dustedData);
+  if (!parseResults.success) {
+    log.error("Captured validation ZodError:", JSON.stringify(parseResults.error.format(), null, 2));
+    return data({ errors: parseResults.error.format() }, { status: 400 });
   }
 
-  return redirect(`/heroes/${updateResults.slug}`);
+  const heroRepo = new HeroRepository(request);
+  const updateData = {
+    ...parseResults.data,
+    updated_on: new Date().toISOString(),
+  };
+
+  const updateResult = await heroRepo.update(params.slug, updateData);
+  if (updateResult.error) {
+    log.error(`Failed to update hero ${params.slug}:`, updateResult.error);
+    return data({ errors: { _form: [`Failed to update hero: ${updateResult.error.message}`] } }, { status: 500 });
+  }
+
+  if (!updateResult.data) {
+    return data({ errors: { _form: [`Failed to update hero: No data returned`] } }, { status: 500 });
+  }
+
+  return redirect(`/heroes/${updateResult.data.slug}`);
 };
 
 export default function EditHero({ loaderData, actionData }: Route.ComponentProps) {

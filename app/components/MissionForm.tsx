@@ -8,7 +8,7 @@ import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import type { HeroRecord } from "~/data/hero.zod";
 import { MissionMutationSchema, type MissionMutation } from "~/data/mission.zod";
-import HeroDataService from "~/services/HeroDataService";
+// Hero data will be fetched via API
 
 interface MissionFormProps {
   form: UseFormReturn<MissionMutation>;
@@ -24,7 +24,11 @@ export default function MissionForm({ form }: MissionFormProps) {
   useEffect(() => {
     const loadHeroes = async () => {
       try {
-        const heroesData = await HeroDataService.getAll();
+        const response = await fetch('/heroes/json');
+        if (!response.ok) {
+          throw new Error('Failed to fetch heroes');
+        }
+        const heroesData = await response.json();
         setHeroes(heroesData);
       } catch (error) {
         log.error("Failed to load heroes:", error);

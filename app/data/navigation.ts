@@ -90,6 +90,13 @@ export const navigation: NavigationGroup[] = [
         name: "Data Setup",
         icon: DatabaseZapIcon,
         href: "/admin/setup",
+        children: [
+          {
+            name: "Heroes",
+            icon: UsersRoundIcon,
+            href: "/admin/setup/heroes",
+          },
+        ],
       },
       {
         name: "User Management",

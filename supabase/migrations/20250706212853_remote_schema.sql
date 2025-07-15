@@ -149,9 +149,6 @@ ALTER TABLE ONLY "public"."chapter"
 ADD CONSTRAINT "chapter_chapter_title_key" UNIQUE ("title");
 
 ALTER TABLE ONLY "public"."chapter"
-ADD CONSTRAINT "chapter_id_key" UNIQUE ("id");
-
-ALTER TABLE ONLY "public"."chapter"
 ADD CONSTRAINT "chapter_pkey" PRIMARY KEY ("id");
 
 ALTER TABLE ONLY "public"."equipment"
@@ -165,9 +162,6 @@ ADD CONSTRAINT "equipment_required_item_pkey" PRIMARY KEY ("base_slug", "require
 
 ALTER TABLE ONLY "public"."equipment_stat"
 ADD CONSTRAINT "equipment_stat_pkey" PRIMARY KEY ("equipment_slug", "stat");
-
-ALTER TABLE ONLY "public"."mission"
-ADD CONSTRAINT "mission_id_key" UNIQUE ("slug");
 
 ALTER TABLE ONLY "public"."mission"
 ADD CONSTRAINT "mission_pkey" PRIMARY KEY ("slug");

@@ -11,8 +11,9 @@ import { Separator } from "~/components/ui/separator";
 import type { EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import HeroDataService from "~/services/HeroDataService";
+import { transformCompleteHeroToRecord, transformBasicHeroToRecord } from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -95,7 +96,23 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   const missionSources = missionSourcesResult.data || [];
 
-  const heroesUsingItem = await HeroDataService.getHeroesUsingItem(equipment.slug);
+  const heroRepo = new HeroRepository(request);
+  const heroesUsingItemResult = await heroRepo.findHeroesUsingEquipment(equipment.slug);
+  
+  if (heroesUsingItemResult.error) {
+    throw new Response("Failed to load heroes using item", { status: 500 });
+  }
+
+  // Transform heroes to HeroRecord format
+  const heroesUsingItem = heroesUsingItemResult.data ? await Promise.all(
+    heroesUsingItemResult.data.map(async (hero) => {
+      const completeHeroResult = await heroRepo.findWithAllData(hero.slug);
+      if (completeHeroResult.data) {
+        return transformCompleteHeroToRecord(completeHeroResult.data);
+      }
+      return transformBasicHeroToRecord(hero);
+    })
+  ) : [];
 
   return {
     equipment,

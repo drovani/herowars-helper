@@ -180,4 +180,4 @@ Plans should account for:
 - Generating commits with descriptive messages following project patterns
 - Following TDD approach (write tests first, then implementation)
 
-The plan should be comprehensive enough that the continue command can execute it step-by-step without additional clarification, with full progress tracking and documentation.
+The plan should be comprehensive enough that the continue command can execute it step-by-step without additional clarification, with full progress tracking and documentation. When creating the final markdown file, please keep the filename to 15 characters or less.

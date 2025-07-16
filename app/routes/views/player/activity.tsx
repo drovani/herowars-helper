@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { ActivityFeed } from "~/components/player/ActivityFeed";
 import { formatTitle } from "~/config/site";
 import { PlayerEventRepository } from "~/repositories/PlayerEventRepository";
+import { getAuthenticatedUser } from "~/lib/auth/utils";
 import { useState } from "react";
 import type { Route } from "./+types/activity";
 import type { PlayerEvent } from "~/repositories/types";
@@ -12,13 +13,12 @@ import type { PlayerEvent } from "~/repositories/types";
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const playerEventRepo = new PlayerEventRepository(request);
   
-  // Get user from request (this would be set by authentication middleware)
-  const url = new URL(request.url);
-  const userId = url.searchParams.get('userId'); // This would come from auth context
+  // Get authenticated user using centralized utility
+  const { user } = await getAuthenticatedUser(request);
   
   let events: PlayerEvent[] = [];
-  if (userId) {
-    const eventsResult = await playerEventRepo.findRecentEvents(userId, 50);
+  if (user) {
+    const eventsResult = await playerEventRepo.findRecentEvents(user.id, 50);
     if (!eventsResult.error && eventsResult.data) {
       events = eventsResult.data;
     }

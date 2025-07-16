@@ -1,13 +1,13 @@
 // ABOUTME: HeroCollectionCard component displays individual hero in user's collection
 // ABOUTME: Shows hero details with editable star rating and equipment levels
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { UserRoundMinusIcon } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { StarRating } from "./StarRating";
-import { EquipmentLevels } from "./EquipmentLevels";
-import { TrashIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
+import { EquipmentLevels } from "./EquipmentLevels";
+import { StarRating } from "./StarRating";
 
 interface HeroCollectionCardProps {
   playerHero: PlayerHeroWithDetails;
@@ -64,8 +64,9 @@ export function HeroCollectionCard({
             onClick={onRemoveHero}
             disabled={isUpdating}
             className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            title="Remove Hero from Collection"
           >
-            <TrashIcon className="size-4" />
+            <UserRoundMinusIcon className="size-4" />
           </Button>
         </div>
         <div className="flex gap-2 flex-wrap">
@@ -92,14 +93,14 @@ export function HeroCollectionCard({
               readOnly={isUpdating}
             />
           </div>
-          
+
           <EquipmentLevels
             level={equipment_level}
             onLevelChange={onUpdateEquipment}
             readOnly={isUpdating}
           />
         </div>
-        
+
         <div className="pt-2 border-t text-xs text-gray-500">
           Added: {created_at ? formatDate(created_at) : 'Unknown date'}
         </div>

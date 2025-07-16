@@ -1,12 +1,11 @@
 // ABOUTME: AddHeroButton component provides plus button for adding heroes to collection
 // ABOUTME: Shows different states based on whether hero is already in collection
+import { LoaderCircle, UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { PlusIcon, CheckIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 interface AddHeroButtonProps {
   heroSlug: string;
-  heroName: string;
   isInCollection?: boolean;
   isLoading?: boolean;
   onAddHero?: (heroSlug: string) => void;
@@ -17,7 +16,6 @@ interface AddHeroButtonProps {
 
 export function AddHeroButton({
   heroSlug,
-  heroName,
   isInCollection = false,
   isLoading = false,
   onAddHero,
@@ -38,9 +36,9 @@ export function AddHeroButton({
   };
 
   const getIcon = () => {
-    if (isLoading) return null;
-    if (isInCollection) return <CheckIcon className="size-4" />;
-    return <PlusIcon className="size-4" />;
+    if (isLoading) return <LoaderCircle className="size-4 animate-spin" />;
+    if (isInCollection) return <UserRoundCheckIcon className="size-4" />;
+    return <UserRoundPlusIcon className="size-4" />;
   };
 
   return (
@@ -50,13 +48,14 @@ export function AddHeroButton({
       onClick={handleClick}
       disabled={isInCollection || isLoading}
       className={cn(
-        "flex items-center gap-2",
+        "flex items-center gap-2 cursor-pointer",
+        isLoading && "bg-blue-600 hover:bg-blue-700 cursor-wait",
         isInCollection && "bg-green-600 hover:bg-green-700",
         className
       )}
+      title={getButtonText()}
     >
       {getIcon()}
-      {getButtonText()}
     </Button>
   );
 }

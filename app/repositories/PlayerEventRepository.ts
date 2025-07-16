@@ -10,24 +10,34 @@ import type {
 } from "./types"
 import type { Json } from "~/types/supabase"
 
+// Schema for input validation (create operations)
+const PlayerEventInputSchema = z.object({
+  user_id: z.uuid(),
+  event_type: z.enum(['CLAIM_HERO', 'UNCLAIM_HERO', 'UPDATE_HERO_STARS', 'UPDATE_HERO_EQUIPMENT']),
+  hero_slug: z.string(),
+  event_data: z.record(z.string(), z.unknown()).optional().default({}),
+  created_by: z.uuid()
+})
+
+// Schema for complete database records
 const PlayerEventSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: z.uuid(),
+  user_id: z.uuid(),
   event_type: z.enum(['CLAIM_HERO', 'UNCLAIM_HERO', 'UPDATE_HERO_STARS', 'UPDATE_HERO_EQUIPMENT']),
   hero_slug: z.string(),
   event_data: z.record(z.string(), z.unknown()),
   created_at: z.string(),
-  created_by: z.string().uuid()
+  created_by: z.uuid()
 })
 
 export class PlayerEventRepository extends BaseRepository<'player_event'> {
   constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
     if (requestOrSupabase && typeof requestOrSupabase === 'object' && 'from' in requestOrSupabase) {
       // Custom supabase client provided
-      super(requestOrSupabase, PlayerEventSchema, 'player_event', PlayerEventSchema, 'id')
+      super(requestOrSupabase, PlayerEventInputSchema, 'player_event', PlayerEventSchema, 'id')
     } else {
       // Request or null provided (standard operation)
-      super('player_event', PlayerEventSchema, requestOrSupabase as Request | null, 'id')
+      super('player_event', PlayerEventInputSchema, requestOrSupabase as Request | null, 'id')
     }
   }
 

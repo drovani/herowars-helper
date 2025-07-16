@@ -1,35 +1,35 @@
 // ABOUTME: Player roster page displays user's hero collection with management capabilities
 // ABOUTME: Allows viewing, filtering, and managing personal hero collection including stars and equipment levels
-import { useAuth } from "~/contexts/AuthContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { Label } from "~/components/ui/label";
-import { HeroCollectionCard } from "~/components/player/HeroCollectionCard";
-import { formatTitle } from "~/config/site";
-import { HeroRepository } from "~/repositories/HeroRepository";
-import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
-import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils";
 import { useState } from "react";
 import { useFetcher } from "react-router";
-import type { Route } from "./+types/roster";
+import { HeroCollectionCard } from "~/components/player/HeroCollectionCard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { formatTitle } from "~/config/site";
+import { useAuth } from "~/contexts/AuthContext";
+import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils";
+import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
+import type { Route } from "./+types/roster";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
   const playerHeroRepo = new PlayerHeroRepository(request);
-  
+
   // Get authenticated user using universal utility
   const { user } = await getAuthenticatedUser(request);
-  
+
   const heroesResult = await heroRepo.findAll();
-  
+
   if (heroesResult.error) {
     throw new Response("Failed to load heroes", { status: 500 });
   }
 
-  const heroes = heroesResult.data ? 
+  const heroes = heroesResult.data ?
     heroesResult.data.map(hero => transformBasicHeroToRecord(hero)) : [];
 
   // Load user's collection if authenticated
@@ -50,61 +50,61 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const formData = await request.formData();
   const action = formData.get('action');
   const heroSlug = formData.get('heroSlug') as string;
-  
+
   const playerHeroRepo = new PlayerHeroRepository(request);
-  
+
   switch (action) {
     case 'addHero': {
       const stars = parseInt(formData.get('stars') as string) || 1;
       const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
-      
+
       const result = await playerHeroRepo.addHeroToCollection(user.id, {
         hero_slug: heroSlug,
         stars,
         equipment_level: equipmentLevel
       });
-      
+
       if (result.error) {
         return { error: result.error.message };
       }
-      
+
       return { success: true, message: 'Hero added to collection' };
     }
-    
+
     case 'updateStars': {
       const stars = parseInt(formData.get('stars') as string);
-      
+
       const result = await playerHeroRepo.updateHeroProgress(user.id, heroSlug, { stars });
-      
+
       if (result.error) {
         return { error: result.error.message };
       }
-      
+
       return { success: true, message: 'Hero stars updated' };
     }
-    
+
     case 'updateEquipment': {
       const equipmentLevel = parseInt(formData.get('equipmentLevel') as string);
-      
+
       const result = await playerHeroRepo.updateHeroProgress(user.id, heroSlug, { equipment_level: equipmentLevel });
-      
+
       if (result.error) {
         return { error: result.error.message };
       }
-      
+
       return { success: true, message: 'Hero equipment updated' };
     }
-    
+
     case 'removeHero': {
       const result = await playerHeroRepo.removeFromCollection(user.id, heroSlug);
-      
+
       if (result.error) {
         return { error: result.error.message };
       }
-      
+
       return { success: true, message: 'Hero removed from collection' };
     }
-    
+
     default:
       return { error: 'Invalid action' };
   }
@@ -118,7 +118,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   const { heroes, playerCollection } = loaderData;
   const { user, isLoading: authLoading } = useAuth();
   const fetcher = useFetcher();
-  
+
   // Filter and sort states
   const [searchTerm, setSearchTerm] = useState("");
   const [classFilter, setClassFilter] = useState("all");
@@ -173,7 +173,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
     const matchesSearch = item.hero.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesClass = classFilter === "all" || item.hero.class === classFilter;
     const matchesFaction = factionFilter === "all" || item.hero.faction === factionFilter;
-    
+
     return matchesSearch && matchesClass && matchesFaction;
   });
 
@@ -218,7 +218,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            
+
             <div>
               <Label htmlFor="class-filter">Filter by Class</Label>
               <Select value={classFilter} onValueChange={setClassFilter}>
@@ -228,12 +228,12 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                 <SelectContent>
                   <SelectItem value="all">All Classes</SelectItem>
                   {uniqueClasses.map(cls => (
-                    <SelectItem key={cls} value={cls}>{cls}</SelectItem>
+                    <SelectItem key={cls} value={cls} className="capitalize">{cls}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="faction-filter">Filter by Faction</Label>
               <Select value={factionFilter} onValueChange={setFactionFilter}>
@@ -243,12 +243,12 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                 <SelectContent>
                   <SelectItem value="all">All Factions</SelectItem>
                   {uniqueFactions.map(faction => (
-                    <SelectItem key={faction} value={faction}>{faction}</SelectItem>
+                    <SelectItem key={faction} value={faction} className="capitalize">{faction}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="sort-by">Sort By</Label>
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -314,13 +314,13 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
           ) : (
             <div className="text-center py-12">
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {collection.length === 0 
-                  ? "No Heroes in Collection" 
+                {collection.length === 0
+                  ? "No Heroes in Collection"
                   : "No Heroes Match Your Filters"
                 }
               </h3>
               <p className="text-gray-500 mb-4">
-                {collection.length === 0 
+                {collection.length === 0
                   ? "Start building your hero roster by adding heroes from the hero catalog."
                   : "Try adjusting your search or filter criteria."
                 }

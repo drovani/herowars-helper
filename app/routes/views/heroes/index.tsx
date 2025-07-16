@@ -3,8 +3,10 @@ import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
 import { useState } from "react";
 import HeroCard from "~/components/hero/HeroCard";
 import HeroTile from "~/components/hero/HeroTile";
+import { AddHeroButton } from "~/components/player/AddHeroButton";
 import { Input } from "~/components/ui/input";
 import { ToggleGroupItem } from "~/components/ui/toggle-group";
+import { useAuth } from "~/contexts/AuthContext";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
@@ -40,6 +42,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
   const { heroes, equipment } = loaderData;
+  const { user } = useAuth();
 
   const [search, setSearch] = useState("");
   const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">("mode", "cards");
@@ -48,6 +51,27 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
   const filteredHeroes = search
     ? heroes.filter((hero) => hero.name.toLowerCase().includes(search.toLowerCase()))
     : heroes;
+
+  const HeroCardWithButton = ({ hero }: { hero: typeof heroes[0] }) => (
+    <div className="relative group">
+      <HeroCard hero={hero} />
+      {user && (
+        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <AddHeroButton
+            heroSlug={hero.slug}
+            heroName={hero.name}
+            // TODO: Check if hero is in collection
+            isInCollection={false}
+            onAddHero={(heroSlug) => {
+              // TODO: Implement add hero to collection
+              console.log('Adding hero to collection:', heroSlug);
+            }}
+            size="sm"
+          />
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -77,7 +101,7 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
         displayMode === "cards" ? (
           <div className="gap-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {filteredHeroes.map((hero) => (
-              <HeroCard hero={hero} key={hero.slug} />
+              <HeroCardWithButton hero={hero} key={hero.slug} />
             ))}
           </div>
         ) : displayMode === "tiles" ? (

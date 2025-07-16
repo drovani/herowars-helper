@@ -8,8 +8,10 @@ import HeroGlyphs from "~/components/hero/HeroGlyphs";
 import HeroItems from "~/components/hero/HeroItems";
 import HeroSkins from "~/components/hero/HeroSkins";
 import HeroStoneSources from "~/components/hero/HeroStoneSources";
+import { AddHeroButton } from "~/components/player/AddHeroButton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
+import { useAuth } from "~/contexts/AuthContext";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
@@ -105,6 +107,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 export default function Hero({ loaderData }: Route.ComponentProps) {
   const { hero, prevHero, nextHero, campaignSources, equipmentUsed } = loaderData;
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -170,6 +173,22 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
         </div>
+        
+        {/* Add to Collection Button */}
+        {user && (
+          <div className="flex justify-end">
+            <AddHeroButton
+              heroSlug={hero.slug}
+              heroName={hero.name}
+              // TODO: Check if hero is in collection
+              isInCollection={false}
+              onAddHero={(heroSlug) => {
+                // TODO: Implement add hero to collection
+                console.log('Adding hero to collection:', heroSlug);
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <HeroItems items={hero.items} equipment={equipmentUsed} />

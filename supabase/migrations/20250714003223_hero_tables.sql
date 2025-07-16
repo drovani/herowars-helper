@@ -120,81 +120,101 @@ GRANT ALL ON TABLE "public"."hero_equipment_slot" TO "authenticated";
 GRANT ALL ON TABLE "public"."hero_equipment_slot" TO "service_role";
 
 -- Create RLS policies for hero table
+drop policy if exists "Editors and Admins can delete hero" on "public"."hero";
 create policy "Editors and Admins can delete hero" on "public"."hero" as permissive for delete to authenticated using (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can insert hero" on "public"."hero";
 create policy "Editors and Admins can insert hero" on "public"."hero" as permissive for insert to authenticated
 with
     check (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can update hero" on "public"."hero";
 create policy "Editors and Admins can update hero" on "public"."hero" as permissive for
 update to authenticated using (has_editorial_role ())
 with
     check (has_editorial_role ());
 
+drop policy if exists "Enable read for all users" on "public"."hero";
 create policy "Enable read for all users" on "public"."hero" as permissive for
 select
     to public using (true);
 
 -- Create RLS policies for hero_artifact table
+drop policy if exists "Editors and Admins can delete hero_artifact" on "public"."hero_artifact";
 create policy "Editors and Admins can delete hero_artifact" on "public"."hero_artifact" as permissive for delete to authenticated using (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can insert hero_artifact" on "public"."hero_artifact";
 create policy "Editors and Admins can insert hero_artifact" on "public"."hero_artifact" as permissive for insert to authenticated
 with
     check (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can update hero_artifact" on "public"."hero_artifact";
 create policy "Editors and Admins can update hero_artifact" on "public"."hero_artifact" as permissive for
 update to authenticated using (has_editorial_role ())
 with
     check (has_editorial_role ());
 
+drop policy if exists "Enable read for all users" on "public"."hero_artifact";
 create policy "Enable read for all users" on "public"."hero_artifact" as permissive for
 select
     to public using (true);
 
 -- Create RLS policies for hero_skin table
+drop policy if exists "Editors and Admins can delete hero_skin" on "public"."hero_skin";
 create policy "Editors and Admins can delete hero_skin" on "public"."hero_skin" as permissive for delete to authenticated using (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can insert hero_skin" on "public"."hero_skin";
 create policy "Editors and Admins can insert hero_skin" on "public"."hero_skin" as permissive for insert to authenticated
 with
     check (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can update hero_skin" on "public"."hero_skin";
 create policy "Editors and Admins can update hero_skin" on "public"."hero_skin" as permissive for
 update to authenticated using (has_editorial_role ())
 with
     check (has_editorial_role ());
 
+drop policy if exists "Enable read for all users" on "public"."hero_skin";
 create policy "Enable read for all users" on "public"."hero_skin" as permissive for
 select
     to public using (true);
 
 -- Create RLS policies for hero_glyph table
+drop policy if exists "Editors and Admins can delete hero_glyph" on "public"."hero_glyph";
 create policy "Editors and Admins can delete hero_glyph" on "public"."hero_glyph" as permissive for delete to authenticated using (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can insert hero_glyph" on "public"."hero_glyph";
 create policy "Editors and Admins can insert hero_glyph" on "public"."hero_glyph" as permissive for insert to authenticated
 with
     check (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can update hero_glyph" on "public"."hero_glyph";
 create policy "Editors and Admins can update hero_glyph" on "public"."hero_glyph" as permissive for
 update to authenticated using (has_editorial_role ())
 with
     check (has_editorial_role ());
 
+drop policy if exists "Enable read for all users" on "public"."hero_glyph";
 create policy "Enable read for all users" on "public"."hero_glyph" as permissive for
 select
     to public using (true);
 
 -- Create RLS policies for hero_equipment_slot table
+drop policy if exists "Editors and Admins can delete hero_equipment_slot" on "public"."hero_equipment_slot";
 create policy "Editors and Admins can delete hero_equipment_slot" on "public"."hero_equipment_slot" as permissive for delete to authenticated using (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can insert hero_equipment_slot" on "public"."hero_equipment_slot";
 create policy "Editors and Admins can insert hero_equipment_slot" on "public"."hero_equipment_slot" as permissive for insert to authenticated
 with
     check (has_editorial_role ());
 
+drop policy if exists "Editors and Admins can update hero_equipment_slot" on "public"."hero_equipment_slot";
 create policy "Editors and Admins can update hero_equipment_slot" on "public"."hero_equipment_slot" as permissive for
 update to authenticated using (has_editorial_role ())
 with
     check (has_editorial_role ());
 
+drop policy if exists "Enable read for all users" on "public"."hero_equipment_slot";
 create policy "Enable read for all users" on "public"."hero_equipment_slot" as permissive for
 select
     to public using (true);

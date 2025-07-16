@@ -105,7 +105,6 @@ app/
 ├── lib/                # Utilities and configurations
 ├── repositories/       # Database repository classes
 ├── routes/             # File-based routing (see Route Organization below)
-├── services/           # Legacy service classes (being migrated)
 ├── types/              # TypeScript type definitions
 └── __tests__/          # Test files and utilities
 ```
@@ -139,6 +138,66 @@ app/routes/
         └── logout.tsx             # /logout
 ```
 
+### API Endpoints
+
+The application provides RESTful API endpoints for administrative functions:
+
+#### Admin User Management API (`/resources/api/admin/users`)
+
+**Authentication**: Requires admin role authorization
+
+**GET `/resources/api/admin/users`**
+- **Purpose**: Retrieve all user accounts
+- **Returns**: JSON array of user objects with metadata
+- **Response Format**:
+  ```json
+  {
+    "success": true,
+    "users": [
+      {
+        "id": "uuid",
+        "email": "user@example.com",
+        "user_metadata": { "full_name": "User Name" },
+        "app_metadata": { "roles": ["user"] },
+        "created_at": "2024-01-01T00:00:00Z",
+        "last_sign_in_at": "2024-01-01T00:00:00Z",
+        "banned_until": null
+      }
+    ]
+  }
+  ```
+
+**POST `/resources/api/admin/users`**
+- **Purpose**: Perform user management actions
+- **Content-Type**: `application/x-www-form-urlencoded`
+- **Actions**:
+  - `updateRoles`: Update user role assignments
+  - `deleteUser`: Remove user account (cannot delete self)
+  - `disableUser`: Temporarily disable user access (cannot disable self)
+  - `enableUser`: Re-enable disabled user access
+  - `createUser`: Create new user account with specified roles
+
+**Request Examples**:
+```bash
+# Update user roles
+curl -X POST /resources/api/admin/users \
+  -d "action=updateRoles&userId=uuid&roles=[\"admin\",\"editor\"]"
+
+# Create new user
+curl -X POST /resources/api/admin/users \
+  -d "action=createUser&email=new@example.com&password=secure123&fullName=New User&roles=[\"editor\"]"
+
+# Disable user
+curl -X POST /resources/api/admin/users \
+  -d "action=disableUser&userId=uuid"
+```
+
+**Error Responses**:
+- `401 Unauthorized`: Not authenticated
+- `403 Forbidden`: Missing admin role
+- `400 Bad Request`: Invalid parameters or self-action attempts
+- `500 Internal Server Error`: Server-side processing errors
+
 ### Data Layer Architecture
 
 #### Repository Pattern (Current)
@@ -146,7 +205,6 @@ app/routes/
 - **HeroRepository**: ✅ Complete - Full CRUD operations for hero data
 - **EquipmentRepository**: ✅ Complete - Equipment and crafting data management
 - **MissionRepository**: ✅ Complete - Campaign and mission data access
-- **Migration Status**: Hero services fully migrated from legacy JSON-based services
 
 #### Database Schema
 ```sql

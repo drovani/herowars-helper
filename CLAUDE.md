@@ -108,7 +108,6 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 
 ### Data Layer
 - **Repository Pattern**: BaseRepository class with type-safe database operations (`app/repositories/BaseRepository.ts`)
-- **Legacy Services**: Service classes (being migrated to repositories) in `app/services/`
 - **JSON Data Storage**: Static data files for heroes, equipment, and missions in `app/data/`; used for initial database hydration, not for regular runtime
 - **Zod Schema Validation**: Type-safe validation schemas for all game data
 - **Supabase Client**: SSR-compatible client creation (`app/lib/supabase/client.ts`)
@@ -118,19 +117,13 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **BaseRepository Class**: Located in `app/repositories/BaseRepository.ts`
 - **Repository Pattern**: Extends BaseRepository<TableName> for type-safe database operations
 - **Repository Types**: Defined in `app/repositories/types.ts`
-- **Current Status**: BaseRepository implemented, migrating from legacy services in `app/services/`
+- **Current Status**: Repository pattern fully implemented and in use
 
 #### Database Schema Key Points
 - **Mission Table**: Uses `slug` as primary key, `chapter_id` as foreign key
 - **Chapter Table**: Uses `id` as primary key, contains `title`
 - **Equipment Table**: Uses `slug` as primary key, `campaign_sources` string array references mission slugs
 - **Relationships**: Mission belongs to Chapter, Equipment references Missions via campaign_sources
-
-#### Repository vs Service Migration
-- **Legacy**: Service classes in `app/services/` work with JSON data
-- **New**: Repository classes in `app/repositories/` work with Supabase database
-- **Data Mismatch**: JSON missions uses compound IDs ("1-1"), which the DB calls slug fields
-- **Migration Status**: Hero services fully migrated; Equipment and Mission services still in use for specific legacy operations
 
 ### Database Schema Quick Reference
 ```sql
@@ -164,7 +157,6 @@ equipment: slug (PK), name, campaign_sources (string[])
 - `app/data/equipment.json` - Equipment data with stats and sources
 - `app/data/missions.json` - Chapter and mission data for campaign and event content with normalized structure
 - `app/repositories/` - Database repositories (BaseRepository + specific implementations)
-- `app/services/` - Legacy service classes (being migrated to repositories)
 
 ## Environment Setup
 

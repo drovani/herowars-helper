@@ -10,6 +10,7 @@ import { formatTitle } from "~/config/site";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
+import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils";
 import { useState } from "react";
 import { useFetcher } from "react-router";
 import type { Route } from "./+types/roster";
@@ -19,9 +20,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
   const playerHeroRepo = new PlayerHeroRepository(request);
   
-  // Get user from request (this would be set by authentication middleware)
-  const url = new URL(request.url);
-  const userId = url.searchParams.get('userId'); // This would come from auth context
+  // Get authenticated user using universal utility
+  const { user } = await getAuthenticatedUser(request);
   
   const heroesResult = await heroRepo.findAll();
   
@@ -34,8 +34,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   // Load user's collection if authenticated
   let playerCollection: PlayerHeroWithDetails[] = [];
-  if (userId) {
-    const collectionResult = await playerHeroRepo.findWithHeroDetails(userId);
+  if (user) {
+    const collectionResult = await playerHeroRepo.findWithHeroDetails(user.id);
     if (!collectionResult.error && collectionResult.data) {
       playerCollection = collectionResult.data;
     }
@@ -45,15 +45,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
+  const user = await requireAuthenticatedUser(request);
+
   const formData = await request.formData();
   const action = formData.get('action');
-  const userId = formData.get('userId') as string;
   const heroSlug = formData.get('heroSlug') as string;
   
-  if (!userId) {
-    return { error: 'User not authenticated' };
-  }
-
   const playerHeroRepo = new PlayerHeroRepository(request);
   
   switch (action) {
@@ -61,7 +58,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
       const stars = parseInt(formData.get('stars') as string) || 1;
       const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
       
-      const result = await playerHeroRepo.addHeroToCollection(userId, {
+      const result = await playerHeroRepo.addHeroToCollection(user.id, {
         hero_slug: heroSlug,
         stars,
         equipment_level: equipmentLevel
@@ -77,7 +74,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     case 'updateStars': {
       const stars = parseInt(formData.get('stars') as string);
       
-      const result = await playerHeroRepo.updateHeroProgress(userId, heroSlug, { stars });
+      const result = await playerHeroRepo.updateHeroProgress(user.id, heroSlug, { stars });
       
       if (result.error) {
         return { error: result.error.message };
@@ -89,7 +86,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     case 'updateEquipment': {
       const equipmentLevel = parseInt(formData.get('equipmentLevel') as string);
       
-      const result = await playerHeroRepo.updateHeroProgress(userId, heroSlug, { equipment_level: equipmentLevel });
+      const result = await playerHeroRepo.updateHeroProgress(user.id, heroSlug, { equipment_level: equipmentLevel });
       
       if (result.error) {
         return { error: result.error.message };
@@ -99,7 +96,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
     
     case 'removeHero': {
-      const result = await playerHeroRepo.removeFromCollection(userId, heroSlug);
+      const result = await playerHeroRepo.removeFromCollection(user.id, heroSlug);
       
       if (result.error) {
         return { error: result.error.message };
@@ -281,7 +278,6 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                       fetcher.submit(
                         {
                           action: 'updateStars',
-                          userId: user.id,
                           heroSlug: playerHero.hero_slug,
                           stars: stars.toString()
                         },
@@ -294,7 +290,6 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                       fetcher.submit(
                         {
                           action: 'updateEquipment',
-                          userId: user.id,
                           heroSlug: playerHero.hero_slug,
                           equipmentLevel: level.toString()
                         },
@@ -307,7 +302,6 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                       fetcher.submit(
                         {
                           action: 'removeHero',
-                          userId: user.id,
                           heroSlug: playerHero.hero_slug
                         },
                         { method: 'POST' }

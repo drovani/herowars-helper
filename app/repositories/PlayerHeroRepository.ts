@@ -1,21 +1,30 @@
 // ABOUTME: PlayerHeroRepository manages user hero collections with authentication and event sourcing
 // ABOUTME: Provides CRUD operations for player hero progression tracking including stars and equipment levels
 import type { SupabaseClient } from "@supabase/supabase-js"
+import log from "loglevel"
 import { z } from "zod"
 import { BaseRepository } from "./BaseRepository"
 import { PlayerEventRepository } from "./PlayerEventRepository"
 import type {
   CreatePlayerHeroInput,
-  UpdatePlayerHeroInput,
   PlayerHero,
   PlayerHeroWithDetails,
-  RepositoryResult
+  RepositoryResult,
+  UpdatePlayerHeroInput
 } from "./types"
-import type { Json } from "~/types/supabase"
 
+// Schema for input validation (create/update operations)
+const PlayerHeroInputSchema = z.object({
+  user_id: z.uuid(),
+  hero_slug: z.string(),
+  stars: z.number().int().min(1).max(6).optional().default(1),
+  equipment_level: z.number().int().min(1).max(16).optional().default(1),
+})
+
+// Schema for complete database records
 const PlayerHeroSchema = z.object({
-  id: z.string().uuid(),
-  user_id: z.string().uuid(),
+  id: z.uuid(),
+  user_id: z.uuid(),
   hero_slug: z.string(),
   stars: z.number().int().min(1).max(6),
   equipment_level: z.number().int().min(1).max(16),
@@ -29,11 +38,11 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
   constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
     if (requestOrSupabase && typeof requestOrSupabase === 'object' && 'from' in requestOrSupabase) {
       // Custom supabase client provided
-      super(requestOrSupabase, PlayerHeroSchema, 'player_hero', PlayerHeroSchema, 'id')
+      super(requestOrSupabase, PlayerHeroInputSchema, 'player_hero', PlayerHeroSchema, 'id')
       this.eventRepo = new PlayerEventRepository(requestOrSupabase)
     } else {
       // Request or null provided (standard operation)
-      super('player_hero', PlayerHeroSchema, requestOrSupabase as Request | null, 'id')
+      super('player_hero', PlayerHeroInputSchema, requestOrSupabase as Request | null, 'id')
       this.eventRepo = new PlayerEventRepository(requestOrSupabase)
     }
   }
@@ -118,7 +127,7 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
       }
 
       // Log the event
-      await this.eventRepo.createEvent(userId, {
+      const eventResult = await this.eventRepo.createEvent(userId, {
         event_type: 'CLAIM_HERO',
         hero_slug: heroInput.hero_slug,
         event_data: {
@@ -126,6 +135,11 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
           initial_equipment_level: heroInput.equipment_level || 1
         }
       })
+
+      // Log event creation failure but don't fail the main operation
+      if (eventResult.error) {
+        log.warn('Failed to create CLAIM_HERO event:', eventResult.error)
+      }
 
       return result
     } catch (error) {
@@ -164,7 +178,7 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
       }
 
       const currentHero = currentResult.data[0]
-      
+
       // Update the hero record
       const result = await this.update(currentHero.id, updates)
 
@@ -174,7 +188,7 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
 
       // Log events for each type of update
       if (updates.stars !== undefined && updates.stars !== currentHero.stars) {
-        await this.eventRepo.createEvent(userId, {
+        const eventResult = await this.eventRepo.createEvent(userId, {
           event_type: 'UPDATE_HERO_STARS',
           hero_slug: heroSlug,
           event_data: {
@@ -182,10 +196,14 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
             new_stars: updates.stars
           }
         })
+
+        if (eventResult.error) {
+          log.warn('Failed to create UPDATE_HERO_STARS event:', eventResult.error)
+        }
       }
 
       if (updates.equipment_level !== undefined && updates.equipment_level !== currentHero.equipment_level) {
-        await this.eventRepo.createEvent(userId, {
+        const eventResult = await this.eventRepo.createEvent(userId, {
           event_type: 'UPDATE_HERO_EQUIPMENT',
           hero_slug: heroSlug,
           event_data: {
@@ -193,6 +211,10 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
             new_equipment_level: updates.equipment_level
           }
         })
+
+        if (eventResult.error) {
+          log.warn('Failed to create UPDATE_HERO_EQUIPMENT event:', eventResult.error)
+        }
       }
 
       return result
@@ -240,7 +262,7 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
       }
 
       // Log the event
-      await this.eventRepo.createEvent(userId, {
+      const eventResult = await this.eventRepo.createEvent(userId, {
         event_type: 'UNCLAIM_HERO',
         hero_slug: heroSlug,
         event_data: {
@@ -248,6 +270,10 @@ export class PlayerHeroRepository extends BaseRepository<'player_hero'> {
           final_equipment_level: currentHero.equipment_level
         }
       })
+
+      if (eventResult.error) {
+        log.warn('Failed to create UNCLAIM_HERO event:', eventResult.error)
+      }
 
       return {
         data: true,

@@ -17,6 +17,7 @@ import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { transformCompleteHeroToRecord, transformBasicHeroToRecord, sortHeroRecords } from "~/lib/hero-transformations";
+import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -53,13 +54,12 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
 
   // Check if hero is in user's collection
-  const url = new URL(request.url);
-  const userId = url.searchParams.get('userId'); // This would come from auth context
+  const { user } = await getAuthenticatedUser(request);
   let isInCollection = false;
   
-  if (userId) {
+  if (user) {
     const playerHeroRepo = new PlayerHeroRepository(request);
-    const collectionResult = await playerHeroRepo.isHeroInCollection(userId, params.slug);
+    const collectionResult = await playerHeroRepo.isHeroInCollection(user.id, params.slug);
     if (!collectionResult.error && collectionResult.data) {
       isInCollection = collectionResult.data;
     }
@@ -119,21 +119,18 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
+  const user = await requireAuthenticatedUser(request);
+  
   const formData = await request.formData();
   const action = formData.get('action');
-  const userId = formData.get('userId') as string;
   const heroSlug = formData.get('heroSlug') as string;
-  
-  if (!userId) {
-    return { error: 'User not authenticated' };
-  }
 
   if (action === 'addHero') {
     const playerHeroRepo = new PlayerHeroRepository(request);
     const stars = parseInt(formData.get('stars') as string) || 1;
     const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
     
-    const result = await playerHeroRepo.addHeroToCollection(userId, {
+    const result = await playerHeroRepo.addHeroToCollection(user.id, {
       hero_slug: heroSlug,
       stars,
       equipment_level: equipmentLevel
@@ -229,18 +226,15 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
               isInCollection={isInCollection}
               isLoading={fetcher.state === "submitting"}
               onAddHero={(heroSlug) => {
-                if (user?.id) {
-                  fetcher.submit(
-                    {
-                      action: 'addHero',
-                      userId: user.id,
-                      heroSlug: heroSlug,
-                      stars: '1',
-                      equipmentLevel: '1'
-                    },
-                    { method: 'POST' }
-                  );
-                }
+                fetcher.submit(
+                  {
+                    action: 'addHero',
+                    heroSlug: heroSlug,
+                    stars: '1',
+                    equipmentLevel: '1'
+                  },
+                  { method: 'POST' }
+                );
               }}
             />
           </div>

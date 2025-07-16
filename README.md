@@ -1,6 +1,6 @@
-# Inavord React Router Template
+# Hero Wars Helper
 
-A modern, production-ready template for building full-stack React applications with authentication, authorization, and comprehensive testing. Built with React Router v7, Supabase, Tailwind CSS v4, and deployed on Netlify.
+A React Router v7 application built to help players manage and track their Hero Wars game data. The application provides tools for managing heroes, equipment, missions, and guild coordination features. Built with Supabase authentication, Tailwind CSS v4, and deployed on Netlify.
 
 ## 🚀 Features
 
@@ -12,6 +12,14 @@ A modern, production-ready template for building full-stack React applications w
 - **TypeScript** - Strict type safety throughout
 - **Vite** - Fast build tooling and HMR
 - **Netlify** - Production deployment with serverless functions
+
+### Hero Wars Game Features
+
+- **Hero Management** - Complete hero database with stats, artifacts, skins, and glyphs
+- **Equipment Tracking** - Comprehensive equipment catalog with crafting trees and sources
+- **Mission Planning** - Campaign chapter information with energy costs and rewards
+- **Data Export** - JSON export capabilities for external tools
+- **Admin Tools** - Database setup and data management for administrators
 
 ### Authentication & Authorization
 
@@ -27,12 +35,13 @@ A modern, production-ready template for building full-stack React applications w
 - Responsive design with mobile-first approach
 - Dark/light theme support ready
 - Accessible components following WAI-ARIA guidelines
-- Framer Motion animations
+- Game-specific UI components for Hero Wars data
 
 ### Developer Experience
 
 - **Comprehensive Testing** - Vitest with React Testing Library
 - **TypeScript Strict Mode** - No `any` types allowed
+- **Repository Pattern** - Structured database operations with BaseRepository
 - **Automated Type Generation** - Supabase types and route types
 - **Claude Code Integration** - AI assistant workflow commands
 - **Linting & Formatting** - ESLint and Prettier configured
@@ -40,7 +49,7 @@ A modern, production-ready template for building full-stack React applications w
 ## 📋 Prerequisites
 
 - **Node.js** >= 22.12.0
-- **npm** or **yarn**
+- **npm** >= 11.3.0
 - **Supabase** account (for authentication and database)
 - **Netlify** account (for deployment)
 
@@ -53,6 +62,11 @@ Create a `.env.local` file in the root directory:
 ```bash
 VITE_SUPABASE_DATABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+# Dev values found with `npx supabase status`
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+SUPABASE_DATABASE_URL=
+SUPABASE_JWT_SECRET=
 
 # Optional: For full user management functionality
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
@@ -74,17 +88,8 @@ Your application will be available at `http://localhost:3000`.
 
 ### 4. Initial Admin Setup
 
-To assign the first admin user, run this SQL in your Supabase Dashboard:
-
-```sql
-UPDATE auth.users
-SET raw_app_meta_data = jsonb_set(
-  COALESCE(raw_app_meta_data, '{}'),
-  '{roles}',
-  '["admin"]'
-)
-WHERE email = 'your-email@example.com';
-```
+The seed data creates the first admin user. Email admin@example.com, password ~!adminShoes.09
+🚨 It is highly recommended that you made a new user, assign them admin priviledges, then delete the default admin@example.com user. 🚨
 
 ## 🏗️ Architecture
 
@@ -94,10 +99,11 @@ WHERE email = 'your-email@example.com';
 app/
 ├── components/ui/        # shadcn/ui components
 ├── contexts/            # React contexts (Auth, etc.)
-├── data/               # Static data and navigation
+├── data/               # Static game data (heroes, equipment, missions) and navigation
 ├── hooks/              # Custom React hooks
 ├── layouts/            # Route layouts (Protected, Admin, etc.)
 ├── lib/                # Utilities and configurations
+├── repositories/       # Database repository classes
 ├── routes/             # File-based routing (see Route Organization below)
 ├── types/              # TypeScript type definitions
 └── __tests__/          # Test files and utilities
@@ -116,54 +122,118 @@ app/routes/
 │           └── users.test.tsx    # API route tests
 └── views/                  # UI routes organized by feature
     ├── auth/               # Authentication pages
-    │   ├── login.tsx              # /login
-    │   ├── sign-up.tsx            # /sign-up
-    │   ├── confirm.tsx            # /auth/confirm
-    │   ├── error.tsx              # /auth/error
-    │   ├── forgot-password.tsx    # /forgot-password
-    │   └── update-password.tsx    # /update-password
     ├── admin/              # Admin interface (requires admin role)
-    │   ├── index.tsx              # /admin/* (dashboard)
-    │   ├── users.tsx              # /admin/users
-    │   ├── setup.tsx              # /admin/setup
+    │   ├── setup.tsx              # /admin/setup (database initialization)
+    │   ├── users.tsx              # /admin/users (user management)
     │   └── test-coverage.tsx      # /admin/test-coverage
+    ├── heroes/             # Hero Wars hero management
+    │   ├── index.tsx              # /heroes (hero listing)
+    │   ├── json.tsx               # /heroes/json (data export)
+    │   └── $slug.tsx              # /heroes/astaroth (hero details)
+    ├── equipment/          # Equipment catalog and management
+    ├── missions/           # Campaign mission browser
     ├── account/            # User account pages
-    │   ├── index.tsx              # /account (main account page)
-    │   └── profile.tsx            # /account (nested index route)
     └── public/             # Public pages
         ├── index.tsx              # / (home page)
-        ├── logout.tsx             # /logout
-        └── protected.tsx          # /protected
+        └── logout.tsx             # /logout
 ```
 
-#### Route Organization Benefits
+### API Endpoints
 
-- **🎯 Feature Grouping**: Related routes are co-located (all auth routes in `auth/`)
-- **🔌 Resource Separation**: API routes separated from UI routes for clarity
-- **📈 Scalability**: Supports growth from 17 to 100+ routes without chaos
-- **🧭 Predictable Locations**: Developers know exactly where to find route files
-- **⚡ Performance**: Easier code splitting and lazy loading implementation
+The application provides RESTful API endpoints for administrative functions:
 
-#### Route Configuration
+#### Admin User Management API (`/resources/api/admin/users`)
 
-All routes are centrally configured in `app/routes.ts` with URL preservation:
+**Authentication**: Requires admin role authorization
 
-- **URLs Unchanged**: All existing URLs maintained during reorganization
-- **Layout Nesting**: Admin routes use `ProtectedAdminLayout`, user routes use `ProtectedUserLayout`
-- **Type Safety**: React Router v7 auto-generates route types for each file
+**GET `/resources/api/admin/users`**
+- **Purpose**: Retrieve all user accounts
+- **Returns**: JSON array of user objects with metadata
+- **Response Format**:
+  ```json
+  {
+    "success": true,
+    "users": [
+      {
+        "id": "uuid",
+        "email": "user@example.com",
+        "user_metadata": { "full_name": "User Name" },
+        "app_metadata": { "roles": ["user"] },
+        "created_at": "2024-01-01T00:00:00Z",
+        "last_sign_in_at": "2024-01-01T00:00:00Z",
+        "banned_until": null
+      }
+    ]
+  }
+  ```
 
-### Authentication Flow
+**POST `/resources/api/admin/users`**
+- **Purpose**: Perform user management actions
+- **Content-Type**: `application/x-www-form-urlencoded`
+- **Actions**:
+  - `updateRoles`: Update user role assignments
+  - `deleteUser`: Remove user account (cannot delete self)
+  - `disableUser`: Temporarily disable user access (cannot disable self)
+  - `enableUser`: Re-enable disabled user access
+  - `createUser`: Create new user account with specified roles
 
-1. **Public Routes** - Landing, login, signup, password reset
-2. **Protected Routes** - Require authentication
-3. **Admin Routes** - Require admin role
-4. **Role Management** - Centralized role checking and assignment
+**Request Examples**:
+```bash
+# Update user roles
+curl -X POST /resources/api/admin/users \
+  -d "action=updateRoles&userId=uuid&roles=[\"admin\",\"editor\"]"
 
-### Data Layer
+# Create new user
+curl -X POST /resources/api/admin/users \
+  -d "action=createUser&email=new@example.com&password=secure123&fullName=New User&roles=[\"editor\"]"
 
-- **Supabase Client** - SSR-compatible configuration
-- **Type Safety** - Auto-generated types from database schema
-- **Repository Pattern** - Structured data access (extensible)
+# Disable user
+curl -X POST /resources/api/admin/users \
+  -d "action=disableUser&userId=uuid"
+```
+
+**Error Responses**:
+- `401 Unauthorized`: Not authenticated
+- `403 Forbidden`: Missing admin role
+- `400 Bad Request`: Invalid parameters or self-action attempts
+- `500 Internal Server Error`: Server-side processing errors
+
+### Data Layer Architecture
+
+#### Repository Pattern (Current)
+- **BaseRepository Class**: Type-safe database operations foundation
+- **HeroRepository**: ✅ Complete - Full CRUD operations for hero data
+- **EquipmentRepository**: ✅ Complete - Equipment and crafting data management
+- **MissionRepository**: ✅ Complete - Campaign and mission data access
+
+#### Database Schema
+```sql
+-- Core Hero Wars tables
+hero: slug (PK), name, faction, main_stat, attack_type, artifact_team_buff
+equipment: slug (PK), name, campaign_sources (string[])
+mission: slug (PK), name, chapter_id (FK), hero_slug, energy_cost, level
+chapter: id (PK), title
+```
+
+### Game Data Management
+
+#### Heroes
+- Complete hero database with stats, skills, and equipment requirements
+- Hero stone source tracking for farming optimization
+- Artifact, skin, and glyph management
+- JSON export for external tool integration
+
+#### Equipment
+- Equipment catalog with stats and crafting requirements
+- Campaign mission sources for farming locations
+- Gray, green, blue, violet, and orange tier items
+- Crafting tree relationships and material tracking
+
+#### Missions
+- Campaign chapter and mission data
+- Energy cost calculations and requirements
+- Equipment drop location mapping
+- Boss hero stone rewards tracking
 
 ## 🧪 Testing
 
@@ -178,9 +248,15 @@ npm run test:coverage # Run with coverage report
 npm run test:ui       # Run with UI interface
 ```
 
+### Repository Testing
+- Repository tests use Supabase client mocking
+- Log capturing pattern prevents console noise during tests
+- Comprehensive CRUD operation testing
+- Integration tests ready for authentication scenarios
+
 **Testing Strategy:**
-- **Unit Tests** - Components, hooks, utilities
-- **Integration Tests** - API routes, auth flows
+- **Unit Tests** - Components, hooks, utilities, repositories
+- **Integration Tests** - API routes, auth flows, database operations
 - **Mocking** - Supabase client, external APIs
 - **Coverage** - Comprehensive test coverage tracking
 
@@ -202,9 +278,38 @@ npm run start    # Local preview of production build
 ## 🔧 Development Commands
 
 ```bash
-npm run tsc              # TypeScript type checking
-npm run supabase:types   # Generate Supabase types
+npm run tsc              # TypeScript type checking and route generation
+npm run supabase:types   # Generate Supabase types from database schema
+npm run test             # Run repository tests in watch mode
+npm run test:run         # Run repository tests once
+npm run test:coverage    # Run tests with coverage report
 ```
+
+## 🎮 Hero Wars Helper Specific Features
+
+### Hero Management
+- View detailed hero information including stats and abilities
+- Track hero development progress and stone farming
+- Equipment requirement tracking per hero
+- Export hero data for external tools
+
+### Equipment System
+- Browse complete equipment catalog
+- View crafting recipes and material requirements
+- Track campaign sources for equipment farming
+- Equipment tier progression (gray → orange)
+
+### Mission Planning
+- Campaign mission browser with rewards
+- Energy cost optimization for farming
+- Equipment drop location reference
+- Boss hero stone farming guides
+
+### Admin Tools
+- Database initialization and data setup
+- Import game data from JSON sources
+- User role management
+- System health monitoring
 
 ## 🤖 AI Assistant Integration
 
@@ -213,20 +318,24 @@ This project includes Claude Code workflow commands in `.claude/commands/`:
 ### Available Commands
 
 - `issue <number>` - Automated issue-to-PR workflow
+- `/plan <description of changes to implement>` - Create a markdown file of a detailed plan to implement the described changes
+- `continue <plan-file>` - Execute implementation plans with progress tracking
 
 ### Usage with Claude Code
 
 1. Install Claude Code CLI
 2. Run `claude issue 123` to process GitHub issue #123
-3. Follow the automated workflow for implementation
+3. Use `claude continue @docs/plans/plan.md` for guided implementation
 
 ## 📚 Documentation
 
 - **Project Guidelines** - See `CLAUDE.md` for development best practices
+- **Game Data Structure** - Hero Wars specific data models and relationships
 - **Component Library** - [shadcn/ui documentation](https://ui.shadcn.com/)
 - **React Router** - [Official documentation](https://reactrouter.com/)
 - **Supabase** - [Authentication guide](https://supabase.com/docs/guides/auth)
 - **Tailwind CSS** - [Utility classes](https://tailwindcss.com/docs)
+- **Repository Pattern** - BaseRepository implementation for database operations
 
 ## 🔒 Security Best Practices
 
@@ -245,12 +354,30 @@ This project includes Claude Code workflow commands in `.claude/commands/`:
 5. Create a pull request with clear description
 6. **Never push directly to `main` branch**
 
+### Development Notes
+
+- Follow TDD practices - write tests before implementation
+- Use repository pattern for all database operations
+- Maintain Hero Wars game data accuracy
+- Preserve existing JSON data structure compatibility
+
+## 🎯 Project Status
+
+### Completed Features
+- ✅ **Repository Architecture**: Complete BaseRepository implementation
+- ✅ **Hero Management**: Full CRUD operations with database integration
+- ✅ **Equipment System**: Comprehensive equipment catalog and sources
+- ✅ **Mission Browser**: Campaign data with farming optimization
+- ✅ **Authentication**: Role-based access control
+- ✅ **Admin Tools**: Database setup and user management
+
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ using React Router, Supabase, and modern web technologies.**
+**Built with ❤️ for Hero Wars: Alliance players using React Router, Supabase, and modern web technologies.**
 
-_This template is designed to be a solid foundation for full-stack React applications with authentication, testing, and deployment ready out of the box._
+_A comprehensive tool for managing your Hero Wars game progression, hero development, and equipment optimization._

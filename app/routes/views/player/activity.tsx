@@ -2,7 +2,9 @@
 // ABOUTME: Shows all user actions including hero additions, updates, and removals with timestamps
 import { useAuth } from "~/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import { ActivityFeed } from "~/components/player/ActivityFeed";
 import { formatTitle } from "~/config/site";
+import { useState } from "react";
 import type { Route } from "./+types/activity";
 
 export const loader = async (_: Route.LoaderArgs) => {
@@ -19,6 +21,64 @@ export const meta = (_: Route.MetaArgs) => {
 
 export default function PlayerActivity(_: Route.ComponentProps) {
   const { user, isLoading: authLoading } = useAuth();
+  const [selectedFilter, setSelectedFilter] = useState("all");
+
+  // Mock activity data - TODO: Replace with actual data from PlayerEventRepository
+  const mockEvents = [
+    {
+      id: "1",
+      user_id: "user1",
+      event_type: "CLAIM_HERO" as const,
+      hero_slug: "astaroth",
+      event_data: {
+        initial_stars: 1,
+        initial_equipment_level: 1
+      },
+      created_at: "2024-01-15T10:00:00Z",
+      created_by: "user1"
+    },
+    {
+      id: "2",
+      user_id: "user1", 
+      event_type: "UPDATE_HERO_STARS" as const,
+      hero_slug: "astaroth",
+      event_data: {
+        previous_stars: 1,
+        new_stars: 5
+      },
+      created_at: "2024-01-15T11:30:00Z",
+      created_by: "user1"
+    },
+    {
+      id: "3",
+      user_id: "user1",
+      event_type: "UPDATE_HERO_EQUIPMENT" as const,
+      hero_slug: "astaroth",
+      event_data: {
+        previous_equipment_level: 1,
+        new_equipment_level: 12
+      },
+      created_at: "2024-01-15T12:00:00Z",
+      created_by: "user1"
+    },
+    {
+      id: "4",
+      user_id: "user1",
+      event_type: "CLAIM_HERO" as const,
+      hero_slug: "aurora",
+      event_data: {
+        initial_stars: 3,
+        initial_equipment_level: 8
+      },
+      created_at: "2024-01-16T14:30:00Z",
+      created_by: "user1"
+    }
+  ];
+
+  // Filter events based on selected filter
+  const filteredEvents = selectedFilter === "all" 
+    ? mockEvents 
+    : mockEvents.filter(event => event.event_type === selectedFilter);
 
   // Show loading state while auth is initializing
   if (authLoading) {
@@ -68,23 +128,23 @@ export default function PlayerActivity(_: Route.ComponentProps) {
     <div className="max-w-4xl mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Activity Log</CardTitle>
+          <CardTitle>Activity Log ({mockEvents.length})</CardTitle>
           <CardDescription>
             Track all changes to your hero collection including additions, updates, and removals.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No Activity Yet
-            </h3>
-            <p className="text-gray-500 mb-4">
-              Your hero collection activity will appear here as you add and update heroes.
-            </p>
-            <div className="text-sm text-gray-400">
-              Activity tracking features coming soon...
-            </div>
-          </div>
+          <ActivityFeed
+            events={filteredEvents}
+            selectedFilter={selectedFilter}
+            onFilterChange={setSelectedFilter}
+            onLoadMore={() => {
+              // TODO: Implement pagination
+              console.log("Load more events");
+            }}
+            hasMore={false} // TODO: Implement pagination logic
+            isLoading={false}
+          />
         </CardContent>
       </Card>
     </div>

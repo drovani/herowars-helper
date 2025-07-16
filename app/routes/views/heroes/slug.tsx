@@ -1,6 +1,6 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
-import { Link, useNavigate, type UIMatch } from "react-router";
+import { Link, useNavigate, useFetcher, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import { RequireEditor } from "~/components/auth/RequireRole";
 import HeroArtifacts from "~/components/hero/HeroArtifacts";
@@ -15,6 +15,7 @@ import { useAuth } from "~/contexts/AuthContext";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { transformCompleteHeroToRecord, transformBasicHeroToRecord, sortHeroRecords } from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug";
 
@@ -49,6 +50,19 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });
+  }
+
+  // Check if hero is in user's collection
+  const url = new URL(request.url);
+  const userId = url.searchParams.get('userId'); // This would come from auth context
+  let isInCollection = false;
+  
+  if (userId) {
+    const playerHeroRepo = new PlayerHeroRepository(request);
+    const collectionResult = await playerHeroRepo.isHeroInCollection(userId, params.slug);
+    if (!collectionResult.error && collectionResult.data) {
+      isInCollection = collectionResult.data;
+    }
   }
 
   const missions = campaignSourcesResult.data || [];
@@ -101,13 +115,45 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const prevHero = currentIndex > 0 ? sortedHeroes[currentIndex - 1] : null;
   const nextHero = currentIndex < sortedHeroes.length - 1 ? sortedHeroes[currentIndex + 1] : null;
 
-  return { hero, prevHero, nextHero, campaignSources, equipmentUsed };
+  return { hero, prevHero, nextHero, campaignSources, equipmentUsed, isInCollection };
+};
+
+export const action = async ({ request }: Route.ActionArgs) => {
+  const formData = await request.formData();
+  const action = formData.get('action');
+  const userId = formData.get('userId') as string;
+  const heroSlug = formData.get('heroSlug') as string;
+  
+  if (!userId) {
+    return { error: 'User not authenticated' };
+  }
+
+  if (action === 'addHero') {
+    const playerHeroRepo = new PlayerHeroRepository(request);
+    const stars = parseInt(formData.get('stars') as string) || 1;
+    const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
+    
+    const result = await playerHeroRepo.addHeroToCollection(userId, {
+      hero_slug: heroSlug,
+      stars,
+      equipment_level: equipmentLevel
+    });
+    
+    if (result.error) {
+      return { error: result.error.message };
+    }
+    
+    return { success: true, message: 'Hero added to collection' };
+  }
+  
+  return { error: 'Invalid action' };
 };
 
 export default function Hero({ loaderData }: Route.ComponentProps) {
-  const { hero, prevHero, nextHero, campaignSources, equipmentUsed } = loaderData;
+  const { hero, prevHero, nextHero, campaignSources, equipmentUsed, isInCollection } = loaderData;
   const navigate = useNavigate();
   const { user } = useAuth();
+  const fetcher = useFetcher();
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -180,11 +226,21 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
             <AddHeroButton
               heroSlug={hero.slug}
               heroName={hero.name}
-              // TODO: Check if hero is in collection
-              isInCollection={false}
+              isInCollection={isInCollection}
+              isLoading={fetcher.state === "submitting"}
               onAddHero={(heroSlug) => {
-                // TODO: Implement add hero to collection
-                console.log('Adding hero to collection:', heroSlug);
+                if (user?.id) {
+                  fetcher.submit(
+                    {
+                      action: 'addHero',
+                      userId: user.id,
+                      heroSlug: heroSlug,
+                      stars: '1',
+                      equipmentLevel: '1'
+                    },
+                    { method: 'POST' }
+                  );
+                }
               }}
             />
           </div>

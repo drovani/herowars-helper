@@ -8,12 +8,21 @@ import { Label } from "~/components/ui/label";
 import { HeroCollectionCard } from "~/components/player/HeroCollectionCard";
 import { formatTitle } from "~/config/site";
 import { HeroRepository } from "~/repositories/HeroRepository";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
 import { useState } from "react";
+import { useFetcher } from "react-router";
 import type { Route } from "./+types/roster";
+import type { PlayerHeroWithDetails } from "~/repositories/types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
+  const playerHeroRepo = new PlayerHeroRepository(request);
+  
+  // Get user from request (this would be set by authentication middleware)
+  const url = new URL(request.url);
+  const userId = url.searchParams.get('userId'); // This would come from auth context
+  
   const heroesResult = await heroRepo.findAll();
   
   if (heroesResult.error) {
@@ -23,11 +32,85 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroes = heroesResult.data ? 
     heroesResult.data.map(hero => transformBasicHeroToRecord(hero)) : [];
 
-  return { heroes };
+  // Load user's collection if authenticated
+  let playerCollection: PlayerHeroWithDetails[] = [];
+  if (userId) {
+    const collectionResult = await playerHeroRepo.findWithHeroDetails(userId);
+    if (!collectionResult.error && collectionResult.data) {
+      playerCollection = collectionResult.data;
+    }
+  }
+
+  return { heroes, playerCollection };
 };
 
-export const action = async (_: Route.ActionArgs) => {
-  return {};
+export const action = async ({ request }: Route.ActionArgs) => {
+  const formData = await request.formData();
+  const action = formData.get('action');
+  const userId = formData.get('userId') as string;
+  const heroSlug = formData.get('heroSlug') as string;
+  
+  if (!userId) {
+    return { error: 'User not authenticated' };
+  }
+
+  const playerHeroRepo = new PlayerHeroRepository(request);
+  
+  switch (action) {
+    case 'addHero': {
+      const stars = parseInt(formData.get('stars') as string) || 1;
+      const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
+      
+      const result = await playerHeroRepo.addHeroToCollection(userId, {
+        hero_slug: heroSlug,
+        stars,
+        equipment_level: equipmentLevel
+      });
+      
+      if (result.error) {
+        return { error: result.error.message };
+      }
+      
+      return { success: true, message: 'Hero added to collection' };
+    }
+    
+    case 'updateStars': {
+      const stars = parseInt(formData.get('stars') as string);
+      
+      const result = await playerHeroRepo.updateHeroProgress(userId, heroSlug, { stars });
+      
+      if (result.error) {
+        return { error: result.error.message };
+      }
+      
+      return { success: true, message: 'Hero stars updated' };
+    }
+    
+    case 'updateEquipment': {
+      const equipmentLevel = parseInt(formData.get('equipmentLevel') as string);
+      
+      const result = await playerHeroRepo.updateHeroProgress(userId, heroSlug, { equipment_level: equipmentLevel });
+      
+      if (result.error) {
+        return { error: result.error.message };
+      }
+      
+      return { success: true, message: 'Hero equipment updated' };
+    }
+    
+    case 'removeHero': {
+      const result = await playerHeroRepo.removeFromCollection(userId, heroSlug);
+      
+      if (result.error) {
+        return { error: result.error.message };
+      }
+      
+      return { success: true, message: 'Hero removed from collection' };
+    }
+    
+    default:
+      return { error: 'Invalid action' };
+  }
 };
 
 export const meta = (_: Route.MetaArgs) => {
@@ -35,8 +118,9 @@ export const meta = (_: Route.MetaArgs) => {
 };
 
 export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
-  const { heroes } = loaderData;
+  const { heroes, playerCollection } = loaderData;
   const { user, isLoading: authLoading } = useAuth();
+  const fetcher = useFetcher();
   
   // Filter and sort states
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,29 +128,8 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   const [factionFilter, setFactionFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
 
-  // Mock collection data - TODO: Replace with actual data from PlayerHeroRepository
-  const mockCollection = [
-    {
-      id: "1",
-      user_id: "user1",
-      hero_slug: "astaroth",
-      stars: 5,
-      equipment_level: 12,
-      created_at: "2024-01-15T10:00:00Z",
-      updated_at: "2024-01-15T10:00:00Z",
-      hero: heroes.find(h => h.slug === "astaroth")!
-    },
-    {
-      id: "2", 
-      user_id: "user1",
-      hero_slug: "aurora",
-      stars: 3,
-      equipment_level: 8,
-      created_at: "2024-01-16T14:30:00Z",
-      updated_at: "2024-01-16T14:30:00Z",
-      hero: heroes.find(h => h.slug === "aurora")!
-    }
-  ].filter(item => item.hero); // Filter out undefined heroes
+  // Use real data from loader
+  const collection = playerCollection || [];
 
   // Show loading state while auth is initializing
   if (authLoading) {
@@ -109,7 +172,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   }
 
   // Filter collection based on search and filters
-  const filteredCollection = mockCollection.filter(item => {
+  const filteredCollection = collection.filter(item => {
     const matchesSearch = item.hero.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesClass = classFilter === "all" || item.hero.class === classFilter;
     const matchesFaction = factionFilter === "all" || item.hero.faction === factionFilter;
@@ -127,7 +190,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
       case "equipment":
         return b.equipment_level - a.equipment_level;
       case "recent":
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
       default:
         return 0;
     }
@@ -141,7 +204,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
     <div className="max-w-6xl mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Hero Roster ({mockCollection.length})</CardTitle>
+          <CardTitle>Hero Roster ({collection.length})</CardTitle>
           <CardDescription>
             Manage your personal hero collection, track progress, and update hero development.
           </CardDescription>
@@ -212,17 +275,44 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                 <HeroCollectionCard
                   key={playerHero.id}
                   playerHero={playerHero}
+                  isUpdating={fetcher.state === "submitting"}
                   onUpdateStars={(stars) => {
-                    // TODO: Implement star update
-                    console.log(`Update ${playerHero.hero.name} stars to ${stars}`);
+                    if (user?.id) {
+                      fetcher.submit(
+                        {
+                          action: 'updateStars',
+                          userId: user.id,
+                          heroSlug: playerHero.hero_slug,
+                          stars: stars.toString()
+                        },
+                        { method: 'POST' }
+                      );
+                    }
                   }}
                   onUpdateEquipment={(level) => {
-                    // TODO: Implement equipment update
-                    console.log(`Update ${playerHero.hero.name} equipment to level ${level}`);
+                    if (user?.id) {
+                      fetcher.submit(
+                        {
+                          action: 'updateEquipment',
+                          userId: user.id,
+                          heroSlug: playerHero.hero_slug,
+                          equipmentLevel: level.toString()
+                        },
+                        { method: 'POST' }
+                      );
+                    }
                   }}
                   onRemoveHero={() => {
-                    // TODO: Implement hero removal
-                    console.log(`Remove ${playerHero.hero.name} from collection`);
+                    if (user?.id) {
+                      fetcher.submit(
+                        {
+                          action: 'removeHero',
+                          userId: user.id,
+                          heroSlug: playerHero.hero_slug
+                        },
+                        { method: 'POST' }
+                      );
+                    }
                   }}
                 />
               ))}
@@ -230,18 +320,18 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
           ) : (
             <div className="text-center py-12">
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                {mockCollection.length === 0 
+                {collection.length === 0 
                   ? "No Heroes in Collection" 
                   : "No Heroes Match Your Filters"
                 }
               </h3>
               <p className="text-gray-500 mb-4">
-                {mockCollection.length === 0 
+                {collection.length === 0 
                   ? "Start building your hero roster by adding heroes from the hero catalog."
                   : "Try adjusting your search or filter criteria."
                 }
               </p>
-              {mockCollection.length === 0 && (
+              {collection.length === 0 && (
                 <div className="text-sm text-gray-400">
                   Visit the Heroes page to add heroes to your collection.
                 </div>

@@ -73,10 +73,10 @@ Create feature branch: `feature/i53-player-hero-collection`
   - `findWithHeroDetails(userId: string)` - Get collection with hero metadata
   - All mutation methods should create corresponding events via PlayerEventRepository
 
-## Phase 2: Player Routes & Navigation
+## Phase 2: Player Routes & Navigation ✅ COMPLETED (2025-01-16)
 
-### 2.1 Update Routes Configuration
-- Modify `app/routes.ts` to add player routes under `ProtectedUserLayout`:
+### 2.1 Update Routes Configuration ✅
+- ✅ Modified `app/routes.ts` to add player routes under `ProtectedUserLayout`:
   ```typescript
   layout("./layouts/ProtectedUserLayout.tsx", [
     route("account", "./routes/views/account/index.tsx", [
@@ -84,21 +84,21 @@ Create feature branch: `feature/i53-player-hero-collection`
     ]),
     route("player", "./routes/views/player/layout.tsx", [
       index("./routes/views/player/roster.tsx"),
-      route("roster", "./routes/views/player/roster.tsx"),
       route("activity", "./routes/views/player/activity.tsx")
     ])
   ])
   ```
 
-### 2.2 Create Player Route Components
-- Create `app/routes/views/player/layout.tsx` - Player section layout
-- Create `app/routes/views/player/roster.tsx` - Main roster management page
-- Create `app/routes/views/player/activity.tsx` - Event history and activity log
-- Implement loader functions with authentication checks
-- Add breadcrumb support for navigation
+### 2.2 Create Player Route Components ✅
+- ✅ Created `app/routes/views/player/layout.tsx` - Player section layout with breadcrumb support
+- ✅ Created `app/routes/views/player/roster.tsx` - Main roster management page with auth checks
+- ✅ Created `app/routes/views/player/activity.tsx` - Event history and activity log with auth checks
+- ✅ Implemented loader functions with authentication checks
+- ✅ Added breadcrumb support for navigation
+- ✅ Added loading states and error handling
 
-### 2.3 Update Navigation
-- Modify `app/data/navigation.ts` Player Tools section:
+### 2.3 Update Navigation ✅
+- ✅ Modified `app/data/navigation.ts` Player Tools section:
   ```typescript
   {
     name: "Player Tools",
@@ -106,7 +106,7 @@ Create feature branch: `feature/i53-player-hero-collection`
       { 
         name: "Hero Roster", 
         icon: UsersRoundIcon, 
-        href: "/player/roster" 
+        href: "/player" 
       },
       { 
         name: "Activity Log", 

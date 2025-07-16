@@ -17,11 +17,15 @@ export default [
       route("setup", "./routes/views/admin/setup.tsx"),
       route("users", "./routes/views/admin/users.tsx"),
       route("test-coverage", "./routes/views/admin/test-coverage.tsx"),
-      route("/*", "./routes/views/admin/index.tsx"),
+      index("./routes/views/admin/index.tsx"),
     ]),
   ]),
   layout("./layouts/ProtectedUserLayout.tsx", [
     route("account", "./routes/views/account/index.tsx", [index("./routes/views/account/profile.tsx")]),
+    route("player", "./routes/views/player/layout.tsx", [
+      index("./routes/views/player/roster.tsx"),
+      route("activity", "./routes/views/player/activity.tsx")
+    ])
   ]),
   route("protected", "./routes/views/public/protected.tsx"),
   route("heroes", "./routes/views/heroes/layout.tsx", [

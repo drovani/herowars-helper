@@ -1,5 +1,6 @@
 import {
   BarChart3Icon,
+  ClockIcon,
   DatabaseZapIcon,
   DropletIcon,
   FileJson2Icon,
@@ -73,7 +74,18 @@ export const navigation: NavigationGroup[] = [
   },
   {
     name: "Player Tools",
-    items: [{ name: "Hero Roster", icon: UsersRoundIcon }],
+    items: [
+      { 
+        name: "Hero Roster", 
+        icon: UsersRoundIcon, 
+        href: "/player" 
+      },
+      { 
+        name: "Activity Log", 
+        icon: ClockIcon, 
+        href: "/player/activity" 
+      }
+    ],
   },
   {
     name: "Guild Coordination Tools",

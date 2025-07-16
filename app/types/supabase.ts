@@ -377,6 +377,82 @@ export type Database = {
           },
         ]
       }
+      player_event: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          event_data: Json
+          event_type: string
+          hero_slug: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          event_data?: Json
+          event_type: string
+          hero_slug: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          event_data?: Json
+          event_type?: string
+          hero_slug?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_event_hero_slug_fkey"
+            columns: ["hero_slug"]
+            isOneToOne: false
+            referencedRelation: "hero"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      player_hero: {
+        Row: {
+          created_at: string | null
+          equipment_level: number
+          hero_slug: string
+          id: string
+          stars: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          equipment_level?: number
+          hero_slug: string
+          id?: string
+          stars?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          equipment_level?: number
+          hero_slug?: string
+          id?: string
+          stars?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_hero_hero_slug_fkey"
+            columns: ["hero_slug"]
+            isOneToOne: false
+            referencedRelation: "hero"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

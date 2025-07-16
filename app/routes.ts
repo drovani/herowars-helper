@@ -23,7 +23,8 @@ export default [
   layout("./layouts/ProtectedUserLayout.tsx", [
     route("account", "./routes/views/account/index.tsx", [index("./routes/views/account/profile.tsx")]),
     route("player", "./routes/views/player/layout.tsx", [
-      index("./routes/views/player/roster.tsx"),
+      index("./routes/views/player/index.tsx"),
+      route("roster", "./routes/views/player/roster.tsx"),
       route("activity", "./routes/views/player/activity.tsx")
     ])
   ]),

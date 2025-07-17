@@ -1,7 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import slugify from "slugify";
 import { twMerge } from "tailwind-merge";
-import heroesData from "~/data/heroes.json";
 
 export function generateSlug(text: string | undefined, suffixToStrip?: string): string {
   if (!text) return "";
@@ -28,7 +27,3 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getHeroNameFromSlug(slug: string): string {
-  const hero = heroesData.find(hero => hero.slug === slug);
-  return hero?.name || slug;
-}

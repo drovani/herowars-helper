@@ -1,6 +1,7 @@
 // ABOUTME: EquipmentLevels component displays and allows editing of hero equipment tier levels (1-16)
-// ABOUTME: Shows a select dropdown or slider for updating equipment progression
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+// ABOUTME: Shows plus/minus buttons for updating equipment progression
+import { MinusIcon, PlusIcon } from "lucide-react";
+import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 
@@ -19,40 +20,34 @@ export function EquipmentLevels({
   onLevelChange, 
   className 
 }: EquipmentLevelsProps) {
-  const handleLevelChange = (value: string) => {
-    if (!readOnly && onLevelChange) {
-      onLevelChange(parseInt(value, 10));
+  const handleIncrement = () => {
+    if (!readOnly && onLevelChange && level < maxLevel) {
+      onLevelChange(level + 1);
+    }
+  };
+
+  const handleDecrement = () => {
+    if (!readOnly && onLevelChange && level > 1) {
+      onLevelChange(level - 1);
     }
   };
 
   // Generate tier colors based on level ranges
   const getTierColor = (level: number) => {
-    if (level <= 3) return "text-gray-600"; // Common
-    if (level <= 6) return "text-green-600"; // Uncommon
-    if (level <= 9) return "text-blue-600"; // Rare
-    if (level <= 12) return "text-purple-600"; // Epic
-    if (level <= 15) return "text-orange-600"; // Legendary
-    return "text-red-600"; // Mythic
-  };
-
-  const getTierName = (level: number) => {
-    if (level <= 3) return "Common";
-    if (level <= 6) return "Uncommon";
-    if (level <= 9) return "Rare";
-    if (level <= 12) return "Epic";
-    if (level <= 15) return "Legendary";
-    return "Mythic";
+    if (level === 1) return "text-gray-600"; // Common
+    if (level <= 3) return "text-green-600"; // Uncommon (2-3)
+    if (level <= 6) return "text-blue-600"; // Rare (4-6)
+    if (level <= 10) return "text-purple-600"; // Epic (7-10)
+    if (level <= 15) return "text-orange-600"; // Legendary (11-15)
+    return "text-red-600"; // Mythic (16)
   };
 
   if (readOnly) {
     return (
-      <div className={cn("flex items-center gap-2", className)}>
+      <div className={cn("flex items-center gap-2 justify-center", className)}>
         <Label className="text-sm font-medium">Equipment Level:</Label>
         <span className={cn("font-semibold", getTierColor(level))}>
           {level}/{maxLevel}
-        </span>
-        <span className={cn("text-xs", getTierColor(level))}>
-          ({getTierName(level)})
         </span>
       </div>
     );
@@ -62,25 +57,27 @@ export function EquipmentLevels({
     <div className={cn("space-y-2", className)}>
       <Label className="text-sm font-medium">Equipment Level</Label>
       <div className="flex items-center gap-2">
-        <Select value={level.toString()} onValueChange={handleLevelChange}>
-          <SelectTrigger className="w-20">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Array.from({ length: maxLevel }, (_, index) => {
-              const levelValue = index + 1;
-              return (
-                <SelectItem key={levelValue} value={levelValue.toString()}>
-                  {levelValue}
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-        <span className="text-sm text-gray-600">/ {maxLevel}</span>
-        <span className={cn("text-xs font-medium", getTierColor(level))}>
-          ({getTierName(level)})
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDecrement}
+          disabled={readOnly || level <= 1}
+          className="size-8 p-0"
+        >
+          <MinusIcon className="size-4" />
+        </Button>
+        <span className={cn("font-semibold min-w-[3rem] text-center", getTierColor(level))}>
+          {level}/{maxLevel}
         </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleIncrement}
+          disabled={readOnly || level >= maxLevel}
+          className="size-8 p-0"
+        >
+          <PlusIcon className="size-4" />
+        </Button>
       </div>
     </div>
   );

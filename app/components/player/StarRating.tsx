@@ -51,9 +51,6 @@ export function StarRating({
           </button>
         );
       })}
-      <span className="ml-2 text-sm text-gray-600">
-        {stars}/{maxStars}
-      </span>
     </div>
   );
 }

@@ -273,6 +273,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
                   key={playerHero.id}
                   playerHero={playerHero}
                   isUpdating={fetcher.state === "submitting"}
+                  isRemoving={fetcher.state === "submitting" && fetcher.formData?.get('action') === 'removeHero' && fetcher.formData?.get('heroSlug') === playerHero.hero_slug}
                   onUpdateStars={(stars) => {
                     if (user?.id) {
                       fetcher.submit(

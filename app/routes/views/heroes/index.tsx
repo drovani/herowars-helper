@@ -104,73 +104,86 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
     ? heroes.filter((hero) => hero.name.toLowerCase().includes(search.toLowerCase()))
     : heroes;
 
-  const HeroCardWithButton = ({ hero }: { hero: typeof heroes[0] }) => (
-    <div className="relative group size-28">
-      <HeroCard hero={hero} />
-      {user && (
-        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
-          <AddHeroButton
-            heroSlug={hero.slug}
-            isInCollection={userCollection.includes(hero.slug)}
-            isLoading={fetcher.state === "submitting"}
-            onAddHero={(heroSlug) => {
-              fetcher.submit(
-                {
-                  action: 'addHero',
-                  heroSlug: heroSlug,
-                  stars: '1',
-                  equipmentLevel: '1'
-                },
-                { method: 'POST' }
-              );
-            }}
-            size="sm"
-          />
-        </div>
-      )}
-    </div>
-  );
-
-  const HeroTileWithButton = ({ hero, equipment }: { hero: typeof heroes[0], equipment: typeof loaderData.equipment }) => (
-    <Card className="w-full grid grid-cols-2 md:grid-cols-5">
-      <div className="flex flex-col items-start p-2">
-        <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
-          <img src={`/images/heroes/${hero.slug}.png`} alt={hero.name} className="size-28 rounded-md" />
-        </Link>
-        <div className="flex flex-col items-start">
-          <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
-            <div className="flex flex-col font-semibold">{hero.name}</div>
-          </Link>
-          {user && (
-            <div className="mt-2">
-              <AddHeroButton
-                heroSlug={hero.slug}
-                heroName={hero.name}
-                isInCollection={userCollection.includes(hero.slug)}
-                isLoading={fetcher.state === "submitting"}
-                onAddHero={(heroSlug) => {
-                  fetcher.submit(
-                    {
-                      action: 'addHero',
-                      heroSlug: heroSlug,
-                      stars: '1',
-                      equipmentLevel: '1'
-                    },
-                    { method: 'POST' }
-                  );
-                }}
-                size="sm"
-              />
-            </div>
-          )}
-        </div>
+  const HeroCardWithButton = ({ hero }: { hero: typeof heroes[0] }) => {
+    const isSubmittingThisHero = fetcher.state === "submitting" && 
+      fetcher.formData?.get('heroSlug') === hero.slug;
+    const isOptimisticallyInCollection = userCollection.includes(hero.slug) || 
+      (isSubmittingThisHero && fetcher.formData?.get('action') === 'addHero');
+    
+    return (
+      <div className="relative group size-28">
+        <HeroCard hero={hero} />
+        {user && (
+          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
+            <AddHeroButton
+              heroSlug={hero.slug}
+              isInCollection={isOptimisticallyInCollection}
+              isLoading={isSubmittingThisHero}
+              onAddHero={(heroSlug) => {
+                fetcher.submit(
+                  {
+                    action: 'addHero',
+                    heroSlug: heroSlug,
+                    stars: '1',
+                    equipmentLevel: '1'
+                  },
+                  { method: 'POST' }
+                );
+              }}
+              size="sm"
+            />
+          </div>
+        )}
       </div>
-      <HeroItemsCompact items={hero.items} equipment={equipment} className="bg-muted p-2" />
-      <HeroSkinsCompact skins={hero.skins} heroSlug={hero.slug} className="p-2" />
-      <HeroArtifactsCompact artifacts={hero.artifacts} main_stat={hero.main_stat} className="bg-muted p-2" />
-      <HeroGlyphsCompact glyphs={hero.glyphs} className="p-2" />
-    </Card>
-  );
+    );
+  };
+
+  const HeroTileWithButton = ({ hero, equipment }: { hero: typeof heroes[0], equipment: typeof loaderData.equipment }) => {
+    const isSubmittingThisHero = fetcher.state === "submitting" && 
+      fetcher.formData?.get('heroSlug') === hero.slug;
+    const isOptimisticallyInCollection = userCollection.includes(hero.slug) || 
+      (isSubmittingThisHero && fetcher.formData?.get('action') === 'addHero');
+    
+    return (
+      <Card className="w-full grid grid-cols-2 md:grid-cols-5">
+        <div className="flex flex-col items-start p-2">
+          <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
+            <img src={`/images/heroes/${hero.slug}.png`} alt={hero.name} className="size-28 rounded-md" />
+          </Link>
+          <div className="flex flex-col items-start">
+            <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
+              <div className="flex flex-col font-semibold">{hero.name}</div>
+            </Link>
+            {user && (
+              <div className="mt-2">
+                <AddHeroButton
+                  heroSlug={hero.slug}
+                  isInCollection={isOptimisticallyInCollection}
+                  isLoading={isSubmittingThisHero}
+                  onAddHero={(heroSlug) => {
+                    fetcher.submit(
+                      {
+                        action: 'addHero',
+                        heroSlug: heroSlug,
+                        stars: '1',
+                        equipmentLevel: '1'
+                      },
+                      { method: 'POST' }
+                    );
+                  }}
+                  size="sm"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <HeroItemsCompact items={hero.items} equipment={equipment} className="bg-muted p-2" />
+        <HeroSkinsCompact skins={hero.skins} heroSlug={hero.slug} className="p-2" />
+        <HeroArtifactsCompact artifacts={hero.artifacts} main_stat={hero.main_stat} className="bg-muted p-2" />
+        <HeroGlyphsCompact glyphs={hero.glyphs} className="p-2" />
+      </Card>
+    );
+  };
 
   return (
     <div className="flex flex-col gap-4">

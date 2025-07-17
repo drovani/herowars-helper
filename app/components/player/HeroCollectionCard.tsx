@@ -1,9 +1,11 @@
 // ABOUTME: HeroCollectionCard component displays individual hero in user's collection
 // ABOUTME: Shows hero details with editable star rating and equipment levels
 import { UserRoundMinusIcon } from "lucide-react";
+import { Link } from "react-router";
+import { useState, useEffect } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
 import { EquipmentLevels } from "./EquipmentLevels";
@@ -15,6 +17,7 @@ interface HeroCollectionCardProps {
   onUpdateEquipment?: (level: number) => void;
   onRemoveHero?: () => void;
   isUpdating?: boolean;
+  isRemoving?: boolean;
   className?: string;
 }
 
@@ -24,9 +27,23 @@ export function HeroCollectionCard({
   onUpdateEquipment,
   onRemoveHero,
   isUpdating = false,
+  isRemoving = false,
   className
 }: HeroCollectionCardProps) {
   const { hero, stars, equipment_level, created_at } = playerHero;
+  
+  // Optimistic state for equipment level
+  const [optimisticEquipmentLevel, setOptimisticEquipmentLevel] = useState(equipment_level);
+  const [optimisticStars, setOptimisticStars] = useState(stars);
+  
+  // Reset optimistic state when server data changes
+  useEffect(() => {
+    setOptimisticEquipmentLevel(equipment_level);
+  }, [equipment_level]);
+  
+  useEffect(() => {
+    setOptimisticStars(stars);
+  }, [stars]);
 
   const getFactionColor = (faction: string) => {
     switch (faction.toLowerCase()) {
@@ -38,72 +55,82 @@ export function HeroCollectionCard({
     }
   };
 
-  const getClassColor = (heroClass: string) => {
-    switch (heroClass.toLowerCase()) {
-      case 'tank': return 'bg-orange-100 text-orange-800';
-      case 'warrior': return 'bg-red-100 text-red-800';
-      case 'marksman': return 'bg-green-100 text-green-800';
-      case 'mage': return 'bg-blue-100 text-blue-800';
-      case 'support': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
+  
+  const handleStarUpdate = (newStars: number) => {
+    setOptimisticStars(newStars);
+    onUpdateStars?.(newStars);
+  };
+  
+  const handleEquipmentUpdate = (newLevel: number) => {
+    setOptimisticEquipmentLevel(newLevel);
+    onUpdateEquipment?.(newLevel);
+  };
 
   return (
     <Card className={cn("transition-all duration-200 hover:shadow-md", className)}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <CardTitle className="text-lg">{hero.name}</CardTitle>
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-4">
+          {/* Hero Image and Name */}
+          <div className="flex-shrink-0">
+            <Link to={`/heroes/${hero.slug}`} viewTransition>
+              <img 
+                src={`/images/heroes/${hero.slug}.png`} 
+                alt={hero.name} 
+                className="size-20 rounded-lg object-cover hover:opacity-80 transition-opacity mb-2"
+              />
+            </Link>
+            <Link to={`/heroes/${hero.slug}`} viewTransition>
+              <h3 className="font-semibold text-sm leading-tight hover:text-blue-600 transition-colors text-center">
+                {hero.name}
+              </h3>
+            </Link>
+          </div>
+          
+          {/* Remove Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={onRemoveHero}
-            disabled={isUpdating}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            disabled={isRemoving}
+            className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
             title="Remove Hero from Collection"
           >
             <UserRoundMinusIcon className="size-4" />
           </Button>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <Badge className={getFactionColor(hero.faction)}>
+        
+        {/* Faction badge and Class image */}
+        <div className="flex gap-2 mb-3 justify-center items-center">
+          <Badge className={`${getFactionColor(hero.faction)} capitalize`} variant="secondary">
             {hero.faction}
           </Badge>
-          <Badge className={getClassColor(hero.class)}>
-            {hero.class}
-          </Badge>
-          <Badge variant="outline">
-            {hero.main_stat}
-          </Badge>
+          <img 
+            src={`/images/classes/${hero.class.toLowerCase()}.png`} 
+            alt={hero.class} 
+            className="size-6 rounded"
+            title={hero.class}
+          />
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-3">
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-1 block">
-              Star Rating
-            </label>
-            <StarRating
-              stars={stars}
-              onStarClick={onUpdateStars}
-              readOnly={isUpdating}
-            />
-          </div>
-
-          <EquipmentLevels
-            level={equipment_level}
-            onLevelChange={onUpdateEquipment}
+        
+        {/* Star Rating */}
+        <div className="mb-3 flex justify-center">
+          <StarRating
+            stars={optimisticStars}
+            onStarClick={handleStarUpdate}
             readOnly={isUpdating}
           />
         </div>
-
-        <div className="pt-2 border-t text-xs text-gray-500">
-          Added: {created_at ? formatDate(created_at) : 'Unknown date'}
-        </div>
+        
+        {/* Equipment Levels */}
+        <EquipmentLevels
+          level={optimisticEquipmentLevel}
+          onLevelChange={handleEquipmentUpdate}
+          readOnly={false}
+        />
       </CardContent>
     </Card>
   );

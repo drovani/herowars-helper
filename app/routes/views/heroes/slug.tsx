@@ -222,9 +222,8 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
           <div className="flex justify-end">
             <AddHeroButton
               heroSlug={hero.slug}
-              heroName={hero.name}
-              isInCollection={isInCollection}
-              isLoading={fetcher.state === "submitting"}
+              isInCollection={isInCollection || (fetcher.state === "submitting" && fetcher.formData?.get('action') === 'addHero')}
+              isLoading={fetcher.state === "submitting" && fetcher.formData?.get('heroSlug') === hero.slug}
               onAddHero={(heroSlug) => {
                 fetcher.submit(
                   {

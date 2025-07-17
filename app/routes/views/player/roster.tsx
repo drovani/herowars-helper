@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useFetcher } from "react-router";
 import { HeroCollectionCard } from "~/components/player/HeroCollectionCard";
+import { PlayerCollectionErrorBoundary } from "~/components/player/PlayerCollectionErrorBoundary";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -267,51 +268,53 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
 
           {/* Hero Collection Grid */}
           {sortedCollection.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sortedCollection.map((playerHero) => (
-                <HeroCollectionCard
-                  key={playerHero.id}
-                  playerHero={playerHero}
-                  isUpdating={fetcher.state === "submitting"}
-                  isRemoving={fetcher.state === "submitting" && fetcher.formData?.get('action') === 'removeHero' && fetcher.formData?.get('heroSlug') === playerHero.hero_slug}
-                  onUpdateStars={(stars) => {
-                    if (user?.id) {
-                      fetcher.submit(
-                        {
-                          action: 'updateStars',
-                          heroSlug: playerHero.hero_slug,
-                          stars: stars.toString()
-                        },
-                        { method: 'POST' }
-                      );
-                    }
-                  }}
-                  onUpdateEquipment={(level) => {
-                    if (user?.id) {
-                      fetcher.submit(
-                        {
-                          action: 'updateEquipment',
-                          heroSlug: playerHero.hero_slug,
-                          equipmentLevel: level.toString()
-                        },
-                        { method: 'POST' }
-                      );
-                    }
-                  }}
-                  onRemoveHero={() => {
-                    if (user?.id) {
-                      fetcher.submit(
-                        {
-                          action: 'removeHero',
-                          heroSlug: playerHero.hero_slug
-                        },
-                        { method: 'POST' }
-                      );
-                    }
-                  }}
-                />
-              ))}
-            </div>
+            <PlayerCollectionErrorBoundary>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sortedCollection.map((playerHero) => (
+                  <HeroCollectionCard
+                    key={playerHero.id}
+                    playerHero={playerHero}
+                    isUpdating={fetcher.state === "submitting"}
+                    isRemoving={fetcher.state === "submitting" && fetcher.formData?.get('action') === 'removeHero' && fetcher.formData?.get('heroSlug') === playerHero.hero_slug}
+                    onUpdateStars={(stars) => {
+                      if (user?.id) {
+                        fetcher.submit(
+                          {
+                            action: 'updateStars',
+                            heroSlug: playerHero.hero_slug,
+                            stars: stars.toString()
+                          },
+                          { method: 'POST' }
+                        );
+                      }
+                    }}
+                    onUpdateEquipment={(level) => {
+                      if (user?.id) {
+                        fetcher.submit(
+                          {
+                            action: 'updateEquipment',
+                            heroSlug: playerHero.hero_slug,
+                            equipmentLevel: level.toString()
+                          },
+                          { method: 'POST' }
+                        );
+                      }
+                    }}
+                    onRemoveHero={() => {
+                      if (user?.id) {
+                        fetcher.submit(
+                          {
+                            action: 'removeHero',
+                            heroSlug: playerHero.hero_slug
+                          },
+                          { method: 'POST' }
+                        );
+                      }
+                    }}
+                  />
+                ))}
+              </div>
+            </PlayerCollectionErrorBoundary>
           ) : (
             <div className="text-center py-12">
               <h3 className="text-lg font-medium text-gray-900 mb-2">

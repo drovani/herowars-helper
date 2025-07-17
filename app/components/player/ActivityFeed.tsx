@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Label } from "~/components/ui/label";
 import { LoaderIcon } from "lucide-react";
-import { cn } from "~/lib/utils";
+import { cn, getHeroNameFromSlug } from "~/lib/utils";
 import type { PlayerEvent } from "~/repositories/types";
 
 interface ActivityFeedProps {
@@ -91,7 +91,7 @@ export function ActivityFeed({
             <EventCard
               key={`${event.id}-${index}`}
               event={event}
-              heroName={event.hero_slug} // TODO: Replace with actual hero name lookup
+              heroName={getHeroNameFromSlug(event.hero_slug)}
             />
           ))}
         </div>

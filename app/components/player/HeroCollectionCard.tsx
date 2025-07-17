@@ -46,12 +46,21 @@ export function HeroCollectionCard({
   }, [stars]);
 
   const getFactionColor = (faction: string) => {
-    switch (faction.toLowerCase()) {
+    const normalizedFaction = faction.toLowerCase();
+    
+    switch (normalizedFaction) {
       case 'chaos': return 'bg-red-100 text-red-800';
-      case 'order': return 'bg-blue-100 text-blue-800';
       case 'nature': return 'bg-green-100 text-green-800';
       case 'progress': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'honor': return 'bg-blue-100 text-blue-800';
+      case 'eternity': return 'bg-amber-100 text-amber-800';
+      case 'mystery': return 'bg-slate-100 text-slate-800';
+      default: 
+        // Log warning for unknown factions in development mode only
+        if (import.meta.env.DEV) {
+          console.warn(`Unknown faction: ${faction}`);
+        }
+        return 'bg-gray-100 text-gray-800';
     }
   };
 

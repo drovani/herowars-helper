@@ -172,9 +172,9 @@ describe('StarRating', () => {
     it('should apply custom className', () => {
       render(<StarRating stars={3} className="custom-class" />)
       
-      // The className is applied to the outermost div, so we need to find the parent of the star count
+      // The className is applied to the outermost div containing the star count
       const starCountText = screen.getByText('3/6')
-      const rootContainer = starCountText.closest('div')?.parentElement?.parentElement
+      const rootContainer = starCountText.closest('div')
       expect(rootContainer).toHaveClass('custom-class')
     })
   })

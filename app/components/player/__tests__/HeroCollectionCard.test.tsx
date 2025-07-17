@@ -73,15 +73,32 @@ describe('HeroCollectionCard', () => {
     })
 
     it('should handle different factions', () => {
-      const orderHero = {
+      const honorHero = {
         ...mockPlayerHero,
-        hero: { ...mockPlayerHero.hero, faction: 'order' }
+        hero: { ...mockPlayerHero.hero, faction: 'honor' }
       }
       
-      render(<HeroCollectionCard playerHero={orderHero} />)
+      render(<HeroCollectionCard playerHero={honorHero} />)
       
-      const factionBadge = screen.getByText('order')
+      const factionBadge = screen.getByText('honor')
       expect(factionBadge).toHaveClass('bg-blue-100', 'text-blue-800')
+    })
+
+    it('should handle unknown factions with warning', () => {
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      
+      const unknownHero = {
+        ...mockPlayerHero,
+        hero: { ...mockPlayerHero.hero, faction: 'unknown-faction' }
+      }
+      
+      render(<HeroCollectionCard playerHero={unknownHero} />)
+      
+      const factionBadge = screen.getByText('unknown-faction')
+      expect(factionBadge).toHaveClass('bg-gray-100', 'text-gray-800')
+      expect(consoleSpy).toHaveBeenCalledWith('Unknown faction: unknown-faction')
+      
+      consoleSpy.mockRestore()
     })
   })
 
@@ -237,7 +254,7 @@ describe('HeroCollectionCard', () => {
     it('should have proper form labels', () => {
       render(<HeroCollectionCard playerHero={mockPlayerHero} />)
       
-      expect(screen.getByText('Star Rating')).toBeInTheDocument()
+      expect(screen.getByText('4/6')).toBeInTheDocument() // Star rating now shows as numerical
       expect(screen.getByText('Equipment Level')).toBeInTheDocument()
     })
   })

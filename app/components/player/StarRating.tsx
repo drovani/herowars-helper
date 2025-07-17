@@ -53,9 +53,8 @@ export function StarRating({
           );
         })}
       </div>
-      <span className="text-sm text-gray-600 ml-1">
-        <span className="font-medium">Star Rating</span>
-        <div className="text-center">{stars}/{maxStars}</div>
+      <span className="text-sm text-gray-600 ml-1 font-medium">
+        {stars}/{maxStars}
       </span>
     </div>
   );

@@ -1,6 +1,5 @@
 // ABOUTME: HeroCollectionCard component displays individual hero in user's collection
 // ABOUTME: Shows hero details with editable star rating and equipment levels
-import log from "loglevel";
 import { UserRoundMinusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
@@ -57,10 +56,6 @@ export function HeroCollectionCard({
       case 'eternity': return 'bg-amber-100 text-amber-800';
       case 'mystery': return 'bg-slate-100 text-slate-800';
       default:
-        // Log warning for unknown factions in development mode only
-        if (import.meta.env.DEV) {
-          log.warn(`Unknown faction: ${faction}`);
-        }
         return 'bg-gray-100 text-gray-800';
     }
   };

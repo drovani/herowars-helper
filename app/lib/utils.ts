@@ -26,3 +26,4 @@ export function getHeroImageUrl(slug: string, extension: string = "png"): string
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+

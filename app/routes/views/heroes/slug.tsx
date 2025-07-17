@@ -1,6 +1,6 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { useEffect } from "react";
-import { Link, useNavigate, type UIMatch } from "react-router";
+import { Link, useNavigate, useFetcher, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import { RequireEditor } from "~/components/auth/RequireRole";
 import HeroArtifacts from "~/components/hero/HeroArtifacts";
@@ -8,12 +8,16 @@ import HeroGlyphs from "~/components/hero/HeroGlyphs";
 import HeroItems from "~/components/hero/HeroItems";
 import HeroSkins from "~/components/hero/HeroSkins";
 import HeroStoneSources from "~/components/hero/HeroStoneSources";
+import { AddHeroButton } from "~/components/player/AddHeroButton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
+import { useAuth } from "~/contexts/AuthContext";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { transformCompleteHeroToRecord, transformBasicHeroToRecord, sortHeroRecords } from "~/lib/hero-transformations";
+import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -47,6 +51,18 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });
+  }
+
+  // Check if hero is in user's collection
+  const { user } = await getAuthenticatedUser(request);
+  let isInCollection = false;
+  
+  if (user) {
+    const playerHeroRepo = new PlayerHeroRepository(request);
+    const collectionResult = await playerHeroRepo.isHeroInCollection(user.id, params.slug);
+    if (!collectionResult.error && collectionResult.data) {
+      isInCollection = collectionResult.data;
+    }
   }
 
   const missions = campaignSourcesResult.data || [];
@@ -99,12 +115,42 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const prevHero = currentIndex > 0 ? sortedHeroes[currentIndex - 1] : null;
   const nextHero = currentIndex < sortedHeroes.length - 1 ? sortedHeroes[currentIndex + 1] : null;
 
-  return { hero, prevHero, nextHero, campaignSources, equipmentUsed };
+  return { hero, prevHero, nextHero, campaignSources, equipmentUsed, isInCollection };
+};
+
+export const action = async ({ request }: Route.ActionArgs) => {
+  const user = await requireAuthenticatedUser(request);
+  
+  const formData = await request.formData();
+  const action = formData.get('action');
+  const heroSlug = formData.get('heroSlug') as string;
+
+  if (action === 'addHero') {
+    const playerHeroRepo = new PlayerHeroRepository(request);
+    const stars = parseInt(formData.get('stars') as string) || 1;
+    const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
+    
+    const result = await playerHeroRepo.addHeroToCollection(user.id, {
+      hero_slug: heroSlug,
+      stars,
+      equipment_level: equipmentLevel
+    });
+    
+    if (result.error) {
+      return { error: result.error.message };
+    }
+    
+    return { success: true, message: 'Hero added to collection' };
+  }
+  
+  return { error: 'Invalid action' };
 };
 
 export default function Hero({ loaderData }: Route.ComponentProps) {
-  const { hero, prevHero, nextHero, campaignSources, equipmentUsed } = loaderData;
+  const { hero, prevHero, nextHero, campaignSources, equipmentUsed, isInCollection } = loaderData;
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const fetcher = useFetcher();
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -170,6 +216,28 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
         </div>
+        
+        {/* Add to Collection Button */}
+        {user && (
+          <div className="flex justify-end">
+            <AddHeroButton
+              heroSlug={hero.slug}
+              isInCollection={isInCollection || (fetcher.state === "submitting" && fetcher.formData?.get('action') === 'addHero')}
+              isLoading={fetcher.state === "submitting" && fetcher.formData?.get('heroSlug') === hero.slug}
+              onAddHero={(heroSlug) => {
+                fetcher.submit(
+                  {
+                    action: 'addHero',
+                    heroSlug: heroSlug,
+                    stars: '1',
+                    equipmentLevel: '1'
+                  },
+                  { method: 'POST' }
+                );
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <HeroItems items={hero.items} equipment={equipmentUsed} />

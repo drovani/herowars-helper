@@ -1,4 +1,4 @@
-import type { Database, Tables, TablesInsert, TablesUpdate } from "~/types/supabase"
+import type { Database, Tables, TablesInsert, TablesUpdate, Json } from "~/types/supabase"
 
 export type TableName = keyof Database["public"]["Tables"]
 
@@ -116,4 +116,29 @@ export interface CreateHeroWithData {
   skins?: CreateInput<'hero_skin'>[]
   glyphs?: CreateInput<'hero_glyph'>[]
   equipmentSlots?: CreateInput<'hero_equipment_slot'>[]
+}
+
+// Player hero collection types
+export type PlayerHero = Tables<'player_hero'>
+export type PlayerEvent = Tables<'player_event'>
+
+export interface PlayerHeroWithDetails extends PlayerHero {
+  hero: Hero
+}
+
+export interface CreatePlayerHeroInput {
+  hero_slug: string
+  stars?: number
+  equipment_level?: number
+}
+
+export interface UpdatePlayerHeroInput {
+  stars?: number
+  equipment_level?: number
+}
+
+export interface CreatePlayerEventInput {
+  event_type: 'CLAIM_HERO' | 'UNCLAIM_HERO' | 'UPDATE_HERO_STARS' | 'UPDATE_HERO_EQUIPMENT'
+  hero_slug: string
+  event_data?: Json
 }

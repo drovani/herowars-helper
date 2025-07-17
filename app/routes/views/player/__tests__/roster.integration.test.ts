@@ -4,10 +4,23 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { loader, action } from '../roster'
 import { PlayerHeroRepository } from '~/repositories/PlayerHeroRepository'
 import { HeroRepository } from '~/repositories/HeroRepository'
+import { createMockSupabaseClient } from '~//__tests__/mocks/supabase'
+import { getAuthenticatedUser, requireAuthenticatedUser } from '~/lib/auth/utils'
 
 // Mock the repositories
 vi.mock('~/repositories/PlayerHeroRepository')
 vi.mock('~/repositories/HeroRepository')
+
+// Mock the Supabase client
+vi.mock('~/lib/supabase/client', () => ({
+  createClient: vi.fn(() => ({ supabase: createMockSupabaseClient(), headers: undefined })),
+}))
+
+// Mock the auth utilities
+vi.mock('~/lib/auth/utils', () => ({
+  getAuthenticatedUser: vi.fn(),
+  requireAuthenticatedUser: vi.fn(),
+}))
 
 describe('Player Roster Integration', () => {
   let mockRequest: Request
@@ -30,6 +43,30 @@ describe('Player Roster Integration', () => {
     
     vi.mocked(HeroRepository).mockImplementation(() => mockHeroRepo)
     vi.mocked(PlayerHeroRepository).mockImplementation(() => mockPlayerHeroRepo)
+    
+    // Mock auth utilities
+    vi.mocked(getAuthenticatedUser).mockResolvedValue({
+      user: { 
+        id: 'user1', 
+        email: 'test@example.com',
+        app_metadata: { roles: ['user'] },
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      error: null
+    })
+    
+    vi.mocked(requireAuthenticatedUser).mockResolvedValue({
+      id: 'user1',
+      email: 'test@example.com',
+      app_metadata: { roles: ['user'] },
+      user_metadata: {},
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
   })
 
   describe('loader', () => {
@@ -63,6 +100,12 @@ describe('Player Roster Integration', () => {
     })
 
     it('should handle empty collection for unauthenticated user', async () => {
+      // Mock getAuthenticatedUser to return no user for this test
+      vi.mocked(getAuthenticatedUser).mockResolvedValue({
+        user: null,
+        error: null
+      })
+
       const mockRequest = new Request('http://localhost:3000/player')
       const mockHeroes = [
         { slug: 'astaroth', name: 'Astaroth', class: 'tank', faction: 'chaos', main_stat: 'strength', attack_type: ['physical'] }
@@ -237,6 +280,9 @@ describe('Player Roster Integration', () => {
 
   describe('action - authentication', () => {
     it('should return error for unauthenticated user', async () => {
+      // Mock requireAuthenticatedUser to throw for this test
+      vi.mocked(requireAuthenticatedUser).mockRejectedValue(new Response('Authentication required', { status: 401 }))
+
       const formData = new FormData()
       formData.append('action', 'addHero')
       formData.append('heroSlug', 'astaroth')
@@ -246,9 +292,7 @@ describe('Player Roster Integration', () => {
         body: formData
       })
 
-      const result = await action({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
-
-      expect(result.error).toBe('User not authenticated')
+      await expect(action({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })).rejects.toThrow(Response)
     })
 
     it('should return error for invalid action', async () => {

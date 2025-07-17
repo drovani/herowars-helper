@@ -1,7 +1,7 @@
 // ABOUTME: Tests for StarRating component covering interactive star selection
 // ABOUTME: Tests both readonly and interactive modes with proper event handling
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent } from '~/__tests__/utils/test-utils'
 import { StarRating } from '../StarRating'
 
 describe('StarRating', () => {
@@ -172,8 +172,10 @@ describe('StarRating', () => {
     it('should apply custom className', () => {
       render(<StarRating stars={3} className="custom-class" />)
       
-      const container = screen.getByText('3/6').closest('div')
-      expect(container).toHaveClass('custom-class')
+      // The className is applied to the outermost div, so we need to find the parent of the star count
+      const starCountText = screen.getByText('3/6')
+      const rootContainer = starCountText.closest('div')?.parentElement?.parentElement
+      expect(rootContainer).toHaveClass('custom-class')
     })
   })
 })

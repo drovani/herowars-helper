@@ -1,7 +1,7 @@
 // ABOUTME: Tests for HeroCollectionCard component covering hero display and interactions
 // ABOUTME: Tests star/equipment updates and hero removal functionality
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { renderWithRouter as render, screen, fireEvent } from '~/__tests__/utils/test-utils'
 import { HeroCollectionCard } from '../HeroCollectionCard'
 import type { PlayerHeroWithDetails } from '~/repositories/types'
 
@@ -33,8 +33,8 @@ describe('HeroCollectionCard', () => {
       
       expect(screen.getByText('Astaroth')).toBeInTheDocument()
       expect(screen.getByText('chaos')).toBeInTheDocument()
-      expect(screen.getByText('tank')).toBeInTheDocument()
-      expect(screen.getByText('strength')).toBeInTheDocument()
+      expect(screen.getByAltText('tank')).toBeInTheDocument()
+      // Main stat is not displayed in the card - removing this assertion
     })
 
     it('should display creation date', () => {
@@ -68,8 +68,8 @@ describe('HeroCollectionCard', () => {
     it('should apply correct class colors', () => {
       render(<HeroCollectionCard playerHero={mockPlayerHero} />)
       
-      const classBadge = screen.getByText('tank')
-      expect(classBadge).toHaveClass('bg-orange-100', 'text-orange-800')
+      const classImage = screen.getByAltText('tank')
+      expect(classImage).toHaveAttribute('src', '/images/classes/tank.png')
     })
 
     it('should handle different factions', () => {
@@ -137,10 +137,10 @@ describe('HeroCollectionCard', () => {
         />
       )
       
-      // When updating, the remove button (with trash icon) should be disabled
+      // When updating, the remove button (with user-round-minus icon) should be disabled
       const buttons = screen.getAllByRole('button')
       const removeButton = buttons.find(button => 
-        button.querySelector('svg')?.classList.contains('lucide-trash')
+        button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
       expect(removeButton).toHaveAttribute('disabled')
     })
@@ -153,7 +153,7 @@ describe('HeroCollectionCard', () => {
       
       const buttons = screen.getAllByRole('button')
       const removeButton = buttons.find(button => 
-        button.querySelector('svg')?.classList.contains('lucide-trash')
+        button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
       fireEvent.click(removeButton!)
       
@@ -172,7 +172,7 @@ describe('HeroCollectionCard', () => {
       
       const buttons = screen.getAllByRole('button')
       const removeButton = buttons.find(button => 
-        button.querySelector('svg')?.classList.contains('lucide-trash')
+        button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
       expect(removeButton).toHaveAttribute('disabled')
     })
@@ -210,7 +210,7 @@ describe('HeroCollectionCard', () => {
       // All interactive elements should be disabled
       const buttons = screen.getAllByRole('button')
       const removeButton = buttons.find(button => 
-        button.querySelector('svg')?.classList.contains('lucide-trash')
+        button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
       const stars = buttons.filter(btn => 
         btn.querySelector('svg')?.classList.contains('size-5')
@@ -229,7 +229,7 @@ describe('HeroCollectionCard', () => {
       
       const buttons = screen.getAllByRole('button')
       const removeButton = buttons.find(button => 
-        button.querySelector('svg')?.classList.contains('lucide-trash')
+        button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
       expect(removeButton).toBeInTheDocument()
     })

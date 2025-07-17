@@ -55,7 +55,8 @@ export function AddHeroButton({
       )}
       title={getButtonText()}
     >
-      {getIcon()}
+      {!isLoading && getIcon()}
+      {getButtonText()}
     </Button>
   );
 }

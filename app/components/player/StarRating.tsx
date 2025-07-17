@@ -26,31 +26,37 @@ export function StarRating({
 
   return (
     <div className={cn("flex items-center gap-1", className)}>
-      {Array.from({ length: maxStars }, (_, index) => {
-        const isFilled = index < stars;
-        return (
-          <button
-            key={index}
-            type="button"
-            onClick={() => handleStarClick(index)}
-            disabled={readOnly}
-            className={cn(
-              "transition-colors duration-200",
-              !readOnly && "hover:scale-110 cursor-pointer",
-              readOnly && "cursor-default"
-            )}
-          >
-            <StarIcon
+      <div className="flex items-center gap-1">
+        {Array.from({ length: maxStars }, (_, index) => {
+          const isFilled = index < stars;
+          return (
+            <button
+              key={index}
+              type="button"
+              onClick={() => handleStarClick(index)}
+              disabled={readOnly}
               className={cn(
-                "size-5",
-                isFilled 
-                  ? "fill-yellow-400 text-yellow-400" 
-                  : "fill-gray-200 text-gray-300"
+                "transition-colors duration-200",
+                !readOnly && "hover:scale-110 cursor-pointer",
+                readOnly && "cursor-default"
               )}
-            />
-          </button>
-        );
-      })}
+            >
+              <StarIcon
+                className={cn(
+                  "size-5",
+                  isFilled 
+                    ? "fill-yellow-400 text-yellow-400" 
+                    : "fill-gray-200 text-gray-300"
+                )}
+              />
+            </button>
+          );
+        })}
+      </div>
+      <span className="text-sm text-gray-600 ml-1">
+        <span className="font-medium">Star Rating</span>
+        <div className="text-center">{stars}/{maxStars}</div>
+      </span>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type { User } from '@supabase/supabase-js'
 import type { RenderOptions } from '@testing-library/react'
 import { render as rtlRender } from '@testing-library/react'
 import type { ReactElement } from 'react'
+import { BrowserRouter } from 'react-router'
 
 // Mock user for testing
 export const mockUser: User = {
@@ -25,9 +26,22 @@ export const mockAdminUser: User = {
   }
 }
 
+// Router wrapper for components that use React Router
+const RouterWrapper = ({ children }: { children: React.ReactNode }) => (
+  <BrowserRouter>{children}</BrowserRouter>
+)
+
 // Simple render function for components that don't need providers
 export function render(ui: ReactElement, options?: RenderOptions) {
   return rtlRender(ui, options)
+}
+
+// Render function with routing context for components that use Link or other router features
+export function renderWithRouter(ui: ReactElement, options?: RenderOptions) {
+  return rtlRender(ui, { 
+    wrapper: RouterWrapper,
+    ...options
+  })
 }
 
 // Re-export everything from testing library

@@ -3,22 +3,48 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { loader } from '../activity'
 import { PlayerEventRepository } from '~/repositories/PlayerEventRepository'
+import { createMockSupabaseClient } from '~//__tests__/mocks/supabase'
+import { getAuthenticatedUser } from '~/lib/auth/utils'
 
 // Mock the repository
 vi.mock('~/repositories/PlayerEventRepository')
+
+// Mock the Supabase client
+vi.mock('~/lib/supabase/client', () => ({
+  createClient: vi.fn(() => ({ supabase: createMockSupabaseClient(), headers: undefined })),
+}))
+
+// Mock the auth utilities
+vi.mock('~/lib/auth/utils', () => ({
+  getAuthenticatedUser: vi.fn(),
+}))
 
 describe('Player Activity Integration', () => {
   let mockRequest: Request
   let mockPlayerEventRepo: any
 
   beforeEach(() => {
-    mockRequest = new Request('http://localhost:3000/player/activity?userId=user1')
+    mockRequest = new Request('http://localhost:3000/player/activity')
     
     mockPlayerEventRepo = {
       findRecentEvents: vi.fn()
     }
     
     vi.mocked(PlayerEventRepository).mockImplementation(() => mockPlayerEventRepo)
+    
+    // Mock auth utilities
+    vi.mocked(getAuthenticatedUser).mockResolvedValue({
+      user: { 
+        id: 'user1', 
+        email: 'test@example.com',
+        app_metadata: { roles: ['user'] },
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      error: null
+    })
   })
 
   describe('loader', () => {
@@ -55,6 +81,12 @@ describe('Player Activity Integration', () => {
     })
 
     it('should handle empty events for unauthenticated user', async () => {
+      // Mock getAuthenticatedUser to return no user for this test
+      vi.mocked(getAuthenticatedUser).mockResolvedValue({
+        user: null,
+        error: null
+      })
+
       const mockRequest = new Request('http://localhost:3000/player/activity')
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
@@ -96,7 +128,21 @@ describe('Player Activity Integration', () => {
     })
 
     it('should handle different user IDs', async () => {
-      const mockRequest = new Request('http://localhost:3000/player/activity?userId=user2')
+      // Mock getAuthenticatedUser to return user2 for this test
+      vi.mocked(getAuthenticatedUser).mockResolvedValue({
+        user: { 
+          id: 'user2', 
+          email: 'test2@example.com',
+          app_metadata: { roles: ['user'] },
+          user_metadata: {},
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        error: null
+      })
+
+      const mockRequest = new Request('http://localhost:3000/player/activity')
       mockPlayerEventRepo.findRecentEvents.mockResolvedValue({ data: [], error: null })
 
       await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
@@ -191,7 +237,13 @@ describe('Player Activity Integration', () => {
   })
 
   describe('authentication handling', () => {
-    it('should handle missing userId parameter', async () => {
+    it('should handle missing user (unauthenticated)', async () => {
+      // Mock getAuthenticatedUser to return no user for this test
+      vi.mocked(getAuthenticatedUser).mockResolvedValue({
+        user: null,
+        error: null
+      })
+
       const mockRequest = new Request('http://localhost:3000/player/activity')
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
@@ -200,8 +252,14 @@ describe('Player Activity Integration', () => {
       expect(mockPlayerEventRepo.findRecentEvents).not.toHaveBeenCalled()
     })
 
-    it('should handle empty userId parameter', async () => {
-      const mockRequest = new Request('http://localhost:3000/player/activity?userId=')
+    it('should handle authentication errors', async () => {
+      // Mock getAuthenticatedUser to return an error for this test
+      vi.mocked(getAuthenticatedUser).mockResolvedValue({
+        user: null,
+        error: 'Authentication failed'
+      })
+
+      const mockRequest = new Request('http://localhost:3000/player/activity')
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 

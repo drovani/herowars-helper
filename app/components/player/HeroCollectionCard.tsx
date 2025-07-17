@@ -95,7 +95,7 @@ export function HeroCollectionCard({
             variant="ghost"
             size="sm"
             onClick={onRemoveHero}
-            disabled={isRemoving}
+            disabled={isRemoving || isUpdating}
             className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
             title="Remove Hero from Collection"
           >
@@ -131,6 +131,11 @@ export function HeroCollectionCard({
           onLevelChange={handleEquipmentUpdate}
           readOnly={false}
         />
+        
+        {/* Date Added */}
+        <div className="mt-3 text-xs text-gray-500 text-center">
+          Added: {created_at ? formatDate(created_at) : 'Unknown date'}
+        </div>
       </CardContent>
     </Card>
   );

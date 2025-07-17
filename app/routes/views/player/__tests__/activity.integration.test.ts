@@ -27,7 +27,8 @@ describe('Player Activity Integration', () => {
     mockRequest = new Request('http://localhost:3000/player/activity')
     
     mockPlayerEventRepo = {
-      findRecentEvents: vi.fn()
+      findRecentEvents: vi.fn(),
+      findEventsByUser: vi.fn()
     }
     
     vi.mocked(PlayerEventRepository).mockImplementation(() => mockPlayerEventRepo)
@@ -71,13 +72,15 @@ describe('Player Activity Integration', () => {
       ]
 
       mockPlayerEventRepo.findRecentEvents.mockResolvedValue({ data: mockEvents, error: null })
+      mockPlayerEventRepo.findEventsByUser.mockResolvedValue({ data: mockEvents, error: null })
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 
       expect(result.events).toHaveLength(2)
       expect(result.events[0].event_type).toBe('CLAIM_HERO')
       expect(result.events[1].event_type).toBe('UPDATE_HERO_STARS')
-      expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith('user1', 50)
+      expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith('user1', 10, 0)
+      expect(mockPlayerEventRepo.findEventsByUser).toHaveBeenCalledWith('user1')
     })
 
     it('should handle empty events for unauthenticated user', async () => {
@@ -100,6 +103,7 @@ describe('Player Activity Integration', () => {
         data: null, 
         error: { message: 'Events error' } 
       })
+      mockPlayerEventRepo.findEventsByUser.mockResolvedValue({ data: [], error: null })
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 
@@ -111,6 +115,7 @@ describe('Player Activity Integration', () => {
         data: null, 
         error: null 
       })
+      mockPlayerEventRepo.findEventsByUser.mockResolvedValue({ data: [], error: null })
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 
@@ -121,10 +126,12 @@ describe('Player Activity Integration', () => {
   describe('event filtering', () => {
     it('should load recent events with correct pagination', async () => {
       mockPlayerEventRepo.findRecentEvents.mockResolvedValue({ data: [], error: null })
+      mockPlayerEventRepo.findEventsByUser.mockResolvedValue({ data: [], error: null })
 
       await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 
-      expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith('user1', 50)
+      expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith('user1', 10, 0)
+      expect(mockPlayerEventRepo.findEventsByUser).toHaveBeenCalledWith('user1')
     })
 
     it('should handle different user IDs', async () => {
@@ -144,10 +151,12 @@ describe('Player Activity Integration', () => {
 
       const mockRequest = new Request('http://localhost:3000/player/activity')
       mockPlayerEventRepo.findRecentEvents.mockResolvedValue({ data: [], error: null })
+      mockPlayerEventRepo.findEventsByUser.mockResolvedValue({ data: [], error: null })
 
       await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 
-      expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith('user2', 50)
+      expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith('user2', 10, 0)
+      expect(mockPlayerEventRepo.findEventsByUser).toHaveBeenCalledWith('user2')
     })
   })
 
@@ -193,6 +202,7 @@ describe('Player Activity Integration', () => {
       ]
 
       mockPlayerEventRepo.findRecentEvents.mockResolvedValue({ data: mockEvents, error: null })
+      mockPlayerEventRepo.findEventsByUser.mockResolvedValue({ data: mockEvents, error: null })
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 
@@ -225,6 +235,7 @@ describe('Player Activity Integration', () => {
       ]
 
       mockPlayerEventRepo.findRecentEvents.mockResolvedValue({ data: mockEvents, error: null })
+      mockPlayerEventRepo.findEventsByUser.mockResolvedValue({ data: mockEvents, error: null })
 
       const result = await loader({ request: mockRequest, params: {}, context: { VALUE_FROM_NETLIFY: 'test' } })
 

@@ -1,8 +1,9 @@
 // ABOUTME: HeroCollectionCard component displays individual hero in user's collection
 // ABOUTME: Shows hero details with editable star rating and equipment levels
+import log from "loglevel";
 import { UserRoundMinusIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { useState, useEffect } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
@@ -31,23 +32,23 @@ export function HeroCollectionCard({
   className
 }: HeroCollectionCardProps) {
   const { hero, stars, equipment_level, created_at } = playerHero;
-  
+
   // Optimistic state for equipment level
   const [optimisticEquipmentLevel, setOptimisticEquipmentLevel] = useState(equipment_level);
   const [optimisticStars, setOptimisticStars] = useState(stars);
-  
+
   // Reset optimistic state when server data changes
   useEffect(() => {
     setOptimisticEquipmentLevel(equipment_level);
   }, [equipment_level]);
-  
+
   useEffect(() => {
     setOptimisticStars(stars);
   }, [stars]);
 
   const getFactionColor = (faction: string) => {
     const normalizedFaction = faction.toLowerCase();
-    
+
     switch (normalizedFaction) {
       case 'chaos': return 'bg-red-100 text-red-800';
       case 'nature': return 'bg-green-100 text-green-800';
@@ -55,10 +56,10 @@ export function HeroCollectionCard({
       case 'honor': return 'bg-blue-100 text-blue-800';
       case 'eternity': return 'bg-amber-100 text-amber-800';
       case 'mystery': return 'bg-slate-100 text-slate-800';
-      default: 
+      default:
         // Log warning for unknown factions in development mode only
         if (import.meta.env.DEV) {
-          console.warn(`Unknown faction: ${faction}`);
+          log.warn(`Unknown faction: ${faction}`);
         }
         return 'bg-gray-100 text-gray-800';
     }
@@ -68,12 +69,12 @@ export function HeroCollectionCard({
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
-  
+
   const handleStarUpdate = (newStars: number) => {
     setOptimisticStars(newStars);
     onUpdateStars?.(newStars);
   };
-  
+
   const handleEquipmentUpdate = (newLevel: number) => {
     setOptimisticEquipmentLevel(newLevel);
     onUpdateEquipment?.(newLevel);
@@ -86,9 +87,9 @@ export function HeroCollectionCard({
           {/* Hero Image and Name */}
           <div className="flex-shrink-0">
             <Link to={`/heroes/${hero.slug}`} viewTransition>
-              <img 
-                src={`/images/heroes/${hero.slug}.png`} 
-                alt={hero.name} 
+              <img
+                src={`/images/heroes/${hero.slug}.png`}
+                alt={hero.name}
                 className="size-20 rounded-lg object-cover hover:opacity-80 transition-opacity mb-2"
               />
             </Link>
@@ -98,7 +99,7 @@ export function HeroCollectionCard({
               </h3>
             </Link>
           </div>
-          
+
           {/* Remove Button */}
           <Button
             variant="ghost"
@@ -111,20 +112,20 @@ export function HeroCollectionCard({
             <UserRoundMinusIcon className="size-4" />
           </Button>
         </div>
-        
+
         {/* Faction badge and Class image */}
         <div className="flex gap-2 mb-3 justify-center items-center">
           <Badge className={`${getFactionColor(hero.faction)} capitalize`} variant="secondary">
             {hero.faction}
           </Badge>
-          <img 
-            src={`/images/classes/${hero.class.toLowerCase()}.png`} 
-            alt={hero.class} 
+          <img
+            src={`/images/classes/${hero.class.toLowerCase()}.png`}
+            alt={hero.class}
             className="size-6 rounded"
             title={hero.class}
           />
         </div>
-        
+
         {/* Star Rating */}
         <div className="mb-3 flex justify-center">
           <StarRating
@@ -133,14 +134,14 @@ export function HeroCollectionCard({
             readOnly={isUpdating}
           />
         </div>
-        
+
         {/* Equipment Levels */}
         <EquipmentLevels
           level={optimisticEquipmentLevel}
           onLevelChange={handleEquipmentUpdate}
           readOnly={false}
         />
-        
+
         {/* Date Added */}
         <div className="mt-3 text-xs text-gray-500 text-center">
           Added: {created_at ? formatDate(created_at) : 'Unknown date'}

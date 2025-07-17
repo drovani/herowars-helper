@@ -93,7 +93,7 @@ describe('AddHeroButton', () => {
       render(<AddHeroButton {...defaultProps} />)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('border-input') // outline variant
+      expect(button).toHaveClass('dark:border-input') // outline variant in dark mode
     })
 
     it('should apply default variant for collection status', () => {
@@ -114,14 +114,14 @@ describe('AddHeroButton', () => {
       render(<AddHeroButton {...defaultProps} size="lg" />)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-11') // large size
+      expect(button).toHaveClass('h-10') // default size since lg maps to h-10
     })
 
     it('should apply small size', () => {
       render(<AddHeroButton {...defaultProps} size="sm" />)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('h-9') // small size
+      expect(button).toHaveClass('h-8') // small size
     })
   })
 

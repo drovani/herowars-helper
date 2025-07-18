@@ -2,7 +2,11 @@ import { Link } from "react-router";
 import { type HeroRecord } from "~/data/hero.zod";
 import { Card, CardHeader } from "../ui/card";
 
-export default function HeroCard({ hero }: { hero: HeroRecord }) {
+type HeroCardProps = {
+  hero: HeroRecord | { slug: string; name: string };
+};
+
+export default function HeroCard({ hero }: HeroCardProps) {
   return (
     <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
       <Card

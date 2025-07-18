@@ -6,6 +6,7 @@ import log from 'loglevel'
 import { z } from 'zod'
 import { BaseRepository } from './BaseRepository'
 import type {
+  BasicHero,
   BulkOptions,
   CompleteHero,
   CreateHeroWithData,
@@ -52,6 +53,59 @@ export class HeroRepository extends BaseRepository<'hero'> {
       hero_skin: true,
       hero_glyph: true,
       hero_equipment_slot: true,
+    }
+  }
+
+  /**
+   * Find all heroes with basic data for cards view (minimal query)
+   * @param options Optional limit and offset for pagination
+   * @returns Paginated list of heroes with only essential fields
+   * @throws {RepositoryError} When database query fails
+   * @example
+   * const result = await repository.findAllBasic({ limit: 50, offset: 0 });
+   */
+  async findAllBasic(options: {
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<RepositoryResult<BasicHero[]>> {
+    const { limit, offset } = options;
+    
+    try {
+      let query = this.supabase
+        .from('hero')
+        .select('slug, name, class, faction, main_stat, order_rank')
+        .order('order_rank');
+
+      if (limit !== undefined) {
+        query = query.limit(limit);
+      }
+      if (offset !== undefined) {
+        query = query.range(offset, offset + (limit || 50) - 1);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        log.error('Error finding all heroes (basic):', error);
+        return {
+          data: null,
+          error: this.handleError(error),
+        };
+      }
+
+      return {
+        data: data as BasicHero[],
+        error: null,
+      };
+    } catch (error) {
+      log.error('Unexpected error finding all heroes (basic):', error);
+      return {
+        data: null,
+        error: {
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          details: error,
+        },
+      };
     }
   }
 

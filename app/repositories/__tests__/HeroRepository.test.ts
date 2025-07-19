@@ -145,6 +145,83 @@ describe('HeroRepository', () => {
       expect(result.data).toEqual(heroesData)
     })
 
+    it('should find all heroes with basic data only', async () => {
+      const basicHeroesData = [
+        {
+          slug: 'hero-1',
+          name: 'Hero One',
+          class: 'tank',
+          faction: 'honor',
+          main_stat: 'strength',
+          order_rank: 1,
+        },
+        {
+          slug: 'hero-2',
+          name: 'Hero Two',
+          class: 'healer',
+          faction: 'nature',
+          main_stat: 'intelligence',
+          order_rank: 2,
+        },
+      ]
+
+      const mockSelect = vi.fn().mockReturnValue({
+        order: () => Promise.resolve({
+          data: basicHeroesData,
+          error: null,
+        }),
+      })
+
+      mockSupabaseClient.from.mockReturnValue({
+        select: mockSelect,
+      })
+
+      const result = await repository.findAllBasic()
+
+      expect(result.error).toBeNull()
+      expect(result.data).toHaveLength(2)
+      expect(result.data).toEqual(basicHeroesData)
+      
+      // Verify that only essential fields are queried
+      expect(mockSupabaseClient.from).toHaveBeenCalledWith('hero')
+      expect(mockSelect).toHaveBeenCalledWith('slug, name, class, faction, main_stat, order_rank')
+    })
+
+    it('should find all heroes with basic data and pagination', async () => {
+      const basicHeroesData = [
+        {
+          slug: 'hero-1',
+          name: 'Hero One',
+          class: 'tank',
+          faction: 'honor',
+          main_stat: 'strength',
+          order_rank: 1,
+        },
+      ]
+
+      const mockQuery = {
+        select: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        range: vi.fn().mockResolvedValue({
+          data: basicHeroesData,
+          error: null,
+        }),
+      }
+
+      mockSupabaseClient.from.mockReturnValue(mockQuery)
+
+      const result = await repository.findAllBasic({ limit: 10, offset: 0 })
+
+      expect(result.error).toBeNull()
+      expect(result.data).toHaveLength(1)
+      expect(result.data).toEqual(basicHeroesData)
+      
+      // Verify pagination was applied
+      expect(mockQuery.limit).toHaveBeenCalledWith(10)
+      expect(mockQuery.range).toHaveBeenCalledWith(0, 9)
+    })
+
     it('should handle database errors gracefully', async () => {
       const dbError = {
         message: 'Database connection failed',

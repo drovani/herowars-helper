@@ -80,6 +80,7 @@ export type IdType = string | number
 
 // Hero-specific repository types
 export type Hero = Tables<'hero'>
+export type BasicHero = Pick<Hero, 'slug' | 'name' | 'class' | 'faction' | 'main_stat' | 'order_rank'>
 export type HeroArtifact = Tables<'hero_artifact'>
 export type HeroSkin = Tables<'hero_skin'>
 export type HeroGlyph = Tables<'hero_glyph'>

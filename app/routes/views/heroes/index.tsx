@@ -1,5 +1,5 @@
 import { ToggleGroup } from "@radix-ui/react-toggle-group";
-import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, LayoutGridIcon, LayoutListIcon } from "lucide-react";
 import { useState } from "react";
 import { Link, useFetcher } from "react-router";
 import HeroArtifactsCompact from "~/components/hero/HeroArtifactsCompact";
@@ -8,6 +8,7 @@ import HeroGlyphsCompact from "~/components/hero/HeroGlyphsCompact";
 import HeroItemsCompact from "~/components/hero/HeroItemsCompact";
 import HeroSkinsCompact from "~/components/hero/HeroSkinsCompact";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
+import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { ToggleGroupItem } from "~/components/ui/toggle-group";
@@ -19,29 +20,59 @@ import { sortHeroRecords, transformCompleteHeroToRecord } from "~/lib/hero-trans
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
+import type { BasicHero } from "~/repositories/types";
 import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
+  const url = new URL(request.url);
+  const mode = url.searchParams.get('mode') || 'cards';
+  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+  const limit = 10; // For tiles pagination
+  const offset = (page - 1) * limit;
+
   const heroRepo = new HeroRepository(request);
 
-  // Use bulk loading for better performance
-  const heroesResult = await heroRepo.findAllWithRelationships();
+  let heroes: any[], sortedHeroes: any[], hasMoreResults = false;
 
-  if (heroesResult.error) {
-    throw new Response("Failed to load heroes", { status: 500 });
+  if (mode === 'cards') {
+    // Cards mode: Use lightweight query for minimal data
+    const basicHeroesResult = await heroRepo.findAllBasic();
+
+    if (basicHeroesResult.error) {
+      throw new Response("Failed to load heroes", { status: 500 });
+    }
+
+    heroes = basicHeroesResult.data || [];
+    sortedHeroes = heroes.sort((a, b) => a.order_rank - b.order_rank);
+  } else {
+    // Tiles mode: Use full relationships query with pagination
+    const completeHeroesResult = await heroRepo.findAllWithRelationships({ limit, offset });
+
+    if (completeHeroesResult.error) {
+      throw new Response("Failed to load heroes", { status: 500 });
+    }
+
+    if (completeHeroesResult.data) {
+      heroes = completeHeroesResult.data.map(hero => transformCompleteHeroToRecord(hero));
+      sortedHeroes = sortHeroRecords(heroes);
+      hasMoreResults = completeHeroesResult.data.length === limit;
+    } else {
+      heroes = [];
+      sortedHeroes = [];
+    }
   }
 
-  // Transform heroes to HeroRecord format - now using bulk loaded data
-  const heroes = heroesResult.data ?
-    heroesResult.data.map(hero => transformCompleteHeroToRecord(hero)) : [];
+  // Only load equipment for tiles mode (cards don't need it)
+  let equipment: any[] = [];
+  if (mode === 'tiles') {
+    const equipmentRepo = new EquipmentRepository(request);
+    const equipmentResult = await equipmentRepo.getAllAsJson();
 
-  const sortedHeroes = sortHeroRecords(heroes);
+    if (equipmentResult.error) {
+      throw new Response("Failed to load equipment", { status: 500 });
+    }
 
-  const equipmentRepo = new EquipmentRepository(request);
-  const equipmentResult = await equipmentRepo.getAllAsJson();
-
-  if (equipmentResult.error) {
-    throw new Response("Failed to load equipment", { status: 500 });
+    equipment = equipmentResult.data?.filter(eq => eq.type === "equipable") || [];
   }
 
   // Check user's collection if authenticated
@@ -58,8 +89,14 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   return {
     heroes: sortedHeroes,
-    equipment: equipmentResult.data?.filter(eq => eq.type === "equipable") || [],
-    userCollection
+    equipment,
+    userCollection,
+    mode,
+    pagination: mode === 'tiles' ? {
+      currentPage: page,
+      limit,
+      hasMore: hasMoreResults
+    } : undefined
   };
 };
 
@@ -92,24 +129,25 @@ export const action = async ({ request }: Route.ActionArgs) => {
 };
 
 export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
-  const { heroes, equipment, userCollection } = loaderData;
+  const { heroes, equipment, userCollection, mode: initialMode, pagination } = loaderData;
   const { user } = useAuth();
   const fetcher = useFetcher();
 
   const [search, setSearch] = useState("");
-  const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">("mode", "cards");
+  const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">("mode", (initialMode as "cards" | "tiles") || "cards");
+  const [currentPage, setCurrentPage] = useQueryState("page", String(pagination?.currentPage || 1));
   const isMobile = useIsMobile();
 
   const filteredHeroes = search
     ? heroes.filter((hero) => hero.name.toLowerCase().includes(search.toLowerCase()))
     : heroes;
 
-  const HeroCardWithButton = ({ hero }: { hero: typeof heroes[0] }) => {
-    const isSubmittingThisHero = fetcher.state === "submitting" && 
+  const HeroCardWithButton = ({ hero }: { hero: BasicHero | (typeof heroes[0]) }) => {
+    const isSubmittingThisHero = fetcher.state === "submitting" &&
       fetcher.formData?.get('heroSlug') === hero.slug;
-    const isOptimisticallyInCollection = userCollection.includes(hero.slug) || 
+    const isOptimisticallyInCollection = userCollection.includes(hero.slug) ||
       (isSubmittingThisHero && fetcher.formData?.get('action') === 'addHero');
-    
+
     return (
       <div className="relative group size-28">
         <HeroCard hero={hero} />
@@ -138,12 +176,17 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
     );
   };
 
-  const HeroTileWithButton = ({ hero, equipment }: { hero: typeof heroes[0], equipment: typeof loaderData.equipment }) => {
-    const isSubmittingThisHero = fetcher.state === "submitting" && 
+  const HeroTileWithButton = ({ hero, equipment }: { hero: any, equipment: typeof loaderData.equipment }) => {
+    const isSubmittingThisHero = fetcher.state === "submitting" &&
       fetcher.formData?.get('heroSlug') === hero.slug;
-    const isOptimisticallyInCollection = userCollection.includes(hero.slug) || 
+    const isOptimisticallyInCollection = userCollection.includes(hero.slug) ||
       (isSubmittingThisHero && fetcher.formData?.get('action') === 'addHero');
-    
+
+    // Only render tiles if hero has complete data (artifacts, skins, etc.)
+    if (!hero.artifacts || !hero.skins || !hero.glyphs || !hero.items) {
+      return null;
+    }
+
     return (
       <Card className="w-full grid grid-cols-2 md:grid-cols-5">
         <div className="flex flex-col items-start p-2">
@@ -236,6 +279,33 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
         )
       ) : (
         <p>No heroes found.</p>
+      )}
+
+      {/* Pagination controls for tiles mode */}
+      {displayMode === "tiles" && pagination && (
+        <div className="flex justify-center gap-2 mt-6">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={parseInt(currentPage) <= 1}
+            onClick={() => setCurrentPage(String(parseInt(currentPage) - 1))}
+          >
+            <ChevronLeftIcon className="size-4" />
+            Previous
+          </Button>
+          <span className="flex items-center px-4 text-sm text-muted-foreground">
+            Page {currentPage}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={!pagination.hasMore}
+            onClick={() => setCurrentPage(String(parseInt(currentPage) + 1))}
+          >
+            Next
+            <ChevronRightIcon className="size-4" />
+          </Button>
+        </div>
       )}
     </div>
   );

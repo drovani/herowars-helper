@@ -1,13 +1,13 @@
 # Team Management System Implementation (Issue #19)
 
 ## Overview
-Implement a comprehensive team management system that allows users to create, label, and manage teams of exactly 5 heroes. Users can organize heroes into custom teams with flexible positioning and sorting options, reflecting the in-game team display format. This feature extends the existing player hero collection system with strategic team planning capabilities.
+Implement a comprehensive team management system that allows users to create, label, and manage teams of exactly 5 heroes. Teams automatically display heroes in descending order by order_rank (left to right), reflecting the in-game team display format. This feature extends the existing player hero collection system with strategic team planning capabilities.
 
 ## Branch Strategy
 **Branch Name**: `feature/i19-team-management`
 - **Type**: `feature/` - New functionality for team creation and management
 - **Base Branch**: `main`
-- **Target**: Enable users to create labeled teams with 5 hero slots
+- **Target**: Enable users to create labeled teams with exactly 5 heroes (auto-ordered by rank)
 
 ## Prerequisites
 ### Files to Examine and Understand
@@ -23,6 +23,7 @@ Current relevant tables:
 - `player_hero`: User hero collection with stars/equipment tracking
 - `hero`: Master hero data with team_buff fields
 - Need to create: `player_team` and `player_team_hero` tables
+- Note: Teams display heroes by order_rank (descending), no manual positioning
 
 ## Dependency Analysis
 ### Files Using Player Hero System
@@ -40,14 +41,16 @@ Current relevant tables:
 ## Phase 1: Database Schema and Repository Foundation
 ### 1.1 Database Schema Design
 - [ ] Create `player_team` table schema (id, user_id, name, description, created_at, updated_at)
-- [ ] Create `player_team_hero` table schema (id, team_id, hero_slug, position, created_at)
-- [ ] Add foreign key constraints and indexes
+- [ ] Implement default naming pattern: "Team 1", "Team 2", etc. for new teams
+- [ ] Create `player_team_hero` table schema (id, team_id, hero_slug, created_at)
+- [ ] Add foreign key constraints and indexes (no position field needed - use hero.order_rank)
 - [ ] Generate Supabase types with `npm run supabase:types`
 
 ### 1.2 Repository Implementation
 - [ ] Create `PlayerTeamRepository.ts` extending BaseRepository
 - [ ] Implement CRUD operations: create, findByUserId, update, delete
-- [ ] Implement team hero management: addHeroToTeam, removeHeroFromTeam, updateHeroPosition
+- [ ] Add auto-naming logic: generate "Team {n}" where n is next available number for user
+- [ ] Implement team hero management: addHeroToTeam, removeHeroFromTeam (no positioning needed)
 - [ ] Add comprehensive error handling and validation
 - [ ] Implement team validation (exactly 5 heroes max)
 
@@ -65,16 +68,16 @@ Current relevant tables:
 
 ### 2.2 Team Builder Component  
 - [ ] Create `TeamBuilder.tsx` for team creation/editing
-- [ ] Implement 5-slot hero placement interface
-- [ ] Add drag-and-drop functionality for hero positioning
-- [ ] Include hero selection from user's collection
-- [ ] Validate team composition (no duplicate heroes)
+- [ ] Implement 5-hero selection interface (auto-ordered by rank)
+- [ ] Include hero selection from user's collection with search/filter
+- [ ] Validate team composition (exactly 5 heroes, no duplicates)
+- [ ] Display preview ordered by order_rank (descending)
 
-### 2.3 Team Hero Slot Component
-- [ ] Create `TeamHeroSlot.tsx` for individual hero positions
-- [ ] Display hero image, name, stars, equipment level
-- [ ] Support empty slot state with "Add Hero" functionality
-- [ ] Include position-based sorting controls
+### 2.3 Team Hero Display Component
+- [ ] Create `TeamHeroDisplay.tsx` for showing heroes in rank order
+- [ ] Display hero image, name, stars, equipment level, order_rank
+- [ ] Show heroes left-to-right in descending order_rank
+- [ ] Include remove hero functionality with confirmation
 
 ## Phase 3: Team Management Routes and Navigation
 ### 3.1 Team Management Routes
@@ -92,10 +95,10 @@ Current relevant tables:
 
 ## Phase 4: Advanced Features and UX Enhancements
 ### 4.1 Team Display Options
-- [ ] Implement custom sort order (drag-and-drop positioning)
-- [ ] Add placement rank sorting (descending, left-to-right)
+- [ ] Implement automatic order_rank sorting (descending, left-to-right)
 - [ ] Create team preview mode showing formation layout
 - [ ] Add team synergy indicators (based on hero team_buff fields)
+- [ ] Show team power/ranking calculations
 
 ### 4.2 Team Import/Export
 - [ ] Add team sharing functionality (JSON export)
@@ -117,9 +120,9 @@ Current relevant tables:
 - [ ] Form validation and error handling
 
 ### Manual Testing Checklist
-- [ ] Create team with custom name and description
+- [ ] Create team with custom name (or default "Team 1", "Team 2") and description
 - [ ] Add/remove heroes from team slots
-- [ ] Reorder heroes within team
+- [ ] Verify automatic hero ordering by rank
 - [ ] Delete teams with confirmation
 - [ ] Navigation between team management pages
 - [ ] Responsive design on mobile devices
@@ -133,7 +136,7 @@ Current relevant tables:
 
 ### Potential Considerations
 - **Database Queries**: Additional joins for team-hero relationships
-- **Component Complexity**: Drag-and-drop and positioning state management
+- **Component Complexity**: Hero selection and validation state management
 - **Memory Usage**: Team data caching for faster navigation
 
 ## Code Review Checklist
@@ -151,9 +154,9 @@ Current relevant tables:
 
 ### User Experience
 - [ ] Intuitive team creation workflow
-- [ ] Clear visual feedback for drag-and-drop operations
+- [ ] Clear visual feedback for hero selection and rank ordering
 - [ ] Responsive design works across devices
-- [ ] Accessibility compliance (keyboard navigation, screen readers)
+- [ ] Accessibility compliance (keyboard navigation, screen readers, rank-based ordering)
 
 ## Documentation Updates
 ### Files to Update
@@ -164,7 +167,7 @@ Current relevant tables:
 
 ### Comments and JSDoc
 - [ ] Add JSDoc comments to PlayerTeamRepository methods
-- [ ] Document team validation logic
+- [ ] Document team validation logic and automatic ordering
 - [ ] Update component prop interfaces with team types
 
 ## Environment Setup
@@ -190,10 +193,10 @@ Current relevant tables:
 
 ## Success Criteria
 - [ ] Users can create teams with custom names and descriptions
-- [ ] Teams support exactly 5 hero slots (some can be empty)
+- [ ] Teams contain exactly 5 heroes (all slots filled, no empty slots)
 - [ ] Heroes can be added/removed from teams via intuitive UI
-- [ ] Hero positioning within teams is customizable
-- [ ] Teams display in both custom and rank-based sort orders
+- [ ] Heroes automatically ordered by order_rank (descending, left-to-right)
+- [ ] Teams display heroes in automatic rank-based order (order_rank descending)
 - [ ] All 511+ tests pass including new team functionality
 - [ ] TypeScript compilation successful with no errors
 - [ ] Mobile-responsive design works across devices

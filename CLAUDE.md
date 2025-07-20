@@ -305,6 +305,47 @@ This pattern:
 - **Supabase Operations**: Mock the client and test query building and data transformation
 - **Repository Tests**: Use loglevel log capturing pattern to ensure clean test output - capture logs to in-memory arrays instead of console during tests
 
+### Modern Component Testing Best Practices
+
+#### Render Result Pattern (REQUIRED)
+All component tests MUST use the modern result pattern instead of importing `screen`:
+
+**✅ Correct Pattern:**
+```typescript
+import { render, fireEvent } from "@testing-library/react";
+
+test('should render component', () => {
+  const result = render(<MyComponent />);
+  result.expect(getByText("Hello")).toBeInTheDocument();
+  result.fireEvent.click(getByRole("button"));
+  result.expect(queryByText("Clicked")).toBeInTheDocument();
+});
+```
+
+**❌ Deprecated Pattern (DO NOT USE):**
+```typescript
+import { render, screen, fireEvent } from "@testing-library/react";
+
+test('should render component', () => {
+  render(<MyComponent />);
+  expect(screen.getByText("Hello")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button"));
+  expect(screen.queryByText("Clicked")).toBeInTheDocument();
+});
+```
+
+#### Benefits of Modern Pattern
+- **Better Test Isolation**: Queries are scoped to the specific component render
+- **Clearer Intent**: Explicit relationship between render call and queries
+- **Prevents Cross-Test Contamination**: No accidental matches from other components
+- **Improved Debugging**: Easier to trace which render instance queries belong to
+
+#### Component Testing Requirements
+- **Always destructure** needed query methods from render return value
+- **Never import `screen`** from React Testing Library in component tests
+- **Use appropriate queries**: `getBy*` for elements that must exist, `queryBy*` for elements that may not exist
+- **Scope all queries** to the specific render instance
+
 ## Tailwind CSS Guidelines
 
 - **Square Elements**: When an element has identical height and width classes (e.g., `h-8 w-8`), always use the `size` property instead (e.g., `size-8`)

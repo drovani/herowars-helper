@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAuth } from "~/contexts/AuthContext";
 
@@ -59,14 +59,14 @@ describe("AccountProfile Auth Hydration", () => {
         updateProfile: vi.fn(),
       });
 
-      render(<TestAccountProfile />);
+      const result = render(<TestAccountProfile />);
 
-      expect(screen.getByText("Loading...")).toBeInTheDocument();
-      expect(screen.getByText("Initializing your account information.")).toBeInTheDocument();
-      expect(screen.getByTestId("loading-skeleton")).toBeInTheDocument();
+      expect(result.getByText("Loading...")).toBeInTheDocument();
+      expect(result.getByText("Initializing your account information.")).toBeInTheDocument();
+      expect(result.getByTestId("loading-skeleton")).toBeInTheDocument();
       
       // Should not show account settings while loading
-      expect(screen.queryByText("Account Settings")).not.toBeInTheDocument();
+      expect(result.queryByText("Account Settings")).not.toBeInTheDocument();
     });
 
     it("shows account settings when auth is loaded", () => {
@@ -85,15 +85,15 @@ describe("AccountProfile Auth Hydration", () => {
         updateProfile: vi.fn(),
       });
 
-      render(<TestAccountProfile />);
+      const result = render(<TestAccountProfile />);
 
-      expect(screen.getByText("Account Settings")).toBeInTheDocument();
-      expect(screen.getByText("Manage your account information and preferences.")).toBeInTheDocument();
-      expect(screen.getByTestId("email")).toHaveValue("user@example.com");
-      expect(screen.getByTestId("display-name")).toHaveValue("Test User");
+      expect(result.getByText("Account Settings")).toBeInTheDocument();
+      expect(result.getByText("Manage your account information and preferences.")).toBeInTheDocument();
+      expect(result.getByTestId("email")).toHaveValue("user@example.com");
+      expect(result.getByTestId("display-name")).toHaveValue("Test User");
       
       // Should not show loading state
-      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+      expect(result.queryByText("Loading...")).not.toBeInTheDocument();
     });
   });
 
@@ -103,7 +103,7 @@ describe("AccountProfile Auth Hydration", () => {
       // /account after login but the page doesn't recognize they're logged in
       
       // Start in loading state (simulating the state right after redirect from login)
-      const { rerender } = render(<TestAccountProfile />);
+      const result = render(<TestAccountProfile />);
       
       mockUseAuth.mockReturnValue({
         user: null,
@@ -113,12 +113,12 @@ describe("AccountProfile Auth Hydration", () => {
         updateProfile: vi.fn(),
       });
 
-      rerender(<TestAccountProfile />);
+      result.rerender(<TestAccountProfile />);
 
       // Should show loading state immediately after redirect
-      expect(screen.getByText("Loading...")).toBeInTheDocument();
-      expect(screen.getByTestId("loading-skeleton")).toBeInTheDocument();
-      expect(screen.queryByText("Account Settings")).not.toBeInTheDocument();
+      expect(result.getByText("Loading...")).toBeInTheDocument();
+      expect(result.getByTestId("loading-skeleton")).toBeInTheDocument();
+      expect(result.queryByText("Account Settings")).not.toBeInTheDocument();
 
       // Simulate auth initialization completing (this is what was broken before the fix)
       mockUseAuth.mockReturnValue({
@@ -136,20 +136,20 @@ describe("AccountProfile Auth Hydration", () => {
         updateProfile: vi.fn(),
       });
 
-      rerender(<TestAccountProfile />);
+      result.rerender(<TestAccountProfile />);
 
       // Should transition to authenticated state without requiring page refresh
       await waitFor(() => {
-        expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-        expect(screen.queryByTestId("loading-skeleton")).not.toBeInTheDocument();
-        expect(screen.getByText("Account Settings")).toBeInTheDocument();
-        expect(screen.getByTestId("email")).toHaveValue("freshly-logged-in@example.com");
-        expect(screen.getByTestId("display-name")).toHaveValue("Fresh User");
+        expect(result.queryByText("Loading...")).not.toBeInTheDocument();
+        expect(result.queryByTestId("loading-skeleton")).not.toBeInTheDocument();
+        expect(result.getByText("Account Settings")).toBeInTheDocument();
+        expect(result.getByTestId("email")).toHaveValue("freshly-logged-in@example.com");
+        expect(result.getByTestId("display-name")).toHaveValue("Fresh User");
       });
 
       // Verify all interactive elements are working
-      expect(screen.getByRole("button", { name: "Update Display Name" })).toBeInTheDocument();
-      expect(screen.getByTestId("display-name")).not.toBeDisabled();
+      expect(result.getByRole("button", { name: "Update Display Name" })).toBeInTheDocument();
+      expect(result.getByTestId("display-name")).not.toBeDisabled();
     });
 
     it("works correctly when auth loads immediately (no loading state)", () => {
@@ -169,21 +169,21 @@ describe("AccountProfile Auth Hydration", () => {
         updateProfile: vi.fn(),
       });
 
-      render(<TestAccountProfile />);
+      const result = render(<TestAccountProfile />);
 
       // Should render directly without loading state
-      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-      expect(screen.queryByTestId("loading-skeleton")).not.toBeInTheDocument();
-      expect(screen.getByText("Account Settings")).toBeInTheDocument();
-      expect(screen.getByTestId("email")).toHaveValue("immediate@example.com");
-      expect(screen.getByTestId("display-name")).toHaveValue("Immediate User");
+      expect(result.queryByText("Loading...")).not.toBeInTheDocument();
+      expect(result.queryByTestId("loading-skeleton")).not.toBeInTheDocument();
+      expect(result.getByText("Account Settings")).toBeInTheDocument();
+      expect(result.getByTestId("email")).toHaveValue("immediate@example.com");
+      expect(result.getByTestId("display-name")).toHaveValue("Immediate User");
     });
 
     it("prevents the 'blank page after login redirect' bug", async () => {
       // This is the specific bug: user logs in, gets redirected to /account,
       // but sees blank page until manual refresh
       
-      const { rerender } = render(<TestAccountProfile />);
+      const result = render(<TestAccountProfile />);
       
       // Simulate the problematic scenario: just redirected from login
       mockUseAuth.mockReturnValue({
@@ -194,11 +194,11 @@ describe("AccountProfile Auth Hydration", () => {
         updateProfile: vi.fn(),
       });
 
-      rerender(<TestAccountProfile />);
+      result.rerender(<TestAccountProfile />);
 
       // User should see loading state (not blank page)
-      expect(screen.getByText("Loading...")).toBeInTheDocument();
-      expect(screen.getByText("Initializing your account information.")).toBeInTheDocument();
+      expect(result.getByText("Loading...")).toBeInTheDocument();
+      expect(result.getByText("Initializing your account information.")).toBeInTheDocument();
       
       // The fix: auth completes and user data loads
       mockUseAuth.mockReturnValue({
@@ -216,17 +216,17 @@ describe("AccountProfile Auth Hydration", () => {
         updateProfile: vi.fn(),
       });
 
-      rerender(<TestAccountProfile />);
+      result.rerender(<TestAccountProfile />);
 
       // User should now see their account without manual refresh
       await waitFor(() => {
-        expect(screen.getByText("Account Settings")).toBeInTheDocument();
-        expect(screen.getByTestId("email")).toHaveValue("bug-fix-test@example.com");
-        expect(screen.getByTestId("display-name")).toHaveValue("Bug Fix User");
+        expect(result.getByText("Account Settings")).toBeInTheDocument();
+        expect(result.getByTestId("email")).toHaveValue("bug-fix-test@example.com");
+        expect(result.getByTestId("display-name")).toHaveValue("Bug Fix User");
       });
 
       // This verifies the bug is fixed: no blank page, no manual refresh needed
-      expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
+      expect(result.queryByText("Loading...")).not.toBeInTheDocument();
     });
   });
 });

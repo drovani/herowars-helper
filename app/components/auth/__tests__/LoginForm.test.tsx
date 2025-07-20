@@ -106,9 +106,9 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      const { getByRole } = render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      expect(getByRole("button", { name: "Logging in..." })).toBeInTheDocument();
+      expect(result.getByRole("button", { name: "Logging in..." })).toBeInTheDocument();
     });
 
     it("disables button when submitting", () => {
@@ -120,17 +120,17 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      const { getByRole } = render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      const submitButton = getByRole("button", { name: "Logging in..." });
+      const submitButton = result.getByRole("button", { name: "Logging in..." });
       expect(submitButton).toBeDisabled();
     });
 
     it("shows normal text when not submitting", () => {
-      const { getByRole } = render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      expect(getByRole("button", { name: "Login" })).toBeInTheDocument();
-      expect(getByRole("button", { name: "Login" })).not.toBeDisabled();
+      expect(result.getByRole("button", { name: "Login" })).toBeInTheDocument();
+      expect(result.getByRole("button", { name: "Login" })).not.toBeDisabled();
     });
   });
 
@@ -144,15 +144,15 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      const { getByText } = render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      expect(getByText("Invalid credentials")).toBeInTheDocument();
+      expect(result.getByText("Invalid credentials")).toBeInTheDocument();
     });
 
     it("does not display error message when no error", () => {
-      const { queryByRole } = render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      expect(queryByRole("alert")).not.toBeInTheDocument();
+      expect(result.queryByRole("alert")).not.toBeInTheDocument();
     });
 
     it("shows error with red text styling", () => {
@@ -164,9 +164,9 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      const { getByText } = render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      const errorMessage = getByText("Login failed");
+      const errorMessage = result.getByText("Login failed");
       expect(errorMessage).toHaveClass("text-red-500");
     });
   });
@@ -174,7 +174,7 @@ describe("LoginForm", () => {
   describe("success handling", () => {
     it("calls onSuccess when success is true", async () => {
       // Initial render
-      const { rerender } = render(<LoginForm onSuccess={mockOnSuccess} />);
+      const result = render(<LoginForm onSuccess={mockOnSuccess} />);
       
       // Simulate successful response
       mockUseFetcher.mockReturnValue({
@@ -185,7 +185,7 @@ describe("LoginForm", () => {
         ),
       } as any);
       
-      rerender(<LoginForm onSuccess={mockOnSuccess} />);
+      result.rerender(<LoginForm onSuccess={mockOnSuccess} />);
       
       await waitFor(() => {
         expect(mockOnSuccess).toHaveBeenCalledTimes(1);

@@ -1,7 +1,7 @@
 // ABOUTME: Tests for StarRating component covering interactive star selection
 // ABOUTME: Tests both readonly and interactive modes with proper event handling
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '~/__tests__/utils/test-utils'
+import { fireEvent, render } from '~/__tests__/utils/test-utils'
 import { StarRating } from '../StarRating'
 
 describe('StarRating', () => {
@@ -38,9 +38,9 @@ describe('StarRating', () => {
     })
 
     it('should disable all stars in readonly mode', () => {
-      render(<StarRating stars={4} readOnly={true} />)
+      const result = render(<StarRating stars={4} readOnly={true} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
       stars.forEach(star => {
         expect(star).toHaveAttribute('disabled')
       })
@@ -69,9 +69,9 @@ describe('StarRating', () => {
 
     it('should call onStarClick when star is clicked', () => {
       const onStarClick = vi.fn()
-      render(<StarRating stars={2} onStarClick={onStarClick} />)
+      const result = render(<StarRating stars={2} onStarClick={onStarClick} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
 
       // Click on the 4th star (index 3)
       fireEvent.click(stars[3])
@@ -81,9 +81,9 @@ describe('StarRating', () => {
 
     it('should handle clicking on first star', () => {
       const onStarClick = vi.fn()
-      render(<StarRating stars={3} onStarClick={onStarClick} />)
+      const result = render(<StarRating stars={3} onStarClick={onStarClick} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
 
       // Click on the first star
       fireEvent.click(stars[0])
@@ -93,9 +93,9 @@ describe('StarRating', () => {
 
     it('should handle clicking on last star', () => {
       const onStarClick = vi.fn()
-      render(<StarRating stars={3} maxStars={5} onStarClick={onStarClick} />)
+      const result = render(<StarRating stars={3} maxStars={5} onStarClick={onStarClick} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
 
       // Click on the last star
       fireEvent.click(stars[4])
@@ -105,9 +105,9 @@ describe('StarRating', () => {
 
     it('should not call onStarClick when readOnly is true', () => {
       const onStarClick = vi.fn()
-      render(<StarRating stars={3} readOnly={true} onStarClick={onStarClick} />)
+      const result = render(<StarRating stars={3} readOnly={true} onStarClick={onStarClick} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
 
       // Try to click on a star
       fireEvent.click(stars[2])
@@ -117,9 +117,9 @@ describe('StarRating', () => {
 
     it('should not call onStarClick when no handler is provided', () => {
       // This should not throw an error
-      render(<StarRating stars={3} />)
+      const result = render(<StarRating stars={3} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
 
       // Click should not cause an error
       fireEvent.click(stars[2])
@@ -153,25 +153,25 @@ describe('StarRating', () => {
 
   describe('accessibility', () => {
     it('should have proper button roles', () => {
-      render(<StarRating stars={3} />)
+      const result = render(<StarRating stars={3} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
       expect(stars).toHaveLength(6)
     })
 
     it('should have proper disabled state for readonly', () => {
-      render(<StarRating stars={3} readOnly={true} />)
+      const result = render(<StarRating stars={3} readOnly={true} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
       stars.forEach(star => {
         expect(star).toHaveAttribute('disabled')
       })
     })
 
     it('should have proper enabled state for interactive', () => {
-      render(<StarRating stars={3} readOnly={false} />)
+      const result = render(<StarRating stars={3} readOnly={false} />)
 
-      const stars = screen.getAllByRole('button')
+      const stars = result.getAllByRole('button')
       stars.forEach(star => {
         expect(star).not.toHaveAttribute('disabled')
       })

@@ -2,13 +2,14 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: ["./app/__tests__/setup.ts"],
+    setupFiles: [resolve(process.cwd(), "app/__tests__/setup.ts")],
     css: true,
     exclude: ["e2e/**/*", "node_modules/**/*", ".netlify/**/*"],
     coverage: {

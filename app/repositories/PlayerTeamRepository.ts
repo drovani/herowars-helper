@@ -116,7 +116,6 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         return { data: null, error: { message: error.message, code: error.code } };
       }
 
-      log.info(`Created team "${teamName}" for user ${userId}`);
       return { data, error: null };
     } catch (err) {
       log.error("Error creating team:", err);

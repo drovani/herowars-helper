@@ -122,7 +122,7 @@ export function HeroCollectionCard({
         </div>
 
         {/* Star Rating */}
-        <div className="mb-3 flex justify-center">
+        <div className="mb-3 flex justify-center" data-testid="star-rating">
           <StarRating
             stars={optimisticStars}
             onStarClick={handleStarUpdate}

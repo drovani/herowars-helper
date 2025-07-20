@@ -40,6 +40,7 @@ export function StarRating({
                 !readOnly && "hover:scale-110 cursor-pointer",
                 readOnly && "cursor-default"
               )}
+              data-testid={isFilled ? "filled" : "empty"}
             >
               <StarIcon
                 className={cn(

@@ -29,7 +29,7 @@ describe('Player Teams Edit Integration', () => {
   const mockTeamId = 'team123'
 
   beforeEach(() => {
-    mockRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`)
+    mockRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`)
     
     mockTeamRepo = {
       findTeamWithHeroes: vi.fn(),
@@ -220,7 +220,7 @@ describe('Player Teams Edit Integration', () => {
 
       mockTeamRepo.updateTeam.mockResolvedValue({ data: mockUpdatedTeam, error: null })
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -256,7 +256,7 @@ describe('Player Teams Edit Integration', () => {
 
       mockTeamRepo.updateTeam.mockResolvedValue({ data: mockUpdatedTeam, error: null })
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -284,7 +284,7 @@ describe('Player Teams Edit Integration', () => {
         error: new Error('Update failed') 
       })
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -307,7 +307,7 @@ describe('Player Teams Edit Integration', () => {
 
       mockTeamRepo.addHeroToTeam.mockResolvedValue({ data: {}, error: null })
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -327,7 +327,7 @@ describe('Player Teams Edit Integration', () => {
       const formData = new FormData()
       formData.append('action', 'addHero')
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -351,7 +351,7 @@ describe('Player Teams Edit Integration', () => {
         error: new Error('Hero already in team') 
       })
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -374,7 +374,7 @@ describe('Player Teams Edit Integration', () => {
 
       mockTeamRepo.removeHeroFromTeam.mockResolvedValue({ data: true, error: null })
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -394,7 +394,7 @@ describe('Player Teams Edit Integration', () => {
       const formData = new FormData()
       formData.append('action', 'removeHero')
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -418,7 +418,7 @@ describe('Player Teams Edit Integration', () => {
         error: new Error('Hero not found in team') 
       })
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })
@@ -438,7 +438,7 @@ describe('Player Teams Edit Integration', () => {
       const formData = new FormData()
       formData.append('action', 'invalidAction')
 
-      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}/edit`, {
+      const actionRequest = new Request(`http://localhost:3000/player/teams/${mockTeamId}`, {
         method: 'POST',
         body: formData
       })

@@ -142,7 +142,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
 
   const handleEditTeam = (teamId: string) => {
     // Navigate to edit page
-    window.location.href = `/player/teams/${teamId}/edit`
+    window.location.href = `/player/teams/${teamId}`
   }
 
   const handleDeleteTeam = (teamId: string) => {

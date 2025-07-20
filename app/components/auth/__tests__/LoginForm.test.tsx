@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFetcher } from "react-router";
 import { LoginForm } from "../LoginForm";
@@ -31,23 +31,23 @@ describe("LoginForm", () => {
 
   describe("rendering", () => {
     it("renders email and password fields", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
 
-      expect(screen.getByLabelText("Email")).toBeInTheDocument();
-      expect(screen.getByLabelText("Password")).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
+      expect(result.getByLabelText("Email")).toBeInTheDocument();
+      expect(result.getByLabelText("Password")).toBeInTheDocument();
+      expect(result.getByRole("button", { name: "Login" })).toBeInTheDocument();
     });
 
     it("applies custom className", () => {
-      const { container } = render(<LoginForm className="custom-class" />);
+      const result = render(<LoginForm className="custom-class" />);
       
       // The className is applied to the outermost div container
-      const formContainer = container.querySelector('.custom-class');
+      const formContainer = result.container.querySelector('.custom-class');
       expect(formContainer).toBeInTheDocument();
     });
 
     it("includes hidden redirectTo field when provided", () => {
-      render(<LoginForm redirectTo="/dashboard" />);
+      const result = render(<LoginForm redirectTo="/dashboard" />);
       
       const hiddenInput = document.querySelector('input[name="redirectTo"]');
       expect(hiddenInput).toBeInTheDocument();
@@ -55,7 +55,7 @@ describe("LoginForm", () => {
     });
 
     it("does not include redirectTo field when not provided", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
       
       const hiddenInput = document.querySelector('input[name="redirectTo"]');
       expect(hiddenInput).not.toBeInTheDocument();
@@ -64,7 +64,7 @@ describe("LoginForm", () => {
 
   describe("form submission", () => {
     it("uses custom action when provided", () => {
-      render(<LoginForm action="/custom-login" />);
+      const result = render(<LoginForm action="/custom-login" />);
       
       // The Form component should receive the action prop
       // This tests that the action is passed correctly
@@ -72,26 +72,26 @@ describe("LoginForm", () => {
     });
 
     it("requires email and password fields", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      const emailInput = screen.getByLabelText("Email");
-      const passwordInput = screen.getByLabelText("Password");
+      const emailInput = result.getByLabelText("Email");
+      const passwordInput = result.getByLabelText("Password");
       
       expect(emailInput).toBeRequired();
       expect(passwordInput).toBeRequired();
     });
 
     it("has correct email input type", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      const emailInput = screen.getByLabelText("Email");
+      const emailInput = result.getByLabelText("Email");
       expect(emailInput).toHaveProperty("type", "email");
     });
 
     it("has correct password input type", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      const passwordInput = screen.getByLabelText("Password");
+      const passwordInput = result.getByLabelText("Password");
       expect(passwordInput).toHaveProperty("type", "password");
     });
   });
@@ -106,9 +106,9 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      render(<LoginForm />);
+      const { getByRole } = render(<LoginForm />);
       
-      expect(screen.getByRole("button", { name: "Logging in..." })).toBeInTheDocument();
+      expect(getByRole("button", { name: "Logging in..." })).toBeInTheDocument();
     });
 
     it("disables button when submitting", () => {
@@ -120,17 +120,17 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      render(<LoginForm />);
+      const { getByRole } = render(<LoginForm />);
       
-      const submitButton = screen.getByRole("button", { name: "Logging in..." });
+      const submitButton = getByRole("button", { name: "Logging in..." });
       expect(submitButton).toBeDisabled();
     });
 
     it("shows normal text when not submitting", () => {
-      render(<LoginForm />);
+      const { getByRole } = render(<LoginForm />);
       
-      expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Login" })).not.toBeDisabled();
+      expect(getByRole("button", { name: "Login" })).toBeInTheDocument();
+      expect(getByRole("button", { name: "Login" })).not.toBeDisabled();
     });
   });
 
@@ -144,15 +144,15 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      render(<LoginForm />);
+      const { getByText } = render(<LoginForm />);
       
-      expect(screen.getByText("Invalid credentials")).toBeInTheDocument();
+      expect(getByText("Invalid credentials")).toBeInTheDocument();
     });
 
     it("does not display error message when no error", () => {
-      render(<LoginForm />);
+      const { queryByRole } = render(<LoginForm />);
       
-      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      expect(queryByRole("alert")).not.toBeInTheDocument();
     });
 
     it("shows error with red text styling", () => {
@@ -164,9 +164,9 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      render(<LoginForm />);
+      const { getByText } = render(<LoginForm />);
       
-      const errorMessage = screen.getByText("Login failed");
+      const errorMessage = getByText("Login failed");
       expect(errorMessage).toHaveClass("text-red-500");
     });
   });
@@ -201,7 +201,7 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      render(<LoginForm onSuccess={mockOnSuccess} />);
+      const result = render(<LoginForm onSuccess={mockOnSuccess} />);
       
       expect(mockOnSuccess).not.toHaveBeenCalled();
     });
@@ -215,14 +215,14 @@ describe("LoginForm", () => {
         ),
       } as any);
 
-      render(<LoginForm onSuccess={mockOnSuccess} />);
+      const result = render(<LoginForm onSuccess={mockOnSuccess} />);
       
       expect(mockOnSuccess).not.toHaveBeenCalled();
     });
 
     it("handles success without onSuccess callback", async () => {
       // Should not throw error when onSuccess is not provided
-      const { rerender } = render(<LoginForm />);
+      const result = render(<LoginForm />);
       
       mockUseFetcher.mockReturnValue({
         data: { success: true },
@@ -232,35 +232,35 @@ describe("LoginForm", () => {
         ),
       } as any);
       
-      expect(() => rerender(<LoginForm />)).not.toThrow();
+      expect(() => result.rerender(<LoginForm />)).not.toThrow();
     });
   });
 
   describe("accessibility", () => {
     it("has proper labels for form fields", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      expect(screen.getByLabelText("Email")).toBeInTheDocument();
-      expect(screen.getByLabelText("Password")).toBeInTheDocument();
+      expect(result.getByLabelText("Email")).toBeInTheDocument();
+      expect(result.getByLabelText("Password")).toBeInTheDocument();
     });
 
     it("has proper button role", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
+      expect(result.getByRole("button", { name: "Login" })).toBeInTheDocument();
     });
 
     it("email input has correct placeholder", () => {
-      render(<LoginForm />);
+      const result = render(<LoginForm />);
       
-      const emailInput = screen.getByLabelText("Email");
+      const emailInput = result.getByLabelText("Email");
       expect(emailInput).toHaveAttribute("placeholder", "m@example.com");
     });
   });
 
   describe("integration", () => {
     it("works with all props together", async () => {
-      const { rerender } = render(
+      const result = render(
         <LoginForm 
           onSuccess={mockOnSuccess}
           redirectTo="/dashboard"
@@ -283,7 +283,7 @@ describe("LoginForm", () => {
         ),
       } as any);
       
-      rerender(
+      result.rerender(
         <LoginForm 
           onSuccess={mockOnSuccess}
           redirectTo="/dashboard"

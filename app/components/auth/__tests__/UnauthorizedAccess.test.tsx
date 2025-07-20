@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BrowserRouter } from "react-router";
 import { useRoles } from "~/hooks/useRoles";
@@ -35,36 +35,36 @@ describe("UnauthorizedAccess", () => {
     });
 
     it("shows authentication required message with default text", () => {
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      expect(screen.getByText("Authentication Required")).toBeInTheDocument();
-      expect(screen.getByText("You must be logged in to edit this content.")).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
+      expect(result.getByText("Authentication Required")).toBeInTheDocument();
+      expect(result.getByText("You must be logged in to edit this content.")).toBeInTheDocument();
+      expect(result.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
     });
 
     it("shows authentication required message with custom action", () => {
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess action="access this feature" />
         </Wrapper>
       );
 
-      expect(screen.getByText("Authentication Required")).toBeInTheDocument();
-      expect(screen.getByText("You must be logged in to access this feature.")).toBeInTheDocument();
+      expect(result.getByText("Authentication Required")).toBeInTheDocument();
+      expect(result.getByText("You must be logged in to access this feature.")).toBeInTheDocument();
     });
 
     it("has correct sign in link", () => {
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      const signInLink = screen.getByRole("link", { name: "Sign In" });
+      const signInLink = result.getByRole("link", { name: "Sign In" });
       expect(signInLink).toHaveAttribute("href", "/login");
     });
   });
@@ -90,37 +90,37 @@ describe("UnauthorizedAccess", () => {
     });
 
     it("shows insufficient permissions message with default text", () => {
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      expect(screen.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(screen.getByText("You need editor role to edit this content.")).toBeInTheDocument();
+      expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
+      expect(result.getByText("You need editor role to edit this content.")).toBeInTheDocument();
     });
 
     it("shows insufficient permissions message with custom role and action", () => {
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess requiredRole="admin" action="manage users" />
         </Wrapper>
       );
 
-      expect(screen.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(screen.getByText("You need admin role to manage users.")).toBeInTheDocument();
+      expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
+      expect(result.getByText("You need admin role to manage users.")).toBeInTheDocument();
     });
 
     it("displays current user information", () => {
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      expect(screen.getByText("Current user: Test User")).toBeInTheDocument();
-      expect(screen.getByText("Your roles: user")).toBeInTheDocument();
-      expect(screen.getByText("Required role: editor")).toBeInTheDocument();
+      expect(result.getByText("Current user: Test User")).toBeInTheDocument();
+      expect(result.getByText("Your roles: user")).toBeInTheDocument();
+      expect(result.getByText("Required role: editor")).toBeInTheDocument();
     });
 
     it("displays multiple roles correctly", () => {
@@ -141,24 +141,24 @@ describe("UnauthorizedAccess", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      expect(screen.getByText("Your roles: user, viewer")).toBeInTheDocument();
+      expect(result.getByText("Your roles: user, viewer")).toBeInTheDocument();
     });
 
     it("has correct navigation links", () => {
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      const heroesLink = screen.getByRole("link", { name: "Back to Heroes" });
-      const equipmentLink = screen.getByRole("link", { name: "Back to Equipment" });
+      const heroesLink = result.getByRole("link", { name: "Back to Heroes" });
+      const equipmentLink = result.getByRole("link", { name: "Back to Equipment" });
 
       expect(heroesLink).toHaveAttribute("href", "/heroes");
       expect(equipmentLink).toHaveAttribute("href", "/equipment");
@@ -184,13 +184,13 @@ describe("UnauthorizedAccess", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      expect(screen.getByText("Your roles:")).toBeInTheDocument();
+      expect(result.getByText("Your roles:")).toBeInTheDocument();
     });
 
     it("displays custom required role", () => {
@@ -211,13 +211,13 @@ describe("UnauthorizedAccess", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess requiredRole="moderator" />
         </Wrapper>
       );
 
-      expect(screen.getByText("Required role: moderator")).toBeInTheDocument();
+      expect(result.getByText("Required role: moderator")).toBeInTheDocument();
     });
   });
 
@@ -233,13 +233,13 @@ describe("UnauthorizedAccess", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      expect(screen.getByRole("heading", { name: "Authentication Required" })).toBeInTheDocument();
+      expect(result.getByRole("heading", { name: "Authentication Required" })).toBeInTheDocument();
     });
 
     it("has accessible buttons and links", () => {
@@ -260,14 +260,14 @@ describe("UnauthorizedAccess", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <Wrapper>
           <UnauthorizedAccess />
         </Wrapper>
       );
 
-      expect(screen.getByRole("link", { name: "Back to Heroes" })).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: "Back to Equipment" })).toBeInTheDocument();
+      expect(result.getByRole("link", { name: "Back to Heroes" })).toBeInTheDocument();
+      expect(result.getByRole("link", { name: "Back to Equipment" })).toBeInTheDocument();
     });
   });
 });

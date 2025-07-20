@@ -12,16 +12,9 @@ import { formatTitle } from "~/config/site"
 import { useAuth } from "~/contexts/AuthContext"
 import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils"
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository"
-import type { LoaderFunctionArgs, ActionFunctionArgs, MetaFunction } from "react-router"
+import type { Route } from "./+types/index"
 
-export type Route = {
-  LoaderArgs: LoaderFunctionArgs
-  ActionArgs: ActionFunctionArgs
-  ComponentProps: { loaderData: any }
-  MetaArgs: any
-}
-
-export const loader = async ({ request }: Route["LoaderArgs"]) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request)
   
   if (!user) {
@@ -38,7 +31,7 @@ export const loader = async ({ request }: Route["LoaderArgs"]) => {
   return { teams: teamsResult.data || [] }
 }
 
-export const action = async ({ request }: Route["ActionArgs"]) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request)
   const formData = await request.formData()
   const action = formData.get('action')
@@ -90,11 +83,11 @@ export const action = async ({ request }: Route["ActionArgs"]) => {
   }
 }
 
-export const meta = (_: Route["MetaArgs"]) => {
+export const meta = (_: Route.MetaArgs) => {
   return [{ title: formatTitle('Team Management') }]
 }
 
-export default function TeamsIndex({ loaderData }: Route["ComponentProps"]) {
+export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
   const { teams } = loaderData
   const { user, isLoading: authLoading } = useAuth()
   const fetcher = useFetcher()

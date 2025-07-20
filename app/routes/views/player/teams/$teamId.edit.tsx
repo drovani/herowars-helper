@@ -1,29 +1,22 @@
 // ABOUTME: Team edit page with team builder interface for existing teams
 // ABOUTME: Allows users to modify team details and hero composition
 
-import { useState, useEffect } from "react"
-import { useFetcher, useLoaderData, useNavigate } from "react-router"
 import { ArrowLeftIcon, SaveIcon } from "lucide-react"
-import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
+import { useEffect, useState } from "react"
+import { useFetcher, useNavigate } from "react-router"
 import { TeamBuilder } from "~/components/team/TeamBuilder"
+import { Button } from "~/components/ui/button"
+import { Card, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { formatTitle } from "~/config/site"
 import { useAuth } from "~/contexts/AuthContext"
 import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils"
-import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository"
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository"
-import type { LoaderFunctionArgs, ActionFunctionArgs, MetaFunction } from "react-router"
+import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository"
+import type { Route } from "./+types/$teamId.edit"
 
-export type Route = {
-  LoaderArgs: LoaderFunctionArgs & { params: { teamId: string } }
-  ActionArgs: ActionFunctionArgs & { params: { teamId: string } }
-  ComponentProps: { loaderData: any }
-  MetaArgs: any
-}
-
-export const loader = async ({ request, params }: Route["LoaderArgs"]) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request)
-  
+
   if (!user) {
     throw new Response("Authentication required", { status: 401 })
   }
@@ -48,25 +41,25 @@ export const loader = async ({ request, params }: Route["LoaderArgs"]) => {
     throw new Response("Failed to load hero collection", { status: 500 })
   }
 
-  return { 
+  return {
     team: teamResult.data,
     userHeroes: collectionResult.data || []
   }
 }
 
-export const action = async ({ request, params }: Route["ActionArgs"]) => {
+export const action = async ({ request, params }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request)
   const teamId = params.teamId!
   const formData = await request.formData()
   const action = formData.get('action')
-  
+
   const teamRepo = new PlayerTeamRepository(request)
 
   switch (action) {
     case 'updateTeam': {
       const name = formData.get('name') as string
       const description = formData.get('description') as string
-      
+
       // Update team details
       const updateResult = await teamRepo.updateTeam(teamId, user.id, {
         name: name || undefined,
@@ -77,15 +70,15 @@ export const action = async ({ request, params }: Route["ActionArgs"]) => {
         return { error: updateResult.error.message }
       }
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         message: `Team "${updateResult.data!.name}" updated successfully`
       }
     }
 
     case 'addHero': {
       const heroSlug = formData.get('heroSlug') as string
-      
+
       if (!heroSlug) {
         return { error: 'Hero slug is required' }
       }
@@ -96,15 +89,15 @@ export const action = async ({ request, params }: Route["ActionArgs"]) => {
         return { error: result.error.message }
       }
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         message: 'Hero added to team'
       }
     }
 
     case 'removeHero': {
       const heroSlug = formData.get('heroSlug') as string
-      
+
       if (!heroSlug) {
         return { error: 'Hero slug is required' }
       }
@@ -115,8 +108,8 @@ export const action = async ({ request, params }: Route["ActionArgs"]) => {
         return { error: result.error.message }
       }
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         message: 'Hero removed from team'
       }
     }
@@ -126,17 +119,17 @@ export const action = async ({ request, params }: Route["ActionArgs"]) => {
   }
 }
 
-export const meta = ({ loaderData }: Route["MetaArgs"]) => {
-  const teamName = loaderData?.team?.name || 'Edit Team'
+export const meta = ({ data }: Route.MetaArgs) => {
+  const teamName = data?.team?.name || 'Team'
   return [{ title: formatTitle(`Edit ${teamName}`) }]
 }
 
-export default function TeamEdit({ loaderData }: Route["ComponentProps"]) {
+export default function TeamEdit({ loaderData }: Route.ComponentProps) {
   const { team, userHeroes } = loaderData
   const { user, isLoading: authLoading } = useAuth()
   const fetcher = useFetcher()
   const navigate = useNavigate()
-  
+
   const [teamName, setTeamName] = useState(team.name)
   const [teamDescription, setTeamDescription] = useState(team.description || "")
   const [addingHeroSlug, setAddingHeroSlug] = useState<string | undefined>(undefined)
@@ -191,10 +184,10 @@ export default function TeamEdit({ loaderData }: Route["ComponentProps"]) {
 
   const handleUpdateTeam = () => {
     fetcher.submit(
-      { 
-        action: 'updateTeam', 
-        name: teamName, 
-        description: teamDescription 
+      {
+        action: 'updateTeam',
+        name: teamName,
+        description: teamDescription
       },
       { method: 'POST' }
     )
@@ -219,9 +212,9 @@ export default function TeamEdit({ loaderData }: Route["ComponentProps"]) {
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleGoBack}
             disabled={isSubmitting}
           >
@@ -235,14 +228,14 @@ export default function TeamEdit({ loaderData }: Route["ComponentProps"]) {
             </p>
           </div>
         </div>
-        
-        <Button 
+
+        <Button
           onClick={handleUpdateTeam}
           disabled={!hasChanges || isSubmitting}
         >
           <SaveIcon className="mr-2 h-4 w-4" />
-          {isSubmitting && fetcher.formData?.get('action') === 'updateTeam' 
-            ? 'Saving...' 
+          {isSubmitting && fetcher.formData?.get('action') === 'updateTeam'
+            ? 'Saving...'
             : 'Save Changes'
           }
         </Button>
@@ -269,7 +262,7 @@ export default function TeamEdit({ loaderData }: Route["ComponentProps"]) {
           {fetcher.data.error}
         </div>
       )}
-      
+
       {fetcher.data?.success && (
         <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg">
           {fetcher.data.message}

@@ -12,16 +12,9 @@ import { useAuth } from "~/contexts/AuthContext"
 import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils"
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository"
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository"
-import type { LoaderFunctionArgs, ActionFunctionArgs, MetaFunction } from "react-router"
+import type { Route } from "./+types/new"
 
-export type Route = {
-  LoaderArgs: LoaderFunctionArgs
-  ActionArgs: ActionFunctionArgs
-  ComponentProps: { loaderData: any }
-  MetaArgs: any
-}
-
-export const loader = async ({ request }: Route["LoaderArgs"]) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request)
   
   if (!user) {
@@ -41,7 +34,7 @@ export const loader = async ({ request }: Route["LoaderArgs"]) => {
   }
 }
 
-export const action = async ({ request }: Route["ActionArgs"]) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request)
   const formData = await request.formData()
   const action = formData.get('action')
@@ -91,11 +84,11 @@ export const action = async ({ request }: Route["ActionArgs"]) => {
   }
 }
 
-export const meta = (_: Route["MetaArgs"]) => {
+export const meta = (_: Route.MetaArgs) => {
   return [{ title: formatTitle('Create Team') }]
 }
 
-export default function TeamNew({ loaderData }: Route["ComponentProps"]) {
+export default function TeamNew({ loaderData }: Route.ComponentProps) {
   const { userHeroes } = loaderData
   const { user, isLoading: authLoading } = useAuth()
   const fetcher = useFetcher()

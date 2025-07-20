@@ -42,7 +42,7 @@ export function Layout(props: Route.ComponentProps) {
     setIsHydrated(true);
   }, []);
 
-  // Safely get matches only after hydration
+  // Always call useMatches hook - React requires hooks to be called in consistent order
   let matches: UIMatch<
     unknown,
     {
@@ -52,6 +52,22 @@ export function Layout(props: Route.ComponentProps) {
     }
   >[] = [];
 
+  try {
+    matches = useMatches() as UIMatch<
+      unknown,
+      {
+        breadcrumb?: (
+          matches: UIMatch<unknown, unknown>
+        ) => { href?: string; title: string } | { href?: string; title: string }[];
+      }
+    >[];
+  } catch (error) {
+    // Fallback to empty matches if router context is not available
+    console.warn('Router context not available during hydration:', error);
+    matches = [];
+  }
+
+  // Only process breadcrumbs after hydration to prevent rendering issues
   let breadcrumbs: UIMatch<
     unknown,
     {
@@ -61,31 +77,15 @@ export function Layout(props: Route.ComponentProps) {
     }
   >[] = [];
 
-  // Only call useMatches after hydration to prevent context errors
-  if (isHydrated) {
-    try {
-      matches = useMatches() as UIMatch<
-        unknown,
-        {
-          breadcrumb?: (
-            matches: UIMatch<unknown, unknown>
-          ) => { href?: string; title: string } | { href?: string; title: string }[];
-        }
-      >[];
-
-      breadcrumbs = matches.filter((match) => match.handle && match.handle.breadcrumb) as UIMatch<
-        unknown,
-        {
-          breadcrumb: (
-            matches: UIMatch<unknown, unknown>
-          ) => { href?: string | undefined; title: string } | { href?: string | undefined; title: string }[];
-        }
-      >[];
-    } catch (error) {
-      // Fallback to empty breadcrumbs if router context is not available
-      console.warn('Router context not available during hydration:', error);
-      breadcrumbs = [];
-    }
+  if (isHydrated && matches.length > 0) {
+    breadcrumbs = matches.filter((match) => match.handle && match.handle.breadcrumb) as UIMatch<
+      unknown,
+      {
+        breadcrumb: (
+          matches: UIMatch<unknown, unknown>
+        ) => { href?: string | undefined; title: string } | { href?: string | undefined; title: string }[];
+      }
+    >[];
   }
 
   return (

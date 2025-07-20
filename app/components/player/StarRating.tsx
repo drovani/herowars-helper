@@ -11,12 +11,12 @@ interface StarRatingProps {
   className?: string;
 }
 
-export function StarRating({ 
-  stars, 
-  maxStars = 6, 
-  readOnly = false, 
-  onStarClick, 
-  className 
+export function StarRating({
+  stars,
+  maxStars = 6,
+  readOnly = false,
+  onStarClick,
+  className
 }: StarRatingProps) {
   const handleStarClick = (starIndex: number) => {
     if (!readOnly && onStarClick) {
@@ -40,12 +40,13 @@ export function StarRating({
                 !readOnly && "hover:scale-110 cursor-pointer",
                 readOnly && "cursor-default"
               )}
+              data-testid={isFilled ? "filled" : "empty"}
             >
               <StarIcon
                 className={cn(
                   "size-5",
-                  isFilled 
-                    ? "fill-yellow-400 text-yellow-400" 
+                  isFilled
+                    ? "fill-yellow-400 text-yellow-400"
                     : "fill-gray-200 text-gray-300"
                 )}
               />
@@ -53,9 +54,6 @@ export function StarRating({
           );
         })}
       </div>
-      <span className="text-sm text-gray-600 ml-1 font-medium">
-        {stars}/{maxStars}
-      </span>
     </div>
   );
 }

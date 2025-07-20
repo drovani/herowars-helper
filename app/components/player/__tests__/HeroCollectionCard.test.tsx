@@ -45,9 +45,15 @@ describe('HeroCollectionCard', () => {
     })
 
     it('should display star rating', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const starRating = result.getByTestId("star-rating");
 
-      expect(screen.getByText('4/6')).toBeInTheDocument()
+      const filled = starRating.querySelectorAll('[data-testid="filled"]');
+      const empty = starRating.querySelectorAll('[data-testid="empty"]');
+
+      expect(starRating).toBeInTheDocument()
+      expect(filled.length).toEqual(4);
+      expect(empty.length).toEqual(2);
     })
 
     it('should display equipment level', () => {
@@ -85,7 +91,7 @@ describe('HeroCollectionCard', () => {
     })
 
     it('should handle unknown factions with warning', () => {
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => { })
 
       const unknownHero = {
         ...mockPlayerHero,
@@ -251,10 +257,10 @@ describe('HeroCollectionCard', () => {
     })
 
     it('should have proper form labels', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const starRating = result.getByTestId("star-rating");
 
-      expect(screen.getByText('4/6')).toBeInTheDocument() // Star rating now shows as numerical
-      expect(screen.getByText('Equipment Level')).toBeInTheDocument()
+      expect(starRating).toBeInTheDocument()
     })
   })
 

@@ -124,12 +124,6 @@ export const adminUserOperations = {
   async createUser(email: string, password: string, userData?: { full_name?: string; roles?: string[] }) {
     const supabase = createAdminClient();
 
-    log.debug('Creating user with data:', {
-      email,
-      password: password ? '[REDACTED]' : 'missing',
-      userData
-    });
-
     // Check if user already exists
     try {
       const { data: existingUsers } = await supabase.auth.admin.listUsers();
@@ -142,12 +136,11 @@ export const adminUserOperations = {
       if (checkError instanceof Error && checkError.message.includes('already exists')) {
         throw checkError;
       }
-      log.debug('Could not check existing users:', checkError);
+      log.error('Could not check existing users:', checkError);
       // Continue with creation attempt for other errors
     }
 
     // Try with minimal parameters first
-    log.debug('Attempting createUser with minimal params...');
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,

@@ -25,7 +25,10 @@ export default [
     route("player", "./routes/views/player/layout.tsx", [
       index("./routes/views/player/index.tsx"),
       route("roster", "./routes/views/player/roster.tsx"),
-      route("activity", "./routes/views/player/activity.tsx")
+      route("activity", "./routes/views/player/activity.tsx"),
+      route("teams", "./routes/views/player/teams/index.tsx"),
+      route("teams/new", "./routes/views/player/teams/new.tsx"),
+      route("teams/:teamId", "./routes/views/player/teams/$teamId.edit.tsx")
     ])
   ]),
   route("protected", "./routes/views/public/protected.tsx"),

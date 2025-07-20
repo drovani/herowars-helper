@@ -143,3 +143,25 @@ export interface CreatePlayerEventInput {
   hero_slug: string
   event_data?: Json
 }
+
+// Team management types
+export type PlayerTeam = Tables<'player_team'>
+export type PlayerTeamHero = Tables<'player_team_hero'>
+
+export interface TeamWithHeroes extends PlayerTeam {
+  heroes: Array<PlayerTeamHero & { hero: Hero }>
+}
+
+export interface CreatePlayerTeamInput {
+  name: string
+  description?: string
+}
+
+export interface UpdatePlayerTeamInput {
+  name?: string
+  description?: string
+}
+
+export interface AddHeroToTeamInput {
+  hero_slug: string
+}

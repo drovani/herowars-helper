@@ -4,6 +4,7 @@
 import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
+import { useMemo } from "react";
 
 interface HeroDetailSkeletonProps {
   className?: string;
@@ -16,20 +17,47 @@ export function HeroDetailSkeleton({
   showAddButton = false,
   showEditButton = false
 }: HeroDetailSkeletonProps) {
-  const renderSection = (title: string, gridCols: number = 6) => (
-    <Card className="w-full">
-      <CardHeader>
-        <h3 className="text-lg font-medium">{title}</h3>
-      </CardHeader>
-      <CardContent>
-        <div className={cn("grid gap-2", `grid-cols-${gridCols}`)}>
-          {Array.from({ length: gridCols }).map((_, i) => (
-            <Skeleton key={i} className="size-16 rounded" />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
+  // Static grid column mapping to ensure Tailwind CSS classes exist
+  const getGridColsClass = (cols: number) => {
+    const colsMap: Record<number, string> = {
+      1: "grid-cols-1",
+      2: "grid-cols-2",
+      3: "grid-cols-3",
+      4: "grid-cols-4",
+      5: "grid-cols-5",
+      6: "grid-cols-6",
+      7: "grid-cols-7",
+      8: "grid-cols-8"
+    };
+    return colsMap[cols] || "grid-cols-6";
+  };
+
+  // Memoize arrays for different section sizes to avoid recreation
+  const sectionArrays = useMemo(() => ({
+    3: Array.from({ length: 3 }, (_, i) => i),
+    4: Array.from({ length: 4 }, (_, i) => i), 
+    5: Array.from({ length: 5 }, (_, i) => i),
+    6: Array.from({ length: 6 }, (_, i) => i)
+  }), []);
+
+  const renderSection = (title: string, gridCols: number = 6) => {
+    const indices = sectionArrays[gridCols as keyof typeof sectionArrays] || sectionArrays[6];
+    
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <h3 className="text-lg font-medium">{title}</h3>
+        </CardHeader>
+        <CardContent>
+          <div className={cn("grid gap-2", getGridColsClass(gridCols))}>
+            {indices.map((i) => (
+              <Skeleton key={i} className="size-16 rounded" />
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className={cn("space-y-8", className)}>
@@ -103,7 +131,7 @@ export function HeroDetailSkeleton({
             <Skeleton className="h-4 w-3/4" />
           </div>
           <div className="grid grid-cols-6 gap-2">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {sectionArrays[6].map((i) => (
               <Skeleton key={i} className="h-12 w-full rounded" />
             ))}
           </div>

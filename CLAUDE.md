@@ -26,7 +26,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - All code files should start with a brief 2 line comment explaining what the file does. Each line of the comment should start with the string "ABOUTME: " to make it easy to grep for.
 - When writing comments, avoid referring to temporal context about refactors or recent changes. Comments should be evergreen and describe the code as it is, not how it evolved or was recently changed.
 - NEVER implement a mock mode for testing or for any purpose. We always use real data and real APIs, never mock implementations.
-- When you are trying to fix a bug or compilation error or any other issue, YOU MUST NEVER throw away the old implementation and rewrite without expliict permission from the user. If you are going to do this, YOU MUST STOP and get explicit permission from the user.
+- When you are trying to fix a bug or compilation error or any other issue, YOU MUST NEVER throw away the old implementation and rewrite without explict permission from the user. If you are going to do this, YOU MUST STOP and get explicit permission from the user.
 - NEVER name things as 'improved' or 'new' or 'enhanced', etc. Code naming should be evergreen. What is new today will be "old" someday.
 
 # Getting help
@@ -304,6 +304,47 @@ This pattern:
 - **Business Logic**: Test validation, permissions, and error handling
 - **Supabase Operations**: Mock the client and test query building and data transformation
 - **Repository Tests**: Use loglevel log capturing pattern to ensure clean test output - capture logs to in-memory arrays instead of console during tests
+
+### Modern Component Testing Best Practices
+
+#### Render Result Pattern (REQUIRED)
+All component tests MUST use the modern result pattern instead of importing `screen`:
+
+**✅ Correct Pattern:**
+```typescript
+import { render, fireEvent } from "@testing-library/react";
+
+test('should render component', () => {
+  const result = render(<MyComponent />);
+  expect(result.getByText("Hello")).toBeInTheDocument();
+  fireEvent.click(result.getByRole("button"));
+  expect(result.queryByText("Clicked")).toBeInTheDocument();
+});
+```
+
+**❌ Deprecated Pattern (DO NOT USE):**
+```typescript
+import { render, screen, fireEvent } from "@testing-library/react";
+
+test('should render component', () => {
+  render(<MyComponent />);
+  expect(screen.getByText("Hello")).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button"));
+  expect(screen.queryByText("Clicked")).toBeInTheDocument();
+});
+```
+
+#### Benefits of Modern Pattern
+- **Better Test Isolation**: Queries are scoped to the specific component render
+- **Clearer Intent**: Explicit relationship between render call and queries
+- **Prevents Cross-Test Contamination**: No accidental matches from other components
+- **Improved Debugging**: Easier to trace which render instance queries belong to
+
+#### Component Testing Requirements
+- **Always destructure** needed query methods from render return value
+- **Never import `screen`** from React Testing Library in component tests
+- **Use appropriate queries**: `getBy*` for elements that must exist, `queryBy*` for elements that may not exist
+- **Scope all queries** to the specific render instance
 
 ## Tailwind CSS Guidelines
 

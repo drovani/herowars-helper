@@ -26,67 +26,67 @@ function ExampleButton({ onClick, disabled, loading, children, variant = "primar
 }
 
 describe("Modern Component Testing Examples", () => {
-  describe("✅ CORRECT: Destructured Render Pattern", () => {
+  describe("✅ CORRECT: Result Object Pattern", () => {
     it("should render button with text", () => {
-      // ✅ Destructure queries from render return value
-      const { getByRole, getByText } = render(<ExampleButton>Click me</ExampleButton>);
+      // ✅ Use result object from render return value
+      const result = render(<ExampleButton>Click me</ExampleButton>);
 
-      expect(getByRole("button")).toBeInTheDocument();
-      expect(getByText("Click me")).toBeInTheDocument();
+      expect(result.getByRole("button")).toBeInTheDocument();
+      expect(result.getByText("Click me")).toBeInTheDocument();
     });
 
     it("should handle click events", () => {
       const mockClick = vi.fn();
-      // ✅ Destructure only the queries you need
-      const { getByRole } = render(<ExampleButton onClick={mockClick}>Click me</ExampleButton>);
+      // ✅ Use result object from render return value
+      const result = render(<ExampleButton onClick={mockClick}>Click me</ExampleButton>);
 
-      fireEvent.click(getByRole("button"));
+      fireEvent.click(result.getByRole("button"));
       expect(mockClick).toHaveBeenCalledTimes(1);
     });
 
     it("should show loading state", () => {
-      // ✅ Use queryBy for elements that may not exist
-      const { getByText, queryByText } = render(
+      // ✅ Use result object from render return value
+      const result = render(
         <ExampleButton loading={true}>Click me</ExampleButton>
       );
 
-      expect(getByText("Loading...")).toBeInTheDocument();
-      expect(queryByText("Click me")).not.toBeInTheDocument();
+      expect(result.getByText("Loading...")).toBeInTheDocument();
+      expect(result.queryByText("Click me")).not.toBeInTheDocument();
     });
 
     it("should handle disabled state", () => {
-      const { getByRole } = render(<ExampleButton disabled={true}>Click me</ExampleButton>);
+      const result = render(<ExampleButton disabled={true}>Click me</ExampleButton>);
 
-      const button = getByRole("button");
+      const button = result.getByRole("button");
       expect(button).toBeDisabled();
     });
 
     it("should apply variant classes", () => {
-      const { getByTestId, rerender } = render(
+      const result = render(
         <ExampleButton variant="primary">Primary</ExampleButton>
       );
 
-      expect(getByTestId("example-button")).toHaveClass("btn-primary");
+      expect(result.getByTestId("example-button")).toHaveClass("btn-primary");
 
       // ✅ Rerender to test different props
-      rerender(<ExampleButton variant="secondary">Secondary</ExampleButton>);
-      expect(getByTestId("example-button")).toHaveClass("btn-secondary");
+      result.rerender(<ExampleButton variant="secondary">Secondary</ExampleButton>);
+      expect(result.getByTestId("example-button")).toHaveClass("btn-secondary");
     });
 
     it("should handle async operations", async () => {
       const mockAsyncClick = vi.fn().mockResolvedValue("success");
-      const { getByRole, getByText } = render(
+      const result = render(
         <ExampleButton onClick={mockAsyncClick}>Async Action</ExampleButton>
       );
 
-      fireEvent.click(getByRole("button"));
+      fireEvent.click(result.getByRole("button"));
 
       // ✅ Use waitFor for async operations
       await waitFor(() => {
         expect(mockAsyncClick).toHaveBeenCalled();
       });
 
-      expect(getByText("Async Action")).toBeInTheDocument();
+      expect(result.getByText("Async Action")).toBeInTheDocument();
     });
   });
 
@@ -123,10 +123,10 @@ describe("Modern Component Testing Examples", () => {
         </form>
       );
 
-      const { getByPlaceholderText, getByRole } = render(<FormExample />);
+      const result = render(<FormExample />);
 
-      const input = getByPlaceholderText("Enter name");
-      const submitButton = getByRole("button", { name: "Submit" });
+      const input = result.getByPlaceholderText("Enter name");
+      const submitButton = result.getByRole("button", { name: "Submit" });
 
       fireEvent.change(input, { target: { value: "John Doe" } });
       expect(input).toHaveValue("John Doe");
@@ -143,23 +143,23 @@ describe("Modern Component Testing Examples", () => {
         </div>
       );
 
-      const { getByText, queryByText, rerender } = render(
+      const result = render(
         <ConditionalExample showButton={false} />
       );
 
-      expect(getByText("Always visible")).toBeInTheDocument();
-      expect(queryByText("Conditional")).not.toBeInTheDocument();
+      expect(result.getByText("Always visible")).toBeInTheDocument();
+      expect(result.queryByText("Conditional")).not.toBeInTheDocument();
 
-      rerender(<ConditionalExample showButton={true} />);
-      expect(queryByText("Conditional")).toBeInTheDocument();
+      result.rerender(<ConditionalExample showButton={true} />);
+      expect(result.queryByText("Conditional")).toBeInTheDocument();
     });
 
     it("should test accessibility", () => {
-      const { getByRole } = render(
+      const result = render(
         <ExampleButton disabled={true}>Disabled Button</ExampleButton>
       );
 
-      const button = getByRole("button");
+      const button = result.getByRole("button");
       expect(button).toHaveAttribute("disabled");
       expect(button).toHaveAccessibleName("Disabled Button");
     });
@@ -172,13 +172,13 @@ describe("Modern Component Testing Examples", () => {
         </div>
       );
 
-      const { getAllByRole, getByText } = render(<MultipleButtons />);
+      const result = render(<MultipleButtons />);
 
-      const buttons = getAllByRole("button");
+      const buttons = result.getAllByRole("button");
       expect(buttons).toHaveLength(2);
 
-      expect(getByText("Primary")).toBeInTheDocument();
-      expect(getByText("Secondary")).toBeInTheDocument();
+      expect(result.getByText("Primary")).toBeInTheDocument();
+      expect(result.getByText("Secondary")).toBeInTheDocument();
     });
   });
 
@@ -186,40 +186,34 @@ describe("Modern Component Testing Examples", () => {
     it("demonstrates comprehensive testing approach", () => {
       const mockClick = vi.fn();
       
-      // ✅ Destructure all needed queries at once
-      const { 
-        getByRole, 
-        getByText, 
-        queryByText, 
-        getByTestId,
-        rerender 
-      } = render(
+      // ✅ Use result object from render return value
+      const result = render(
         <ExampleButton onClick={mockClick} variant="primary">
           Test Button
         </ExampleButton>
       );
 
       // ✅ Test rendering
-      expect(getByRole("button")).toBeInTheDocument();
-      expect(getByText("Test Button")).toBeInTheDocument();
+      expect(result.getByRole("button")).toBeInTheDocument();
+      expect(result.getByText("Test Button")).toBeInTheDocument();
       
       // ✅ Test styling/classes
-      expect(getByTestId("example-button")).toHaveClass("btn-primary");
+      expect(result.getByTestId("example-button")).toHaveClass("btn-primary");
       
       // ✅ Test interactions
-      fireEvent.click(getByRole("button"));
+      fireEvent.click(result.getByRole("button"));
       expect(mockClick).toHaveBeenCalledTimes(1);
       
       // ✅ Test state changes with rerender
-      rerender(
+      result.rerender(
         <ExampleButton onClick={mockClick} loading={true}>
           Test Button
         </ExampleButton>
       );
       
-      expect(getByText("Loading...")).toBeInTheDocument();
-      expect(queryByText("Test Button")).not.toBeInTheDocument();
-      expect(getByRole("button")).toBeDisabled();
+      expect(result.getByText("Loading...")).toBeInTheDocument();
+      expect(result.queryByText("Test Button")).not.toBeInTheDocument();
+      expect(result.getByRole("button")).toBeDisabled();
     });
   });
 });

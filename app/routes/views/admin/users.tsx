@@ -1,6 +1,6 @@
 import { UserRoundCheckIcon, UserRoundMinusIcon, UserRoundXIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { redirect, useFetcher, useLoaderData, useRevalidator } from "react-router";
+import { useEffect, useState, Suspense } from "react";
+import { redirect, useFetcher, useLoaderData, useRevalidator, Await } from "react-router";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "~/components/ui/alert-dialog";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -15,8 +15,9 @@ import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
 import { ASSIGNABLE_ROLES } from "~/lib/supabase/admin";
 import { createClient } from "~/lib/supabase/client";
+import { AdminUserTableSkeleton } from "~/components/skeletons/AdminUserTableSkeleton";
 
-export const loader = async ({ request }: { request: Request }) => {
+async function loadUsersData(request: Request) {
   const { supabase } = createClient(request);
 
   // Check if user is authenticated and has admin role
@@ -63,6 +64,12 @@ export const loader = async ({ request }: { request: Request }) => {
       hasServiceRole: false
     };
   }
+}
+
+export const loader = async ({ request }: { request: Request }) => {
+  return {
+    usersData: loadUsersData(request),
+  };
 };
 
 export const action = async ({ request }: { request: Request }) => {
@@ -111,12 +118,7 @@ interface UserData {
 }
 
 
-export default function AdminUsers() {
-  const { users, error, hasServiceRole } = useLoaderData() as {
-    users: UserData[];
-    error: string | null;
-    hasServiceRole: boolean;
-  };
+function AdminUsersContent({ users, error, hasServiceRole }: { users: UserData[], error: string | null, hasServiceRole: boolean }) {
   const { user: currentUser } = useAuth();
   const fetcher = useFetcher();
   const createUserFetcher = useFetcher();
@@ -719,5 +721,23 @@ export default function AdminUsers() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AdminUsers() {
+  const loaderData = useLoaderData() as { usersData: Promise<{ users: UserData[], error: string | null, hasServiceRole: boolean }> };
+  
+  return (
+    <Suspense fallback={<AdminUserTableSkeleton />}>
+      <Await resolve={loaderData.usersData}>
+        {(data: { users: UserData[], error: string | null, hasServiceRole: boolean }) => (
+          <AdminUsersContent 
+            users={data.users}
+            error={data.error}
+            hasServiceRole={data.hasServiceRole}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 }

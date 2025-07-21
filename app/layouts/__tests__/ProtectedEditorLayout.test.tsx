@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BrowserRouter, Outlet } from "react-router";
 import { useAuth } from "~/contexts/AuthContext";
@@ -51,24 +51,24 @@ describe("ProtectedEditorLayout", () => {
     });
 
     it("renders the outlet content", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Protected Content")).toBeInTheDocument();
+      expect(result.getByText("Protected Content")).toBeInTheDocument();
     });
 
     it("does not show unauthorized access message", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.queryByText("Insufficient Permissions")).not.toBeInTheDocument();
-      expect(screen.queryByText("Authentication Required")).not.toBeInTheDocument();
+      expect(result.queryByText("Insufficient Permissions")).not.toBeInTheDocument();
+      expect(result.queryByText("Authentication Required")).not.toBeInTheDocument();
     });
   });
 
@@ -91,13 +91,13 @@ describe("ProtectedEditorLayout", () => {
     });
 
     it("renders the outlet content", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Protected Content")).toBeInTheDocument();
+      expect(result.getByText("Protected Content")).toBeInTheDocument();
     });
   });
 
@@ -120,13 +120,13 @@ describe("ProtectedEditorLayout", () => {
     });
 
     it("renders the outlet content", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Protected Content")).toBeInTheDocument();
+      expect(result.getByText("Protected Content")).toBeInTheDocument();
     });
   });
 
@@ -149,36 +149,36 @@ describe("ProtectedEditorLayout", () => {
     });
 
     it("shows unauthorized access message", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(screen.getByText("You need admin or editor role to access this page.")).toBeInTheDocument();
+      expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
+      expect(result.getByText("You need admin or editor role to access this page.")).toBeInTheDocument();
     });
 
     it("does not render the outlet content", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+      expect(result.queryByText("Protected Content")).not.toBeInTheDocument();
     });
 
     it("shows user's current role information", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Current user: Test User")).toBeInTheDocument();
-      expect(screen.getByText("Your roles: user")).toBeInTheDocument();
-      expect(screen.getByText("Required role: admin or editor")).toBeInTheDocument();
+      expect(result.getByText("Current user: Test User")).toBeInTheDocument();
+      expect(result.getByText("Your roles: user")).toBeInTheDocument();
+      expect(result.getByText("Required role: admin or editor")).toBeInTheDocument();
     });
   });
 
@@ -194,34 +194,34 @@ describe("ProtectedEditorLayout", () => {
     });
 
     it("shows authentication required message", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Authentication Required")).toBeInTheDocument();
-      expect(screen.getByText("You must be logged in to access this page.")).toBeInTheDocument();
+      expect(result.getByText("Authentication Required")).toBeInTheDocument();
+      expect(result.getByText("You must be logged in to access this page.")).toBeInTheDocument();
     });
 
     it("does not render the outlet content", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+      expect(result.queryByText("Protected Content")).not.toBeInTheDocument();
     });
 
     it("shows sign in button", () => {
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
+      expect(result.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
     });
   });
 
@@ -242,14 +242,14 @@ describe("ProtectedEditorLayout", () => {
         updateProfile: vi.fn(),
       });
 
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+      expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
+      expect(result.queryByText("Protected Content")).not.toBeInTheDocument();
     });
 
     it("handles user with unrecognized roles", () => {
@@ -268,15 +268,15 @@ describe("ProtectedEditorLayout", () => {
         updateProfile: vi.fn(),
       });
 
-      render(
+      const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
         </Wrapper>
       );
 
-      expect(screen.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(screen.getByText("Your roles: viewer, guest")).toBeInTheDocument();
-      expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
+      expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
+      expect(result.getByText("Your roles: viewer, guest")).toBeInTheDocument();
+      expect(result.queryByText("Protected Content")).not.toBeInTheDocument();
     });
   });
 });

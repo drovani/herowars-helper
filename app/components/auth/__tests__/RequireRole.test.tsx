@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useRoles } from "~/hooks/useRoles";
 import { RequireEditor, RequireRole } from "../RequireRole";
@@ -39,34 +39,34 @@ describe("RequireRole", () => {
     });
 
     it("renders children when user has single required role", () => {
-      render(
+      const result = render(
         <RequireRole roles="editor">
           <div>Editor content</div>
         </RequireRole>
       );
 
-      expect(screen.getByText("Editor content")).toBeInTheDocument();
+      expect(result.getByText("Editor content")).toBeInTheDocument();
     });
 
     it("renders children when user has one of multiple required roles", () => {
-      render(
+      const result = render(
         <RequireRole roles={["admin", "editor"]}>
           <div>Admin or editor content</div>
         </RequireRole>
       );
 
-      expect(screen.getByText("Admin or editor content")).toBeInTheDocument();
+      expect(result.getByText("Admin or editor content")).toBeInTheDocument();
     });
 
     it("renders children and not fallback", () => {
-      render(
+      const result = render(
         <RequireRole roles="editor" fallback={<div>No access</div>}>
           <div>Editor content</div>
         </RequireRole>
       );
 
-      expect(screen.getByText("Editor content")).toBeInTheDocument();
-      expect(screen.queryByText("No access")).not.toBeInTheDocument();
+      expect(result.getByText("Editor content")).toBeInTheDocument();
+      expect(result.queryByText("No access")).not.toBeInTheDocument();
     });
   });
 
@@ -94,44 +94,44 @@ describe("RequireRole", () => {
     });
 
     it("does not render children when user lacks required role", () => {
-      render(
+      const result = render(
         <RequireRole roles="admin">
           <div>Admin content</div>
         </RequireRole>
       );
 
-      expect(screen.queryByText("Admin content")).not.toBeInTheDocument();
+      expect(result.queryByText("Admin content")).not.toBeInTheDocument();
     });
 
     it("renders fallback when provided", () => {
-      render(
+      const result = render(
         <RequireRole roles="admin" fallback={<div>No admin access</div>}>
           <div>Admin content</div>
         </RequireRole>
       );
 
-      expect(screen.queryByText("Admin content")).not.toBeInTheDocument();
-      expect(screen.getByText("No admin access")).toBeInTheDocument();
+      expect(result.queryByText("Admin content")).not.toBeInTheDocument();
+      expect(result.getByText("No admin access")).toBeInTheDocument();
     });
 
     it("renders nothing when no fallback provided", () => {
-      const { container } = render(
+      const result = render(
         <RequireRole roles="admin">
           <div>Admin content</div>
         </RequireRole>
       );
 
-      expect(container).toBeEmptyDOMElement();
+      expect(result.container).toBeEmptyDOMElement();
     });
 
     it("does not render children when user has none of multiple required roles", () => {
-      render(
+      const result = render(
         <RequireRole roles={["admin", "moderator"]}>
           <div>Admin or moderator content</div>
         </RequireRole>
       );
 
-      expect(screen.queryByText("Admin or moderator content")).not.toBeInTheDocument();
+      expect(result.queryByText("Admin or moderator content")).not.toBeInTheDocument();
     });
   });
 
@@ -158,13 +158,13 @@ describe("RequireRole", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <RequireRole roles={["admin", "editor", "moderator"]}>
           <div>Privileged content</div>
         </RequireRole>
       );
 
-      expect(screen.getByText("Privileged content")).toBeInTheDocument();
+      expect(result.getByText("Privileged content")).toBeInTheDocument();
     });
   });
 });
@@ -198,13 +198,13 @@ describe("RequireEditor", () => {
     });
 
     it("renders children when user has editor role", () => {
-      render(
+      const result = render(
         <RequireEditor>
           <div>Edit button</div>
         </RequireEditor>
       );
 
-      expect(screen.getByText("Edit button")).toBeInTheDocument();
+      expect(result.getByText("Edit button")).toBeInTheDocument();
     });
 
     it("renders children when user has admin role", () => {
@@ -228,13 +228,13 @@ describe("RequireEditor", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <RequireEditor>
           <div>Edit button</div>
         </RequireEditor>
       );
 
-      expect(screen.getByText("Edit button")).toBeInTheDocument();
+      expect(result.getByText("Edit button")).toBeInTheDocument();
     });
 
     it("renders fallback when provided and user cannot edit", () => {
@@ -255,14 +255,14 @@ describe("RequireEditor", () => {
         isLoading: false,
       });
 
-      render(
+      const result = render(
         <RequireEditor fallback={<div>Cannot edit</div>}>
           <div>Edit button</div>
         </RequireEditor>
       );
 
-      expect(screen.queryByText("Edit button")).not.toBeInTheDocument();
-      expect(screen.getByText("Cannot edit")).toBeInTheDocument();
+      expect(result.queryByText("Edit button")).not.toBeInTheDocument();
+      expect(result.getByText("Cannot edit")).toBeInTheDocument();
     });
   });
 
@@ -290,23 +290,23 @@ describe("RequireEditor", () => {
     });
 
     it("does not render children when user cannot edit", () => {
-      render(
+      const result = render(
         <RequireEditor>
           <div>Edit button</div>
         </RequireEditor>
       );
 
-      expect(screen.queryByText("Edit button")).not.toBeInTheDocument();
+      expect(result.queryByText("Edit button")).not.toBeInTheDocument();
     });
 
     it("renders nothing when no fallback provided", () => {
-      const { container } = render(
+      const result = render(
         <RequireEditor>
           <div>Edit button</div>
         </RequireEditor>
       );
 
-      expect(container).toBeEmptyDOMElement();
+      expect(result.container).toBeEmptyDOMElement();
     });
   });
 });

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BrowserRouter } from "react-router";
 import { LoginModal } from "../LoginModal";
@@ -52,7 +52,7 @@ describe("LoginModal", () => {
 
   describe("rendering", () => {
     it("renders trigger button", () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -60,11 +60,11 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      expect(screen.getByRole("button", { name: "Open Login" })).toBeInTheDocument();
+      expect(result.getByRole("button", { name: "Open Login" })).toBeInTheDocument();
     });
 
     it("does not show modal content initially", () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -72,12 +72,12 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      expect(screen.queryByText("Login")).not.toBeInTheDocument();
-      expect(screen.queryByTestId("login-form")).not.toBeInTheDocument();
+      expect(result.queryByText("Login")).not.toBeInTheDocument();
+      expect(result.queryByTestId("login-form")).not.toBeInTheDocument();
     });
 
     it("shows modal content when trigger is clicked", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -85,19 +85,19 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(screen.getByText("Login")).toBeInTheDocument();
-        expect(screen.getByText("Enter your credentials to access your account")).toBeInTheDocument();
-        expect(screen.getByTestId("login-form")).toBeInTheDocument();
+        expect(result.getByText("Login")).toBeInTheDocument();
+        expect(result.getByText("Enter your credentials to access your account")).toBeInTheDocument();
+        expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
     });
   });
 
   describe("controlled mode", () => {
     it("respects external open state", () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal open={true} onOpenChange={vi.fn()}>
             <button>Open Login</button>
@@ -105,14 +105,14 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      expect(screen.getByText("Login")).toBeInTheDocument();
-      expect(screen.getByTestId("login-form")).toBeInTheDocument();
+      expect(result.getByText("Login")).toBeInTheDocument();
+      expect(result.getByTestId("login-form")).toBeInTheDocument();
     });
 
     it("calls onOpenChange when modal state changes", async () => {
       const mockOnOpenChange = vi.fn();
       
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal open={false} onOpenChange={mockOnOpenChange}>
             <button>Open Login</button>
@@ -120,7 +120,7 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
         expect(mockOnOpenChange).toHaveBeenCalledWith(true);
@@ -130,7 +130,7 @@ describe("LoginModal", () => {
 
   describe("LoginForm integration", () => {
     it("passes current URL as redirectTo", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -138,15 +138,15 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(screen.getByText("redirectTo: /test-path")).toBeInTheDocument();
+        expect(result.getByText("redirectTo: /test-path")).toBeInTheDocument();
       });
     });
 
     it("passes correct action to LoginForm", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -154,15 +154,15 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(screen.getByText("action: /login")).toBeInTheDocument();
+        expect(result.getByText("action: /login")).toBeInTheDocument();
       });
     });
 
     it("passes correct className to LoginForm", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -170,17 +170,17 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(screen.getByText("className: mt-4")).toBeInTheDocument();
+        expect(result.getByText("className: mt-4")).toBeInTheDocument();
       });
     });
   });
 
   describe("success handling", () => {
     it("closes modal on login success", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -189,22 +189,22 @@ describe("LoginModal", () => {
       );
 
       // Open modal
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       
       await waitFor(() => {
-        expect(screen.getByTestId("login-form")).toBeInTheDocument();
+        expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
 
       // Trigger success
-      fireEvent.click(screen.getByRole("button", { name: "Trigger Success" }));
+      fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
 
       await waitFor(() => {
-        expect(screen.queryByTestId("login-form")).not.toBeInTheDocument();
+        expect(result.queryByTestId("login-form")).not.toBeInTheDocument();
       });
     });
 
     it("reloads page on login success", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -213,14 +213,14 @@ describe("LoginModal", () => {
       );
 
       // Open modal
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       
       await waitFor(() => {
-        expect(screen.getByTestId("login-form")).toBeInTheDocument();
+        expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
 
       // Trigger success
-      fireEvent.click(screen.getByRole("button", { name: "Trigger Success" }));
+      fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
 
       await waitFor(() => {
         expect(mockReload).toHaveBeenCalledTimes(1);
@@ -230,7 +230,7 @@ describe("LoginModal", () => {
     it("handles success in controlled mode", async () => {
       const mockOnOpenChange = vi.fn();
       
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal open={true} onOpenChange={mockOnOpenChange}>
             <button>Open Login</button>
@@ -239,7 +239,7 @@ describe("LoginModal", () => {
       );
 
       // Trigger success
-      fireEvent.click(screen.getByRole("button", { name: "Trigger Success" }));
+      fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
 
       await waitFor(() => {
         expect(mockOnOpenChange).toHaveBeenCalledWith(false);
@@ -250,7 +250,7 @@ describe("LoginModal", () => {
 
   describe("navigation links", () => {
     it("shows sign up link", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -258,17 +258,17 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        const signUpLink = screen.getByRole("link", { name: "Sign up" });
+        const signUpLink = result.getByRole("link", { name: "Sign up" });
         expect(signUpLink).toBeInTheDocument();
         expect(signUpLink).toHaveAttribute("href", "/sign-up");
       });
     });
 
     it("closes modal when sign up link is clicked", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -277,14 +277,14 @@ describe("LoginModal", () => {
       );
 
       // Open modal
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       
       await waitFor(() => {
-        expect(screen.getByRole("link", { name: "Sign up" })).toBeInTheDocument();
+        expect(result.getByRole("link", { name: "Sign up" })).toBeInTheDocument();
       });
 
       // Get the link and verify it exists
-      const signUpLink = screen.getByRole("link", { name: "Sign up" });
+      const signUpLink = result.getByRole("link", { name: "Sign up" });
       expect(signUpLink).toBeInTheDocument();
       
       // We can't easily test the actual closing behavior due to how the onClick is set up
@@ -295,7 +295,7 @@ describe("LoginModal", () => {
 
   describe("accessibility", () => {
     it("has proper dialog title", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -303,15 +303,15 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+        expect(result.getByRole("heading", { name: "Login" })).toBeInTheDocument();
       });
     });
 
     it("has proper dialog description", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -319,15 +319,15 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(screen.getByText("Enter your credentials to access your account")).toBeInTheDocument();
+        expect(result.getByText("Enter your credentials to access your account")).toBeInTheDocument();
       });
     });
 
     it("trigger is accessible", () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button aria-label="Open login modal">Login</button>
@@ -335,14 +335,14 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      const trigger = screen.getByRole("button", { name: "Open login modal" });
+      const trigger = result.getByRole("button", { name: "Open login modal" });
       expect(trigger).toBeInTheDocument();
     });
   });
 
   describe("edge cases", () => {
     it("handles multiple modal instances", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <div>
             <LoginModal>
@@ -355,19 +355,19 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      fireEvent.click(screen.getByRole("button", { name: "Open Login 1" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login 1" }));
       
       await waitFor(() => {
-        expect(screen.getByText("Login")).toBeInTheDocument();
+        expect(result.getByText("Login")).toBeInTheDocument();
       });
 
       // Only one modal should be open at a time
-      expect(screen.getAllByTestId("login-form")).toHaveLength(1);
+      expect(result.getAllByTestId("login-form")).toHaveLength(1);
     });
 
     it("works with different trigger elements", () => {
       expect(() => {
-        render(
+        const result = render(
           <Wrapper>
             <LoginModal>
               <div>Custom trigger</div>
@@ -378,7 +378,7 @@ describe("LoginModal", () => {
     });
 
     it("handles undefined onSuccess gracefully", async () => {
-      render(
+      const result = render(
         <Wrapper>
           <LoginModal>
             <button>Open Login</button>
@@ -387,15 +387,15 @@ describe("LoginModal", () => {
       );
 
       // Open modal
-      fireEvent.click(screen.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       
       await waitFor(() => {
-        expect(screen.getByTestId("login-form")).toBeInTheDocument();
+        expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
 
       // Trigger success without onSuccess callback should not throw
       expect(() => {
-        fireEvent.click(screen.getByRole("button", { name: "Trigger Success" }));
+        fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
       }).not.toThrow();
     });
   });

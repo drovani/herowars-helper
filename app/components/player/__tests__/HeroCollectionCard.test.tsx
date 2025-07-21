@@ -1,7 +1,7 @@
 // ABOUTME: Tests for HeroCollectionCard component covering hero display and interactions
 // ABOUTME: Tests star/equipment updates and hero removal functionality
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, renderWithRouter as render, screen } from '~/__tests__/utils/test-utils'
+import { fireEvent, renderWithRouter as render } from '~/__tests__/utils/test-utils'
 import type { PlayerHeroWithDetails } from '~/repositories/types'
 import { HeroCollectionCard } from '../HeroCollectionCard'
 
@@ -29,19 +29,19 @@ const mockPlayerHero: PlayerHeroWithDetails = {
 describe('HeroCollectionCard', () => {
   describe('hero information display', () => {
     it('should display hero name and basic info', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
-      expect(screen.getByText('Astaroth')).toBeInTheDocument()
-      expect(screen.getByText('chaos')).toBeInTheDocument()
-      expect(screen.getByAltText('tank')).toBeInTheDocument()
+      expect(result.getByText('Astaroth')).toBeInTheDocument()
+      expect(result.getByText('chaos')).toBeInTheDocument()
+      expect(result.getByAltText('tank')).toBeInTheDocument()
       // Main stat is not displayed in the card - removing this assertion
     })
 
     it('should display creation date', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
       // Should show formatted date
-      expect(screen.getByText(/Added:/)).toBeInTheDocument()
+      expect(result.getByText(/Added:/)).toBeInTheDocument()
     })
 
     it('should display star rating', () => {
@@ -57,24 +57,24 @@ describe('HeroCollectionCard', () => {
     })
 
     it('should display equipment level', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
-      expect(screen.getByText('Equipment Level')).toBeInTheDocument()
+      expect(result.getByText('Equipment Level')).toBeInTheDocument()
     })
   })
 
   describe('faction and class styling', () => {
     it('should apply correct faction colors', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
-      const factionBadge = screen.getByText('chaos')
+      const factionBadge = result.getByText('chaos')
       expect(factionBadge).toHaveClass('bg-red-100', 'text-red-800')
     })
 
     it('should apply correct class colors', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
-      const classImage = screen.getByAltText('tank')
+      const classImage = result.getByAltText('tank')
       expect(classImage).toHaveAttribute('src', '/images/classes/tank.png')
     })
 
@@ -84,9 +84,9 @@ describe('HeroCollectionCard', () => {
         hero: { ...mockPlayerHero.hero, faction: 'honor' }
       }
 
-      render(<HeroCollectionCard playerHero={honorHero} />)
+      const result = render(<HeroCollectionCard playerHero={honorHero} />)
 
-      const factionBadge = screen.getByText('honor')
+      const factionBadge = result.getByText('honor')
       expect(factionBadge).toHaveClass('bg-blue-100', 'text-blue-800')
     })
 
@@ -98,9 +98,9 @@ describe('HeroCollectionCard', () => {
         hero: { ...mockPlayerHero.hero, faction: 'unknown-faction' }
       }
 
-      render(<HeroCollectionCard playerHero={unknownHero} />)
+      const result = render(<HeroCollectionCard playerHero={unknownHero} />)
 
-      const factionBadge = screen.getByText('unknown-faction')
+      const factionBadge = result.getByText('unknown-faction')
       expect(factionBadge).toHaveClass('bg-gray-100', 'text-gray-800')
 
       consoleSpy.mockRestore()
@@ -110,9 +110,9 @@ describe('HeroCollectionCard', () => {
   describe('star rating interaction', () => {
     it('should call onUpdateStars when star is clicked', () => {
       const onUpdateStars = vi.fn()
-      render(<HeroCollectionCard playerHero={mockPlayerHero} onUpdateStars={onUpdateStars} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} onUpdateStars={onUpdateStars} />)
 
-      const stars = screen.getAllByRole('button').filter(btn =>
+      const stars = result.getAllByRole('button').filter(btn =>
         btn.querySelector('svg')?.classList.contains('size-5')
       )
 
@@ -124,7 +124,7 @@ describe('HeroCollectionCard', () => {
 
     it('should be disabled when isUpdating is true', () => {
       const onUpdateStars = vi.fn()
-      render(
+      const result = render(
         <HeroCollectionCard
           playerHero={mockPlayerHero}
           onUpdateStars={onUpdateStars}
@@ -132,7 +132,7 @@ describe('HeroCollectionCard', () => {
         />
       )
 
-      const stars = screen.getAllByRole('button').filter(btn =>
+      const stars = result.getAllByRole('button').filter(btn =>
         btn.querySelector('svg')?.classList.contains('size-5')
       )
 
@@ -145,14 +145,14 @@ describe('HeroCollectionCard', () => {
 
   describe('equipment level interaction', () => {
     it('should display equipment level', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
       // The equipment level is displayed but may not be interactive in the test
-      expect(screen.getByText('Equipment Level')).toBeInTheDocument()
+      expect(result.getByText('Equipment Level')).toBeInTheDocument()
     })
 
     it('should handle updating state', () => {
-      render(
+      const result = render(
         <HeroCollectionCard
           playerHero={mockPlayerHero}
           isUpdating={true}
@@ -160,7 +160,7 @@ describe('HeroCollectionCard', () => {
       )
 
       // When updating, the remove button (with user-round-minus icon) should be disabled
-      const buttons = screen.getAllByRole('button')
+      const buttons = result.getAllByRole('button')
       const removeButton = buttons.find(button =>
         button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
@@ -171,9 +171,9 @@ describe('HeroCollectionCard', () => {
   describe('hero removal', () => {
     it('should call onRemoveHero when remove button is clicked', () => {
       const onRemoveHero = vi.fn()
-      render(<HeroCollectionCard playerHero={mockPlayerHero} onRemoveHero={onRemoveHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} onRemoveHero={onRemoveHero} />)
 
-      const buttons = screen.getAllByRole('button')
+      const buttons = result.getAllByRole('button')
       const removeButton = buttons.find(button =>
         button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
@@ -184,7 +184,7 @@ describe('HeroCollectionCard', () => {
 
     it('should be disabled when isUpdating is true', () => {
       const onRemoveHero = vi.fn()
-      render(
+      const result = render(
         <HeroCollectionCard
           playerHero={mockPlayerHero}
           onRemoveHero={onRemoveHero}
@@ -192,7 +192,7 @@ describe('HeroCollectionCard', () => {
         />
       )
 
-      const buttons = screen.getAllByRole('button')
+      const buttons = result.getAllByRole('button')
       const removeButton = buttons.find(button =>
         button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
@@ -207,22 +207,22 @@ describe('HeroCollectionCard', () => {
         created_at: null
       }
 
-      render(<HeroCollectionCard playerHero={heroWithNullDate} />)
+      const result = render(<HeroCollectionCard playerHero={heroWithNullDate} />)
 
-      expect(screen.getByText('Added: Unknown date')).toBeInTheDocument()
+      expect(result.getByText('Added: Unknown date')).toBeInTheDocument()
     })
 
     it('should format dates correctly', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
       // Should show formatted date (exact format depends on locale)
-      expect(screen.getByText(/Added: \d+\/\d+\/\d+/)).toBeInTheDocument()
+      expect(result.getByText(/Added: \d+\/\d+\/\d+/)).toBeInTheDocument()
     })
   })
 
   describe('loading states', () => {
     it('should show loading state when isUpdating is true', () => {
-      render(
+      const result = render(
         <HeroCollectionCard
           playerHero={mockPlayerHero}
           isUpdating={true}
@@ -230,7 +230,7 @@ describe('HeroCollectionCard', () => {
       )
 
       // All interactive elements should be disabled
-      const buttons = screen.getAllByRole('button')
+      const buttons = result.getAllByRole('button')
       const removeButton = buttons.find(button =>
         button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
@@ -247,9 +247,9 @@ describe('HeroCollectionCard', () => {
 
   describe('accessibility', () => {
     it('should have proper button roles', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} />)
 
-      const buttons = screen.getAllByRole('button')
+      const buttons = result.getAllByRole('button')
       const removeButton = buttons.find(button =>
         button.querySelector('svg')?.classList.contains('lucide-user-round-minus')
       )
@@ -266,9 +266,9 @@ describe('HeroCollectionCard', () => {
 
   describe('custom styling', () => {
     it('should apply custom className', () => {
-      render(<HeroCollectionCard playerHero={mockPlayerHero} className="custom-class" />)
+      const result = render(<HeroCollectionCard playerHero={mockPlayerHero} className="custom-class" />)
 
-      const card = screen.getByText('Astaroth').closest('[class*="card"]')
+      const card = result.getByText('Astaroth').closest('[class*="card"]')
       expect(card).toHaveClass('custom-class')
     })
   })

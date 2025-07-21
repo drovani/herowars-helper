@@ -28,8 +28,8 @@ export function MissionIndexSkeleton({
             key={missionIndex} 
             className="h-28 w-28 relative hover:scale-110 transition-all duration-500 overflow-hidden animate-pulse"
           >
-            {/* Random boss background placeholder */}
-            {missionIndex % 4 === 0 && (
+            {/* Boss background placeholder - first and last missions */}
+            {(missionIndex === 0 || missionIndex === missionsPerChapter - 1) && (
               <div className="absolute inset-0 bg-muted opacity-50" />
             )}
             <div className="absolute inset-0 flex items-center justify-center">
@@ -37,11 +37,11 @@ export function MissionIndexSkeleton({
             </div>
             <CardHeader className={cn(
               "p-1 bottom-0 absolute w-full text-center",
-              missionIndex % 4 === 0 ? "bg-orange-300/80" : "bg-white/80"
+              (missionIndex === 0 || missionIndex === missionsPerChapter - 1) ? "bg-orange-300/80" : "bg-white/80"
             )}>
               <CardTitle className="text-sm">
                 <Skeleton className="h-3 w-full" />
-                {missionIndex % 4 === 0 && (
+                {(missionIndex === 0 || missionIndex === missionsPerChapter - 1) && (
                   <Skeleton className="h-2 w-3/4 mt-1" />
                 )}
               </CardTitle>

@@ -7,18 +7,34 @@ import { SkeletonCard } from "./SkeletonCard";
 import { useMemo } from "react";
 
 interface SkeletonGridProps {
+  /** Additional CSS classes to apply to the grid container */
   className?: string;
+  /** Number of skeleton items to display (capped at 100 for performance) */
   items?: number;
+  /** Responsive column configuration for different screen sizes */
   columns?: {
+    /** Number of columns on mobile devices */
     mobile?: number;
+    /** Number of columns on tablet devices */
     tablet?: number;
+    /** Number of columns on desktop devices */
     desktop?: number;
   };
+  /** Size of individual skeleton items */
   itemSize?: "sm" | "md" | "lg";
+  /** Whether to show header controls (search, buttons) above the grid */
   showHeaders?: boolean;
+  /** Gap size between grid items */
   gap?: "sm" | "md" | "lg";
 }
 
+/**
+ * Skeleton placeholder for responsive grid layouts with configurable item count and spacing.
+ * Matches existing grid layouts used in heroes/equipment pages with proper responsive behavior.
+ * 
+ * @param props - Configuration options for the skeleton grid
+ * @returns A responsive skeleton grid with proper accessibility and loading announcements
+ */
 export function SkeletonGrid({ 
   className,
   items = 12,

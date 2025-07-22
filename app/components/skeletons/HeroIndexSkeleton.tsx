@@ -7,11 +7,21 @@ import { cn } from "~/lib/utils";
 import { useMemo } from "react";
 
 interface HeroIndexSkeletonProps {
+  /** Additional CSS classes to apply to the skeleton container */
   className?: string;
+  /** Display mode: "cards" for grid view, "tiles" for detailed table view */
   mode?: "cards" | "tiles";
+  /** Number of hero skeletons to display (capped for performance) */
   itemCount?: number;
 }
 
+/**
+ * Skeleton placeholder for hero index page with cards and tiles view modes.
+ * Matches hero grid responsive layout and supports both display modes with proper dimensions.
+ * 
+ * @param props - Configuration options for the hero index skeleton
+ * @returns A skeleton layout matching the hero index page structure with accessibility support
+ */
 export function HeroIndexSkeleton({ 
   className,
   mode = "cards",

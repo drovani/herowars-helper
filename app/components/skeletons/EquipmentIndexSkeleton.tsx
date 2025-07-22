@@ -6,11 +6,21 @@ import { Card, CardHeader } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 
 interface EquipmentIndexSkeletonProps {
+  /** Additional CSS classes to apply to the skeleton container */
   className?: string;
+  /** Number of equipment skeleton cards to display */
   itemCount?: number;
+  /** Whether to show the add equipment button skeleton */
   showAddButton?: boolean;
 }
 
+/**
+ * Skeleton placeholder for equipment index page with equipment card grid layout.
+ * Matches equipment card dimensions and responsive grid behavior with quality color placeholders.
+ * 
+ * @param props - Configuration options for the equipment index skeleton
+ * @returns A skeleton layout matching the equipment index page structure
+ */
 export function EquipmentIndexSkeleton({ 
   className,
   itemCount = 20,

@@ -1,39 +1,23 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import log from "loglevel";
+import { http, HttpResponse } from "msw";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createMockChapter,
+  createMockChapterList,
+  createMockEquipment,
+  createMockMission,
+} from "~/__tests__/mocks/msw/factories";
+import { resetStores, server, setChapterStore, setEquipmentStore, setMissionStore } from "~/__tests__/mocks/msw/server";
 import { MissionRepository } from "../MissionRepository";
-
-// Mock the supabase client
-const mockSupabaseClient = {
-  from: vi.fn().mockReturnThis(),
-  select: vi.fn().mockReturnThis(),
-  insert: vi.fn().mockReturnThis(),
-  update: vi.fn().mockReturnThis(),
-  delete: vi.fn().mockReturnThis(),
-  eq: vi.fn().mockReturnThis(),
-  in: vi.fn().mockReturnThis(),
-  order: vi.fn().mockReturnThis(),
-  limit: vi.fn().mockReturnThis(),
-  range: vi.fn().mockReturnThis(),
-  single: vi.fn().mockResolvedValue({ data: null, error: null }),
-  gte: vi.fn().mockReturnThis(),
-  neq: vi.fn().mockReturnThis(),
-  upsert: vi.fn().mockReturnThis(),
-};
-
-vi.mock("~/lib/supabase/client", () => ({
-  createClient: vi.fn(() => ({
-    supabase: mockSupabaseClient,
-  })),
-}));
 
 describe("MissionRepository", () => {
   let repository: MissionRepository;
-  let mockSupabase: any;
   let capturedLogs: Array<{ level: string; message: string; args: any[] }> = [];
   let originalMethodFactory: any;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    // Reset MSW stores for clean tests
+    resetStores();
 
     // Capture logs to in-memory array instead of console
     capturedLogs = [];
@@ -47,7 +31,6 @@ describe("MissionRepository", () => {
     log.rebuild();
 
     repository = new MissionRepository();
-    mockSupabase = (repository as any).supabase;
   });
 
   afterEach(() => {
@@ -74,214 +57,250 @@ describe("MissionRepository", () => {
   describe("findByChapter", () => {
     it("should find missions by chapter ID with proper sorting", async () => {
       const mockMissions = [
-        {
+        createMockMission({
           slug: "1-1",
           name: "Mission 1",
           chapter_id: 1,
           hero_slug: "astaroth",
           energy_cost: 6,
           level: 1,
-        },
-        {
+        }),
+        createMockMission({
           slug: "1-2",
           name: "Mission 2",
           chapter_id: 1,
           hero_slug: "galahad",
           energy_cost: 6,
           level: 2,
-        },
+        }),
       ];
+      setMissionStore(mockMissions);
 
-      // Mock the chain for multiple order calls - first order returns this, second resolves
-      mockSupabase.order.mockReturnValueOnce(mockSupabase);
-      mockSupabase.order.mockResolvedValueOnce({
-        data: mockMissions,
-        error: null,
-      });
+      // Add handler to validate the query parameters
+      server.use(
+        http.get("*/rest/v1/mission", ({ request }) => {
+          const url = new URL(request.url);
+          const chapterFilter = url.searchParams.get("chapter_id");
+          expect(chapterFilter).toBe("eq.1");
+
+          const orderParams = url.searchParams.getAll("order");
+          // Supabase combines multiple orders into a single comma-separated parameter
+          expect(orderParams).toContain("chapter_id.asc,level.asc");
+
+          return HttpResponse.json(mockMissions);
+        })
+      );
 
       const result = await repository.findByChapter(1);
 
       expect(result.data).toEqual(mockMissions);
       expect(result.error).toBeNull();
-      expect(mockSupabase.from).toHaveBeenCalledWith("mission");
-      expect(mockSupabase.select).toHaveBeenCalledWith("*");
-      expect(mockSupabase.eq).toHaveBeenCalledWith("chapter_id", 1);
     });
 
     it("should handle errors when finding missions by chapter", async () => {
-      const mockError = {
-        message: "Database error",
-        code: "DB_ERROR",
-        details: "Connection failed",
-      };
-
-      // Mock the chain for multiple order calls with error on final call
-      mockSupabase.order.mockReturnValueOnce(mockSupabase);
-      mockSupabase.order.mockResolvedValueOnce({
-        data: null,
-        error: mockError,
-      });
+      server.use(
+        http.get("*/rest/v1/mission", () => {
+          return HttpResponse.json(
+            {
+              message: "Database error",
+              code: "DB_ERROR",
+              details: "Connection failed",
+            },
+            { status: 500 }
+          );
+        })
+      );
 
       const result = await repository.findByChapter(1);
 
       expect(result.data).toBeNull();
-      expect(result.error).toEqual(mockError);
+      expect(result.error).toEqual({
+        message: "Database error",
+        code: "DB_ERROR",
+        details: "Connection failed",
+      });
     });
   });
 
   describe("findByHeroSlug", () => {
     it("should find missions by hero slug with proper sorting", async () => {
       const mockMissions = [
-        {
+        createMockMission({
           slug: "1-1",
           name: "Mission 1",
           chapter_id: 1,
           hero_slug: "astaroth",
           energy_cost: 6,
           level: 1,
-        },
-        {
+        }),
+        createMockMission({
           slug: "3-5",
           name: "Mission 3-5",
           chapter_id: 3,
           hero_slug: "astaroth",
           energy_cost: 8,
           level: 25,
-        },
+        }),
       ];
+      setMissionStore(mockMissions);
 
-      // Mock the chain for multiple order calls - first order returns this, second resolves
-      mockSupabase.order.mockReturnValueOnce(mockSupabase);
-      mockSupabase.order.mockResolvedValueOnce({
-        data: mockMissions,
-        error: null,
-      });
+      // Add handler to validate the query parameters
+      server.use(
+        http.get("*/rest/v1/mission", ({ request }) => {
+          const url = new URL(request.url);
+          const heroFilter = url.searchParams.get("hero_slug");
+          expect(heroFilter).toBe("eq.astaroth");
+
+          const orderParams = url.searchParams.getAll("order");
+          // Supabase combines multiple orders into a single comma-separated parameter
+          expect(orderParams).toContain("chapter_id.asc,level.asc");
+
+          return HttpResponse.json(mockMissions);
+        })
+      );
 
       const result = await repository.findByHeroSlug("astaroth");
 
       expect(result.data).toEqual(mockMissions);
       expect(result.error).toBeNull();
-      expect(mockSupabase.from).toHaveBeenCalledWith("mission");
-      expect(mockSupabase.select).toHaveBeenCalledWith("*");
-      expect(mockSupabase.eq).toHaveBeenCalledWith("hero_slug", "astaroth");
     });
   });
 
   describe("findWithChapter", () => {
     it("should find mission with chapter relationship", async () => {
-      const mockMissionWithChapter = {
+      const mockChapter = createMockChapter({ id: 1, title: "Chapter 1" });
+      const mockMission = createMockMission({
         slug: "1-1",
         name: "Mission 1",
         chapter_id: 1,
         hero_slug: "astaroth",
         energy_cost: 6,
         level: 1,
-        chapter: {
-          id: 1,
-          title: "Chapter 1",
-        },
-      };
-
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockMissionWithChapter,
-              error: null,
-            }),
-          }),
-        }),
       });
+
+      setChapterStore([mockChapter]);
+
+      server.use(
+        http.get("*/rest/v1/mission", ({ request }) => {
+          const url = new URL(request.url);
+          const select = url.searchParams.get("select");
+          const slugFilter = url.searchParams.get("slug");
+
+          expect(select).toContain("chapter(*)");
+          expect(slugFilter).toBe("eq.1-1");
+
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
+
+          // Return mission with chapter relationship
+          const missionWithChapter = { ...mockMission, chapter: mockChapter };
+          return HttpResponse.json(missionWithChapter);
+        })
+      );
 
       const result = await repository.findWithChapter("1-1");
 
-      expect(result.data).toEqual(mockMissionWithChapter);
+      expect(result.data).toEqual({ ...mockMission, chapter: mockChapter });
       expect(result.error).toBeNull();
     });
   });
 
   describe("findByCampaignSource", () => {
     it("should find missions by equipment campaign source", async () => {
-      const mockEquipment = {
+      const mockEquipment = createMockEquipment({
         slug: "sword-of-justice",
         campaign_sources: ["1-1", "1-2", "2-3"],
-      };
+      });
 
       const mockMissions = [
-        {
+        createMockMission({
           slug: "1-1",
           name: "Mission 1",
           chapter_id: 1,
           hero_slug: "astaroth",
           energy_cost: 6,
           level: 1,
-        },
-        {
+        }),
+        createMockMission({
           slug: "1-2",
           name: "Mission 2",
           chapter_id: 1,
           hero_slug: "galahad",
           energy_cost: 6,
           level: 2,
-        },
-        {
+        }),
+        createMockMission({
           slug: "2-3",
           name: "Mission 3",
           chapter_id: 2,
           hero_slug: "keira",
           energy_cost: 7,
           level: 15,
-        },
+        }),
       ];
 
-      // Mock the equipment query first
-      mockSupabase.from.mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockEquipment,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      setEquipmentStore([mockEquipment]);
+      setMissionStore(mockMissions);
 
-      // Then mock the mission query with multiple order calls
-      mockSupabase.from.mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          in: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({
-                data: mockMissions,
-                error: null,
-              }),
-            }),
-          }),
+      let equipmentCalled = false;
+      let missionCalled = false;
+
+      server.use(
+        // Equipment query first
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+          expect(slugFilter).toBe("eq.sword-of-justice");
+
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
+
+          equipmentCalled = true;
+          return HttpResponse.json(mockEquipment);
         }),
-      });
+        // Mission query with IN filter
+        http.get("*/rest/v1/mission", ({ request }) => {
+          // Skip the equipment call
+          if (!equipmentCalled) return;
+
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+          expect(slugFilter).toBe("in.(1-1,1-2,2-3)");
+
+          const orderParams = url.searchParams.getAll("order");
+          // Supabase combines multiple orders into a single comma-separated parameter
+          expect(orderParams).toContain("chapter_id.asc,level.asc");
+
+          missionCalled = true;
+          return HttpResponse.json(mockMissions);
+        })
+      );
 
       const result = await repository.findByCampaignSource("sword-of-justice");
 
       expect(result.data).toEqual(mockMissions);
       expect(result.error).toBeNull();
+      expect(equipmentCalled).toBe(true);
+      expect(missionCalled).toBe(true);
     });
 
     it("should return empty array when equipment has no campaign sources", async () => {
-      const mockEquipment = {
+      const mockEquipment = createMockEquipment({
         slug: "crafted-item",
         campaign_sources: null,
-      };
-
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockEquipment,
-              error: null,
-            }),
-          }),
-        }),
       });
+
+      setEquipmentStore([mockEquipment]);
+
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+          expect(slugFilter).toBe("eq.crafted-item");
+
+          return HttpResponse.json(mockEquipment);
+        })
+      );
 
       const result = await repository.findByCampaignSource("crafted-item");
 
@@ -290,93 +309,93 @@ describe("MissionRepository", () => {
     });
 
     it("should handle errors when equipment is not found", async () => {
-      const mockError = {
+      server.use(
+        http.get("*/rest/v1/equipment", () => {
+          return HttpResponse.json(
+            {
+              message: "Equipment not found",
+              code: "PGRST116",
+              details: "No rows returned",
+            },
+            { status: 404 }
+          );
+        })
+      );
+
+      const result = await repository.findByCampaignSource("non-existent-equipment");
+
+      expect(result.data).toBeNull();
+      expect(result.error).toEqual({
         message: "Equipment not found",
         code: "PGRST116",
         details: "No rows returned",
-      };
-
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: null,
-              error: mockError,
-            }),
-          }),
-        }),
       });
-
-      const result = await repository.findByCampaignSource(
-        "non-existent-equipment"
-      );
-
-      expect(result.data).toBeNull();
-      expect(result.error).toEqual(mockError);
     });
   });
 
   describe("findAllChapters", () => {
     it("should find all chapters", async () => {
-      const mockChapters = [
-        { id: 1, title: "Chapter 1" },
-        { id: 2, title: "Chapter 2" },
-        { id: 3, title: "Chapter 3" },
-      ];
+      const mockChapters = createMockChapterList(3);
+      setChapterStore(mockChapters);
 
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: mockChapters,
-            error: null,
-          }),
-        }),
-      });
+      server.use(
+        http.get("*/rest/v1/chapter", ({ request }) => {
+          const url = new URL(request.url);
+          const order = url.searchParams.get("order");
+          expect(order).toBe("id.asc");
+
+          return HttpResponse.json(mockChapters);
+        })
+      );
 
       const result = await repository.findAllChapters();
 
       expect(result.data).toEqual(mockChapters);
       expect(result.error).toBeNull();
-      expect(mockSupabase.from).toHaveBeenCalledWith("chapter");
     });
 
     it("should handle errors when finding chapters", async () => {
-      const mockError = {
-        message: "Database error",
-        code: "DB_ERROR",
-        details: "Connection failed",
-      };
-
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({
-            data: null,
-            error: mockError,
-          }),
-        }),
-      });
+      server.use(
+        http.get("*/rest/v1/chapter", () => {
+          return HttpResponse.json(
+            {
+              message: "Database error",
+              code: "DB_ERROR",
+              details: "Connection failed",
+            },
+            { status: 500 }
+          );
+        })
+      );
 
       const result = await repository.findAllChapters();
 
       expect(result.data).toBeNull();
-      expect(result.error).toEqual(mockError);
+      expect(result.error).toEqual({
+        message: "Database error",
+        code: "DB_ERROR",
+        details: "Connection failed",
+      });
     });
   });
 
   describe("findChapterById", () => {
     it("should find chapter by ID", async () => {
-      const mockChapter = { id: 1, title: "Chapter 1" };
+      const mockChapter = createMockChapter({ id: 1, title: "Chapter 1" });
+      setChapterStore([mockChapter]);
 
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockChapter,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      server.use(
+        http.get("*/rest/v1/chapter", ({ request }) => {
+          const url = new URL(request.url);
+          const idFilter = url.searchParams.get("id");
+          expect(idFilter).toBe("eq.1");
+
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
+
+          return HttpResponse.json(mockChapter);
+        })
+      );
 
       const result = await repository.findChapterById(1);
 
@@ -387,45 +406,52 @@ describe("MissionRepository", () => {
 
   describe("findChapterWithMissions", () => {
     it("should find chapter with missions", async () => {
-      const mockChapterWithMissions = {
-        id: 1,
-        title: "Chapter 1",
-        missions: [
-          {
-            slug: "1-1",
-            name: "Mission 1",
-            chapter_id: 1,
-            hero_slug: "astaroth",
-            energy_cost: 6,
-            level: 1,
-          },
-          {
-            slug: "1-2",
-            name: "Mission 2",
-            chapter_id: 1,
-            hero_slug: "galahad",
-            energy_cost: 6,
-            level: 2,
-          },
-        ],
-      };
-
-      mockSupabase.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: mockChapterWithMissions,
-                error: null,
-              }),
-            }),
-          }),
+      const mockChapter = createMockChapter({ id: 1, title: "Chapter 1" });
+      const mockMissions = [
+        createMockMission({
+          slug: "1-1",
+          name: "Mission 1",
+          chapter_id: 1,
+          hero_slug: "astaroth",
+          energy_cost: 6,
+          level: 1,
         }),
-      });
+        createMockMission({
+          slug: "1-2",
+          name: "Mission 2",
+          chapter_id: 1,
+          hero_slug: "galahad",
+          energy_cost: 6,
+          level: 2,
+        }),
+      ];
+
+      setChapterStore([mockChapter]);
+      setMissionStore(mockMissions);
+
+      server.use(
+        http.get("*/rest/v1/chapter", ({ request }) => {
+          const url = new URL(request.url);
+          const select = url.searchParams.get("select");
+          const idFilter = url.searchParams.get("id");
+          const order = url.searchParams.get("order");
+
+          expect(select).toContain("mission(*)");
+          expect(idFilter).toBe("eq.1");
+          expect(order).toBe("missions.level.asc");
+
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
+
+          // Return chapter with missions relationship
+          const chapterWithMissions = { ...mockChapter, missions: mockMissions };
+          return HttpResponse.json(chapterWithMissions);
+        })
+      );
 
       const result = await repository.findChapterWithMissions(1);
 
-      expect(result.data).toEqual(mockChapterWithMissions);
+      expect(result.data).toEqual({ ...mockChapter, missions: mockMissions });
       expect(result.error).toBeNull();
     });
   });
@@ -437,27 +463,23 @@ describe("MissionRepository", () => {
         { id: 2, title: "Chapter 2" },
       ];
 
-      const mockCreatedChapters = [
-        { id: 1, title: "Chapter 1" },
-        { id: 2, title: "Chapter 2" },
-      ];
+      const mockCreatedChapters = inputChapters.map((c) => createMockChapter(c));
 
-      mockSupabase.from.mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi
-              .fn()
-              .mockResolvedValueOnce({
-                data: mockCreatedChapters[0],
-                error: null,
-              })
-              .mockResolvedValueOnce({
-                data: mockCreatedChapters[1],
-                error: null,
-              }),
-          }),
-        }),
-      });
+      let callCount = 0;
+      server.use(
+        http.post("*/rest/v1/chapter", async ({ request }) => {
+          const body = (await request.json()) as any;
+          const expectedChapter = inputChapters[callCount];
+          expect(body).toEqual(expectedChapter);
+
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
+
+          const responseChapter = mockCreatedChapters[callCount];
+          callCount++;
+          return HttpResponse.json(responseChapter, { status: 201 });
+        })
+      );
 
       const result = await repository.bulkCreateChapters(inputChapters);
 
@@ -471,17 +493,24 @@ describe("MissionRepository", () => {
         { id: -1, title: "" }, // Invalid data
       ];
 
-      // Mock successful creation for the first item
-      mockSupabase.from.mockReturnValueOnce({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: { id: 1, title: "Chapter 1" },
-              error: null,
-            }),
-          }),
-        }),
-      });
+      let callCount = 0;
+      server.use(
+        http.post("*/rest/v1/chapter", async ({ request }) => {
+          const body = (await request.json()) as any;
+          const expectedChapter = inputChapters[callCount];
+          expect(body).toEqual(expectedChapter);
+
+          callCount++;
+
+          if (callCount === 1) {
+            // First chapter succeeds
+            return HttpResponse.json(createMockChapter(expectedChapter), { status: 201 });
+          } else {
+            // Second chapter fails validation (handled by repository validation)
+            return HttpResponse.json({ message: "Validation failed", code: "VALIDATION_ERROR" }, { status: 400 });
+          }
+        })
+      );
 
       const result = await repository.bulkCreateChapters(inputChapters);
 
@@ -512,41 +541,22 @@ describe("MissionRepository", () => {
         },
       ];
 
-      const mockCreatedMissions = [
-        {
-          slug: "1-1",
-          name: "Mission 1",
-          chapter_id: 1,
-          hero_slug: "astaroth",
-          energy_cost: 6,
-          level: 1,
-        },
-        {
-          slug: "1-2",
-          name: "Mission 2",
-          chapter_id: 1,
-          hero_slug: "galahad",
-          energy_cost: 6,
-          level: 2,
-        },
-      ];
+      const mockCreatedMissions = inputMissions.map((m) => createMockMission(m));
 
-      mockSupabase.from.mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi
-              .fn()
-              .mockResolvedValueOnce({
-                data: mockCreatedMissions[0],
-                error: null,
-              })
-              .mockResolvedValueOnce({
-                data: mockCreatedMissions[1],
-                error: null,
-              }),
-          }),
-        }),
-      });
+      server.use(
+        http.post("*/rest/v1/mission", async ({ request }) => {
+          const body = (await request.json()) as any;
+          // Just validate that the body is one of the expected missions
+          expect(inputMissions).toContainEqual(body);
+
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
+
+          // Return the created mission based on the request body
+          const responseMission = createMockMission(body);
+          return HttpResponse.json(responseMission, { status: 201 });
+        })
+      );
 
       const result = await repository.bulkCreateMissions(inputMissions);
 
@@ -557,25 +567,35 @@ describe("MissionRepository", () => {
 
   describe("purgeMissionDomain", () => {
     it("should purge both missions and chapters successfully", async () => {
-      // Mock mission delete with count
-      mockSupabase.from.mockReturnValueOnce({
-        delete: vi.fn().mockReturnValue({
-          gte: vi.fn().mockResolvedValue({
-            count: 5,
-            error: null,
-          }),
-        }),
-      });
+      let missionDeleteCalled = false;
+      let chapterDeleteCalled = false;
 
-      // Mock chapter delete with count
-      mockSupabase.from.mockReturnValueOnce({
-        delete: vi.fn().mockReturnValue({
-          gte: vi.fn().mockResolvedValue({
-            count: 3,
-            error: null,
-          }),
+      server.use(
+        // Mission delete
+        http.delete("*/rest/v1/mission", ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+          expect(slugFilter).toBe("gte.");
+
+          missionDeleteCalled = true;
+          return HttpResponse.json(null, {
+            status: 204,
+            headers: { "Content-Range": "*/5" },
+          });
         }),
-      });
+        // Chapter delete
+        http.delete("*/rest/v1/chapter", ({ request }) => {
+          const url = new URL(request.url);
+          const idFilter = url.searchParams.get("id");
+          expect(idFilter).toBe("gte.0");
+
+          chapterDeleteCalled = true;
+          return HttpResponse.json(null, {
+            status: 204,
+            headers: { "Content-Range": "*/3" },
+          });
+        })
+      );
 
       const result = await repository.purgeMissionDomain();
 
@@ -584,25 +604,23 @@ describe("MissionRepository", () => {
         chapters: 3,
       });
       expect(result.error).toBeNull();
-      expect(mockSupabase.from).toHaveBeenCalledWith("mission");
-      expect(mockSupabase.from).toHaveBeenCalledWith("chapter");
+      expect(missionDeleteCalled).toBe(true);
+      expect(chapterDeleteCalled).toBe(true);
     });
 
     it("should handle mission delete errors", async () => {
-      const mockError = {
-        message: "Mission delete failed",
-        code: "DELETE_ERROR",
-        details: "Database constraint violation",
-      };
-
-      mockSupabase.from.mockReturnValue({
-        delete: vi.fn().mockReturnValue({
-          gte: vi.fn().mockResolvedValue({
-            data: null,
-            error: mockError,
-          }),
-        }),
-      });
+      server.use(
+        http.delete("*/rest/v1/mission", () => {
+          return HttpResponse.json(
+            {
+              message: "Mission delete failed",
+              code: "DELETE_ERROR",
+              details: "Database constraint violation",
+            },
+            { status: 500 }
+          );
+        })
+      );
 
       const result = await repository.purgeMissionDomain();
 
@@ -615,32 +633,29 @@ describe("MissionRepository", () => {
     });
 
     it("should handle chapter delete errors", async () => {
-      const mockMissionDeleteResult = Array(5).fill({ slug: "mission-1" });
-      const mockChapterError = {
-        message: "Chapter delete failed",
-        code: "DELETE_ERROR",
-        details: "Database constraint violation",
-      };
+      let missionDeleteCalled = false;
 
-      // Mock successful mission delete
-      mockSupabase.from.mockReturnValueOnce({
-        delete: vi.fn().mockReturnValue({
-          gte: vi.fn().mockResolvedValue({
-            data: mockMissionDeleteResult,
-            error: null,
-          }),
+      server.use(
+        // Successful mission delete
+        http.delete("*/rest/v1/mission", () => {
+          missionDeleteCalled = true;
+          return HttpResponse.json(null, {
+            status: 204,
+            headers: { "Content-Range": "*/5" },
+          });
         }),
-      });
-
-      // Mock failed chapter delete
-      mockSupabase.from.mockReturnValueOnce({
-        delete: vi.fn().mockReturnValue({
-          gte: vi.fn().mockResolvedValue({
-            data: null,
-            error: mockChapterError,
-          }),
-        }),
-      });
+        // Failed chapter delete
+        http.delete("*/rest/v1/chapter", () => {
+          return HttpResponse.json(
+            {
+              message: "Chapter delete failed",
+              code: "DELETE_ERROR",
+              details: "Database constraint violation",
+            },
+            { status: 500 }
+          );
+        })
+      );
 
       const result = await repository.purgeMissionDomain();
 
@@ -650,38 +665,38 @@ describe("MissionRepository", () => {
         code: "DELETE_ERROR",
         details: "Database constraint violation",
       });
+      expect(missionDeleteCalled).toBe(true);
     });
 
     it("should handle unexpected errors during purge", async () => {
-      mockSupabase.from.mockImplementation(() => {
-        throw new Error("Unexpected database error");
-      });
+      // Force an unexpected error by having the handler throw
+      server.use(
+        http.delete("*/rest/v1/mission", () => {
+          throw new Error("Unexpected database error");
+        })
+      );
 
       const result = await repository.purgeMissionDomain();
 
       expect(result.data).toBeNull();
-      expect(result.error?.message).toBe("Unexpected database error");
+      expect(result.error?.message).toBe("Failed to purge missions: Unexpected database error");
     });
 
     it("should handle empty delete results", async () => {
-      // Mock empty delete results with count 0
-      mockSupabase.from.mockReturnValueOnce({
-        delete: vi.fn().mockReturnValue({
-          gte: vi.fn().mockResolvedValue({
-            count: 0,
-            error: null,
-          }),
+      server.use(
+        http.delete("*/rest/v1/mission", () => {
+          return HttpResponse.json(null, {
+            status: 204,
+            headers: { "Content-Range": "*/0" },
+          });
         }),
-      });
-
-      mockSupabase.from.mockReturnValueOnce({
-        delete: vi.fn().mockReturnValue({
-          gte: vi.fn().mockResolvedValue({
-            count: 0,
-            error: null,
-          }),
-        }),
-      });
+        http.delete("*/rest/v1/chapter", () => {
+          return HttpResponse.json(null, {
+            status: 204,
+            headers: { "Content-Range": "*/0" },
+          });
+        })
+      );
 
       const result = await repository.purgeMissionDomain();
 
@@ -700,44 +715,39 @@ describe("MissionRepository", () => {
         { id: 2, title: "New Chapter" },
       ];
 
-      const existingChapter = { id: 1, title: "Existing Chapter" };
-      const newChapter = { id: 2, title: "New Chapter" };
+      const existingChapter = createMockChapter({ id: 1, title: "Existing Chapter" });
+      const newChapter = createMockChapter({ id: 2, title: "New Chapter" });
 
-      // Mock findChapterById for first chapter (exists)
-      mockSupabase.from.mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: existingChapter,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      let findCallCount = 0;
+      server.use(
+        // Mock findChapterById calls
+        http.get("*/rest/v1/chapter", ({ request }) => {
+          const url = new URL(request.url);
+          const idFilter = url.searchParams.get("id");
+          const acceptHeader = request.headers.get("Accept");
 
-      // Mock findChapterById for second chapter (doesn't exist)
-      mockSupabase.from.mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: null,
-              error: { message: "Not found", code: "PGRST116" },
-            }),
-          }),
-        }),
-      });
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
 
-      // Mock insert for new chapter
-      mockSupabase.from.mockReturnValueOnce({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: newChapter,
-              error: null,
-            }),
-          }),
+          findCallCount++;
+
+          if (idFilter === "eq.1") {
+            // First chapter exists
+            return HttpResponse.json(existingChapter);
+          } else if (idFilter === "eq.2") {
+            // Second chapter doesn't exist
+            return HttpResponse.json({ message: "Not found", code: "PGRST116" }, { status: 404 });
+          }
+
+          return HttpResponse.json(null, { status: 404 });
         }),
-      });
+        // Mock insert for new chapter
+        http.post("*/rest/v1/chapter", async ({ request }) => {
+          const body = (await request.json()) as any;
+          expect(body).toEqual({ id: 2, title: "New Chapter" });
+
+          return HttpResponse.json(newChapter, { status: 201 });
+        })
+      );
 
       const result = await repository.bulkCreateChapters(inputChapters, {
         skipExisting: true,
@@ -746,9 +756,8 @@ describe("MissionRepository", () => {
       expect(result.data).toEqual([newChapter]);
       expect(result.error).toBeDefined();
       expect(result.error?.code).toBe("BULK_PARTIAL_SUCCESS");
-      expect((result.error?.details as any)?.skipped).toEqual([
-        existingChapter,
-      ]);
+      expect((result.error?.details as any)?.skipped).toEqual([existingChapter]);
+      expect(findCallCount).toBe(2);
     });
   });
 
@@ -767,7 +776,7 @@ describe("MissionRepository", () => {
 
       const bulkCreateSpy = vi.spyOn(repository, "bulkCreate");
       bulkCreateSpy.mockResolvedValueOnce({
-        data: inputMissions,
+        data: inputMissions.map((m) => createMockMission(m)),
         error: null,
       });
 

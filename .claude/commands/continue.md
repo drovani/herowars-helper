@@ -3,12 +3,12 @@
 ## Usage
 
 ```bash
-claude continue [instruction-file.md]
+claude continue $ARGUMENTS
 ```
 
 ## Description
 
-This command reads a markdown instruction file and follows the steps outlined within it, updating the file with progress as tasks are completed. The command is designed to handle multi-phase project work where progress tracking is important.
+This command reads a markdown instruction file ($ARGUMENTS) and follows the steps outlined within it, updating the file with progress as tasks are completed. The command is designed to handle multi-phase project work where progress tracking is important.
 
 ## Key Features
 
@@ -43,8 +43,8 @@ This command reads a markdown instruction file and follows the steps outlined wi
 
 - **ALWAYS** make a new branch before making any file changes
 - **NEVER** try to reset the linked database; only reset the local database with `npx supabase db reset`
-- Run `npm run tsc` after each task's code changes
-- Execute relevant tests for modified areas
+- Run `npm run tsc` after each task's code changes to check for Typescript errors
+- Execute relevant tests for modified areas and ensure tests properly pass.
 - Update todo tracking using TodoWrite tool
 - Generate commits with descriptive messages
 

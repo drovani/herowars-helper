@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 
 export default function Titans() {
   const artifactRounds = [
@@ -56,7 +62,8 @@ export default function Titans() {
         <CardHeader>
           <CardTitle>Titan Quick Guide</CardTitle>
           <CardDescription>
-            <p>Based on the{" "}
+            <p>
+              Based on the{" "}
               <a
                 href="https://www.reddit.com/r/HeroWarsApp/comments/1bq1r65/titan_guide_infographic_march_2024/#lightbox"
                 className="text-blue-500 hover:text-blue-600"
@@ -64,12 +71,18 @@ export default function Titans() {
                 infograph
               </a>{" "}
               created by{" "}
-              <a href="https://www.reddit.com/user/FancyGamesStudio/" className="text-blue-500 hover:text-blue-600">
+              <a
+                href="https://www.reddit.com/user/FancyGamesStudio/"
+                className="text-blue-500 hover:text-blue-600"
+              >
                 FancyGamesStudio
-              </a>.
+              </a>
+              .
             </p>
             <p>
-              This guide is a work in progress and will be updated as new information becomes available. It particular, it has not been updated since the release of Verdoc, Verdant Protector.
+              This guide is a work in progress and will be updated as new
+              information becomes available. It particular, it has not been
+              updated since the release of Verdoc, Verdant Protector.
             </p>
           </CardDescription>
         </CardHeader>

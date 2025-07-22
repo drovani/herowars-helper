@@ -1,349 +1,324 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Heroes Collection Schema",
-    "type": "array",
-    "items": {
-        "type": "object",
-        "required": [
-            "name",
-            "slug",
-            "class",
-            "updated_on",
-            "faction",
-            "main_stat",
-            "attack_type",
-            "stone_source",
-            "order_rank"
-        ],
-        "properties": {
-            "name": {
-                "type": "string"
-            },
-            "slug": {
-                "type": "string"
-            },
-            "class": {
-                "type": "string",
-                "enum": [
-                    "tank",
-                    "warrior",
-                    "mage",
-                    "support",
-                    "control",
-                    "marksman",
-                    "healer"
-                ]
-            },
-            "faction": {
-                "type": "string",
-                "enum": [
-                    "nature",
-                    "chaos",
-                    "honor",
-                    "eternity",
-                    "mystery",
-                    "progress"
-                ]
-            },
-            "main_stat": {
-                "type": "string",
-                "enum": [
-                    "strength",
-                    "agility",
-                    "intelligence"
-                ]
-            },
-            "attack_type": {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                    "enum": [
-                        "physical",
-                        "magic",
-                        "pure"
-                    ]
-                }
-            },
-            "stone_source": {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                    "enum": [
-                        "Arena Shop",
-                        "Campaign",
-                        "Heroic Chest",
-                        "Outland Shop",
-                        "Special Events",
-                        "Dungeon Shop",
-                        "Guild War Shop",
-                        "Grand Arena Shop",
-                        "Tower Shop",
-                        "Town Shop",
-                        "Highwayman Shop",
-                        "Hydra Shop",
-                        "Soul Shop"
-                    ]
-                }
-            },
-            "skins": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": [
-                        "name",
-                        "stat"
-                    ],
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "stat": {
-                            "type": "string",
-                            "enum": [
-                                "intelligence",
-                                "agility",
-                                "strength",
-                                "health",
-                                "physical attack",
-                                "magic attack",
-                                "armor",
-                                "magic defense",
-                                "dodge",
-                                "magic penetration",
-                                "armor penetration",
-                                "vampirism",
-                                "crit hit chance"
-                            ]
-                        },
-                        "source": {
-                            "type": "string"
-                        },
-                        "has_plus": {
-                            "type": "boolean"
-                        }
-                    }
-                }
-            },
-            "items": {
-                "type": "object",
-                "properties": {
-                    "white": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "green": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "green+1": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "blue": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "blue+1": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "blue+2": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "violet": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "violet+1": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "violet+2": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "violet+3": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "orange": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "orange+1": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "orange+2": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "orange+3": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    },
-                    "orange+4": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 6,
-                        "maxItems": 6
-                    }
-                }
-            },
-            "glyphs": {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                    "enum": [
-                        "intelligence",
-                        "agility",
-                        "strength",
-                        "health",
-                        "physical attack",
-                        "magic attack",
-                        "armor",
-                        "magic defense",
-                        "dodge",
-                        "magic penetration",
-                        "vampirism",
-                        "armor penetration",
-                        "crit hit chance"
-                    ]
-                },
-                "minItems": 5,
-                "maxItems": 5
-            },
-            "order_rank": {
-                "type": "number",
-                "minimum": 1
-            },
-            "updated_on": {
-                "type": "string",
-                "format": "date-time",
-                "description": "Timestamp when the equipment was last updated.",
-                "readOnly": true
-            },
-            "artifacts": {
-                "type": "object",
-                "properties": {
-                    "weapon": {
-                        "type": "object",
-                        "required": [
-                            "name",
-                            "team_buff"
-                        ],
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "team_buff": {
-                                "type": "string",
-                                "enum": [
-                                    "armor",
-                                    "dodge",
-                                    "physical attack",
-                                    "magic attack",
-                                    "magic defense",
-                                    "armor penetration",
-                                    "crit hit chance",
-                                    "magic penetration"
-                                ]
-                            },
-                            "team_buff_secondary": {
-                                "type": "string",
-                                "enum": [
-                                    "armor",
-                                    "dodge",
-                                    "physical attack",
-                                    "magic attack",
-                                    "magic defense",
-                                    "armor penetration",
-                                    "crit hit chance",
-                                    "magic penetration"
-                                ]
-                            }
-                        }
-                    },
-                    "book": {
-                        "type": "string",
-                        "enum": [
-                            "Alchemist's Folio",
-                            "Book of Illusions",
-                            "Defender's Covenant",
-                            "Manuscript of the Void",
-                            "Tome of Arcane Knowledge",
-                            "Warrior's Code"
-                        ]
-                    },
-                    "ring": {
-                        "type": "null"
-                    }
-                },
-                "required": [
-                    "weapon",
-                    "book",
-                    "ring"
-                ]
-            }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Heroes Collection Schema",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "name",
+      "slug",
+      "class",
+      "updated_on",
+      "faction",
+      "main_stat",
+      "attack_type",
+      "stone_source",
+      "order_rank"
+    ],
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "slug": {
+        "type": "string"
+      },
+      "class": {
+        "type": "string",
+        "enum": [
+          "tank",
+          "warrior",
+          "mage",
+          "support",
+          "control",
+          "marksman",
+          "healer"
+        ]
+      },
+      "faction": {
+        "type": "string",
+        "enum": ["nature", "chaos", "honor", "eternity", "mystery", "progress"]
+      },
+      "main_stat": {
+        "type": "string",
+        "enum": ["strength", "agility", "intelligence"]
+      },
+      "attack_type": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["physical", "magic", "pure"]
         }
+      },
+      "stone_source": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "Arena Shop",
+            "Campaign",
+            "Heroic Chest",
+            "Outland Shop",
+            "Special Events",
+            "Dungeon Shop",
+            "Guild War Shop",
+            "Grand Arena Shop",
+            "Tower Shop",
+            "Town Shop",
+            "Highwayman Shop",
+            "Hydra Shop",
+            "Soul Shop"
+          ]
+        }
+      },
+      "skins": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["name", "stat"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "stat": {
+              "type": "string",
+              "enum": [
+                "intelligence",
+                "agility",
+                "strength",
+                "health",
+                "physical attack",
+                "magic attack",
+                "armor",
+                "magic defense",
+                "dodge",
+                "magic penetration",
+                "armor penetration",
+                "vampirism",
+                "crit hit chance"
+              ]
+            },
+            "source": {
+              "type": "string"
+            },
+            "has_plus": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "white": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "green": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "green+1": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "blue": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "blue+1": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "blue+2": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "violet": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "violet+1": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "violet+2": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "violet+3": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "orange": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "orange+1": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "orange+2": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "orange+3": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          },
+          "orange+4": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          }
+        }
+      },
+      "glyphs": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": [
+            "intelligence",
+            "agility",
+            "strength",
+            "health",
+            "physical attack",
+            "magic attack",
+            "armor",
+            "magic defense",
+            "dodge",
+            "magic penetration",
+            "vampirism",
+            "armor penetration",
+            "crit hit chance"
+          ]
+        },
+        "minItems": 5,
+        "maxItems": 5
+      },
+      "order_rank": {
+        "type": "number",
+        "minimum": 1
+      },
+      "updated_on": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Timestamp when the equipment was last updated.",
+        "readOnly": true
+      },
+      "artifacts": {
+        "type": "object",
+        "properties": {
+          "weapon": {
+            "type": "object",
+            "required": ["name", "team_buff"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "team_buff": {
+                "type": "string",
+                "enum": [
+                  "armor",
+                  "dodge",
+                  "physical attack",
+                  "magic attack",
+                  "magic defense",
+                  "armor penetration",
+                  "crit hit chance",
+                  "magic penetration"
+                ]
+              },
+              "team_buff_secondary": {
+                "type": "string",
+                "enum": [
+                  "armor",
+                  "dodge",
+                  "physical attack",
+                  "magic attack",
+                  "magic defense",
+                  "armor penetration",
+                  "crit hit chance",
+                  "magic penetration"
+                ]
+              }
+            }
+          },
+          "book": {
+            "type": "string",
+            "enum": [
+              "Alchemist's Folio",
+              "Book of Illusions",
+              "Defender's Covenant",
+              "Manuscript of the Void",
+              "Tome of Arcane Knowledge",
+              "Warrior's Code"
+            ]
+          },
+          "ring": {
+            "type": "null"
+          }
+        },
+        "required": ["weapon", "book", "ring"]
+      }
     }
+  }
 }

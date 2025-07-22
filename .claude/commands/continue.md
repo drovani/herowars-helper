@@ -1,21 +1,25 @@
 # Continue Command for Claude Code
 
 ## Usage
+
 ```bash
 claude continue [instruction-file.md]
 ```
 
 ## Description
+
 This command reads a markdown instruction file and follows the steps outlined within it, updating the file with progress as tasks are completed. The command is designed to handle multi-phase project work where progress tracking is important.
 
 ## Key Features
 
 ### 1. Progress Tracking
+
 - **Phase Completion**: Mark phases as ✅ COMPLETED when all tasks within are finished
 - **Task Status**: Update individual tasks with status indicators (🔄 IN PROGRESS, ✅ DONE, ❌ FAILED)
 - **Progress Comments**: Add timestamped progress notes inline with tasks
 
 ### 2. Auto-Documentation
+
 - **Timestamp Progress**: Add completion times for phases and major tasks
 - **Error Logging**: Document any issues encountered with solutions
 - **Code Changes**: Note which files were modified and why
@@ -24,17 +28,20 @@ This command reads a markdown instruction file and follows the steps outlined wi
 ## Command Implementation Notes
 
 ### Error Handling
+
 - If a task fails, mark it as ❌ FAILED with error details
 - Continue with remaining tasks when possible
 - Provide clear next steps for failed tasks
 
 ### Progress Persistence
+
 - Save progress after each completed task by commiting the code
 - Allow resuming from any point in the instruction file
 - Maintain git history for each phase completion
 
 ### Integration with Development Workflow
-- **ALWAYS** make a new branch before making any file changes 
+
+- **ALWAYS** make a new branch before making any file changes
 - **NEVER** try to reset the linked database; only reset the local database with `npx supabase db reset`
 - Run `npm run tsc` after each task's code changes
 - Execute relevant tests for modified areas

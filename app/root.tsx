@@ -17,7 +17,9 @@ import { formatTitle, siteConfig } from "./config/site";
 import { AuthProvider } from "./contexts/AuthContext";
 import styles from "./tailwind.css?url";
 
-export const links: Route.LinksFunction = () => [{ rel: "stylesheet", href: styles, as: "style" }];
+export const links: Route.LinksFunction = () => [
+  { rel: "stylesheet", href: styles, as: "style" },
+];
 
 export const meta = (_: Route.MetaArgs) => {
   return [
@@ -36,7 +38,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 export function Layout(props: Route.ComponentProps) {
   const request = props?.loaderData?.request;
   const [isHydrated, setIsHydrated] = useState(false);
-  
+
   // Handle hydration to prevent router context errors
   useEffect(() => {
     setIsHydrated(true);
@@ -48,7 +50,9 @@ export function Layout(props: Route.ComponentProps) {
     {
       breadcrumb?: (
         matches: UIMatch<unknown, unknown>
-      ) => { href?: string; title: string } | { href?: string; title: string }[];
+      ) =>
+        | { href?: string; title: string }
+        | { href?: string; title: string }[];
     }
   >[] = [];
 
@@ -58,12 +62,14 @@ export function Layout(props: Route.ComponentProps) {
       {
         breadcrumb?: (
           matches: UIMatch<unknown, unknown>
-        ) => { href?: string; title: string } | { href?: string; title: string }[];
+        ) =>
+          | { href?: string; title: string }
+          | { href?: string; title: string }[];
       }
     >[];
   } catch (error) {
     // Fallback to empty matches if router context is not available
-    console.warn('Router context not available during hydration:', error);
+    console.warn("Router context not available during hydration:", error);
     matches = [];
   }
 
@@ -73,17 +79,23 @@ export function Layout(props: Route.ComponentProps) {
     {
       breadcrumb: (
         matches: UIMatch<unknown, unknown>
-      ) => { href?: string | undefined; title: string } | { href?: string | undefined; title: string }[];
+      ) =>
+        | { href?: string | undefined; title: string }
+        | { href?: string | undefined; title: string }[];
     }
   >[] = [];
 
   if (isHydrated && matches.length > 0) {
-    breadcrumbs = matches.filter((match) => match.handle && match.handle.breadcrumb) as UIMatch<
+    breadcrumbs = matches.filter(
+      (match) => match.handle && match.handle.breadcrumb
+    ) as UIMatch<
       unknown,
       {
         breadcrumb: (
           matches: UIMatch<unknown, unknown>
-        ) => { href?: string | undefined; title: string } | { href?: string | undefined; title: string }[];
+        ) =>
+          | { href?: string | undefined; title: string }
+          | { href?: string | undefined; title: string }[];
       }
     >[];
   }
@@ -99,11 +111,19 @@ export function Layout(props: Route.ComponentProps) {
       <body className="max-h-screen">
         <AuthProvider request={request as unknown as Request}>
           <SidebarProvider defaultOpen={true}>
-            <SiteSidebar settings={{
-              site_title: siteConfig.title,
-              site_subtitle: siteConfig.subtitle,
-              site_logo: <img src={siteConfig.logo.src} alt={siteConfig.logo.alt} className="size-8" />,
-            }} />
+            <SiteSidebar
+              settings={{
+                site_title: siteConfig.title,
+                site_subtitle: siteConfig.subtitle,
+                site_logo: (
+                  <img
+                    src={siteConfig.logo.src}
+                    alt={siteConfig.logo.alt}
+                    className="size-8"
+                  />
+                ),
+              }}
+            />
             <SidebarInset>
               <SiteHeader breadcrumbs={breadcrumbs} />
               <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 max-w-4xl">
@@ -126,16 +146,24 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";
-    details = error.status === 404 ? "The requested page could not be found." : error.statusText || details;
+    details =
+      error.status === 404
+        ? "The requested page could not be found."
+        : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     // Check for router context errors specifically
-    if (error.message.includes('useContext') || error.message.includes('useMatches') || 
-        error.message.includes('data router') || error.message.includes('Cannot read properties of null')) {
+    if (
+      error.message.includes("useContext") ||
+      error.message.includes("useMatches") ||
+      error.message.includes("data router") ||
+      error.message.includes("Cannot read properties of null")
+    ) {
       message = "Hydration Error";
-      details = "The page is reloading due to a development hot-reload issue. This should resolve automatically.";
-      
+      details =
+        "The page is reloading due to a development hot-reload issue. This should resolve automatically.";
+
       // Auto-reload in development for hydration errors
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         setTimeout(() => {
           window.location.reload();
         }, 2000);

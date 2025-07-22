@@ -1,24 +1,18 @@
 {
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "json.schemas": [
-        {
-            "fileMatch": [
-                "equipments.json",
-            ],
-            "url": "./app/data/equipment-schema.json"
-        },
-        {
-            "fileMatch": [
-                "missions.json"
-            ],
-            "url": "./app/data/missions-schema.json"
-        },
-        {
-            "fileMatch": [
-                "heroes.json"
-            ],
-            "url": "./app/data/hero-schema.json"
-        }
-    ],
-    "explorer.excludeGitIgnore": true
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "json.schemas": [
+    {
+      "fileMatch": ["equipments.json"],
+      "url": "./app/data/equipment-schema.json"
+    },
+    {
+      "fileMatch": ["missions.json"],
+      "url": "./app/data/missions-schema.json"
+    },
+    {
+      "fileMatch": ["heroes.json"],
+      "url": "./app/data/hero-schema.json"
+    }
+  ],
+  "explorer.excludeGitIgnore": true
 }

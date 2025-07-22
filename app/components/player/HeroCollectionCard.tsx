@@ -28,12 +28,13 @@ export function HeroCollectionCard({
   onRemoveHero,
   isUpdating = false,
   isRemoving = false,
-  className
+  className,
 }: HeroCollectionCardProps) {
   const { hero, stars, equipment_level, created_at } = playerHero;
 
   // Optimistic state for equipment level
-  const [optimisticEquipmentLevel, setOptimisticEquipmentLevel] = useState(equipment_level);
+  const [optimisticEquipmentLevel, setOptimisticEquipmentLevel] =
+    useState(equipment_level);
   const [optimisticStars, setOptimisticStars] = useState(stars);
 
   // Reset optimistic state when server data changes
@@ -49,17 +50,22 @@ export function HeroCollectionCard({
     const normalizedFaction = faction.toLowerCase();
 
     switch (normalizedFaction) {
-      case 'chaos': return 'bg-red-100 text-red-800';
-      case 'nature': return 'bg-green-100 text-green-800';
-      case 'progress': return 'bg-purple-100 text-purple-800';
-      case 'honor': return 'bg-blue-100 text-blue-800';
-      case 'eternity': return 'bg-amber-100 text-amber-800';
-      case 'mystery': return 'bg-slate-100 text-slate-800';
+      case "chaos":
+        return "bg-red-100 text-red-800";
+      case "nature":
+        return "bg-green-100 text-green-800";
+      case "progress":
+        return "bg-purple-100 text-purple-800";
+      case "honor":
+        return "bg-blue-100 text-blue-800";
+      case "eternity":
+        return "bg-amber-100 text-amber-800";
+      case "mystery":
+        return "bg-slate-100 text-slate-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
-
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -76,7 +82,9 @@ export function HeroCollectionCard({
   };
 
   return (
-    <Card className={cn("transition-all duration-200 hover:shadow-md", className)}>
+    <Card
+      className={cn("transition-all duration-200 hover:shadow-md", className)}
+    >
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-4">
           {/* Hero Image and Name */}
@@ -110,7 +118,10 @@ export function HeroCollectionCard({
 
         {/* Faction badge and Class image */}
         <div className="flex gap-2 mb-3 justify-center items-center">
-          <Badge className={`${getFactionColor(hero.faction)} capitalize`} variant="secondary">
+          <Badge
+            className={`${getFactionColor(hero.faction)} capitalize`}
+            variant="secondary"
+          >
             {hero.faction}
           </Badge>
           <img
@@ -139,7 +150,7 @@ export function HeroCollectionCard({
 
         {/* Date Added */}
         <div className="mt-3 text-xs text-gray-500 text-center">
-          Added: {created_at ? formatDate(created_at) : 'Unknown date'}
+          Added: {created_at ? formatDate(created_at) : "Unknown date"}
         </div>
       </CardContent>
     </Card>

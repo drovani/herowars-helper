@@ -147,6 +147,7 @@ The application provides RESTful API endpoints for administrative functions:
 **Authentication**: Requires admin role authorization
 
 **GET `/resources/api/admin/users`**
+
 - **Purpose**: Retrieve all user accounts
 - **Returns**: JSON array of user objects with metadata
 - **Response Format**:
@@ -168,6 +169,7 @@ The application provides RESTful API endpoints for administrative functions:
   ```
 
 **POST `/resources/api/admin/users`**
+
 - **Purpose**: Perform user management actions
 - **Content-Type**: `application/x-www-form-urlencoded`
 - **Actions**:
@@ -178,6 +180,7 @@ The application provides RESTful API endpoints for administrative functions:
   - `createUser`: Create new user account with specified roles
 
 **Request Examples**:
+
 ```bash
 # Update user roles
 curl -X POST /resources/api/admin/users \
@@ -193,6 +196,7 @@ curl -X POST /resources/api/admin/users \
 ```
 
 **Error Responses**:
+
 - `401 Unauthorized`: Not authenticated
 - `403 Forbidden`: Missing admin role
 - `400 Bad Request`: Invalid parameters or self-action attempts
@@ -201,12 +205,14 @@ curl -X POST /resources/api/admin/users \
 ### Data Layer Architecture
 
 #### Repository Pattern (Current)
+
 - **BaseRepository Class**: Type-safe database operations foundation
 - **HeroRepository**: ✅ Complete - Full CRUD operations for hero data
 - **EquipmentRepository**: ✅ Complete - Equipment and crafting data management
 - **MissionRepository**: ✅ Complete - Campaign and mission data access
 
 #### Database Schema
+
 ```sql
 -- Core Hero Wars tables
 hero: slug (PK), name, faction, main_stat, attack_type, artifact_team_buff
@@ -218,18 +224,21 @@ chapter: id (PK), title
 ### Game Data Management
 
 #### Heroes
+
 - Complete hero database with stats, skills, and equipment requirements
 - Hero stone source tracking for farming optimization
 - Artifact, skin, and glyph management
 - JSON export for external tool integration
 
 #### Equipment
+
 - Equipment catalog with stats and crafting requirements
 - Campaign mission sources for farming locations
 - Gray, green, blue, violet, and orange tier items
 - Crafting tree relationships and material tracking
 
 #### Missions
+
 - Campaign chapter and mission data
 - Energy cost calculations and requirements
 - Equipment drop location mapping
@@ -249,12 +258,14 @@ npm run test:ui       # Run with UI interface
 ```
 
 ### Repository Testing
+
 - Repository tests use Supabase client mocking
 - Log capturing pattern prevents console noise during tests
 - Comprehensive CRUD operation testing
 - Integration tests ready for authentication scenarios
 
 **Testing Strategy:**
+
 - **Unit Tests** - Components, hooks, utilities, repositories
 - **Integration Tests** - API routes, auth flows, database operations
 - **Mocking** - Supabase client, external APIs
@@ -288,24 +299,28 @@ npm run test:coverage    # Run tests with coverage report
 ## 🎮 Hero Wars Helper Specific Features
 
 ### Hero Management
+
 - View detailed hero information including stats and abilities
 - Track hero development progress and stone farming
 - Equipment requirement tracking per hero
 - Export hero data for external tools
 
 ### Equipment System
+
 - Browse complete equipment catalog
 - View crafting recipes and material requirements
 - Track campaign sources for equipment farming
 - Equipment tier progression (gray → orange)
 
 ### Mission Planning
+
 - Campaign mission browser with rewards
 - Energy cost optimization for farming
 - Equipment drop location reference
 - Boss hero stone farming guides
 
 ### Admin Tools
+
 - Database initialization and data setup
 - Import game data from JSON sources
 - User role management
@@ -364,13 +379,13 @@ This project includes Claude Code workflow commands in `.claude/commands/`:
 ## 🎯 Project Status
 
 ### Completed Features
+
 - ✅ **Repository Architecture**: Complete BaseRepository implementation
 - ✅ **Hero Management**: Full CRUD operations with database integration
 - ✅ **Equipment System**: Comprehensive equipment catalog and sources
 - ✅ **Mission Browser**: Campaign data with farming optimization
 - ✅ **Authentication**: Role-based access control
 - ✅ **Admin Tools**: Database setup and user management
-
 
 ## 📄 License
 

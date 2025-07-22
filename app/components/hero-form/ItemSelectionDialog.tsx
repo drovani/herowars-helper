@@ -2,7 +2,12 @@ import { SearchIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import EquipmentImage from "~/components/EquipmentImage";
 import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { type EquipmentRecord } from "~/data/equipment.zod";
@@ -16,16 +21,26 @@ interface ItemSelectionDialogProps {
   quality: HeroRankLevel;
 }
 
-export default function ItemSelectionDialog({ open, onClose, onSelect, equipment, quality }: ItemSelectionDialogProps) {
+export default function ItemSelectionDialog({
+  open,
+  onClose,
+  onSelect,
+  equipment,
+  quality,
+}: ItemSelectionDialogProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const availableEquipment = equipment.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const availableEquipment = equipment.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="capitalize">Select {quality.replace("+", " +")} Equipment</DialogTitle>
+          <DialogTitle className="capitalize">
+            Select {quality.replace("+", " +")} Equipment
+          </DialogTitle>
           <div className="relative mt-4">
             <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -70,7 +85,9 @@ export default function ItemSelectionDialog({ open, onClose, onSelect, equipment
             ))}
           </div>
           {availableEquipment.length === 0 && searchQuery && (
-            <div className="text-center text-muted-foreground py-8">No equipment found matching "{searchQuery}"</div>
+            <div className="text-center text-muted-foreground py-8">
+              No equipment found matching "{searchQuery}"
+            </div>
           )}
         </ScrollArea>
       </DialogContent>

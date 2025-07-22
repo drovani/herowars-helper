@@ -1,27 +1,38 @@
 // ABOUTME: Team hero display component showing heroes in rank order
 // ABOUTME: Displays heroes left-to-right in descending order_rank with remove functionality
 
-import { XIcon } from "lucide-react"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
-import { Card, CardContent } from "~/components/ui/card"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip"
-import type { PlayerTeamHero, Hero } from "~/repositories/types"
+import { XIcon } from "lucide-react";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+import type { PlayerTeamHero, Hero } from "~/repositories/types";
 
 interface TeamHeroSlotProps {
-  teamHero?: PlayerTeamHero & { hero: Hero }
-  position: number
-  onRemove?: (heroSlug: string) => void
-  isRemoving?: boolean
-  readonly?: boolean
+  teamHero?: PlayerTeamHero & { hero: Hero };
+  position: number;
+  onRemove?: (heroSlug: string) => void;
+  isRemoving?: boolean;
+  readonly?: boolean;
 }
 
-function TeamHeroSlot({ teamHero, position, onRemove, isRemoving = false, readonly = false }: TeamHeroSlotProps) {
+function TeamHeroSlot({
+  teamHero,
+  position,
+  onRemove,
+  isRemoving = false,
+  readonly = false,
+}: TeamHeroSlotProps) {
   const handleRemove = () => {
     if (teamHero && onRemove) {
-      onRemove(teamHero.hero_slug)
+      onRemove(teamHero.hero_slug);
     }
-  }
+  };
 
   if (!teamHero) {
     return (
@@ -31,13 +42,11 @@ function TeamHeroSlot({ teamHero, position, onRemove, isRemoving = false, readon
             <div className="text-xs text-muted-foreground font-medium">
               Slot {position}
             </div>
-            <div className="text-xs text-muted-foreground/60 mt-1">
-              Empty
-            </div>
+            <div className="text-xs text-muted-foreground/60 mt-1">Empty</div>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -59,18 +68,21 @@ function TeamHeroSlot({ teamHero, position, onRemove, isRemoving = false, readon
                   <span className="sr-only">Remove {teamHero.hero.name}</span>
                 </Button>
               )}
-              
+
               {/* Hero info */}
               <div className="flex-1 flex flex-col justify-between text-center">
                 <div>
-                  <div className="text-xs font-medium truncate" title={teamHero.hero.name}>
+                  <div
+                    className="text-xs font-medium truncate"
+                    title={teamHero.hero.name}
+                  >
                     {teamHero.hero.name}
                   </div>
                   <Badge variant="outline" className="text-xs mt-1 px-1">
                     #{teamHero.hero.order_rank}
                   </Badge>
                 </div>
-                
+
                 <div className="mt-1">
                   <div className="text-xs text-muted-foreground capitalize">
                     {teamHero.hero.class}
@@ -99,32 +111,34 @@ function TeamHeroSlot({ teamHero, position, onRemove, isRemoving = false, readon
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  )
+  );
 }
 
 interface TeamHeroDisplayProps {
-  teamHeroes: Array<PlayerTeamHero & { hero: Hero }>
-  onRemoveHero?: (heroSlug: string) => void
-  removingHeroSlug?: string
-  readonly?: boolean
-  className?: string
+  teamHeroes: Array<PlayerTeamHero & { hero: Hero }>;
+  onRemoveHero?: (heroSlug: string) => void;
+  removingHeroSlug?: string;
+  readonly?: boolean;
+  className?: string;
 }
 
-export function TeamHeroDisplay({ 
-  teamHeroes, 
-  onRemoveHero, 
-  removingHeroSlug, 
+export function TeamHeroDisplay({
+  teamHeroes,
+  onRemoveHero,
+  removingHeroSlug,
   readonly = false,
-  className 
+  className,
 }: TeamHeroDisplayProps) {
   // Sort heroes by order_rank descending (highest rank first, left-to-right)
-  const sortedHeroes = [...teamHeroes].sort((a, b) => b.hero.order_rank - a.hero.order_rank)
-  
+  const sortedHeroes = [...teamHeroes].sort(
+    (a, b) => b.hero.order_rank - a.hero.order_rank
+  );
+
   // Create array of 5 slots, filling with heroes or undefined
-  const slots = Array.from({ length: 5 }, (_, index) => sortedHeroes[index])
+  const slots = Array.from({ length: 5 }, (_, index) => sortedHeroes[index]);
 
   return (
-    <div className={`flex gap-3 ${className || ''}`}>
+    <div className={`flex gap-3 ${className || ""}`}>
       {slots.map((teamHero, index) => (
         <TeamHeroSlot
           key={teamHero?.id || `slot-${index}`}
@@ -136,7 +150,7 @@ export function TeamHeroDisplay({
         />
       ))}
     </div>
-  )
+  );
 }
 
-export { TeamHeroSlot }
+export { TeamHeroSlot };

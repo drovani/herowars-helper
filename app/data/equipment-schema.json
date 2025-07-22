@@ -18,11 +18,7 @@
     "properties": {
       "type": {
         "type": "string",
-        "enum": [
-          "equipable",
-          "fragment",
-          "recipe"
-        ],
+        "enum": ["equipable", "fragment", "recipe"],
         "default": "equipable",
         "description": "Discriminator field to distinguish among equipable items, fragments, and recipes"
       },
@@ -43,13 +39,7 @@
       },
       "quality": {
         "type": "string",
-        "enum": [
-          "gray",
-          "green",
-          "blue",
-          "violet",
-          "orange"
-        ],
+        "enum": ["gray", "green", "blue", "violet", "orange"],
         "description": "Quality tier of the equipment"
       },
       "buy_value_gold": {
@@ -112,10 +102,7 @@
             }
           }
         },
-        "required": [
-          "gold_cost",
-          "required_items"
-        ],
+        "required": ["gold_cost", "required_items"],
         "description": "Crafting requirements for this item"
       },
       "sources": {
@@ -138,15 +125,9 @@
             "pattern": ".* \\(Fragment\\)$"
           }
         },
-        "required": [
-          "type"
-        ],
+        "required": ["type"],
         "not": {
-          "required": [
-            "stats",
-            "hero_level_required",
-            "crafting"
-          ]
+          "required": ["stats", "hero_level_required", "crafting"]
         }
       },
       {
@@ -158,29 +139,18 @@
             "pattern": ".* - Recipe.*$"
           }
         },
-        "required": [
-          "type"
-        ],
+        "required": ["type"],
         "not": {
-          "required": [
-            "stats",
-            "hero_level_required"
-          ]
+          "required": ["stats", "hero_level_required"]
         }
       },
       {
         "properties": {
           "type": {
-            "enum": [
-              "equipable",
-              null
-            ]
+            "enum": ["equipable", null]
           }
         },
-        "required": [
-          "stats",
-          "hero_level_required"
-        ]
+        "required": ["stats", "hero_level_required"]
       }
     ],
     "additionalProperties": false

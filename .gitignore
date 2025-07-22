@@ -3,6 +3,8 @@ node_modules
 /.cache
 /public/build
 /build
+/claude-1
+/claude-2
 .env
 .react-router/
 

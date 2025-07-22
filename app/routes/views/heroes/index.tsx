@@ -1,5 +1,10 @@
 import { ToggleGroup } from "@radix-ui/react-toggle-group";
-import { ChevronLeftIcon, ChevronRightIcon, LayoutGridIcon, LayoutListIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  LayoutGridIcon,
+  LayoutListIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { Link, useFetcher } from "react-router";
 import HeroArtifactsCompact from "~/components/hero/HeroArtifactsCompact";
@@ -15,8 +20,14 @@ import { ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useAuth } from "~/contexts/AuthContext";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
-import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils";
-import { sortHeroRecords, transformCompleteHeroToRecord } from "~/lib/hero-transformations";
+import {
+  getAuthenticatedUser,
+  requireAuthenticatedUser,
+} from "~/lib/auth/utils";
+import {
+  sortHeroRecords,
+  transformCompleteHeroToRecord,
+} from "~/lib/hero-transformations";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
@@ -25,16 +36,18 @@ import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const url = new URL(request.url);
-  const mode = url.searchParams.get('mode') || 'cards';
-  const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+  const mode = url.searchParams.get("mode") || "cards";
+  const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
   const limit = 10; // For tiles pagination
   const offset = (page - 1) * limit;
 
   const heroRepo = new HeroRepository(request);
 
-  let heroes: any[], sortedHeroes: any[], hasMoreResults = false;
+  let heroes: any[],
+    sortedHeroes: any[],
+    hasMoreResults = false;
 
-  if (mode === 'cards') {
+  if (mode === "cards") {
     // Cards mode: Use lightweight query for minimal data
     const basicHeroesResult = await heroRepo.findAllBasic();
 
@@ -46,14 +59,19 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     sortedHeroes = heroes.sort((a, b) => a.order_rank - b.order_rank);
   } else {
     // Tiles mode: Use full relationships query with pagination
-    const completeHeroesResult = await heroRepo.findAllWithRelationships({ limit, offset });
+    const completeHeroesResult = await heroRepo.findAllWithRelationships({
+      limit,
+      offset,
+    });
 
     if (completeHeroesResult.error) {
       throw new Response("Failed to load heroes", { status: 500 });
     }
 
     if (completeHeroesResult.data) {
-      heroes = completeHeroesResult.data.map(hero => transformCompleteHeroToRecord(hero));
+      heroes = completeHeroesResult.data.map((hero) =>
+        transformCompleteHeroToRecord(hero)
+      );
       sortedHeroes = sortHeroRecords(heroes);
       hasMoreResults = completeHeroesResult.data.length === limit;
     } else {
@@ -64,7 +82,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   // Only load equipment for tiles mode (cards don't need it)
   let equipment: any[] = [];
-  if (mode === 'tiles') {
+  if (mode === "tiles") {
     const equipmentRepo = new EquipmentRepository(request);
     const equipmentResult = await equipmentRepo.getAllAsJson();
 
@@ -72,7 +90,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       throw new Response("Failed to load equipment", { status: 500 });
     }
 
-    equipment = equipmentResult.data?.filter(eq => eq.type === "equipable") || [];
+    equipment =
+      equipmentResult.data?.filter((eq) => eq.type === "equipable") || [];
   }
 
   // Check user's collection if authenticated
@@ -83,7 +102,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     const playerHeroRepo = new PlayerHeroRepository(request);
     const collectionResult = await playerHeroRepo.findByUserId(user.id);
     if (!collectionResult.error && collectionResult.data) {
-      userCollection = collectionResult.data.map(ph => ph.hero_slug);
+      userCollection = collectionResult.data.map((ph) => ph.hero_slug);
     }
   }
 
@@ -92,11 +111,14 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     equipment,
     userCollection,
     mode,
-    pagination: mode === 'tiles' ? {
-      currentPage: page,
-      limit,
-      hasMore: hasMoreResults
-    } : undefined
+    pagination:
+      mode === "tiles"
+        ? {
+            currentPage: page,
+            limit,
+            hasMore: hasMoreResults,
+          }
+        : undefined,
   };
 };
 
@@ -104,49 +126,70 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request);
 
   const formData = await request.formData();
-  const action = formData.get('action');
-  const heroSlug = formData.get('heroSlug') as string;
+  const action = formData.get("action");
+  const heroSlug = formData.get("heroSlug") as string;
 
-  if (action === 'addHero') {
+  if (action === "addHero") {
     const playerHeroRepo = new PlayerHeroRepository(request);
-    const stars = parseInt(formData.get('stars') as string) || 1;
-    const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
+    const stars = parseInt(formData.get("stars") as string) || 1;
+    const equipmentLevel =
+      parseInt(formData.get("equipmentLevel") as string) || 1;
 
     const result = await playerHeroRepo.addHeroToCollection(user.id, {
       hero_slug: heroSlug,
       stars,
-      equipment_level: equipmentLevel
+      equipment_level: equipmentLevel,
     });
 
     if (result.error) {
       return { error: result.error.message };
     }
 
-    return { success: true, message: 'Hero added to collection' };
+    return { success: true, message: "Hero added to collection" };
   }
 
-  return { error: 'Invalid action' };
+  return { error: "Invalid action" };
 };
 
 export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
-  const { heroes, equipment, userCollection, mode: initialMode, pagination } = loaderData;
+  const {
+    heroes,
+    equipment,
+    userCollection,
+    mode: initialMode,
+    pagination,
+  } = loaderData;
   const { user } = useAuth();
   const fetcher = useFetcher();
 
   const [search, setSearch] = useState("");
-  const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">("mode", (initialMode as "cards" | "tiles") || "cards");
-  const [currentPage, setCurrentPage] = useQueryState("page", String(pagination?.currentPage || 1));
+  const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">(
+    "mode",
+    (initialMode as "cards" | "tiles") || "cards"
+  );
+  const [currentPage, setCurrentPage] = useQueryState(
+    "page",
+    String(pagination?.currentPage || 1)
+  );
   const isMobile = useIsMobile();
 
   const filteredHeroes = search
-    ? heroes.filter((hero) => hero.name.toLowerCase().includes(search.toLowerCase()))
+    ? heroes.filter((hero) =>
+        hero.name.toLowerCase().includes(search.toLowerCase())
+      )
     : heroes;
 
-  const HeroCardWithButton = ({ hero }: { hero: BasicHero | (typeof heroes[0]) }) => {
-    const isSubmittingThisHero = fetcher.state === "submitting" &&
-      fetcher.formData?.get('heroSlug') === hero.slug;
-    const isOptimisticallyInCollection = userCollection.includes(hero.slug) ||
-      (isSubmittingThisHero && fetcher.formData?.get('action') === 'addHero');
+  const HeroCardWithButton = ({
+    hero,
+  }: {
+    hero: BasicHero | (typeof heroes)[0];
+  }) => {
+    const isSubmittingThisHero =
+      fetcher.state === "submitting" &&
+      fetcher.formData?.get("heroSlug") === hero.slug;
+    const isOptimisticallyInCollection =
+      userCollection.includes(hero.slug) ||
+      (isSubmittingThisHero && fetcher.formData?.get("action") === "addHero");
 
     return (
       <div className="relative group size-28">
@@ -160,12 +203,12 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
               onAddHero={(heroSlug) => {
                 fetcher.submit(
                   {
-                    action: 'addHero',
+                    action: "addHero",
                     heroSlug: heroSlug,
-                    stars: '1',
-                    equipmentLevel: '1'
+                    stars: "1",
+                    equipmentLevel: "1",
                   },
-                  { method: 'POST' }
+                  { method: "POST" }
                 );
               }}
               size="sm"
@@ -176,11 +219,19 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
     );
   };
 
-  const HeroTileWithButton = ({ hero, equipment }: { hero: any, equipment: typeof loaderData.equipment }) => {
-    const isSubmittingThisHero = fetcher.state === "submitting" &&
-      fetcher.formData?.get('heroSlug') === hero.slug;
-    const isOptimisticallyInCollection = userCollection.includes(hero.slug) ||
-      (isSubmittingThisHero && fetcher.formData?.get('action') === 'addHero');
+  const HeroTileWithButton = ({
+    hero,
+    equipment,
+  }: {
+    hero: any;
+    equipment: typeof loaderData.equipment;
+  }) => {
+    const isSubmittingThisHero =
+      fetcher.state === "submitting" &&
+      fetcher.formData?.get("heroSlug") === hero.slug;
+    const isOptimisticallyInCollection =
+      userCollection.includes(hero.slug) ||
+      (isSubmittingThisHero && fetcher.formData?.get("action") === "addHero");
 
     // Only render tiles if hero has complete data (artifacts, skins, etc.)
     if (!hero.artifacts || !hero.skins || !hero.glyphs || !hero.items) {
@@ -191,7 +242,11 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
       <Card className="w-full grid grid-cols-2 md:grid-cols-5">
         <div className="flex flex-col items-start p-2">
           <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
-            <img src={`/images/heroes/${hero.slug}.png`} alt={hero.name} className="size-28 rounded-md" />
+            <img
+              src={`/images/heroes/${hero.slug}.png`}
+              alt={hero.name}
+              className="size-28 rounded-md"
+            />
           </Link>
           <div className="flex flex-col items-start">
             <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
@@ -206,12 +261,12 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
                   onAddHero={(heroSlug) => {
                     fetcher.submit(
                       {
-                        action: 'addHero',
+                        action: "addHero",
                         heroSlug: heroSlug,
-                        stars: '1',
-                        equipmentLevel: '1'
+                        stars: "1",
+                        equipmentLevel: "1",
                       },
-                      { method: 'POST' }
+                      { method: "POST" }
                     );
                   }}
                   size="sm"
@@ -220,9 +275,21 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
             )}
           </div>
         </div>
-        <HeroItemsCompact items={hero.items} equipment={equipment} className="bg-muted p-2" />
-        <HeroSkinsCompact skins={hero.skins} heroSlug={hero.slug} className="p-2" />
-        <HeroArtifactsCompact artifacts={hero.artifacts} main_stat={hero.main_stat} className="bg-muted p-2" />
+        <HeroItemsCompact
+          items={hero.items}
+          equipment={equipment}
+          className="bg-muted p-2"
+        />
+        <HeroSkinsCompact
+          skins={hero.skins}
+          heroSlug={hero.slug}
+          className="p-2"
+        />
+        <HeroArtifactsCompact
+          artifacts={hero.artifacts}
+          main_stat={hero.main_stat}
+          className="bg-muted p-2"
+        />
         <HeroGlyphsCompact glyphs={hero.glyphs} className="p-2" />
       </Card>
     );
@@ -241,7 +308,9 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
           <ToggleGroup
             type="single"
             value={displayMode}
-            onValueChange={(value) => setDisplayMode(value as "cards" | "tiles")}
+            onValueChange={(value) =>
+              setDisplayMode(value as "cards" | "tiles")
+            }
           >
             <ToggleGroupItem value="cards">
               <LayoutGridIcon />
@@ -270,7 +339,11 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
             </div>
             <div className="flex flex-col gap-4">
               {filteredHeroes.map((hero) => (
-                <HeroTileWithButton hero={hero} key={hero.slug} equipment={equipment} />
+                <HeroTileWithButton
+                  hero={hero}
+                  key={hero.slug}
+                  equipment={equipment}
+                />
               ))}
             </div>
           </>

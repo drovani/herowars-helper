@@ -13,12 +13,12 @@ interface EquipmentLevelsProps {
   className?: string;
 }
 
-export function EquipmentLevels({ 
-  level, 
-  maxLevel = 16, 
-  readOnly = false, 
-  onLevelChange, 
-  className 
+export function EquipmentLevels({
+  level,
+  maxLevel = 16,
+  readOnly = false,
+  onLevelChange,
+  className,
 }: EquipmentLevelsProps) {
   const handleIncrement = () => {
     if (!readOnly && onLevelChange && level < maxLevel) {
@@ -66,7 +66,12 @@ export function EquipmentLevels({
         >
           <MinusIcon className="size-4" />
         </Button>
-        <span className={cn("font-semibold min-w-[3rem] text-center", getTierColor(level))}>
+        <span
+          className={cn(
+            "font-semibold min-w-[3rem] text-center",
+            getTierColor(level)
+          )}
+        >
           {level}/{maxLevel}
         </span>
         <Button

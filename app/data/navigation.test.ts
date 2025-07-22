@@ -95,7 +95,9 @@ describe("Navigation Data", () => {
     });
 
     it("has administration group with admin role", () => {
-      const adminGroup = navigation.find((group) => group.name === "Administration");
+      const adminGroup = navigation.find(
+        (group) => group.name === "Administration"
+      );
       expect(adminGroup).toBeDefined();
       expect(adminGroup?.roles).toContain("admin");
     });
@@ -119,7 +121,7 @@ describe("Navigation Data", () => {
           expect(typeof item.icon).toBe("object");
           // Check if it's a React component by looking for displayName
           expect(item.icon.displayName).toBeDefined();
-          
+
           // Test nested children icons as well
           if (item.children) {
             item.children.forEach((child) => {
@@ -138,14 +140,14 @@ describe("Navigation Data", () => {
           expect(typeof item.icon).toBe("object");
           expect(item.icon).toHaveProperty("$$typeof");
           expect(item.icon).toHaveProperty("render");
-          
+
           // Check that it has a valid displayName (lucide icons have clean names)
           expect(item.icon.displayName).toBeDefined();
           expect(typeof item.icon.displayName).toBe("string");
           if (item.icon.displayName) {
             expect(item.icon.displayName.length).toBeGreaterThan(0);
           }
-          
+
           // Test nested children icons as well
           if (item.children) {
             item.children.forEach((child) => {
@@ -168,7 +170,9 @@ describe("Navigation Data", () => {
     it("admin-only groups have admin role requirement", () => {
       // Test the business rule: groups with admin-only routes must have admin role
       navigation.forEach((group) => {
-        const hasAdminRoutes = group.items.some((item) => item.href && item.href.startsWith("/admin/"));
+        const hasAdminRoutes = group.items.some(
+          (item) => item.href && item.href.startsWith("/admin/")
+        );
 
         if (hasAdminRoutes) {
           expect(group.roles).toBeDefined();

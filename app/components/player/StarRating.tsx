@@ -16,7 +16,7 @@ export function StarRating({
   maxStars = 6,
   readOnly = false,
   onStarClick,
-  className
+  className,
 }: StarRatingProps) {
   const handleStarClick = (starIndex: number) => {
     if (!readOnly && onStarClick) {

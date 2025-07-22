@@ -131,7 +131,9 @@ describe("RequireRole", () => {
         </RequireRole>
       );
 
-      expect(result.queryByText("Admin or moderator content")).not.toBeInTheDocument();
+      expect(
+        result.queryByText("Admin or moderator content")
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -141,7 +143,7 @@ describe("RequireRole", () => {
         hasRole: vi.fn((roles) => {
           const requiredRoles = Array.isArray(roles) ? roles : [roles];
           const userRoles = ["user", "editor"];
-          return requiredRoles.some(role => userRoles.includes(role));
+          return requiredRoles.some((role) => userRoles.includes(role));
         }),
         canEdit: vi.fn(() => true),
         isAdmin: vi.fn(() => false),
@@ -179,7 +181,9 @@ describe("RequireEditor", () => {
       mockUseRoles.mockReturnValue({
         hasRole: vi.fn((roles) => {
           const requiredRoles = Array.isArray(roles) ? roles : [roles];
-          return requiredRoles.some(role => ["admin", "editor"].includes(role));
+          return requiredRoles.some((role) =>
+            ["admin", "editor"].includes(role)
+          );
         }),
         canEdit: vi.fn(() => true),
         isAdmin: vi.fn(() => false),
@@ -211,7 +215,7 @@ describe("RequireEditor", () => {
       mockUseRoles.mockReturnValue({
         hasRole: vi.fn((roles) => {
           const requiredRoles = Array.isArray(roles) ? roles : [roles];
-          return requiredRoles.some(role => ["admin"].includes(role));
+          return requiredRoles.some((role) => ["admin"].includes(role));
         }),
         canEdit: vi.fn(() => true),
         isAdmin: vi.fn(() => true),

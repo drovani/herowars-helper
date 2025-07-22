@@ -1,6 +1,10 @@
 // ABOUTME: AddHeroButton component provides plus button for adding heroes to collection
 // ABOUTME: Shows different states based on whether hero is already in collection
-import { LoaderCircle, UserRoundCheckIcon, UserRoundPlusIcon } from "lucide-react";
+import {
+  LoaderCircle,
+  UserRoundCheckIcon,
+  UserRoundPlusIcon,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
@@ -21,7 +25,7 @@ export function AddHeroButton({
   onAddHero,
   className,
   variant = "outline",
-  size = "sm"
+  size = "sm",
 }: AddHeroButtonProps) {
   const handleClick = () => {
     if (!isInCollection && !isLoading && onAddHero) {

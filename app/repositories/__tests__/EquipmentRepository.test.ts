@@ -11,19 +11,19 @@ import { EquipmentRepository } from "../EquipmentRepository";
 describe("EquipmentRepository", () => {
   let repository: EquipmentRepository;
   let mockSupabase: ReturnType<typeof createMockSupabaseClient>;
-  let capturedLogs: Array<{level: string, message: string, args: any[]}> = [];
+  let capturedLogs: Array<{ level: string; message: string; args: any[] }> = [];
   let originalMethodFactory: any;
 
   beforeEach(() => {
     // Capture logs to in-memory array instead of console
     capturedLogs = [];
     originalMethodFactory = log.methodFactory;
-    log.methodFactory = function(methodName, _logLevel, _loggerName) {
-      return function(message, ...args) {
-        capturedLogs.push({level: methodName, message, args});
+    log.methodFactory = function (methodName, _logLevel, _loggerName) {
+      return function (message, ...args) {
+        capturedLogs.push({ level: methodName, message, args });
         // Silent - don't output to console
-      }
-    }
+      };
+    };
     log.rebuild();
 
     mockSupabase = createMockSupabaseClient();
@@ -230,7 +230,11 @@ describe("EquipmentRepository", () => {
     });
 
     it("should handle equipment not found", async () => {
-      const mockError = { message: "Not found", code: "PGRST116", details: undefined };
+      const mockError = {
+        message: "Not found",
+        code: "PGRST116",
+        details: undefined,
+      };
 
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
@@ -271,8 +275,16 @@ describe("EquipmentRepository", () => {
       };
 
       const mockRequiredItems = [
-        { base_slug: "test-equipment", required_slug: "component-1", quantity: 2 },
-        { base_slug: "test-equipment", required_slug: "component-2", quantity: 1 },
+        {
+          base_slug: "test-equipment",
+          required_slug: "component-1",
+          quantity: 2,
+        },
+        {
+          base_slug: "test-equipment",
+          required_slug: "component-2",
+          quantity: 1,
+        },
       ];
 
       // Mock findById
@@ -325,9 +337,17 @@ describe("EquipmentRepository", () => {
         crafting_gold_cost: 500,
       };
 
-      const mockStats = [{ equipment_slug: "test-equipment", stat: "strength", value: 100 }];
+      const mockStats = [
+        { equipment_slug: "test-equipment", stat: "strength", value: 100 },
+      ];
 
-      const mockRequiredItems = [{ base_slug: "test-equipment", required_slug: "component-1", quantity: 2 }];
+      const mockRequiredItems = [
+        {
+          base_slug: "test-equipment",
+          required_slug: "component-1",
+          quantity: 2,
+        },
+      ];
 
       // Mock findById
       mockSupabase.from.mockReturnValueOnce({
@@ -425,8 +445,16 @@ describe("EquipmentRepository", () => {
   describe("bulkCreateRequiredItems", () => {
     it("should bulk create required items successfully", async () => {
       const mockRequiredItemsData = [
-        { base_slug: "test-equipment", required_slug: "component-1", quantity: 2 },
-        { base_slug: "test-equipment", required_slug: "component-2", quantity: 1 },
+        {
+          base_slug: "test-equipment",
+          required_slug: "component-1",
+          quantity: 2,
+        },
+        {
+          base_slug: "test-equipment",
+          required_slug: "component-2",
+          quantity: 1,
+        },
       ];
 
       mockSupabase.from.mockReturnValue({
@@ -438,7 +466,9 @@ describe("EquipmentRepository", () => {
         }),
       });
 
-      const result = await repository.bulkCreateRequiredItems(mockRequiredItemsData);
+      const result = await repository.bulkCreateRequiredItems(
+        mockRequiredItemsData
+      );
 
       expect(result.data).toEqual(mockRequiredItemsData);
       expect(result.error).toBeNull();
@@ -448,38 +478,48 @@ describe("EquipmentRepository", () => {
 
   describe("findEquipmentThatRequires", () => {
     it("should find equipment that requires a specific fragment successfully", async () => {
-      const mockBrothersEquipment: Database["public"]["Tables"]["equipment"]["Row"] = {
-        slug: "brothers",
-        name: "Brothers",
-        quality: "green",
-        type: "equipable",
-        buy_value_gold: 4500,
-        buy_value_coin: 0,
-        sell_value: 900,
-        guild_activity_points: 10,
-        hero_level_required: 35,
-        campaign_sources: null,
-        crafting_gold_cost: 22500,
-      };
+      const mockBrothersEquipment: Database["public"]["Tables"]["equipment"]["Row"] =
+        {
+          slug: "brothers",
+          name: "Brothers",
+          quality: "green",
+          type: "equipable",
+          buy_value_gold: 4500,
+          buy_value_coin: 0,
+          sell_value: 900,
+          guild_activity_points: 10,
+          hero_level_required: 35,
+          campaign_sources: null,
+          crafting_gold_cost: 22500,
+        };
 
-      const mockAnotherEquipment: Database["public"]["Tables"]["equipment"]["Row"] = {
-        slug: "another-item",
-        name: "Another Item",
-        quality: "blue",
-        type: "equipable",
-        buy_value_gold: 2000,
-        buy_value_coin: 0,
-        sell_value: 400,
-        guild_activity_points: 5,
-        hero_level_required: 20,
-        campaign_sources: null,
-        crafting_gold_cost: 10000,
-      };
+      const mockAnotherEquipment: Database["public"]["Tables"]["equipment"]["Row"] =
+        {
+          slug: "another-item",
+          name: "Another Item",
+          quality: "blue",
+          type: "equipable",
+          buy_value_gold: 2000,
+          buy_value_coin: 0,
+          sell_value: 400,
+          guild_activity_points: 5,
+          hero_level_required: 20,
+          campaign_sources: null,
+          crafting_gold_cost: 10000,
+        };
 
       // Mock the join query response - equipment_required_item with inner join on equipment
       const mockJoinResponse = [
-        { base_slug: "brothers", quantity: 5, equipment: mockBrothersEquipment },
-        { base_slug: "another-item", quantity: 3, equipment: mockAnotherEquipment },
+        {
+          base_slug: "brothers",
+          quantity: 5,
+          equipment: mockBrothersEquipment,
+        },
+        {
+          base_slug: "another-item",
+          quantity: 3,
+          equipment: mockAnotherEquipment,
+        },
       ];
 
       mockSupabase.from.mockReturnValue({
@@ -491,7 +531,9 @@ describe("EquipmentRepository", () => {
         }),
       });
 
-      const result = await repository.findEquipmentThatRequires("brothers-fragment");
+      const result = await repository.findEquipmentThatRequires(
+        "brothers-fragment"
+      );
 
       expect(result.data).toEqual([
         { equipment: mockBrothersEquipment, quantity: 5 },
@@ -511,7 +553,9 @@ describe("EquipmentRepository", () => {
         }),
       });
 
-      const result = await repository.findEquipmentThatRequires("non-existent-fragment");
+      const result = await repository.findEquipmentThatRequires(
+        "non-existent-fragment"
+      );
 
       expect(result.data).toEqual([]);
       expect(result.error).toBeNull();
@@ -529,7 +573,9 @@ describe("EquipmentRepository", () => {
         }),
       });
 
-      const result = await repository.findEquipmentThatRequires("brothers-fragment");
+      const result = await repository.findEquipmentThatRequires(
+        "brothers-fragment"
+      );
 
       expect(result.data).toBeNull();
       expect(result.error).toEqual({
@@ -562,7 +608,8 @@ describe("EquipmentRepository", () => {
 
     describe("transformEquipmentFromJSON", () => {
       it("should transform JSON equipment to database format", () => {
-        const result = EquipmentRepository.transformEquipmentFromJSON(mockJsonEquipment);
+        const result =
+          EquipmentRepository.transformEquipmentFromJSON(mockJsonEquipment);
 
         expect(result).toEqual({
           slug: "test-equipment",
@@ -592,7 +639,8 @@ describe("EquipmentRepository", () => {
           updated_on: "2024-01-01T00:00:00Z",
         } as EquipmentRecord;
 
-        const result = EquipmentRepository.transformEquipmentFromJSON(minimalEquipment);
+        const result =
+          EquipmentRepository.transformEquipmentFromJSON(minimalEquipment);
 
         expect(result).toEqual({
           slug: "minimal-equipment",
@@ -612,7 +660,8 @@ describe("EquipmentRepository", () => {
 
     describe("transformStatsFromJSON", () => {
       it("should transform JSON stats to database format", () => {
-        const result = EquipmentRepository.transformStatsFromJSON(mockJsonEquipment);
+        const result =
+          EquipmentRepository.transformStatsFromJSON(mockJsonEquipment);
 
         expect(result).toEqual([
           { equipment_slug: "test-equipment", stat: "strength", value: 100 },
@@ -633,7 +682,9 @@ describe("EquipmentRepository", () => {
           updated_on: "2024-01-01T00:00:00Z",
         } as EquipmentRecord;
 
-        const result = EquipmentRepository.transformStatsFromJSON(equipmentWithoutStats);
+        const result = EquipmentRepository.transformStatsFromJSON(
+          equipmentWithoutStats
+        );
 
         expect(result).toEqual([]);
       });
@@ -641,11 +692,20 @@ describe("EquipmentRepository", () => {
 
     describe("transformRequiredItemsFromJSON", () => {
       it("should transform JSON required items to database format", () => {
-        const result = EquipmentRepository.transformRequiredItemsFromJSON(mockJsonEquipment);
+        const result =
+          EquipmentRepository.transformRequiredItemsFromJSON(mockJsonEquipment);
 
         expect(result).toEqual([
-          { base_slug: "test-equipment", required_slug: "component-1", quantity: 2 },
-          { base_slug: "test-equipment", required_slug: "component-2", quantity: 1 },
+          {
+            base_slug: "test-equipment",
+            required_slug: "component-1",
+            quantity: 2,
+          },
+          {
+            base_slug: "test-equipment",
+            required_slug: "component-2",
+            quantity: 1,
+          },
         ]);
       });
 
@@ -662,7 +722,9 @@ describe("EquipmentRepository", () => {
           updated_on: "2024-01-01T00:00:00Z",
         } as EquipmentRecord;
 
-        const result = EquipmentRepository.transformRequiredItemsFromJSON(equipmentWithoutCrafting);
+        const result = EquipmentRepository.transformRequiredItemsFromJSON(
+          equipmentWithoutCrafting
+        );
 
         expect(result).toEqual([]);
       });
@@ -688,9 +750,16 @@ describe("EquipmentRepository", () => {
           updated_on: "2024-11-09T01:57:37.950Z",
         };
 
-        const result = EquipmentRepository.transformRequiredItemsFromJSON(brothersEquipment);
+        const result =
+          EquipmentRepository.transformRequiredItemsFromJSON(brothersEquipment);
 
-        expect(result).toEqual([{ base_slug: "brothers", required_slug: "brothers-fragment", quantity: 5 }]);
+        expect(result).toEqual([
+          {
+            base_slug: "brothers",
+            required_slug: "brothers-fragment",
+            quantity: 5,
+          },
+        ]);
       });
     });
   });
@@ -718,9 +787,19 @@ describe("EquipmentRepository", () => {
         },
       ];
 
-      const mockEquipment = [{ slug: "test-equipment", name: "Test Equipment" }];
-      const mockStats = [{ equipment_slug: "test-equipment", stat: "strength", value: 100 }];
-      const mockRequiredItems = [{ base_slug: "test-equipment", required_slug: "component-1", quantity: 2 }];
+      const mockEquipment = [
+        { slug: "test-equipment", name: "Test Equipment" },
+      ];
+      const mockStats = [
+        { equipment_slug: "test-equipment", stat: "strength", value: 100 },
+      ];
+      const mockRequiredItems = [
+        {
+          base_slug: "test-equipment",
+          required_slug: "component-1",
+          quantity: 2,
+        },
+      ];
 
       // Mock equipment bulk creation
       vi.spyOn(repository, "bulkCreate").mockResolvedValue({
@@ -751,7 +830,10 @@ describe("EquipmentRepository", () => {
     });
 
     it("should handle equipment creation failure", async () => {
-      const mockError = { message: "Equipment creation failed", code: "CREATE_ERROR" };
+      const mockError = {
+        message: "Equipment creation failed",
+        code: "CREATE_ERROR",
+      };
 
       vi.spyOn(repository, "bulkCreate").mockResolvedValue({
         data: null,
@@ -766,33 +848,35 @@ describe("EquipmentRepository", () => {
   });
 
   describe("findRawComponentOf", () => {
-    const mockEnchantedLuteFragment: Database["public"]["Tables"]["equipment"]["Row"] = {
-      slug: "enchanted-lute-fragment",
-      name: "Enchanted Lute (Fragment)",
-      quality: "blue",
-      type: "fragment",
-      buy_value_gold: 1000,
-      buy_value_coin: 0,
-      sell_value: 200,
-      guild_activity_points: 5,
-      hero_level_required: null,
-      campaign_sources: ["3-1"],
-      crafting_gold_cost: null,
-    };
+    const mockEnchantedLuteFragment: Database["public"]["Tables"]["equipment"]["Row"] =
+      {
+        slug: "enchanted-lute-fragment",
+        name: "Enchanted Lute (Fragment)",
+        quality: "blue",
+        type: "fragment",
+        buy_value_gold: 1000,
+        buy_value_coin: 0,
+        sell_value: 200,
+        guild_activity_points: 5,
+        hero_level_required: null,
+        campaign_sources: ["3-1"],
+        crafting_gold_cost: null,
+      };
 
-    const mockEnchantedLute: Database["public"]["Tables"]["equipment"]["Row"] = {
-      slug: "enchanted-lute",
-      name: "Enchanted Lute",
-      quality: "blue",
-      type: "equipable",
-      buy_value_gold: 5000,
-      buy_value_coin: 0,
-      sell_value: 1000,
-      guild_activity_points: 15,
-      hero_level_required: 40,
-      campaign_sources: null,
-      crafting_gold_cost: 25000,
-    };
+    const mockEnchantedLute: Database["public"]["Tables"]["equipment"]["Row"] =
+      {
+        slug: "enchanted-lute",
+        name: "Enchanted Lute",
+        quality: "blue",
+        type: "equipable",
+        buy_value_gold: 5000,
+        buy_value_coin: 0,
+        sell_value: 1000,
+        guild_activity_points: 15,
+        hero_level_required: 40,
+        campaign_sources: null,
+        crafting_gold_cost: 25000,
+      };
 
     const mockSirensSong: Database["public"]["Tables"]["equipment"]["Row"] = {
       slug: "sirens-song",
@@ -808,19 +892,20 @@ describe("EquipmentRepository", () => {
       crafting_gold_cost: 50000,
     };
 
-    const mockAsclepiusStaff: Database["public"]["Tables"]["equipment"]["Row"] = {
-      slug: "asclepius-staff",
-      name: "Asclepius Staff",
-      quality: "orange",
-      type: "equipable",
-      buy_value_gold: 20000,
-      buy_value_coin: 0,
-      sell_value: 4000,
-      guild_activity_points: 40,
-      hero_level_required: 60,
-      campaign_sources: null,
-      crafting_gold_cost: 100000,
-    };
+    const mockAsclepiusStaff: Database["public"]["Tables"]["equipment"]["Row"] =
+      {
+        slug: "asclepius-staff",
+        name: "Asclepius Staff",
+        quality: "orange",
+        type: "equipable",
+        buy_value_gold: 20000,
+        buy_value_coin: 0,
+        sell_value: 4000,
+        guild_activity_points: 40,
+        hero_level_required: 60,
+        campaign_sources: null,
+        crafting_gold_cost: 100000,
+      };
 
     it("should find final equipment that uses a component recursively", async () => {
       // Test the example: fragment (5x) → lute (1x) → song (2x) → staff
@@ -830,7 +915,13 @@ describe("EquipmentRepository", () => {
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({
-            data: [{ base_slug: "enchanted-lute", quantity: 5, equipment: mockEnchantedLute }],
+            data: [
+              {
+                base_slug: "enchanted-lute",
+                quantity: 5,
+                equipment: mockEnchantedLute,
+              },
+            ],
             error: null,
           }),
         }),
@@ -840,7 +931,13 @@ describe("EquipmentRepository", () => {
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({
-            data: [{ base_slug: "sirens-song", quantity: 1, equipment: mockSirensSong }],
+            data: [
+              {
+                base_slug: "sirens-song",
+                quantity: 1,
+                equipment: mockSirensSong,
+              },
+            ],
             error: null,
           }),
         }),
@@ -850,7 +947,13 @@ describe("EquipmentRepository", () => {
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({
-            data: [{ base_slug: "asclepius-staff", quantity: 2, equipment: mockAsclepiusStaff }],
+            data: [
+              {
+                base_slug: "asclepius-staff",
+                quantity: 2,
+                equipment: mockAsclepiusStaff,
+              },
+            ],
             error: null,
           }),
         }),
@@ -866,7 +969,9 @@ describe("EquipmentRepository", () => {
         }),
       });
 
-      const result = await repository.findRawComponentOf("enchanted-lute-fragment");
+      const result = await repository.findRawComponentOf(
+        "enchanted-lute-fragment"
+      );
 
       expect(result.data).toEqual([
         {
@@ -895,47 +1000,50 @@ describe("EquipmentRepository", () => {
         crafting_gold_cost: null,
       };
 
-      const mockIntermediate1: Database["public"]["Tables"]["equipment"]["Row"] = {
-        slug: "intermediate-1",
-        name: "Intermediate 1",
-        quality: "blue",
-        type: "equipable",
-        buy_value_gold: 2000,
-        buy_value_coin: 0,
-        sell_value: 400,
-        guild_activity_points: 8,
-        hero_level_required: 30,
-        campaign_sources: null,
-        crafting_gold_cost: 10000,
-      };
+      const mockIntermediate1: Database["public"]["Tables"]["equipment"]["Row"] =
+        {
+          slug: "intermediate-1",
+          name: "Intermediate 1",
+          quality: "blue",
+          type: "equipable",
+          buy_value_gold: 2000,
+          buy_value_coin: 0,
+          sell_value: 400,
+          guild_activity_points: 8,
+          hero_level_required: 30,
+          campaign_sources: null,
+          crafting_gold_cost: 10000,
+        };
 
-      const mockIntermediate2: Database["public"]["Tables"]["equipment"]["Row"] = {
-        slug: "intermediate-2",
-        name: "Intermediate 2",
-        quality: "blue",
-        type: "equipable",
-        buy_value_gold: 2500,
-        buy_value_coin: 0,
-        sell_value: 500,
-        guild_activity_points: 10,
-        hero_level_required: 35,
-        campaign_sources: null,
-        crafting_gold_cost: 12500,
-      };
+      const mockIntermediate2: Database["public"]["Tables"]["equipment"]["Row"] =
+        {
+          slug: "intermediate-2",
+          name: "Intermediate 2",
+          quality: "blue",
+          type: "equipable",
+          buy_value_gold: 2500,
+          buy_value_coin: 0,
+          sell_value: 500,
+          guild_activity_points: 10,
+          hero_level_required: 35,
+          campaign_sources: null,
+          crafting_gold_cost: 12500,
+        };
 
-      const mockFinalProduct: Database["public"]["Tables"]["equipment"]["Row"] = {
-        slug: "final-product",
-        name: "Final Product",
-        quality: "violet",
-        type: "equipable",
-        buy_value_gold: 8000,
-        buy_value_coin: 0,
-        sell_value: 1600,
-        guild_activity_points: 20,
-        hero_level_required: 55,
-        campaign_sources: null,
-        crafting_gold_cost: 40000,
-      };
+      const mockFinalProduct: Database["public"]["Tables"]["equipment"]["Row"] =
+        {
+          slug: "final-product",
+          name: "Final Product",
+          quality: "violet",
+          type: "equipable",
+          buy_value_gold: 8000,
+          buy_value_coin: 0,
+          sell_value: 1600,
+          guild_activity_points: 20,
+          hero_level_required: 55,
+          campaign_sources: null,
+          crafting_gold_cost: 40000,
+        };
 
       // Set up mocks using a different strategy - by call parameters
       mockSupabase.from.mockImplementation((table) => {
@@ -947,19 +1055,39 @@ describe("EquipmentRepository", () => {
                   if (value === "shared-component") {
                     return {
                       data: [
-                        { base_slug: "intermediate-1", quantity: 3, equipment: mockIntermediate1 },
-                        { base_slug: "intermediate-2", quantity: 2, equipment: mockIntermediate2 },
+                        {
+                          base_slug: "intermediate-1",
+                          quantity: 3,
+                          equipment: mockIntermediate1,
+                        },
+                        {
+                          base_slug: "intermediate-2",
+                          quantity: 2,
+                          equipment: mockIntermediate2,
+                        },
                       ],
                       error: null,
                     };
                   } else if (value === "intermediate-1") {
                     return {
-                      data: [{ base_slug: "final-product", quantity: 1, equipment: mockFinalProduct }],
+                      data: [
+                        {
+                          base_slug: "final-product",
+                          quantity: 1,
+                          equipment: mockFinalProduct,
+                        },
+                      ],
                       error: null,
                     };
                   } else if (value === "intermediate-2") {
                     return {
-                      data: [{ base_slug: "final-product", quantity: 1, equipment: mockFinalProduct }],
+                      data: [
+                        {
+                          base_slug: "final-product",
+                          quantity: 1,
+                          equipment: mockFinalProduct,
+                        },
+                      ],
                       error: null,
                     };
                   } else if (value === "final-product") {
@@ -1021,7 +1149,13 @@ describe("EquipmentRepository", () => {
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({
-            data: [{ base_slug: "circular-b", quantity: 1, equipment: mockCircularB }],
+            data: [
+              {
+                base_slug: "circular-b",
+                quantity: 1,
+                equipment: mockCircularB,
+              },
+            ],
             error: null,
           }),
         }),
@@ -1031,7 +1165,13 @@ describe("EquipmentRepository", () => {
       mockSupabase.from.mockReturnValueOnce({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockResolvedValue({
-            data: [{ base_slug: "circular-a", quantity: 1, equipment: mockCircularA }],
+            data: [
+              {
+                base_slug: "circular-a",
+                quantity: 1,
+                equipment: mockCircularA,
+              },
+            ],
             error: null,
           }),
         }),
@@ -1061,7 +1201,10 @@ describe("EquipmentRepository", () => {
     });
 
     it("should handle database errors gracefully", async () => {
-      const mockError = { message: "Database connection failed", code: "DB_ERROR" };
+      const mockError = {
+        message: "Database connection failed",
+        code: "DB_ERROR",
+      };
 
       mockSupabase.from.mockReturnValue({
         select: vi.fn().mockReturnValue({
@@ -1097,19 +1240,20 @@ describe("EquipmentRepository", () => {
         crafting_gold_cost: null,
       };
 
-      const mockIntermediateItem: Database["public"]["Tables"]["equipment"]["Row"] = {
-        slug: "intermediate-item",
-        name: "Intermediate Item",
-        quality: "blue",
-        type: "equipable",
-        buy_value_gold: 1000,
-        buy_value_coin: 0,
-        sell_value: 200,
-        guild_activity_points: 5,
-        hero_level_required: 25,
-        campaign_sources: null,
-        crafting_gold_cost: 5000,
-      };
+      const mockIntermediateItem: Database["public"]["Tables"]["equipment"]["Row"] =
+        {
+          slug: "intermediate-item",
+          name: "Intermediate Item",
+          quality: "blue",
+          type: "equipable",
+          buy_value_gold: 1000,
+          buy_value_coin: 0,
+          sell_value: 200,
+          guild_activity_points: 5,
+          hero_level_required: 25,
+          campaign_sources: null,
+          crafting_gold_cost: 5000,
+        };
 
       const mockFinalItem: Database["public"]["Tables"]["equipment"]["Row"] = {
         slug: "final-item",
@@ -1125,19 +1269,20 @@ describe("EquipmentRepository", () => {
         crafting_gold_cost: 10000,
       };
 
-      const mockUltimateItem: Database["public"]["Tables"]["equipment"]["Row"] = {
-        slug: "ultimate-item",
-        name: "Ultimate Item",
-        quality: "violet",
-        type: "equipable",
-        buy_value_gold: 5000,
-        buy_value_coin: 0,
-        sell_value: 1000,
-        guild_activity_points: 15,
-        hero_level_required: 45,
-        campaign_sources: null,
-        crafting_gold_cost: 25000,
-      };
+      const mockUltimateItem: Database["public"]["Tables"]["equipment"]["Row"] =
+        {
+          slug: "ultimate-item",
+          name: "Ultimate Item",
+          quality: "violet",
+          type: "equipable",
+          buy_value_gold: 5000,
+          buy_value_coin: 0,
+          sell_value: 1000,
+          guild_activity_points: 15,
+          hero_level_required: 45,
+          campaign_sources: null,
+          crafting_gold_cost: 25000,
+        };
 
       // Set up mocks using parameter-based strategy
       mockSupabase.from.mockImplementation((table) => {
@@ -1149,14 +1294,28 @@ describe("EquipmentRepository", () => {
                   if (value === "test-fragment") {
                     return {
                       data: [
-                        { base_slug: "intermediate-item", quantity: 2, equipment: mockIntermediateItem },
-                        { base_slug: "final-item", quantity: 1, equipment: mockFinalItem },
+                        {
+                          base_slug: "intermediate-item",
+                          quantity: 2,
+                          equipment: mockIntermediateItem,
+                        },
+                        {
+                          base_slug: "final-item",
+                          quantity: 1,
+                          equipment: mockFinalItem,
+                        },
                       ],
                       error: null,
                     };
                   } else if (value === "intermediate-item") {
                     return {
-                      data: [{ base_slug: "ultimate-item", quantity: 3, equipment: mockUltimateItem }],
+                      data: [
+                        {
+                          base_slug: "ultimate-item",
+                          quantity: 3,
+                          equipment: mockUltimateItem,
+                        },
+                      ],
                       error: null,
                     };
                   } else if (value === "final-item") {
@@ -1200,7 +1359,9 @@ describe("EquipmentRepository", () => {
       const mockError = new Error("Unexpected error");
 
       // Mock method to spy on and make it throw
-      vi.spyOn(repository, "findEquipmentThatRequires").mockRejectedValue(mockError);
+      vi.spyOn(repository, "findEquipmentThatRequires").mockRejectedValue(
+        mockError
+      );
 
       const result = await repository.findRawComponentOf("test-fragment");
 

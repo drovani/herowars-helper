@@ -1,6 +1,12 @@
 import React from "react";
 import { Link, type UIMatch } from "react-router";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "./ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "./ui/breadcrumb";
 import { Separator } from "./ui/separator";
 import { SidebarTrigger } from "./ui/sidebar";
 
@@ -12,7 +18,9 @@ function SiteHeader({
     {
       breadcrumb: (
         matches: UIMatch<unknown, unknown>
-      ) => { href?: string; title: string } | { href?: string; title: string }[];
+      ) =>
+        | { href?: string; title: string }
+        | { href?: string; title: string }[];
     }
   >[];
 }) {
@@ -31,18 +39,33 @@ function SiteHeader({
                 const result = match.handle.breadcrumb(match);
                 const crumbs = Array.isArray(result) ? result : [result];
                 const nodes: React.ReactNode[] = [];
-                for (let crumbIndex = 0; crumbIndex < crumbs.length; crumbIndex++) {
+                for (
+                  let crumbIndex = 0;
+                  crumbIndex < crumbs.length;
+                  crumbIndex++
+                ) {
                   const crumb = crumbs[crumbIndex];
                   if (crumb.href) {
                     nodes.push(
-                      <BreadcrumbLink key={`${index}-${crumbIndex}-link`} asChild>
+                      <BreadcrumbLink
+                        key={`${index}-${crumbIndex}-link`}
+                        asChild
+                      >
                         <Link to={crumb.href}>{crumb.title}</Link>
                       </BreadcrumbLink>
                     );
                   } else {
-                    nodes.push(<BreadcrumbItem key={`${index}-${crumbIndex}-item`}>{crumb.title}</BreadcrumbItem>);
+                    nodes.push(
+                      <BreadcrumbItem key={`${index}-${crumbIndex}-item`}>
+                        {crumb.title}
+                      </BreadcrumbItem>
+                    );
                   }
-                  nodes.push(<BreadcrumbSeparator key={`${index}-${crumbIndex}-separator`} />);
+                  nodes.push(
+                    <BreadcrumbSeparator
+                      key={`${index}-${crumbIndex}-separator`}
+                    />
+                  );
                 }
                 if (index + 1 >= breadcrumbs.length) {
                   nodes.pop();

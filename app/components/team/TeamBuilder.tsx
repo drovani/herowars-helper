@@ -1,32 +1,48 @@
 // ABOUTME: Team builder component for team creation and editing
 // ABOUTME: Handles hero selection from user collection with search/filter and team validation
 
-import { useState } from "react"
-import { SearchIcon, PlusIcon } from "lucide-react"
-import { Badge } from "~/components/ui/badge"
-import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
-import { Separator } from "~/components/ui/separator"
-import { Textarea } from "~/components/ui/textarea"
-import { TeamHeroDisplay } from "./TeamHeroDisplay"
-import type { PlayerTeamHero, Hero, PlayerHeroWithDetails } from "~/repositories/types"
+import { useState } from "react";
+import { SearchIcon, PlusIcon } from "lucide-react";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { Separator } from "~/components/ui/separator";
+import { Textarea } from "~/components/ui/textarea";
+import { TeamHeroDisplay } from "./TeamHeroDisplay";
+import type {
+  PlayerTeamHero,
+  Hero,
+  PlayerHeroWithDetails,
+} from "~/repositories/types";
 
 interface TeamBuilderProps {
-  teamName: string
-  teamDescription: string
-  teamHeroes: Array<PlayerTeamHero & { hero: Hero }>
-  availableHeroes: PlayerHeroWithDetails[]
-  onTeamNameChange: (name: string) => void
-  onTeamDescriptionChange: (description: string) => void
-  onAddHero: (heroSlug: string) => void
-  onRemoveHero: (heroSlug: string) => void
-  addingHeroSlug?: string
-  removingHeroSlug?: string
-  isSubmitting?: boolean
+  teamName: string;
+  teamDescription: string;
+  teamHeroes: Array<PlayerTeamHero & { hero: Hero }>;
+  availableHeroes: PlayerHeroWithDetails[];
+  onTeamNameChange: (name: string) => void;
+  onTeamDescriptionChange: (description: string) => void;
+  onAddHero: (heroSlug: string) => void;
+  onRemoveHero: (heroSlug: string) => void;
+  addingHeroSlug?: string;
+  removingHeroSlug?: string;
+  isSubmitting?: boolean;
 }
 
 export function TeamBuilder({
@@ -40,47 +56,54 @@ export function TeamBuilder({
   onRemoveHero,
   addingHeroSlug,
   removingHeroSlug,
-  isSubmitting = false
+  isSubmitting = false,
 }: TeamBuilderProps) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [classFilter, setClassFilter] = useState("all")
-  const [factionFilter, setFactionFilter] = useState("all")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [classFilter, setClassFilter] = useState("all");
+  const [factionFilter, setFactionFilter] = useState("all");
 
-  const teamHeroSlugs = new Set(teamHeroes.map(th => th.hero_slug))
-  const isTeamComplete = teamHeroes.length >= 5
+  const teamHeroSlugs = new Set(teamHeroes.map((th) => th.hero_slug));
+  const isTeamComplete = teamHeroes.length >= 5;
 
   // Filter available heroes
-  const filteredHeroes = availableHeroes.filter(playerHero => {
+  const filteredHeroes = availableHeroes.filter((playerHero) => {
     // Exclude heroes already in team
-    if (teamHeroSlugs.has(playerHero.hero_slug)) return false
-    
+    if (teamHeroSlugs.has(playerHero.hero_slug)) return false;
+
     // Search filter
-    if (searchTerm && !playerHero.hero.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return false
+    if (
+      searchTerm &&
+      !playerHero.hero.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) {
+      return false;
     }
-    
+
     // Class filter
     if (classFilter !== "all" && playerHero.hero.class !== classFilter) {
-      return false
+      return false;
     }
-    
+
     // Faction filter
     if (factionFilter !== "all" && playerHero.hero.faction !== factionFilter) {
-      return false
+      return false;
     }
-    
-    return true
-  })
+
+    return true;
+  });
 
   // Get unique classes and factions for filters
-  const uniqueClasses = [...new Set(availableHeroes.map(h => h.hero.class))].sort()
-  const uniqueFactions = [...new Set(availableHeroes.map(h => h.hero.faction))].sort()
+  const uniqueClasses = [
+    ...new Set(availableHeroes.map((h) => h.hero.class)),
+  ].sort();
+  const uniqueFactions = [
+    ...new Set(availableHeroes.map((h) => h.hero.faction)),
+  ].sort();
 
   const handleAddHero = (heroSlug: string) => {
     if (!isTeamComplete && !addingHeroSlug) {
-      onAddHero(heroSlug)
+      onAddHero(heroSlug);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -88,9 +111,7 @@ export function TeamBuilder({
       <Card>
         <CardHeader>
           <CardTitle>Team Details</CardTitle>
-          <CardDescription>
-            Set your team name and description
-          </CardDescription>
+          <CardDescription>Set your team name and description</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -104,7 +125,7 @@ export function TeamBuilder({
               disabled={isSubmitting}
             />
           </div>
-          
+
           <div>
             <Label htmlFor="team-description">Description (Optional)</Label>
             <Textarea
@@ -130,7 +151,8 @@ export function TeamBuilder({
             </Badge>
           </CardTitle>
           <CardDescription>
-            Heroes are automatically ordered by rank (highest to lowest, left to right)
+            Heroes are automatically ordered by rank (highest to lowest, left to
+            right)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -140,7 +162,7 @@ export function TeamBuilder({
             removingHeroSlug={removingHeroSlug}
             className="justify-center"
           />
-          
+
           {isTeamComplete && (
             <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
               <div className="text-sm text-green-800 font-medium">
@@ -175,38 +197,42 @@ export function TeamBuilder({
                   className="pl-9"
                 />
               </div>
-              
+
               <Select value={classFilter} onValueChange={setClassFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Filter by class" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Classes</SelectItem>
-                  {uniqueClasses.map(cls => (
+                  {uniqueClasses.map((cls) => (
                     <SelectItem key={cls} value={cls} className="capitalize">
                       {cls}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              
+
               <Select value={factionFilter} onValueChange={setFactionFilter}>
                 <SelectTrigger>
                   <SelectValue placeholder="Filter by faction" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Factions</SelectItem>
-                  {uniqueFactions.map(faction => (
-                    <SelectItem key={faction} value={faction} className="capitalize">
+                  {uniqueFactions.map((faction) => (
+                    <SelectItem
+                      key={faction}
+                      value={faction}
+                      className="capitalize"
+                    >
                       {faction}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
+
             <Separator />
-            
+
             {/* Available Heroes List */}
             <ScrollArea className="h-60 w-full">
               <div className="space-y-2">
@@ -218,11 +244,17 @@ export function TeamBuilder({
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex-1">
-                          <div className="font-medium">{playerHero.hero.name}</div>
+                          <div className="font-medium">
+                            {playerHero.hero.name}
+                          </div>
                           <div className="text-sm text-muted-foreground">
-                            <span className="capitalize">{playerHero.hero.class}</span>
+                            <span className="capitalize">
+                              {playerHero.hero.class}
+                            </span>
                             {" • "}
-                            <span className="capitalize">{playerHero.hero.faction}</span>
+                            <span className="capitalize">
+                              {playerHero.hero.faction}
+                            </span>
                             {" • "}
                             Rank: {playerHero.hero.order_rank}
                           </div>
@@ -236,14 +268,16 @@ export function TeamBuilder({
                           </div>
                         </div>
                       </div>
-                      
+
                       <Button
                         size="sm"
                         onClick={() => handleAddHero(playerHero.hero_slug)}
                         disabled={addingHeroSlug === playerHero.hero_slug}
                       >
                         <PlusIcon className="h-4 w-4 mr-1" />
-                        {addingHeroSlug === playerHero.hero_slug ? 'Adding...' : 'Add'}
+                        {addingHeroSlug === playerHero.hero_slug
+                          ? "Adding..."
+                          : "Add"}
                       </Button>
                     </div>
                   ))
@@ -265,7 +299,9 @@ export function TeamBuilder({
                       </div>
                     ) : (
                       <div>
-                        <div className="font-medium">No Heroes Match Filters</div>
+                        <div className="font-medium">
+                          No Heroes Match Filters
+                        </div>
                         <div className="text-sm">
                           Try adjusting your search or filter criteria.
                         </div>
@@ -279,5 +315,5 @@ export function TeamBuilder({
         </Card>
       )}
     </div>
-  )
+  );
 }

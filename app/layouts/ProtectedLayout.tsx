@@ -17,12 +17,19 @@ export default function ProtectedLayout({ roles = [] }: { roles?: string[] }) {
     );
   }
 
-  const hasRole = roles.length === 0 || user?.roles.some((role) => roles?.includes(role));
+  const hasRole =
+    roles.length === 0 || user?.roles.some((role) => roles?.includes(role));
 
   if (isAuthenticated && hasRole) {
     return <Outlet />;
   } else {
-    const requiredRole = roles.length > 0 ? roles.join(" or ") : "authenticated user";
-    return <UnauthorizedAccess requiredRole={requiredRole} action="access this page" />;
+    const requiredRole =
+      roles.length > 0 ? roles.join(" or ") : "authenticated user";
+    return (
+      <UnauthorizedAccess
+        requiredRole={requiredRole}
+        action="access this page"
+      />
+    );
   }
 }

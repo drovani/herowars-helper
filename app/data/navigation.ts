@@ -78,18 +78,18 @@ export const navigation: NavigationGroup[] = [
       {
         name: "Hero Roster",
         icon: UsersRoundIcon,
-        href: "/player/roster"
+        href: "/player/roster",
       },
       {
         name: "Teams",
         icon: UsersIcon,
-        href: "/player/teams"
+        href: "/player/teams",
       },
       {
         name: "Activity Log",
         icon: ClockIcon,
-        href: "/player/activity"
-      }
+        href: "/player/activity",
+      },
     ],
   },
   {

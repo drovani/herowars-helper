@@ -5,7 +5,7 @@ import { useAuth } from "~/contexts/AuthContext";
 // Create a simple test component that demonstrates the auth loading behavior
 function TestAccountProfile() {
   const { user, isLoading: authLoading } = useAuth();
-  
+
   if (authLoading) {
     return (
       <div>
@@ -22,16 +22,8 @@ function TestAccountProfile() {
     <div>
       <h1>Account Settings</h1>
       <p>Manage your account information and preferences.</p>
-      <input 
-        data-testid="email" 
-        value={user?.email || ""} 
-        disabled 
-        readOnly
-      />
-      <input 
-        data-testid="display-name" 
-        defaultValue={user?.name || ""} 
-      />
+      <input data-testid="email" value={user?.email || ""} disabled readOnly />
+      <input data-testid="display-name" defaultValue={user?.name || ""} />
       <button>Update Display Name</button>
     </div>
   );
@@ -62,9 +54,11 @@ describe("AccountProfile Auth Hydration", () => {
       const result = render(<TestAccountProfile />);
 
       expect(result.getByText("Loading...")).toBeInTheDocument();
-      expect(result.getByText("Initializing your account information.")).toBeInTheDocument();
+      expect(
+        result.getByText("Initializing your account information.")
+      ).toBeInTheDocument();
       expect(result.getByTestId("loading-skeleton")).toBeInTheDocument();
-      
+
       // Should not show account settings while loading
       expect(result.queryByText("Account Settings")).not.toBeInTheDocument();
     });
@@ -73,7 +67,7 @@ describe("AccountProfile Auth Hydration", () => {
       mockUseAuth.mockReturnValue({
         user: {
           id: "user-1",
-          email: "user@example.com", 
+          email: "user@example.com",
           name: "Test User",
           avatar: "/avatar.png",
           roles: ["user"],
@@ -88,10 +82,12 @@ describe("AccountProfile Auth Hydration", () => {
       const result = render(<TestAccountProfile />);
 
       expect(result.getByText("Account Settings")).toBeInTheDocument();
-      expect(result.getByText("Manage your account information and preferences.")).toBeInTheDocument();
+      expect(
+        result.getByText("Manage your account information and preferences.")
+      ).toBeInTheDocument();
       expect(result.getByTestId("email")).toHaveValue("user@example.com");
       expect(result.getByTestId("display-name")).toHaveValue("Test User");
-      
+
       // Should not show loading state
       expect(result.queryByText("Loading...")).not.toBeInTheDocument();
     });
@@ -99,12 +95,12 @@ describe("AccountProfile Auth Hydration", () => {
 
   describe("regression test for auth hydration after login redirect", () => {
     it("handles auth state transition from loading to authenticated seamlessly", async () => {
-      // This test specifically addresses the issue where users are redirected to 
+      // This test specifically addresses the issue where users are redirected to
       // /account after login but the page doesn't recognize they're logged in
-      
+
       // Start in loading state (simulating the state right after redirect from login)
       const result = render(<TestAccountProfile />);
-      
+
       mockUseAuth.mockReturnValue({
         user: null,
         isAuthenticated: false,
@@ -141,14 +137,20 @@ describe("AccountProfile Auth Hydration", () => {
       // Should transition to authenticated state without requiring page refresh
       await waitFor(() => {
         expect(result.queryByText("Loading...")).not.toBeInTheDocument();
-        expect(result.queryByTestId("loading-skeleton")).not.toBeInTheDocument();
+        expect(
+          result.queryByTestId("loading-skeleton")
+        ).not.toBeInTheDocument();
         expect(result.getByText("Account Settings")).toBeInTheDocument();
-        expect(result.getByTestId("email")).toHaveValue("freshly-logged-in@example.com");
+        expect(result.getByTestId("email")).toHaveValue(
+          "freshly-logged-in@example.com"
+        );
         expect(result.getByTestId("display-name")).toHaveValue("Fresh User");
       });
 
       // Verify all interactive elements are working
-      expect(result.getByRole("button", { name: "Update Display Name" })).toBeInTheDocument();
+      expect(
+        result.getByRole("button", { name: "Update Display Name" })
+      ).toBeInTheDocument();
       expect(result.getByTestId("display-name")).not.toBeDisabled();
     });
 
@@ -182,9 +184,9 @@ describe("AccountProfile Auth Hydration", () => {
     it("prevents the 'blank page after login redirect' bug", async () => {
       // This is the specific bug: user logs in, gets redirected to /account,
       // but sees blank page until manual refresh
-      
+
       const result = render(<TestAccountProfile />);
-      
+
       // Simulate the problematic scenario: just redirected from login
       mockUseAuth.mockReturnValue({
         user: null,
@@ -198,8 +200,10 @@ describe("AccountProfile Auth Hydration", () => {
 
       // User should see loading state (not blank page)
       expect(result.getByText("Loading...")).toBeInTheDocument();
-      expect(result.getByText("Initializing your account information.")).toBeInTheDocument();
-      
+      expect(
+        result.getByText("Initializing your account information.")
+      ).toBeInTheDocument();
+
       // The fix: auth completes and user data loads
       mockUseAuth.mockReturnValue({
         user: {
@@ -221,7 +225,9 @@ describe("AccountProfile Auth Hydration", () => {
       // User should now see their account without manual refresh
       await waitFor(() => {
         expect(result.getByText("Account Settings")).toBeInTheDocument();
-        expect(result.getByTestId("email")).toHaveValue("bug-fix-test@example.com");
+        expect(result.getByTestId("email")).toHaveValue(
+          "bug-fix-test@example.com"
+        );
         expect(result.getByTestId("display-name")).toHaveValue("Bug Fix User");
       });
 

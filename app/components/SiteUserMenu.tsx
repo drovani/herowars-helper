@@ -11,7 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "~/components/ui/sidebar";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "~/components/ui/sidebar";
 import { useAuth } from "~/contexts/AuthContext";
 import { Button } from "./ui/button";
 
@@ -32,7 +37,9 @@ export function SiteUserMenu() {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={`${user.avatar}`} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">{user.fallback}</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">
+                      {user.fallback}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">{user.name}</span>
@@ -51,10 +58,14 @@ export function SiteUserMenu() {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage src={`${user.avatar}`} alt={user.name} />
-                      <AvatarFallback className="rounded-lg">{user.fallback}</AvatarFallback>
+                      <AvatarFallback className="rounded-lg">
+                        {user.fallback}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">{user.name}</span>
+                      <span className="truncate font-semibold">
+                        {user.name}
+                      </span>
                       <span className="truncate text-xs">{user.email}</span>
                     </div>
                   </div>
@@ -62,14 +73,21 @@ export function SiteUserMenu() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                    <Link to="/account" className="flex items-center gap-2" viewTransition>
+                    <Link
+                      to="/account"
+                      className="flex items-center gap-2"
+                      viewTransition
+                    >
                       <BadgeCheck />
                       Account
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={signOut} className="w-full flex items-center gap-2">
+                <DropdownMenuItem
+                  onClick={signOut}
+                  className="w-full flex items-center gap-2"
+                >
                   <LogOut />
                   Log out
                 </DropdownMenuItem>
@@ -79,16 +97,17 @@ export function SiteUserMenu() {
         </SidebarMenu>
       ) : state === "expanded" ? (
         <LoginModal>
-          <Button variant={"outline"} className="w-full flex items-center gap-2">
+          <Button
+            variant={"outline"}
+            className="w-full flex items-center gap-2"
+          >
             <LogInIcon />
             <span>Sign in</span>
           </Button>
         </LoginModal>
       ) : (
         <LoginModal>
-          <LogInIcon
-            className="size-8 p-0.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer"
-          />
+          <LogInIcon className="size-8 p-0.5 border border-input bg-background hover:bg-accent hover:text-accent-foreground cursor-pointer" />
         </LoginModal>
       )}
     </div>

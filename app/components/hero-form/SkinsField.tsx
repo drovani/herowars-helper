@@ -4,9 +4,19 @@ import { PlusCircleIcon, XIcon } from "lucide-react";
 import { useRef } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { Button } from "~/components/ui/button";
-import { FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "~/components/ui/select";
 import { type HeroMutation, type HeroRecord } from "~/data/hero.zod";
 import { Stats } from "~/data/ReadonlyArrays";
 import { generateSlug } from "~/lib/utils";
@@ -15,7 +25,13 @@ import { Checkbox } from "../ui/checkbox";
 function StatDisplay({ stat }: { stat: string }) {
   return (
     <div className="flex items-center gap-2">
-      {stat && <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />}
+      {stat && (
+        <img
+          src={`/images/stats/${generateSlug(stat)}.png`}
+          alt={stat}
+          className="w-6 h-6"
+        />
+      )}
       <span className="capitalize">{stat}</span>
     </div>
   );
@@ -32,10 +48,13 @@ export default function SkinsField({ form, hero }: SkinsFieldProps) {
 
   const inputRefs = useRef<Record<number, HTMLInputElement>>({});
 
-  const theOtherMainStats = ["strength", "agility", "intelligence"].filter((stat) => stat !== hero.main_stat);
-  const availableStats = Stats.map((stat) => ({ stat, disabled: theOtherMainStats.includes(stat) })).sort((l, r) =>
-    l.stat.localeCompare(r.stat)
+  const theOtherMainStats = ["strength", "agility", "intelligence"].filter(
+    (stat) => stat !== hero.main_stat
   );
+  const availableStats = Stats.map((stat) => ({
+    stat,
+    disabled: theOtherMainStats.includes(stat),
+  })).sort((l, r) => l.stat.localeCompare(r.stat));
 
   const addSkin = () => {
     const newIndex = skins.length;
@@ -82,9 +101,15 @@ export default function SkinsField({ form, hero }: SkinsFieldProps) {
           <FormLabel className="text-lg font-semibold">Hero Skins</FormLabel>
           <div className="space-y-2 rounded-lg border p-4">
             <div className="grid grid-cols-[1fr_40px_160px_40px] gap-4 items-center mb-4">
-              <FormLabel className="text-sm text-muted-foreground">Name</FormLabel>
-              <FormLabel className="text-sm text-muted-foreground -ml-10">Has Plus</FormLabel>
-              <FormLabel className="text-sm text-muted-foreground">Stat Boost</FormLabel>
+              <FormLabel className="text-sm text-muted-foreground">
+                Name
+              </FormLabel>
+              <FormLabel className="text-sm text-muted-foreground -ml-10">
+                Has Plus
+              </FormLabel>
+              <FormLabel className="text-sm text-muted-foreground">
+                Stat Boost
+              </FormLabel>
               <div /> {/* Spacer for action button column */}
             </div>
             <div className="space-y-2">
@@ -95,7 +120,10 @@ export default function SkinsField({ form, hero }: SkinsFieldProps) {
                   name={`skins.${index}`}
                   defaultValue={skin}
                   render={() => (
-                    <div key={index} className="grid grid-cols-[1fr_15px_185px_40px] gap-4 items-center">
+                    <div
+                      key={index}
+                      className="grid grid-cols-[1fr_15px_185px_40px] gap-4 items-center"
+                    >
                       {index === 0 ? (
                         <div className="font-medium">{skin.name}</div>
                       ) : (
@@ -109,7 +137,9 @@ export default function SkinsField({ form, hero }: SkinsFieldProps) {
                                 if (el) inputRefs.current[index] = el;
                               }}
                               value={skin.name}
-                              onChange={(e) => updateSkinName(index, e.target.value)}
+                              onChange={(e) =>
+                                updateSkinName(index, e.target.value)
+                              }
                               placeholder="Enter skin name"
                             />
                           )}
@@ -117,7 +147,9 @@ export default function SkinsField({ form, hero }: SkinsFieldProps) {
                       )}
                       <Checkbox
                         defaultChecked={skin.has_plus}
-                        onCheckedChange={(checked) => updateSkinHasPlus(index, checked)}
+                        onCheckedChange={(checked) =>
+                          updateSkinHasPlus(index, checked)
+                        }
                       />
                       <FormField
                         control={form.control}
@@ -127,14 +159,25 @@ export default function SkinsField({ form, hero }: SkinsFieldProps) {
                           <div>
                             <Select
                               value={skin.stat}
-                              onValueChange={(value) => updateSkinStat(index, value as (typeof Stats)[number])}
+                              onValueChange={(value) =>
+                                updateSkinStat(
+                                  index,
+                                  value as (typeof Stats)[number]
+                                )
+                              }
                             >
-                              <SelectTrigger className={fieldState.error && "border-red-500"}>
+                              <SelectTrigger
+                                className={fieldState.error && "border-red-500"}
+                              >
                                 <StatDisplay stat={skin.stat} />
                               </SelectTrigger>
                               <SelectContent>
                                 {availableStats.map((stat) => (
-                                  <SelectItem key={stat.stat} value={stat.stat} disabled={stat.disabled}>
+                                  <SelectItem
+                                    key={stat.stat}
+                                    value={stat.stat}
+                                    disabled={stat.disabled}
+                                  >
                                     <StatDisplay stat={stat.stat} />
                                   </SelectItem>
                                 ))}
@@ -155,13 +198,20 @@ export default function SkinsField({ form, hero }: SkinsFieldProps) {
                           <XIcon className="h-4 w-4" />
                         </Button>
                       )}
-                      {index === 0 && <div />} {/* Empty space for consistent grid */}
+                      {index === 0 && <div />}{" "}
+                      {/* Empty space for consistent grid */}
                     </div>
                   )}
                 />
               ))}
             </div>
-            <Button type="button" variant="outline" size="sm" onClick={addSkin} className="w-full mt-4">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={addSkin}
+              className="w-full mt-4"
+            >
               <PlusCircleIcon className="mr-2 h-4 w-4" />
               Add Skin
             </Button>

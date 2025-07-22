@@ -5,13 +5,13 @@ import type { Route } from "./+types/json";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const missionRepo = new MissionRepository(request);
-  
+
   // Get missions with proper sorting
   const missionsResult = await missionRepo.findAll({
     orderBy: [
       { column: "chapter_id", ascending: true },
-      { column: "level", ascending: true }
-    ]
+      { column: "level", ascending: true },
+    ],
   });
 
   if (missionsResult.error) {
@@ -28,20 +28,20 @@ export async function loader({ request }: Route.LoaderArgs) {
   const chapters = chaptersResult.data || [];
 
   // Format missions to match schema (remove database-specific fields)
-  const formattedMissions = missions.map(mission => ({
+  const formattedMissions = missions.map((mission) => ({
     slug: mission.slug,
     name: mission.name,
     ...(mission.hero_slug && { hero_slug: mission.hero_slug }),
-    energy_cost: mission.energy_cost
+    energy_cost: mission.energy_cost,
   }));
 
   // Create the schema-compliant structure
   const exportData = {
-    chapters: chapters.map(chapter => ({
+    chapters: chapters.map((chapter) => ({
       id: chapter.id,
-      title: chapter.title
+      title: chapter.title,
     })),
-    missions: formattedMissions
+    missions: formattedMissions,
   };
 
   const missionsJson = JSON.stringify(exportData, null, 2);

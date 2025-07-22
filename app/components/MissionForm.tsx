@@ -3,11 +3,27 @@ import { type UseFormReturn } from "react-hook-form";
 import { useNavigate, useSubmit } from "react-router";
 import log from "loglevel";
 import { Button } from "~/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import type { HeroRecord } from "~/data/hero.zod";
-import { MissionMutationSchema, type MissionMutation } from "~/data/mission.zod";
+import {
+  MissionMutationSchema,
+  type MissionMutation,
+} from "~/data/mission.zod";
 // Hero data will be fetched via API
 
 interface MissionFormProps {
@@ -24,9 +40,9 @@ export default function MissionForm({ form }: MissionFormProps) {
   useEffect(() => {
     const loadHeroes = async () => {
       try {
-        const response = await fetch('/heroes/json');
+        const response = await fetch("/heroes/json");
         if (!response.ok) {
-          throw new Error('Failed to fetch heroes');
+          throw new Error("Failed to fetch heroes");
         }
         const heroesData = await response.json();
         setHeroes(heroesData);
@@ -66,9 +82,9 @@ export default function MissionForm({ form }: MissionFormProps) {
               <FormItem>
                 <FormLabel>Chapter</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="1" 
+                  <Input
+                    type="number"
+                    placeholder="1"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                     value={field.value || ""}
@@ -86,9 +102,9 @@ export default function MissionForm({ form }: MissionFormProps) {
               <FormItem>
                 <FormLabel>Mission Number</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
-                    placeholder="1" 
+                  <Input
+                    type="number"
+                    placeholder="1"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                     value={field.value || ""}
@@ -134,14 +150,22 @@ export default function MissionForm({ form }: MissionFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Boss (Optional)</FormLabel>
-              <Select 
-                onValueChange={(value) => field.onChange(value === "none" ? "" : value)} 
-                value={field.value || "none"} 
+              <Select
+                onValueChange={(value) =>
+                  field.onChange(value === "none" ? "" : value)
+                }
+                value={field.value || "none"}
                 disabled={isLoadingHeroes}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={isLoadingHeroes ? "Loading heroes..." : "Select a boss hero"} />
+                    <SelectValue
+                      placeholder={
+                        isLoadingHeroes
+                          ? "Loading heroes..."
+                          : "Select a boss hero"
+                      }
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -162,7 +186,12 @@ export default function MissionForm({ form }: MissionFormProps) {
           <Button type="submit" disabled={isSubmitting || isLoadingHeroes}>
             {isSubmitting ? "Saving..." : "Save Mission"}
           </Button>
-          <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isSubmitting}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate(-1)}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
         </div>

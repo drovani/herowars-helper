@@ -42,7 +42,9 @@ describe("UnauthorizedAccess", () => {
       );
 
       expect(result.getByText("Authentication Required")).toBeInTheDocument();
-      expect(result.getByText("You must be logged in to edit this content.")).toBeInTheDocument();
+      expect(
+        result.getByText("You must be logged in to edit this content.")
+      ).toBeInTheDocument();
       expect(result.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
     });
 
@@ -54,7 +56,9 @@ describe("UnauthorizedAccess", () => {
       );
 
       expect(result.getByText("Authentication Required")).toBeInTheDocument();
-      expect(result.getByText("You must be logged in to access this feature.")).toBeInTheDocument();
+      expect(
+        result.getByText("You must be logged in to access this feature.")
+      ).toBeInTheDocument();
     });
 
     it("has correct sign in link", () => {
@@ -97,7 +101,9 @@ describe("UnauthorizedAccess", () => {
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(result.getByText("You need editor role to edit this content.")).toBeInTheDocument();
+      expect(
+        result.getByText("You need editor role to edit this content.")
+      ).toBeInTheDocument();
     });
 
     it("shows insufficient permissions message with custom role and action", () => {
@@ -108,7 +114,9 @@ describe("UnauthorizedAccess", () => {
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(result.getByText("You need admin role to manage users.")).toBeInTheDocument();
+      expect(
+        result.getByText("You need admin role to manage users.")
+      ).toBeInTheDocument();
     });
 
     it("displays current user information", () => {
@@ -158,7 +166,9 @@ describe("UnauthorizedAccess", () => {
       );
 
       const heroesLink = result.getByRole("link", { name: "Back to Heroes" });
-      const equipmentLink = result.getByRole("link", { name: "Back to Equipment" });
+      const equipmentLink = result.getByRole("link", {
+        name: "Back to Equipment",
+      });
 
       expect(heroesLink).toHaveAttribute("href", "/heroes");
       expect(equipmentLink).toHaveAttribute("href", "/equipment");
@@ -239,7 +249,9 @@ describe("UnauthorizedAccess", () => {
         </Wrapper>
       );
 
-      expect(result.getByRole("heading", { name: "Authentication Required" })).toBeInTheDocument();
+      expect(
+        result.getByRole("heading", { name: "Authentication Required" })
+      ).toBeInTheDocument();
     });
 
     it("has accessible buttons and links", () => {
@@ -266,8 +278,12 @@ describe("UnauthorizedAccess", () => {
         </Wrapper>
       );
 
-      expect(result.getByRole("link", { name: "Back to Heroes" })).toBeInTheDocument();
-      expect(result.getByRole("link", { name: "Back to Equipment" })).toBeInTheDocument();
+      expect(
+        result.getByRole("link", { name: "Back to Heroes" })
+      ).toBeInTheDocument();
+      expect(
+        result.getByRole("link", { name: "Back to Equipment" })
+      ).toBeInTheDocument();
     });
   });
 });

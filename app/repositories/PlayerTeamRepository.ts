@@ -34,19 +34,36 @@ const PlayerTeamSchema = z.object({
 
 export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
-    if (requestOrSupabase && typeof requestOrSupabase === "object" && "from" in requestOrSupabase) {
+    if (
+      requestOrSupabase &&
+      typeof requestOrSupabase === "object" &&
+      "from" in requestOrSupabase
+    ) {
       // Custom supabase client provided
-      super(requestOrSupabase, PlayerTeamInputSchema, "player_team", PlayerTeamSchema, "id");
+      super(
+        requestOrSupabase,
+        PlayerTeamInputSchema,
+        "player_team",
+        PlayerTeamSchema,
+        "id"
+      );
     } else {
       // Request or null provided (standard operation)
-      super("player_team", PlayerTeamInputSchema, requestOrSupabase as Request | null, "id");
+      super(
+        "player_team",
+        PlayerTeamInputSchema,
+        requestOrSupabase as Request | null,
+        "id"
+      );
     }
   }
 
   /**
    * Find all teams for a specific user with hero details
    */
-  async findByUserId(userId: string): Promise<RepositoryResult<TeamWithHeroes[]>> {
+  async findByUserId(
+    userId: string
+  ): Promise<RepositoryResult<TeamWithHeroes[]>> {
     try {
       const { data, error } = await this.supabase
         .from("player_team")
@@ -64,7 +81,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
 
       if (error) {
         log.error("Failed to fetch user teams:", error);
-        return { data: null, error: { message: error.message, code: error.code } };
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
       }
 
       // Transform data to match TeamWithHeroes interface
@@ -83,7 +103,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       log.error("Error fetching user teams:", err);
       return {
         data: null,
-        error: { message: err instanceof Error ? err.message : "Unknown error occurred" },
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
       };
     }
   }
@@ -91,7 +114,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   /**
    * Create a new team with auto-generated name if not provided
    */
-  async createTeam(userId: string, teamData: CreatePlayerTeamInput): Promise<RepositoryResult<PlayerTeam>> {
+  async createTeam(
+    userId: string,
+    teamData: CreatePlayerTeamInput
+  ): Promise<RepositoryResult<PlayerTeam>> {
     try {
       let teamName = teamData.name;
 
@@ -113,7 +139,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
 
       if (error) {
         log.error("Failed to create team:", error);
-        return { data: null, error: { message: error.message, code: error.code } };
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
       }
 
       return { data, error: null };
@@ -121,7 +150,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       log.error("Error creating team:", err);
       return {
         data: null,
-        error: { message: err instanceof Error ? err.message : "Unknown error occurred" },
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
       };
     }
   }
@@ -145,11 +177,17 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
 
       if (error) {
         log.error("Failed to update team:", error);
-        return { data: null, error: { message: error.message, code: error.code } };
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
       }
 
       if (!data) {
-        return { data: null, error: { message: "Team not found or access denied" } };
+        return {
+          data: null,
+          error: { message: "Team not found or access denied" },
+        };
       }
 
       log.info(`Updated team ${teamId}`);
@@ -158,7 +196,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       log.error("Error updating team:", err);
       return {
         data: null,
-        error: { message: err instanceof Error ? err.message : "Unknown error occurred" },
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
       };
     }
   }
@@ -166,7 +207,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   /**
    * Delete a team and all its hero assignments
    */
-  async deleteTeam(teamId: string, userId: string): Promise<RepositoryResult<boolean>> {
+  async deleteTeam(
+    teamId: string,
+    userId: string
+  ): Promise<RepositoryResult<boolean>> {
     try {
       // Verify user owns the team
       const { data: team, error: teamError } = await this.supabase
@@ -177,15 +221,25 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         .single();
 
       if (teamError || !team) {
-        return { data: null, error: { message: "Team not found or access denied" } };
+        return {
+          data: null,
+          error: { message: "Team not found or access denied" },
+        };
       }
 
       // Delete the team (cascade will handle team heroes)
-      const { error } = await this.supabase.from("player_team").delete().eq("id", teamId).eq("user_id", userId);
+      const { error } = await this.supabase
+        .from("player_team")
+        .delete()
+        .eq("id", teamId)
+        .eq("user_id", userId);
 
       if (error) {
         log.error("Failed to delete team:", error);
-        return { data: null, error: { message: error.message, code: error.code } };
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
       }
 
       log.info(`Deleted team ${teamId}`);
@@ -194,7 +248,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       log.error("Error deleting team:", err);
       return {
         data: null,
-        error: { message: err instanceof Error ? err.message : "Unknown error occurred" },
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
       };
     }
   }
@@ -222,13 +279,19 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         .single();
 
       if (teamError || !teamInfo) {
-        return { data: null, error: { message: "Team not found or access denied" } };
+        return {
+          data: null,
+          error: { message: "Team not found or access denied" },
+        };
       }
 
       // Check if team already has 5 heroes
       const currentHeroCount = teamInfo.player_team_hero?.length || 0;
       if (currentHeroCount >= 5) {
-        return { data: null, error: { message: "Team already has maximum of 5 heroes" } };
+        return {
+          data: null,
+          error: { message: "Team already has maximum of 5 heroes" },
+        };
       }
 
       // Check if hero is already in the team
@@ -240,7 +303,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         .single();
 
       if (existingHero) {
-        return { data: null, error: { message: "Hero is already in this team" } };
+        return {
+          data: null,
+          error: { message: "Hero is already in this team" },
+        };
       }
 
       // Add hero to team
@@ -255,7 +321,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
 
       if (error) {
         log.error("Failed to add hero to team:", error);
-        return { data: null, error: { message: error.message, code: error.code } };
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
       }
 
       return { data, error: null };
@@ -263,7 +332,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       log.error("Error adding hero to team:", err);
       return {
         data: null,
-        error: { message: err instanceof Error ? err.message : "Unknown error occurred" },
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
       };
     }
   }
@@ -271,7 +343,11 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   /**
    * Remove a hero from a team
    */
-  async removeHeroFromTeam(teamId: string, userId: string, heroSlug: string): Promise<RepositoryResult<boolean>> {
+  async removeHeroFromTeam(
+    teamId: string,
+    userId: string,
+    heroSlug: string
+  ): Promise<RepositoryResult<boolean>> {
     try {
       // Verify team belongs to user
       const { data: team, error: teamError } = await this.supabase
@@ -282,7 +358,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         .single();
 
       if (teamError || !team) {
-        return { data: null, error: { message: "Team not found or access denied" } };
+        return {
+          data: null,
+          error: { message: "Team not found or access denied" },
+        };
       }
 
       // Remove hero from team
@@ -294,7 +373,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
 
       if (error) {
         log.error("Failed to remove hero from team:", error);
-        return { data: null, error: { message: error.message, code: error.code } };
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
       }
 
       log.info(`Removed hero ${heroSlug} from team ${teamId}`);
@@ -303,7 +385,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       log.error("Error removing hero from team:", err);
       return {
         data: null,
-        error: { message: err instanceof Error ? err.message : "Unknown error occurred" },
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
       };
     }
   }
@@ -320,7 +405,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         .like("name", "Team %");
 
       if (error) {
-        log.warn("Failed to get existing team names, defaulting to Team 1:", error);
+        log.warn(
+          "Failed to get existing team names, defaulting to Team 1:",
+          error
+        );
         return 1;
       }
 
@@ -341,7 +429,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   /**
    * Get team with heroes by team ID (with user verification)
    */
-  async findTeamWithHeroes(teamId: string, userId: string): Promise<RepositoryResult<TeamWithHeroes>> {
+  async findTeamWithHeroes(
+    teamId: string,
+    userId: string
+  ): Promise<RepositoryResult<TeamWithHeroes>> {
     try {
       const { data, error } = await this.supabase
         .from("player_team")
@@ -360,11 +451,17 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
 
       if (error) {
         log.error("Failed to fetch team with heroes:", error);
-        return { data: null, error: { message: error.message, code: error.code } };
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
       }
 
       if (!data) {
-        return { data: null, error: { message: "Team not found or access denied" } };
+        return {
+          data: null,
+          error: { message: "Team not found or access denied" },
+        };
       }
 
       // Transform data to match TeamWithHeroes interface
@@ -383,7 +480,10 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       log.error("Error fetching team with heroes:", err);
       return {
         data: null,
-        error: { message: err instanceof Error ? err.message : "Unknown error occurred" },
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
       };
     }
   }

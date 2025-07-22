@@ -1,9 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
-import log from 'loglevel';
+import { createClient } from "@supabase/supabase-js";
+import log from "loglevel";
 
 // Canonical list of assignable roles (user role is always default)
-export const ASSIGNABLE_ROLES = ['admin', 'editor'] as const;
-export type AssignableRole = typeof ASSIGNABLE_ROLES[number];
+export const ASSIGNABLE_ROLES = ["admin", "editor"] as const;
+export type AssignableRole = (typeof ASSIGNABLE_ROLES)[number];
 
 /**
  * Server-side Supabase client with service role key for admin operations
@@ -14,14 +14,16 @@ export function createAdminClient() {
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing required environment variables: VITE_SUPABASE_DATABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+    throw new Error(
+      "Missing required environment variables: VITE_SUPABASE_DATABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
+    );
   }
 
   return createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
-      persistSession: false
-    }
+      persistSession: false,
+    },
   });
 }
 
@@ -50,17 +52,20 @@ export const adminUserOperations = {
     const supabase = createAdminClient();
 
     // Validate roles - only admin and editor are assignable, user is default
-    const invalidRoles = roles.filter(role => !ASSIGNABLE_ROLES.includes(role as AssignableRole) && role !== 'user');
+    const invalidRoles = roles.filter(
+      (role) =>
+        !ASSIGNABLE_ROLES.includes(role as AssignableRole) && role !== "user"
+    );
     if (invalidRoles.length > 0) {
-      throw new Error(`Invalid roles: ${invalidRoles.join(', ')}`);
+      throw new Error(`Invalid roles: ${invalidRoles.join(", ")}`);
     }
 
     // Ensure user always has 'user' role plus any assigned elevated roles
-    const elevatedRoles = roles.filter(role => role !== 'user');
-    const finalRoles = ['user', ...elevatedRoles];
+    const elevatedRoles = roles.filter((role) => role !== "user");
+    const finalRoles = ["user", ...elevatedRoles];
 
     const { data, error } = await supabase.auth.admin.updateUserById(userId, {
-      app_metadata: { roles: finalRoles }
+      app_metadata: { roles: finalRoles },
     });
 
     if (error) {
@@ -91,7 +96,7 @@ export const adminUserOperations = {
     const supabase = createAdminClient();
     // Set ban for 10 years (87600 hours)
     const { data, error } = await supabase.auth.admin.updateUserById(userId, {
-      ban_duration: '87600h'
+      ban_duration: "87600h",
     });
 
     if (error) {
@@ -108,7 +113,7 @@ export const adminUserOperations = {
     const supabase = createAdminClient();
 
     const { data, error } = await supabase.auth.admin.updateUserById(userId, {
-      ban_duration: 'none'
+      ban_duration: "none",
     });
 
     if (error) {
@@ -121,22 +126,29 @@ export const adminUserOperations = {
   /**
    * Create a new user with email and password
    */
-  async createUser(email: string, password: string, userData?: { full_name?: string; roles?: string[] }) {
+  async createUser(
+    email: string,
+    password: string,
+    userData?: { full_name?: string; roles?: string[] }
+  ) {
     const supabase = createAdminClient();
 
     // Check if user already exists
     try {
       const { data: existingUsers } = await supabase.auth.admin.listUsers();
-      const existingUser = existingUsers.users.find(u => u.email === email);
+      const existingUser = existingUsers.users.find((u) => u.email === email);
       if (existingUser) {
         throw new Error(`A user with email ${email} already exists`);
       }
     } catch (checkError) {
       // If it's our custom error about existing user, rethrow it
-      if (checkError instanceof Error && checkError.message.includes('already exists')) {
+      if (
+        checkError instanceof Error &&
+        checkError.message.includes("already exists")
+      ) {
         throw checkError;
       }
-      log.error('Could not check existing users:', checkError);
+      log.error("Could not check existing users:", checkError);
       // Continue with creation attempt for other errors
     }
 
@@ -144,23 +156,28 @@ export const adminUserOperations = {
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: true
+      email_confirm: true,
     });
 
     if (error) {
-      log.error('Supabase createUser error details:', {
+      log.error("Supabase createUser error details:", {
         message: error.message,
         status: error.status,
         code: error.code,
-        details: error
+        details: error,
       });
 
       // Provide more specific error messages
-      if (error.message?.includes('already exists') || error.message?.includes('duplicate')) {
+      if (
+        error.message?.includes("already exists") ||
+        error.message?.includes("duplicate")
+      ) {
         throw new Error(`A user with email ${email} already exists`);
       }
 
-      throw new Error(`Failed to create user: ${error.message || 'Database error'}`);
+      throw new Error(
+        `Failed to create user: ${error.message || "Database error"}`
+      );
     }
 
     return data.user;
@@ -173,16 +190,21 @@ export const adminUserOperations = {
     const supabase = createAdminClient();
 
     // First check if user is disabled
-    const { data: userData, error: getUserError } = await supabase.auth.admin.getUserById(userId);
+    const { data: userData, error: getUserError } =
+      await supabase.auth.admin.getUserById(userId);
     if (getUserError) {
       throw new Error(`Failed to fetch user: ${getUserError.message}`);
     }
 
     const user = userData.user;
-    const isDisabled = (user as any).banned_until && new Date((user as any).banned_until) > new Date();
+    const isDisabled =
+      (user as any).banned_until &&
+      new Date((user as any).banned_until) > new Date();
 
     if (!isDisabled) {
-      throw new Error('Can only delete disabled users. Please disable the user first.');
+      throw new Error(
+        "Can only delete disabled users. Please disable the user first."
+      );
     }
 
     const { error } = await supabase.auth.admin.deleteUser(userId);
@@ -192,5 +214,5 @@ export const adminUserOperations = {
     }
 
     return { success: true };
-  }
+  },
 };

@@ -93,7 +93,7 @@ export function HeroDetailSkeleton({
               <Skeleton className="h-4 w-20" />
               <div className="flex gap-2">
                 <Skeleton className="h-6 w-16" />
-                <Skeleton className="h-6 w-18" />
+                <Skeleton className="h-6 w-20" />
               </div>
             </div>
           </div>

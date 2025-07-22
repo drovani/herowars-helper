@@ -19,13 +19,13 @@ export function AdminSetupSkeleton({
       <div className={cn("space-y-6 max-w-2xl mx-auto", className)}>
         <Card>
           <CardHeader>
-            <CardTitle>Initializing Data</CardTitle>
-            <CardDescription>Processing your request...</CardDescription>
+            <Skeleton className="h-7 w-40" />
+            <Skeleton className="h-4 w-48" />
           </CardHeader>
           <CardContent className="flex items-center justify-center py-8">
             <div className="flex items-center gap-3">
               <Skeleton className="size-6 rounded-full animate-pulse" />
-              <span className="text-lg">Initializing...</span>
+              <Skeleton className="h-6 w-32" />
             </div>
           </CardContent>
         </Card>

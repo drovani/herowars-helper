@@ -42,7 +42,7 @@ export function EquipmentDetailSkeleton({
               </div>
               <div className="space-y-1">
                 <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-6 w-18" />
+                <Skeleton className="h-6 w-20" />
               </div>
             </div>
           </div>

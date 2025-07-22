@@ -4,7 +4,7 @@
 import { Skeleton } from "~/components/ui/skeleton";
 import { Card } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 
 interface HeroIndexSkeletonProps {
   /** Additional CSS classes to apply to the skeleton container */
@@ -22,7 +22,7 @@ interface HeroIndexSkeletonProps {
  * @param props - Configuration options for the hero index skeleton
  * @returns A skeleton layout matching the hero index page structure with accessibility support
  */
-export function HeroIndexSkeleton({ 
+export const HeroIndexSkeleton = memo(function HeroIndexSkeleton({ 
   className,
   mode = "cards",
   itemCount = 15
@@ -141,4 +141,4 @@ export function HeroIndexSkeleton({
       <span className="sr-only">Hero tiles are loading, please wait.</span>
     </div>
   );
-}
+});

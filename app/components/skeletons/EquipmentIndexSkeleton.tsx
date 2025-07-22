@@ -4,6 +4,7 @@
 import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
+import { memo } from "react";
 
 interface EquipmentIndexSkeletonProps {
   /** Additional CSS classes to apply to the skeleton container */
@@ -21,7 +22,7 @@ interface EquipmentIndexSkeletonProps {
  * @param props - Configuration options for the equipment index skeleton
  * @returns A skeleton layout matching the equipment index page structure
  */
-export function EquipmentIndexSkeleton({ 
+export const EquipmentIndexSkeleton = memo(function EquipmentIndexSkeleton({ 
   className,
   itemCount = 20,
   showAddButton = false
@@ -50,4 +51,4 @@ export function EquipmentIndexSkeleton({
       </div>
     </div>
   );
-}
+});

@@ -4,7 +4,7 @@
 import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 import { SkeletonCard } from "./SkeletonCard";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 
 interface SkeletonGridProps {
   /** Additional CSS classes to apply to the grid container */
@@ -35,7 +35,7 @@ interface SkeletonGridProps {
  * @param props - Configuration options for the skeleton grid
  * @returns A responsive skeleton grid with proper accessibility and loading announcements
  */
-export function SkeletonGrid({ 
+export const SkeletonGrid = memo(function SkeletonGrid({ 
   className,
   items = 12,
   columns = {
@@ -132,4 +132,4 @@ export function SkeletonGrid({
       <span className="sr-only">Content is loading, please wait.</span>
     </div>
   );
-}
+});

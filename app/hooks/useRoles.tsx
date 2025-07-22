@@ -13,9 +13,9 @@ export function useRoles() {
      */
     const hasRole = (roles: string | string[]): boolean => {
       if (!isAuthenticated || !user) return false;
-      
+
       const requiredRoles = Array.isArray(roles) ? roles : [roles];
-      return user.roles.some(role => requiredRoles.includes(role));
+      return user.roles.some((role) => requiredRoles.includes(role));
     };
 
     /**

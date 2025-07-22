@@ -8,7 +8,14 @@ import CraftingField from "~/components/equipment-form/CraftingField";
 import StatsField from "~/components/equipment-form/StatsField";
 import EquipmentImage from "~/components/EquipmentImage";
 import { Button } from "~/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
@@ -28,11 +35,17 @@ type EquipmentFormProps = {
   missions: MissionRecord[];
 };
 
-export default function EquipmentForm({ form, existingItems, missions }: EquipmentFormProps) {
+export default function EquipmentForm({
+  form,
+  existingItems,
+  missions,
+}: EquipmentFormProps) {
   const navigate = useNavigate();
   const submit = useSubmit();
 
-  const [previewSlug, setPreviewSlug] = useState(form.getValues("name") ? generateSlug(form.getValues("name")) : "");
+  const [previewSlug, setPreviewSlug] = useState(
+    form.getValues("name") ? generateSlug(form.getValues("name")) : ""
+  );
   const itemType = form.watch("type");
   const isFragment = useMemo(() => itemType === "fragment", [itemType]);
   const isRecipe = useMemo(() => itemType === "recipe", [itemType]);
@@ -153,7 +166,11 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
             <FormItem className="space-y-2">
               <FormLabel>Quality</FormLabel>
               <FormControl>
-                <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-4">
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  className="flex gap-4"
+                >
                   {EQUIPMENT_QUALITIES.map((quality) => (
                     <div key={quality} className="flex items-center space-x-2">
                       <RadioGroupItem value={quality} id={quality} />
@@ -215,7 +232,11 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                       type="number"
                       {...field}
                       value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === "" ? null : +e.target.value
+                        )
+                      }
                       className="pl-10"
                     />
                     <img
@@ -241,7 +262,11 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                       type="number"
                       {...field}
                       value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
+                      onChange={(e) =>
+                        field.onChange(
+                          e.target.value === "" ? null : +e.target.value
+                        )
+                      }
                       className="pl-10"
                     />
                     <img
@@ -268,7 +293,11 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                       <Input
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === "" ? null : +e.target.value
+                          )
+                        }
                         className="pl-10"
                       />
                       <img
@@ -294,7 +323,11 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
                       <Input
                         type="number"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value === "" ? null : +e.target.value)}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === "" ? null : +e.target.value
+                          )
+                        }
                         className="pl-10"
                       />
                       <img
@@ -312,7 +345,11 @@ export default function EquipmentForm({ form, existingItems, missions }: Equipme
         </div>
 
         <StatsField form={form} disabled={isFragment || isRecipe} />
-        <CraftingField form={form} existingItems={existingItems} disabled={isFragment} />
+        <CraftingField
+          form={form}
+          existingItems={existingItems}
+          disabled={isFragment}
+        />
         <CampaignSourcesField form={form} missions={missions} />
 
         <div className="flex gap-4">

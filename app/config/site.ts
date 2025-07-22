@@ -26,7 +26,8 @@ export const siteConfig: SiteConfig = {
   name: "hero-wars-helper",
   title: "Hero Wars Helper",
   subtitle: "Tools for players",
-  description: "A modern React Router v7 template with Supabase authentication, role-based access control, and production-ready tooling",
+  description:
+    "A modern React Router v7 template with Supabase authentication, role-based access control, and production-ready tooling",
   logo: {
     src: "/images/hero-wars-alliance-logo.webp",
     alt: "Hero Wars Alliance logo",
@@ -38,7 +39,8 @@ export const siteConfig: SiteConfig = {
   meta: {
     defaultTitle: "Hero Wars Helper",
     titleTemplate: "%s | Hero Wars Helper",
-    description: "A modern React Router v7 template with Supabase authentication, role-based access control, and production-ready tooling",
+    description:
+      "A modern React Router v7 template with Supabase authentication, role-based access control, and production-ready tooling",
   },
   version: "0.1.0",
 };
@@ -52,5 +54,5 @@ export function formatTitle(pageTitle?: string): string {
   if (!pageTitle) {
     return siteConfig.meta.defaultTitle;
   }
-  return siteConfig.meta.titleTemplate.replace('%s', pageTitle);
+  return siteConfig.meta.titleTemplate.replace("%s", pageTitle);
 }

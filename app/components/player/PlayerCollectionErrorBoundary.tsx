@@ -27,7 +27,7 @@ export class PlayerCollectionErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Player Collection Error:', error, errorInfo);
+    console.error("Player Collection Error:", error, errorInfo);
   }
 
   private handleRetry = () => {
@@ -53,23 +53,27 @@ export class PlayerCollectionErrorBoundary extends Component<Props, State> {
               <AlertTriangleIcon className="size-4" />
               <AlertTitle>Something went wrong</AlertTitle>
               <AlertDescription>
-                There was an error loading your hero collection. This might be a temporary issue.
+                There was an error loading your hero collection. This might be a
+                temporary issue.
               </AlertDescription>
             </Alert>
-            
+
             {import.meta.env.DEV && this.state.error && (
               <div className="p-3 bg-gray-100 rounded text-sm font-mono">
                 <strong>Error:</strong> {this.state.error.message}
               </div>
             )}
-            
+
             <div className="flex gap-2">
-              <Button onClick={this.handleRetry} className="flex items-center gap-2">
+              <Button
+                onClick={this.handleRetry}
+                className="flex items-center gap-2"
+              >
                 <RefreshCwIcon className="size-4" />
                 Try Again
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => window.location.reload()}
               >
                 Refresh Page

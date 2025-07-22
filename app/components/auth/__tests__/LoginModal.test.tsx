@@ -18,9 +18,9 @@ vi.mock("../LoginForm", () => ({
 
 // Mock window.location.reload
 const mockReload = vi.fn();
-Object.defineProperty(window, 'location', {
+Object.defineProperty(window, "location", {
   value: {
-    pathname: '/test-path',
+    pathname: "/test-path",
     reload: mockReload,
   },
   writable: true,
@@ -35,15 +35,15 @@ describe("LoginModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Ensure window object is available for all tests
-    if (typeof window === 'undefined') {
-      Object.defineProperty(global, 'window', {
+    if (typeof window === "undefined") {
+      Object.defineProperty(global, "window", {
         value: {
-          pathname: '/test-path',
+          pathname: "/test-path",
           reload: mockReload,
           location: {
-            pathname: '/test-path',
+            pathname: "/test-path",
             reload: mockReload,
-          }
+          },
         },
         writable: true,
       });
@@ -60,7 +60,9 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
-      expect(result.getByRole("button", { name: "Open Login" })).toBeInTheDocument();
+      expect(
+        result.getByRole("button", { name: "Open Login" })
+      ).toBeInTheDocument();
     });
 
     it("does not show modal content initially", () => {
@@ -89,7 +91,9 @@ describe("LoginModal", () => {
 
       await waitFor(() => {
         expect(result.getByText("Login")).toBeInTheDocument();
-        expect(result.getByText("Enter your credentials to access your account")).toBeInTheDocument();
+        expect(
+          result.getByText("Enter your credentials to access your account")
+        ).toBeInTheDocument();
         expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
     });
@@ -111,7 +115,7 @@ describe("LoginModal", () => {
 
     it("calls onOpenChange when modal state changes", async () => {
       const mockOnOpenChange = vi.fn();
-      
+
       const result = render(
         <Wrapper>
           <LoginModal open={false} onOpenChange={mockOnOpenChange}>
@@ -190,7 +194,7 @@ describe("LoginModal", () => {
 
       // Open modal
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
-      
+
       await waitFor(() => {
         expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
@@ -214,7 +218,7 @@ describe("LoginModal", () => {
 
       // Open modal
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
-      
+
       await waitFor(() => {
         expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
@@ -229,7 +233,7 @@ describe("LoginModal", () => {
 
     it("handles success in controlled mode", async () => {
       const mockOnOpenChange = vi.fn();
-      
+
       const result = render(
         <Wrapper>
           <LoginModal open={true} onOpenChange={mockOnOpenChange}>
@@ -278,15 +282,17 @@ describe("LoginModal", () => {
 
       // Open modal
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
-      
+
       await waitFor(() => {
-        expect(result.getByRole("link", { name: "Sign up" })).toBeInTheDocument();
+        expect(
+          result.getByRole("link", { name: "Sign up" })
+        ).toBeInTheDocument();
       });
 
       // Get the link and verify it exists
       const signUpLink = result.getByRole("link", { name: "Sign up" });
       expect(signUpLink).toBeInTheDocument();
-      
+
       // We can't easily test the actual closing behavior due to how the onClick is set up
       // But we can verify the link is there and has the correct attributes
       expect(signUpLink).toHaveAttribute("href", "/sign-up");
@@ -306,7 +312,9 @@ describe("LoginModal", () => {
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(result.getByRole("heading", { name: "Login" })).toBeInTheDocument();
+        expect(
+          result.getByRole("heading", { name: "Login" })
+        ).toBeInTheDocument();
       });
     });
 
@@ -322,7 +330,9 @@ describe("LoginModal", () => {
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
-        expect(result.getByText("Enter your credentials to access your account")).toBeInTheDocument();
+        expect(
+          result.getByText("Enter your credentials to access your account")
+        ).toBeInTheDocument();
       });
     });
 
@@ -356,7 +366,7 @@ describe("LoginModal", () => {
       );
 
       fireEvent.click(result.getByRole("button", { name: "Open Login 1" }));
-      
+
       await waitFor(() => {
         expect(result.getByText("Login")).toBeInTheDocument();
       });
@@ -388,14 +398,16 @@ describe("LoginModal", () => {
 
       // Open modal
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
-      
+
       await waitFor(() => {
         expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
 
       // Trigger success without onSuccess callback should not throw
       expect(() => {
-        fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
+        fireEvent.click(
+          result.getByRole("button", { name: "Trigger Success" })
+        );
       }).not.toThrow();
     });
   });

@@ -9,7 +9,10 @@ interface HeroArtifactsProps {
   main_stat: HeroMainStat;
 }
 
-export default function HeroArtifacts({ artifacts, main_stat }: HeroArtifactsProps) {
+export default function HeroArtifacts({
+  artifacts,
+  main_stat,
+}: HeroArtifactsProps) {
   if (artifacts === undefined) return null;
 
   return (
@@ -22,7 +25,9 @@ export default function HeroArtifacts({ artifacts, main_stat }: HeroArtifactsPro
         <CardContent className="flex items-center gap-2">
           <div className="size-12 xl:size-16 aspect-square rounded relative overflow-hidden">
             <img
-              src={`/images/heroes/artifacts/${generateSlug(artifacts.weapon.name)}.png`}
+              src={`/images/heroes/artifacts/${generateSlug(
+                artifacts.weapon.name
+              )}.png`}
               alt={artifacts.weapon.name}
               className="object-contain"
               onError={(e) => {
@@ -35,18 +40,28 @@ export default function HeroArtifacts({ artifacts, main_stat }: HeroArtifactsPro
               <Badge variant="secondary" className="capitalize">
                 Activation chance
               </Badge>
-              <div key={artifacts.weapon.team_buff} className="capitalize flex gap-1">
+              <div
+                key={artifacts.weapon.team_buff}
+                className="capitalize flex gap-1"
+              >
                 <img
-                  src={`/images/stats/${generateSlug(artifacts.weapon.team_buff)}.png`}
+                  src={`/images/stats/${generateSlug(
+                    artifacts.weapon.team_buff
+                  )}.png`}
                   alt={artifacts.weapon.team_buff}
                   className="w-6 h-6"
                 />
                 {artifacts.weapon.team_buff}
               </div>
               {artifacts.weapon.team_buff_secondary && (
-                <div key={artifacts.weapon.team_buff_secondary} className="capitalize flex gap-1">
+                <div
+                  key={artifacts.weapon.team_buff_secondary}
+                  className="capitalize flex gap-1"
+                >
                   <img
-                    src={`/images/stats/${generateSlug(artifacts.weapon.team_buff_secondary)}.png`}
+                    src={`/images/stats/${generateSlug(
+                      artifacts.weapon.team_buff_secondary
+                    )}.png`}
                     alt={artifacts.weapon.team_buff_secondary}
                     className="w-6 h-6"
                   />
@@ -66,7 +81,9 @@ export default function HeroArtifacts({ artifacts, main_stat }: HeroArtifactsPro
         <CardContent className="flex items-start gap-4">
           <div className="size-12 xl:size-16 aspect-square rounded relative overflow-hidden">
             <img
-              src={`/images/heroes/artifacts/${generateSlug(artifacts.book)}.png`}
+              src={`/images/heroes/artifacts/${generateSlug(
+                artifacts.book
+              )}.png`}
               alt={artifacts.book}
               className="object-contain"
             />
@@ -75,7 +92,11 @@ export default function HeroArtifacts({ artifacts, main_stat }: HeroArtifactsPro
             <div className="flex flex-col gap-2">
               {ArtifactBookStats[artifacts.book].map((stat) => (
                 <div key={stat} className="capitalize flex gap-1">
-                  <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />
+                  <img
+                    src={`/images/stats/${generateSlug(stat)}.png`}
+                    alt={stat}
+                    className="w-6 h-6"
+                  />
                   {stat}
                 </div>
               ))}
@@ -99,7 +120,11 @@ export default function HeroArtifacts({ artifacts, main_stat }: HeroArtifactsPro
           </div>
           <div>
             <div className="capitalize flex gap-2">
-              <img src={`/images/stats/${generateSlug(main_stat)}.png`} alt={main_stat} className="w-6 h-6" />
+              <img
+                src={`/images/stats/${generateSlug(main_stat)}.png`}
+                alt={main_stat}
+                className="w-6 h-6"
+              />
               {main_stat}
             </div>
           </div>

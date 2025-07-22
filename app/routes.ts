@@ -1,4 +1,10 @@
-import { index, layout, prefix, route, type RouteConfig } from "@react-router/dev/routes";
+import {
+  index,
+  layout,
+  prefix,
+  route,
+  type RouteConfig,
+} from "@react-router/dev/routes";
 import log from "loglevel";
 log.enableAll();
 
@@ -21,15 +27,17 @@ export default [
     ]),
   ]),
   layout("./layouts/ProtectedUserLayout.tsx", [
-    route("account", "./routes/views/account/index.tsx", [index("./routes/views/account/profile.tsx")]),
+    route("account", "./routes/views/account/index.tsx", [
+      index("./routes/views/account/profile.tsx"),
+    ]),
     route("player", "./routes/views/player/layout.tsx", [
       index("./routes/views/player/index.tsx"),
       route("roster", "./routes/views/player/roster.tsx"),
       route("activity", "./routes/views/player/activity.tsx"),
       route("teams", "./routes/views/player/teams/index.tsx"),
       route("teams/new", "./routes/views/player/teams/new.tsx"),
-      route("teams/:teamId", "./routes/views/player/teams/$teamId.edit.tsx")
-    ])
+      route("teams/:teamId", "./routes/views/player/teams/$teamId.edit.tsx"),
+    ]),
   ]),
   route("protected", "./routes/views/public/protected.tsx"),
   route("heroes", "./routes/views/heroes/layout.tsx", [
@@ -37,7 +45,9 @@ export default [
     route(":slug", "./routes/views/heroes/slug.tsx"),
     route(":slug.json", "./routes/views/heroes/slug.json.tsx"),
   ]),
-  route("titans", "./routes/views/titans/layout.tsx", [index("./routes/views/titans/index.tsx")]),
+  route("titans", "./routes/views/titans/layout.tsx", [
+    index("./routes/views/titans/index.tsx"),
+  ]),
   route("equipment", "./routes/views/equipment/layout.tsx", [
     index("./routes/views/equipment/index.tsx"),
     route(":slug", "./routes/views/equipment/slug.tsx"),

@@ -1,6 +1,12 @@
 import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { useRoles } from "~/hooks/useRoles";
 
 interface UnauthorizedAccessProps {
@@ -8,9 +14,9 @@ interface UnauthorizedAccessProps {
   action?: string;
 }
 
-export function UnauthorizedAccess({ 
-  requiredRole = "editor", 
-  action = "edit this content" 
+export function UnauthorizedAccess({
+  requiredRole = "editor",
+  action = "edit this content",
 }: UnauthorizedAccessProps) {
   const { isAuthenticated, user } = useRoles();
 
@@ -19,9 +25,7 @@ export function UnauthorizedAccess({
       <Card className="mx-auto max-w-md">
         <CardHeader>
           <CardTitle>Authentication Required</CardTitle>
-          <CardDescription>
-            You must be logged in to {action}.
-          </CardDescription>
+          <CardDescription>You must be logged in to {action}.</CardDescription>
         </CardHeader>
         <CardContent>
           <Button asChild>

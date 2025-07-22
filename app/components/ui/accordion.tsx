@@ -1,4 +1,10 @@
-import { Content, Header, Item, Root, Trigger } from "@radix-ui/react-accordion";
+import {
+  Content,
+  Header,
+  Item,
+  Root,
+  Trigger,
+} from "@radix-ui/react-accordion";
 import { type ClassValue } from "clsx";
 import { ChevronDown } from "lucide-react";
 import { forwardRef } from "react";
@@ -11,7 +17,9 @@ const AccordionItem = forwardRef<
   React.ComponentPropsWithoutRef<typeof Item> & {
     className?: ClassValue;
   }
->(({ className, ...props }, ref) => <Item ref={ref} className={cn("border-b", className)} {...props} />);
+>(({ className, ...props }, ref) => (
+  <Item ref={ref} className={cn("border-b", className)} {...props} />
+));
 AccordionItem.displayName = "AccordionItem";
 
 const AccordionTrigger = forwardRef<
@@ -30,7 +38,12 @@ const AccordionTrigger = forwardRef<
       {...props}
     >
       {children}
-      <ChevronDown className={cn(props.disabled && "hidden", "h-4 w-4 shrink-0 transition-transform duration-200")} />
+      <ChevronDown
+        className={cn(
+          props.disabled && "hidden",
+          "h-4 w-4 shrink-0 transition-transform duration-200"
+        )}
+      />
     </Trigger>
   </Header>
 ));

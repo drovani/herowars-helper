@@ -3,7 +3,10 @@ import { useForm } from "react-hook-form";
 import { redirect, type UIMatch, data } from "react-router";
 import { ZodError } from "zod";
 import EquipmentForm from "~/components/EquipmentForm";
-import { type EquipmentMutation, EquipmentMutationSchema } from "~/data/equipment.zod";
+import {
+  type EquipmentMutation,
+  EquipmentMutationSchema,
+} from "~/data/equipment.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/new";
@@ -13,7 +16,9 @@ export const meta = (_: Route.MetaArgs) => {
 };
 
 export const handle = {
-  breadcrumb: (matches: UIMatch<Route.ComponentProps["loaderData"], unknown>) => ({
+  breadcrumb: (
+    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>
+  ) => ({
     href: matches.pathname,
     title: "New",
   }),
@@ -24,7 +29,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const equipmentRepo = new EquipmentRepository(request);
   const [missionsResult, existingItemsResult] = await Promise.all([
     missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
-    equipmentRepo.getAllAsJson()
+    equipmentRepo.getAllAsJson(),
   ]);
 
   if (missionsResult.error) {
@@ -37,16 +42,16 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   const missions = missionsResult.data || [];
   const existingItems = existingItemsResult.data || [];
-  
+
   // Convert Mission[] to MissionRecord[] for compatibility with existing components
-  const allMissions = missions.map(mission => ({
+  const allMissions = missions.map((mission) => ({
     id: mission.slug,
     chapter: mission.chapter_id,
     chapter_title: "", // We'd need to fetch this from chapters table
-    mission_number: parseInt(mission.slug.split('-')[1]),
+    mission_number: parseInt(mission.slug.split("-")[1]),
     name: mission.name,
     boss: mission.hero_slug || undefined,
-    updated_on: new Date().toISOString()
+    updated_on: new Date().toISOString(),
   }));
 
   return { existingItems, allMissions };
@@ -63,11 +68,13 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const createResult = await equipmentRepo.create(validated);
 
     if (createResult.error) {
-      return data({ errors: { _errors: [createResult.error.message] } }, { status: 400 });
+      return data(
+        { errors: { _errors: [createResult.error.message] } },
+        { status: 400 }
+      );
     }
 
     return redirect(`/equipment/${createResult.data!.slug}`);
-
   } catch (error) {
     if (error instanceof ZodError) {
       return data({ errors: error.format() }, { status: 400 });
@@ -92,7 +99,11 @@ export default function NewEquipment({ loaderData }: Route.ComponentProps) {
   return (
     <section className="space-y-4">
       <h1>New Equipment</h1>
-      <EquipmentForm form={form} missions={allMissions} existingItems={existingItems} />
+      <EquipmentForm
+        form={form}
+        missions={allMissions}
+        existingItems={existingItems}
+      />
     </section>
   );
 }

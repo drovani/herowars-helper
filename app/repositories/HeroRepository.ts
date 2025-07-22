@@ -38,7 +38,11 @@ const HeroSchema = z.object({
 
 export class HeroRepository extends BaseRepository<"hero"> {
   constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
-    if (requestOrSupabase && typeof requestOrSupabase === "object" && "from" in requestOrSupabase) {
+    if (
+      requestOrSupabase &&
+      typeof requestOrSupabase === "object" &&
+      "from" in requestOrSupabase
+    ) {
       // Custom supabase client provided (for admin operations)
       super(requestOrSupabase, HeroSchema, "hero", HeroSchema, "slug");
     } else {
@@ -104,7 +108,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -156,7 +161,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -174,7 +180,11 @@ export class HeroRepository extends BaseRepository<"hero"> {
    */
   async findByClass(heroClass: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await this.supabase.from("hero").select("*").eq("class", heroClass).order("name");
+      const { data, error } = await this.supabase
+        .from("hero")
+        .select("*")
+        .eq("class", heroClass)
+        .order("name");
 
       if (error) {
         log.error(`Error finding heroes by class ${heroClass}:`, error);
@@ -189,11 +199,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding heroes by class ${heroClass}:`, error);
+      log.error(
+        `Unexpected error finding heroes by class ${heroClass}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -210,7 +224,11 @@ export class HeroRepository extends BaseRepository<"hero"> {
    */
   async findByFaction(faction: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await this.supabase.from("hero").select("*").eq("faction", faction).order("name");
+      const { data, error } = await this.supabase
+        .from("hero")
+        .select("*")
+        .eq("faction", faction)
+        .order("name");
 
       if (error) {
         log.error(`Error finding heroes by faction ${faction}:`, error);
@@ -225,11 +243,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding heroes by faction ${faction}:`, error);
+      log.error(
+        `Unexpected error finding heroes by faction ${faction}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -246,7 +268,11 @@ export class HeroRepository extends BaseRepository<"hero"> {
    */
   async findByMainStat(mainStat: string): Promise<RepositoryResult<Hero[]>> {
     try {
-      const { data, error } = await this.supabase.from("hero").select("*").eq("main_stat", mainStat).order("name");
+      const { data, error } = await this.supabase
+        .from("hero")
+        .select("*")
+        .eq("main_stat", mainStat)
+        .order("name");
 
       if (error) {
         log.error(`Error finding heroes by main stat ${mainStat}:`, error);
@@ -261,11 +287,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding heroes by main stat ${mainStat}:`, error);
+      log.error(
+        `Unexpected error finding heroes by main stat ${mainStat}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -280,7 +310,9 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * @example
    * const result = await repository.findByAttackType('physical');
    */
-  async findByAttackType(attackType: string): Promise<RepositoryResult<Hero[]>> {
+  async findByAttackType(
+    attackType: string
+  ): Promise<RepositoryResult<Hero[]>> {
     try {
       const { data, error } = await this.supabase
         .from("hero")
@@ -301,11 +333,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding heroes by attack type ${attackType}:`, error);
+      log.error(
+        `Unexpected error finding heroes by attack type ${attackType}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -363,7 +399,9 @@ export class HeroRepository extends BaseRepository<"hero"> {
         ...hero,
         artifacts: hero.hero_artifact || [],
         skins: hero.hero_skin || [],
-        glyphs: (hero.hero_glyph || []).sort((a: HeroGlyph, b: HeroGlyph) => a.position - b.position),
+        glyphs: (hero.hero_glyph || []).sort(
+          (a: HeroGlyph, b: HeroGlyph) => a.position - b.position
+        ),
         equipmentSlots: hero.hero_equipment_slot || [],
       }));
 
@@ -380,11 +418,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error("Unexpected error bulk loading heroes with relationships:", error);
+      log.error(
+        "Unexpected error bulk loading heroes with relationships:",
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -428,7 +470,9 @@ export class HeroRepository extends BaseRepository<"hero"> {
         ...data,
         artifacts: data.hero_artifact || [],
         skins: data.hero_skin || [],
-        glyphs: (data.hero_glyph || []).sort((a: HeroGlyph, b: HeroGlyph) => a.position - b.position),
+        glyphs: (data.hero_glyph || []).sort(
+          (a: HeroGlyph, b: HeroGlyph) => a.position - b.position
+        ),
         equipmentSlots: data.hero_equipment_slot || [],
       };
 
@@ -443,18 +487,24 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding complete hero data for ${slug}:`, error);
+      log.error(
+        `Unexpected error finding complete hero data for ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async findWithArtifacts(slug: string): Promise<RepositoryResult<HeroWithArtifacts>> {
+  async findWithArtifacts(
+    slug: string
+  ): Promise<RepositoryResult<HeroWithArtifacts>> {
     try {
       const { data, error } = await this.supabase
         .from("hero")
@@ -487,11 +537,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding hero with artifacts for ${slug}:`, error);
+      log.error(
+        `Unexpected error finding hero with artifacts for ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -535,14 +589,17 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async findWithGlyphs(slug: string): Promise<RepositoryResult<HeroWithGlyphs>> {
+  async findWithGlyphs(
+    slug: string
+  ): Promise<RepositoryResult<HeroWithGlyphs>> {
     try {
       const { data, error } = await this.supabase
         .from("hero")
@@ -565,7 +622,9 @@ export class HeroRepository extends BaseRepository<"hero"> {
 
       const heroWithGlyphs: HeroWithGlyphs = {
         ...data,
-        glyphs: (data.hero_glyph || []).sort((a: HeroGlyph, b: HeroGlyph) => a.position - b.position),
+        glyphs: (data.hero_glyph || []).sort(
+          (a: HeroGlyph, b: HeroGlyph) => a.position - b.position
+        ),
       };
 
       delete (heroWithGlyphs as any).hero_glyph;
@@ -575,18 +634,24 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding hero with glyphs for ${slug}:`, error);
+      log.error(
+        `Unexpected error finding hero with glyphs for ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async findWithEquipment(slug: string): Promise<RepositoryResult<HeroWithEquipment>> {
+  async findWithEquipment(
+    slug: string
+  ): Promise<RepositoryResult<HeroWithEquipment>> {
     try {
       const { data, error } = await this.supabase
         .from("hero")
@@ -619,11 +684,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding hero with equipment for ${slug}:`, error);
+      log.error(
+        `Unexpected error finding hero with equipment for ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -631,7 +700,9 @@ export class HeroRepository extends BaseRepository<"hero"> {
   }
 
   // Equipment relationship queries
-  async findHeroesUsingEquipment(equipmentSlug: string): Promise<RepositoryResult<Hero[]>> {
+  async findHeroesUsingEquipment(
+    equipmentSlug: string
+  ): Promise<RepositoryResult<Hero[]>> {
     try {
       const { data, error } = await this.supabase
         .from("hero")
@@ -644,7 +715,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
         .eq("hero_equipment_slot.equipment_slug", equipmentSlug);
 
       if (error) {
-        log.error(`Error finding heroes using equipment ${equipmentSlug}:`, error);
+        log.error(
+          `Error finding heroes using equipment ${equipmentSlug}:`,
+          error
+        );
         return {
           data: null,
           error: this.handleError(error),
@@ -665,18 +739,25 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding heroes using equipment ${equipmentSlug}:`, error);
+      log.error(
+        `Unexpected error finding heroes using equipment ${equipmentSlug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async getHeroEquipmentByQuality(heroSlug: string, quality: string): Promise<RepositoryResult<HeroEquipmentSlot[]>> {
+  async getHeroEquipmentByQuality(
+    heroSlug: string,
+    quality: string
+  ): Promise<RepositoryResult<HeroEquipmentSlot[]>> {
     try {
       const { data, error } = await this.supabase
         .from("hero_equipment_slot")
@@ -686,7 +767,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
         .order("slot_position");
 
       if (error) {
-        log.error(`Error finding hero equipment by quality for ${heroSlug}, quality ${quality}:`, error);
+        log.error(
+          `Error finding hero equipment by quality for ${heroSlug}, quality ${quality}:`,
+          error
+        );
         return {
           data: null,
           error: this.handleError(error),
@@ -698,11 +782,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding hero equipment by quality for ${heroSlug}, quality ${quality}:`, error);
+      log.error(
+        `Unexpected error finding hero equipment by quality for ${heroSlug}, quality ${quality}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -739,7 +827,9 @@ export class HeroRepository extends BaseRepository<"hero"> {
    *   equipmentSlots: []
    * });
    */
-  async createWithAllData(heroData: CreateHeroWithData): Promise<RepositoryResult<CompleteHero>> {
+  async createWithAllData(
+    heroData: CreateHeroWithData
+  ): Promise<RepositoryResult<CompleteHero>> {
     try {
       // Start transaction - create hero first
       const heroResult = await this.create(heroData.hero);
@@ -762,9 +852,14 @@ export class HeroRepository extends BaseRepository<"hero"> {
 
       // Create related data
       if (heroData.artifacts && heroData.artifacts.length > 0) {
-        const artifactsResult = await this.bulkCreateArtifacts(heroData.artifacts);
+        const artifactsResult = await this.bulkCreateArtifacts(
+          heroData.artifacts
+        );
         if (artifactsResult.error) {
-          log.warn(`Some artifacts failed to create for hero ${hero.slug}:`, artifactsResult.error);
+          log.warn(
+            `Some artifacts failed to create for hero ${hero.slug}:`,
+            artifactsResult.error
+          );
         }
         results.artifacts = artifactsResult.data || [];
       }
@@ -772,7 +867,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
       if (heroData.skins && heroData.skins.length > 0) {
         const skinsResult = await this.bulkCreateSkins(heroData.skins);
         if (skinsResult.error) {
-          log.warn(`Some skins failed to create for hero ${hero.slug}:`, skinsResult.error);
+          log.warn(
+            `Some skins failed to create for hero ${hero.slug}:`,
+            skinsResult.error
+          );
         }
         results.skins = skinsResult.data || [];
       }
@@ -780,15 +878,23 @@ export class HeroRepository extends BaseRepository<"hero"> {
       if (heroData.glyphs && heroData.glyphs.length > 0) {
         const glyphsResult = await this.bulkCreateGlyphs(heroData.glyphs);
         if (glyphsResult.error) {
-          log.warn(`Some glyphs failed to create for hero ${hero.slug}:`, glyphsResult.error);
+          log.warn(
+            `Some glyphs failed to create for hero ${hero.slug}:`,
+            glyphsResult.error
+          );
         }
         results.glyphs = glyphsResult.data || [];
       }
 
       if (heroData.equipmentSlots && heroData.equipmentSlots.length > 0) {
-        const equipmentResult = await this.bulkCreateEquipmentSlots(heroData.equipmentSlots);
+        const equipmentResult = await this.bulkCreateEquipmentSlots(
+          heroData.equipmentSlots
+        );
         if (equipmentResult.error) {
-          log.warn(`Some equipment slots failed to create for hero ${hero.slug}:`, equipmentResult.error);
+          log.warn(
+            `Some equipment slots failed to create for hero ${hero.slug}:`,
+            equipmentResult.error
+          );
         }
         results.equipmentSlots = equipmentResult.data || [];
       }
@@ -810,7 +916,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -841,7 +948,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
     try {
       for (let i = 0; i < artifacts.length; i += batchSize) {
         const batch = artifacts.slice(i, i + batchSize);
-        const { data, error } = await this.supabase.from("hero_artifact").insert(batch).select();
+        const { data, error } = await this.supabase
+          .from("hero_artifact")
+          .insert(batch)
+          .select();
 
         if (error) {
           errors.push(error);
@@ -851,7 +961,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
         }
 
         if (onProgress) {
-          onProgress(Math.min(i + batchSize, artifacts.length), artifacts.length);
+          onProgress(
+            Math.min(i + batchSize, artifacts.length),
+            artifacts.length
+          );
         }
       }
 
@@ -875,7 +988,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -893,7 +1007,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
     try {
       for (let i = 0; i < skins.length; i += batchSize) {
         const batch = skins.slice(i, i + batchSize);
-        const { data, error } = await this.supabase.from("hero_skin").insert(batch).select();
+        const { data, error } = await this.supabase
+          .from("hero_skin")
+          .insert(batch)
+          .select();
 
         if (error) {
           errors.push(error);
@@ -927,7 +1044,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -945,7 +1063,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
     try {
       for (let i = 0; i < glyphs.length; i += batchSize) {
         const batch = glyphs.slice(i, i + batchSize);
-        const { data, error } = await this.supabase.from("hero_glyph").insert(batch).select();
+        const { data, error } = await this.supabase
+          .from("hero_glyph")
+          .insert(batch)
+          .select();
 
         if (error) {
           errors.push(error);
@@ -979,7 +1100,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -997,7 +1119,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
     try {
       for (let i = 0; i < equipmentSlots.length; i += batchSize) {
         const batch = equipmentSlots.slice(i, i + batchSize);
-        const { data, error } = await this.supabase.from("hero_equipment_slot").insert(batch).select();
+        const { data, error } = await this.supabase
+          .from("hero_equipment_slot")
+          .insert(batch)
+          .select();
 
         if (error) {
           errors.push(error);
@@ -1007,7 +1132,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
         }
 
         if (onProgress) {
-          onProgress(Math.min(i + batchSize, equipmentSlots.length), equipmentSlots.length);
+          onProgress(
+            Math.min(i + batchSize, equipmentSlots.length),
+            equipmentSlots.length
+          );
         }
       }
 
@@ -1031,7 +1159,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -1048,10 +1177,22 @@ export class HeroRepository extends BaseRepository<"hero"> {
 
       // Delete in correct order to respect foreign key constraints
       const deleteResults = await Promise.all([
-        this.supabase.from("hero_equipment_slot").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
-        this.supabase.from("hero_glyph").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
-        this.supabase.from("hero_skin").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
-        this.supabase.from("hero_artifact").delete().neq("id", "00000000-0000-0000-0000-000000000000"),
+        this.supabase
+          .from("hero_equipment_slot")
+          .delete()
+          .neq("id", "00000000-0000-0000-0000-000000000000"),
+        this.supabase
+          .from("hero_glyph")
+          .delete()
+          .neq("id", "00000000-0000-0000-0000-000000000000"),
+        this.supabase
+          .from("hero_skin")
+          .delete()
+          .neq("id", "00000000-0000-0000-0000-000000000000"),
+        this.supabase
+          .from("hero_artifact")
+          .delete()
+          .neq("id", "00000000-0000-0000-0000-000000000000"),
       ]);
 
       // Check for errors in the related table deletions
@@ -1070,7 +1211,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
       }
 
       // Now delete all heroes
-      const heroDeleteResult = await this.supabase.from("hero").delete().neq("slug", "__nonexistent__");
+      const heroDeleteResult = await this.supabase
+        .from("hero")
+        .delete()
+        .neq("slug", "__nonexistent__");
 
       if (heroDeleteResult.error) {
         log.error("Failed to purge heroes:", heroDeleteResult.error);
@@ -1096,7 +1240,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error during hero domain purge",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unknown error during hero domain purge",
           code: "PURGE_DOMAIN_ERROR",
           details: error,
         },
@@ -1115,9 +1262,13 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * const result = await repository.initializeFromJSON(jsonData.default);
    * console.log(`Created ${result.data?.heroes.length} heroes`);
    */
-  async initializeFromJSON(heroesJsonData: any[]): Promise<RepositoryResult<{ heroes: CompleteHero[] }>> {
+  async initializeFromJSON(
+    heroesJsonData: any[]
+  ): Promise<RepositoryResult<{ heroes: CompleteHero[] }>> {
     try {
-      log.info(`Starting hero data initialization from JSON (${heroesJsonData.length} heroes)...`);
+      log.info(
+        `Starting hero data initialization from JSON (${heroesJsonData.length} heroes)...`
+      );
 
       const createdHeroes: CompleteHero[] = [];
       const errors: any[] = [];
@@ -1159,7 +1310,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
         } catch (transformError) {
           errors.push({
             inputData: heroJson,
-            message: transformError instanceof Error ? transformError.message : "Data transformation failed",
+            message:
+              transformError instanceof Error
+                ? transformError.message
+                : "Data transformation failed",
             code: "TRANSFORM_ERROR",
             batchIndex: i,
             details: transformError,
@@ -1201,7 +1355,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error during hero JSON initialization",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unknown error during hero JSON initialization",
           code: "JSON_INIT_ERROR",
           details: error,
         },
@@ -1215,7 +1372,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * @param artifacts Raw artifact data from JSON
    * @returns Array of artifact data ready for database insertion
    */
-  private transformJsonArtifacts(heroSlug: string, artifacts: any): CreateInput<"hero_artifact">[] {
+  private transformJsonArtifacts(
+    heroSlug: string,
+    artifacts: any
+  ): CreateInput<"hero_artifact">[] {
     const artifactData: CreateInput<"hero_artifact">[] = [];
 
     if (!artifacts) {
@@ -1261,7 +1421,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * @param skins Raw skin data from JSON
    * @returns Array of skin data ready for database insertion
    */
-  private transformJsonSkins(heroSlug: string, skins: any): CreateInput<"hero_skin">[] {
+  private transformJsonSkins(
+    heroSlug: string,
+    skins: any
+  ): CreateInput<"hero_skin">[] {
     if (!skins || !Array.isArray(skins)) {
       return [];
     }
@@ -1282,7 +1445,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * @param glyphs Raw glyph data from JSON (array with nulls for empty slots)
    * @returns Array of glyph data ready for database insertion
    */
-  private transformJsonGlyphs(heroSlug: string, glyphs: any): CreateInput<"hero_glyph">[] {
+  private transformJsonGlyphs(
+    heroSlug: string,
+    glyphs: any
+  ): CreateInput<"hero_glyph">[] {
     if (!glyphs || !Array.isArray(glyphs)) {
       return [];
     }
@@ -1309,7 +1475,10 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * @param items Raw equipment items from JSON organized by quality
    * @returns Array of equipment slot data ready for database insertion
    */
-  private transformJsonEquipmentSlots(heroSlug: string, items: any): CreateInput<"hero_equipment_slot">[] {
+  private transformJsonEquipmentSlots(
+    heroSlug: string,
+    items: any
+  ): CreateInput<"hero_equipment_slot">[] {
     if (!items) {
       return [];
     }
@@ -1318,16 +1487,18 @@ export class HeroRepository extends BaseRepository<"hero"> {
 
     for (const [quality, equipmentArray] of Object.entries(items)) {
       if (Array.isArray(equipmentArray)) {
-        equipmentArray.forEach((equipmentSlug: string | null, slotIndex: number) => {
-          if (equipmentSlug) {
-            equipmentSlotData.push({
-              hero_slug: heroSlug,
-              quality: quality,
-              slot_position: slotIndex + 1,
-              equipment_slug: equipmentSlug,
-            });
+        equipmentArray.forEach(
+          (equipmentSlug: string | null, slotIndex: number) => {
+            if (equipmentSlug) {
+              equipmentSlotData.push({
+                hero_slug: heroSlug,
+                quality: quality,
+                slot_position: slotIndex + 1,
+                equipment_slug: equipmentSlug,
+              });
+            }
           }
-        });
+        );
       }
     }
 
@@ -1372,16 +1543,25 @@ export class HeroRepository extends BaseRepository<"hero"> {
     };
 
     // Transform artifacts
-    createData.artifacts = this.transformJsonArtifacts(heroJson.slug, heroJson.artifacts);
+    createData.artifacts = this.transformJsonArtifacts(
+      heroJson.slug,
+      heroJson.artifacts
+    );
 
     // Transform skins
     createData.skins = this.transformJsonSkins(heroJson.slug, heroJson.skins);
 
     // Transform glyphs
-    createData.glyphs = this.transformJsonGlyphs(heroJson.slug, heroJson.glyphs);
+    createData.glyphs = this.transformJsonGlyphs(
+      heroJson.slug,
+      heroJson.glyphs
+    );
 
     // Transform equipment items
-    createData.equipmentSlots = this.transformJsonEquipmentSlots(heroJson.slug, heroJson.items);
+    createData.equipmentSlots = this.transformJsonEquipmentSlots(
+      heroJson.slug,
+      heroJson.items
+    );
 
     return createData;
   }

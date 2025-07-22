@@ -16,8 +16,15 @@ import { MissionRepository } from "~/repositories/MissionRepository";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import { transformCompleteHeroToRecord, transformBasicHeroToRecord, sortHeroRecords } from "~/lib/hero-transformations";
-import { getAuthenticatedUser, requireAuthenticatedUser } from "~/lib/auth/utils";
+import {
+  transformCompleteHeroToRecord,
+  transformBasicHeroToRecord,
+  sortHeroRecords,
+} from "~/lib/hero-transformations";
+import {
+  getAuthenticatedUser,
+  requireAuthenticatedUser,
+} from "~/lib/auth/utils";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -25,7 +32,9 @@ export const meta = ({ data }: Route.MetaArgs) => {
 };
 
 export const handle = {
-  breadcrumb: (match: UIMatch<Route.ComponentProps["loaderData"], unknown>) => ({
+  breadcrumb: (
+    match: UIMatch<Route.ComponentProps["loaderData"], unknown>
+  ) => ({
     href: match.pathname,
     title: match.data?.hero.name,
   }),
@@ -36,7 +45,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   const heroRepo = new HeroRepository(request);
   const heroResult = await heroRepo.findWithAllData(params.slug);
-  
+
   if (heroResult.error || !heroResult.data) {
     throw new Response(null, {
       status: 404,
@@ -56,10 +65,13 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   // Check if hero is in user's collection
   const { user } = await getAuthenticatedUser(request);
   let isInCollection = false;
-  
+
   if (user) {
     const playerHeroRepo = new PlayerHeroRepository(request);
-    const collectionResult = await playerHeroRepo.isHeroInCollection(user.id, params.slug);
+    const collectionResult = await playerHeroRepo.isHeroInCollection(
+      user.id,
+      params.slug
+    );
     if (!collectionResult.error && collectionResult.data) {
       isInCollection = collectionResult.data;
     }
@@ -68,14 +80,14 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const missions = campaignSourcesResult.data || [];
 
   // Convert Mission[] to MissionRecord[] for compatibility with existing components
-  const campaignSources = missions.map(mission => ({
+  const campaignSources = missions.map((mission) => ({
     id: mission.slug,
     chapter: mission.chapter_id,
     chapter_title: "", // We'd need to fetch this from chapters table
-    mission_number: parseInt(mission.slug.split('-')[1]),
+    mission_number: parseInt(mission.slug.split("-")[1]),
     name: mission.name,
     boss: mission.hero_slug || undefined,
-    updated_on: new Date().toISOString()
+    updated_on: new Date().toISOString(),
   }));
 
   const equipmentSlugs: string[] = [];
@@ -86,75 +98,101 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
   const equipmentRepo = new EquipmentRepository(request);
   const equipmentUsedResult = await equipmentRepo.getAllAsJson();
-  
+
   if (equipmentUsedResult.error) {
     throw new Response("Failed to load equipment", { status: 500 });
   }
-  
+
   // Filter to only the equipment used by this hero
-  const equipmentUsed = equipmentUsedResult.data?.filter(eq => equipmentSlugs.includes(eq.slug)) || [];
-  
+  const equipmentUsed =
+    equipmentUsedResult.data?.filter((eq) =>
+      equipmentSlugs.includes(eq.slug)
+    ) || [];
+
   // Get all heroes for navigation
   const allHeroesResult = await heroRepo.findAll();
   if (allHeroesResult.error) {
     throw new Response("Failed to load heroes for navigation", { status: 500 });
   }
 
-  const allHeroes = allHeroesResult.data ? await Promise.all(
-    allHeroesResult.data.map(async (h) => {
-      const completeHeroResult = await heroRepo.findWithAllData(h.slug);
-      if (completeHeroResult.data) {
-        return transformCompleteHeroToRecord(completeHeroResult.data);
-      }
-      return transformBasicHeroToRecord(h);
-    })
-  ) : [];
+  const allHeroes = allHeroesResult.data
+    ? await Promise.all(
+        allHeroesResult.data.map(async (h) => {
+          const completeHeroResult = await heroRepo.findWithAllData(h.slug);
+          if (completeHeroResult.data) {
+            return transformCompleteHeroToRecord(completeHeroResult.data);
+          }
+          return transformBasicHeroToRecord(h);
+        })
+      )
+    : [];
 
   const sortedHeroes = sortHeroRecords(allHeroes);
   const currentIndex = sortedHeroes.findIndex((h) => h.slug === hero.slug);
   const prevHero = currentIndex > 0 ? sortedHeroes[currentIndex - 1] : null;
-  const nextHero = currentIndex < sortedHeroes.length - 1 ? sortedHeroes[currentIndex + 1] : null;
+  const nextHero =
+    currentIndex < sortedHeroes.length - 1
+      ? sortedHeroes[currentIndex + 1]
+      : null;
 
-  return { hero, prevHero, nextHero, campaignSources, equipmentUsed, isInCollection };
+  return {
+    hero,
+    prevHero,
+    nextHero,
+    campaignSources,
+    equipmentUsed,
+    isInCollection,
+  };
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request);
-  
-  const formData = await request.formData();
-  const action = formData.get('action');
-  const heroSlug = formData.get('heroSlug') as string;
 
-  if (action === 'addHero') {
+  const formData = await request.formData();
+  const action = formData.get("action");
+  const heroSlug = formData.get("heroSlug") as string;
+
+  if (action === "addHero") {
     const playerHeroRepo = new PlayerHeroRepository(request);
-    const stars = parseInt(formData.get('stars') as string) || 1;
-    const equipmentLevel = parseInt(formData.get('equipmentLevel') as string) || 1;
-    
+    const stars = parseInt(formData.get("stars") as string) || 1;
+    const equipmentLevel =
+      parseInt(formData.get("equipmentLevel") as string) || 1;
+
     const result = await playerHeroRepo.addHeroToCollection(user.id, {
       hero_slug: heroSlug,
       stars,
-      equipment_level: equipmentLevel
+      equipment_level: equipmentLevel,
     });
-    
+
     if (result.error) {
       return { error: result.error.message };
     }
-    
-    return { success: true, message: 'Hero added to collection' };
+
+    return { success: true, message: "Hero added to collection" };
   }
-  
-  return { error: 'Invalid action' };
+
+  return { error: "Invalid action" };
 };
 
 export default function Hero({ loaderData }: Route.ComponentProps) {
-  const { hero, prevHero, nextHero, campaignSources, equipmentUsed, isInCollection } = loaderData;
+  const {
+    hero,
+    prevHero,
+    nextHero,
+    campaignSources,
+    equipmentUsed,
+    isInCollection,
+  } = loaderData;
   const navigate = useNavigate();
   const { user } = useAuth();
   const fetcher = useFetcher();
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
 
@@ -180,14 +218,22 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
     <div className="space-y-8">
       <div className="flex items-start gap-6">
         <div className="size-32 bg-muted rounded">
-          <img src={`/images/heroes/${hero.slug}.png`} alt={hero.name[0]} className="size-32" />
+          <img
+            src={`/images/heroes/${hero.slug}.png`}
+            alt={hero.name[0]}
+            className="size-32"
+          />
         </div>
         <div className="space-y-4">
           <div>
             <h1 className="text-3xl font-bold mb-2">{hero.name}</h1>
             <div className="flex gap-2">
               <div className="capitalize flex gap-1">
-                <img src={`/images/classes/${hero.class}.png`} alt={hero.class} className="w-6 h-6" />
+                <img
+                  src={`/images/classes/${hero.class}.png`}
+                  alt={hero.class}
+                  className="w-6 h-6"
+                />
                 {hero.class}
               </div>
               <Badge variant="outline">
@@ -200,7 +246,11 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
             <div className="text-sm space-y-2">
               <div>Main Stat:</div>
               <div className="font-semibold capitalize flex gap-1">
-                <img src={`/images/stats/${hero.main_stat}.png`} alt={hero.main_stat} className="w-6 h-6" />
+                <img
+                  src={`/images/stats/${hero.main_stat}.png`}
+                  alt={hero.main_stat}
+                  className="w-6 h-6"
+                />
                 {hero.main_stat}
               </div>
             </div>
@@ -216,23 +266,30 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
         </div>
-        
+
         {/* Add to Collection Button */}
         {user && (
           <div className="flex justify-end">
             <AddHeroButton
               heroSlug={hero.slug}
-              isInCollection={isInCollection || (fetcher.state === "submitting" && fetcher.formData?.get('action') === 'addHero')}
-              isLoading={fetcher.state === "submitting" && fetcher.formData?.get('heroSlug') === hero.slug}
+              isInCollection={
+                isInCollection ||
+                (fetcher.state === "submitting" &&
+                  fetcher.formData?.get("action") === "addHero")
+              }
+              isLoading={
+                fetcher.state === "submitting" &&
+                fetcher.formData?.get("heroSlug") === hero.slug
+              }
               onAddHero={(heroSlug) => {
                 fetcher.submit(
                   {
-                    action: 'addHero',
+                    action: "addHero",
                     heroSlug: heroSlug,
-                    stars: '1',
-                    equipmentLevel: '1'
+                    stars: "1",
+                    equipmentLevel: "1",
                   },
-                  { method: 'POST' }
+                  { method: "POST" }
                 );
               }}
             />
@@ -244,11 +301,18 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
       <HeroSkins skins={hero.skins} heroSlug={hero.slug} />
       <HeroArtifacts artifacts={hero.artifacts} main_stat={hero.main_stat} />
       <HeroGlyphs glyphs={hero.glyphs} />
-      <HeroStoneSources stoneSource={hero.stone_source} campaignSources={campaignSources} />
+      <HeroStoneSources
+        stoneSource={hero.stone_source}
+        campaignSources={campaignSources}
+      />
 
       <RequireEditor>
         <div className="flex gap-4">
-          <Link to={`/heroes/${hero.slug}/edit`} className={buttonVariants({ variant: "default" })} viewTransition>
+          <Link
+            to={`/heroes/${hero.slug}/edit`}
+            className={buttonVariants({ variant: "default" })}
+            viewTransition
+          >
             Edit
           </Link>
         </div>
@@ -257,7 +321,11 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 w-full">
         <div className="flex justify-start w-full sm:w-auto">
           {prevHero ? (
-            <Link to={`/heroes/${prevHero.slug}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+            <Link
+              to={`/heroes/${prevHero.slug}`}
+              className={buttonVariants({ variant: "outline" })}
+              viewTransition
+            >
               <ArrowLeftIcon className="mr-2 h-4 w-4" />
               {prevHero.name}
             </Link>
@@ -266,13 +334,21 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
           )}
         </div>
         <div className="flex justify-center w-full sm:w-auto">
-          <Link to="/heroes" className={buttonVariants({ variant: "secondary" })} viewTransition>
+          <Link
+            to="/heroes"
+            className={buttonVariants({ variant: "secondary" })}
+            viewTransition
+          >
             All Heroes
           </Link>
         </div>
         <div className="flex justify-end w-full sm:w-auto">
           {nextHero ? (
-            <Link to={`/heroes/${nextHero.slug}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+            <Link
+              to={`/heroes/${nextHero.slug}`}
+              className={buttonVariants({ variant: "outline" })}
+              viewTransition
+            >
               {nextHero.name}
               <ArrowRightIcon className="ml-2 h-4 w-4" />
             </Link>

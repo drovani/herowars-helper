@@ -3,7 +3,12 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
-import { EQUIPMENT_QUALITIES, EquipmentTableSchema, isEquipable, type EquipmentRecord } from "~/data/equipment.zod";
+import {
+  EQUIPMENT_QUALITIES,
+  EquipmentTableSchema,
+  isEquipable,
+  type EquipmentRecord,
+} from "~/data/equipment.zod";
 import type { Database } from "~/types/supabase";
 import { BaseRepository } from "./BaseRepository";
 import type { FindAllOptions, RepositoryResult } from "./types";
@@ -46,12 +51,27 @@ export interface EquipmentRequirements {
 
 export class EquipmentRepository extends BaseRepository<"equipment"> {
   constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
-    if (requestOrSupabase && typeof requestOrSupabase === "object" && "from" in requestOrSupabase) {
+    if (
+      requestOrSupabase &&
+      typeof requestOrSupabase === "object" &&
+      "from" in requestOrSupabase
+    ) {
       // Custom supabase client provided (for admin operations)
-      super(requestOrSupabase, EquipmentTableSchema, "equipment", EquipmentTableSchema, "slug");
+      super(
+        requestOrSupabase,
+        EquipmentTableSchema,
+        "equipment",
+        EquipmentTableSchema,
+        "slug"
+      );
     } else {
       // Request or null provided (standard operation)
-      super("equipment", EquipmentTableSchema, requestOrSupabase as Request | null, "slug");
+      super(
+        "equipment",
+        EquipmentTableSchema,
+        requestOrSupabase as Request | null,
+        "slug"
+      );
     }
   }
 
@@ -64,7 +84,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   async findAll(
     options: FindAllOptions = {}
-  ): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+  ): Promise<
+    RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
+  > {
     const { data, error } = await super.findAll(options);
     if (!options?.orderBy && data) {
       return {
@@ -78,9 +100,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   // Equipment-specific query methods
   async findByQuality(
     quality: Database["public"]["Enums"]["equipment_quality"]
-  ): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+  ): Promise<
+    RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
+  > {
     try {
-      const { data, error } = await this.supabase.from("equipment").select("*").eq("quality", quality).order("name");
+      const { data, error } = await this.supabase
+        .from("equipment")
+        .select("*")
+        .eq("quality", quality)
+        .order("name");
 
       if (error) {
         log.error(`Error finding equipment by quality ${quality}:`, error);
@@ -95,11 +123,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding equipment by quality ${quality}:`, error);
+      log.error(
+        `Unexpected error finding equipment by quality ${quality}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -108,9 +140,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   async findByType(
     type: Database["public"]["Enums"]["equipment_type"]
-  ): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+  ): Promise<
+    RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
+  > {
     try {
-      const { data, error } = await this.supabase.from("equipment").select("*").eq("type", type).order("name");
+      const { data, error } = await this.supabase
+        .from("equipment")
+        .select("*")
+        .eq("type", type)
+        .order("name");
 
       if (error) {
         log.error(`Error finding equipment by type ${type}:`, error);
@@ -129,7 +167,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -138,7 +177,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   async findByCampaignSource(
     missionSlug: string
-  ): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+  ): Promise<
+    RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
+  > {
     try {
       const { data, error } = await this.supabase
         .from("equipment")
@@ -147,7 +188,10 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         .order("name");
 
       if (error) {
-        log.error(`Error finding equipment by campaign source ${missionSlug}:`, error);
+        log.error(
+          `Error finding equipment by campaign source ${missionSlug}:`,
+          error
+        );
         return {
           data: null,
           error: this.handleError(error),
@@ -159,11 +203,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding equipment by campaign source ${missionSlug}:`, error);
+      log.error(
+        `Unexpected error finding equipment by campaign source ${missionSlug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -171,9 +219,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   // Core replacement methods for EquipmentDataService
-  async findEquipableEquipment(): Promise<RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>> {
+  async findEquipableEquipment(): Promise<
+    RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
+  > {
     try {
-      const { data, error } = await this.supabase.from("equipment").select("*").eq("type", "equipable").order("name");
+      const { data, error } = await this.supabase
+        .from("equipment")
+        .select("*")
+        .eq("type", "equipable")
+        .order("name");
 
       if (error) {
         log.error("Error finding equipable equipment:", error);
@@ -195,20 +249,28 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async findEquipmentThatRequires(
-    slug: string
-  ): Promise<RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; quantity: number }>>> {
+  async findEquipmentThatRequires(slug: string): Promise<
+    RepositoryResult<
+      Array<{
+        equipment: Database["public"]["Tables"]["equipment"]["Row"];
+        quantity: number;
+      }>
+    >
+  > {
     try {
       const { data, error } = await this.supabase
         .from("equipment_required_item")
-        .select("base_slug, quantity, equipment!equipment_required_item_base_slug_fkey(*)")
+        .select(
+          "base_slug, quantity, equipment!equipment_required_item_base_slug_fkey(*)"
+        )
         .eq("required_slug", slug);
 
       if (error) {
@@ -220,21 +282,26 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       }
 
       // Extract equipment records with quantities from the joined data
-      const equipmentWithQuantities = data?.map((item: any) => ({
-        equipment: item.equipment,
-        quantity: item.quantity,
-      })) || [];
+      const equipmentWithQuantities =
+        data?.map((item: any) => ({
+          equipment: item.equipment,
+          quantity: item.quantity,
+        })) || [];
 
       return {
         data: equipmentWithQuantities,
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding equipment that requires ${slug}:`, error);
+      log.error(
+        `Unexpected error finding equipment that requires ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -244,7 +311,12 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   async findEquipmentRequiredFor(
     slugOrEquipment: string | Database["public"]["Tables"]["equipment"]["Row"]
   ): Promise<
-    RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; quantity: number }>>
+    RepositoryResult<
+      Array<{
+        equipment: Database["public"]["Tables"]["equipment"]["Row"];
+        quantity: number;
+      }>
+    >
   > {
     try {
       let equipment: Database["public"]["Tables"]["equipment"]["Row"];
@@ -263,7 +335,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       }
 
       // Find required items for this equipment
-      const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(equipment.slug);
+      const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(
+        equipment.slug
+      );
       if (requiredItemsResult.error) {
         return {
           data: null,
@@ -281,7 +355,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       // Get the actual equipment records for the required items with quantities
       const requiredItemsWithEquipment = await Promise.all(
         requiredItemsResult.data.map(async (requiredItem) => {
-          const equipmentResult = await this.findById(requiredItem.required_slug);
+          const equipmentResult = await this.findById(
+            requiredItem.required_slug
+          );
           return {
             equipment: equipmentResult.data!,
             quantity: requiredItem.quantity,
@@ -290,7 +366,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       );
 
       // Filter out any failed results
-      const validRequiredItems = requiredItemsWithEquipment.filter((item) => item.equipment !== null);
+      const validRequiredItems = requiredItemsWithEquipment.filter(
+        (item) => item.equipment !== null
+      );
 
       return {
         data: validRequiredItems,
@@ -301,7 +379,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -312,10 +391,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     equipment: Database["public"]["Tables"]["equipment"]["Row"]
   ): Promise<RepositoryResult<EquipmentRequirements | null>> {
     try {
-      const baseItems: EquipmentRequirements = { gold_cost: 0, required_items: [] };
+      const baseItems: EquipmentRequirements = {
+        gold_cost: 0,
+        required_items: [],
+      };
 
       // Get required items for this equipment
-      const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(equipment.slug);
+      const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(
+        equipment.slug
+      );
       if (requiredItemsResult.error) {
         return {
           data: null,
@@ -351,14 +435,23 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
           const raws = rawsResult.data;
           baseItems.gold_cost += raws.gold_cost * requiredItem.quantity;
-          this.combineEquipmentRequirements(baseItems.required_items, raws.required_items, requiredItem.quantity);
+          this.combineEquipmentRequirements(
+            baseItems.required_items,
+            raws.required_items,
+            requiredItem.quantity
+          );
         } else {
           // This is a raw component
-          const found = baseItems.required_items.find((ri) => ri.equipment.slug === component.slug);
+          const found = baseItems.required_items.find(
+            (ri) => ri.equipment.slug === component.slug
+          );
           if (found) {
             found.quantity += requiredItem.quantity;
           } else {
-            baseItems.required_items.push({ equipment: component, quantity: requiredItem.quantity });
+            baseItems.required_items.push({
+              equipment: component,
+              quantity: requiredItem.quantity,
+            });
           }
         }
       }
@@ -372,21 +465,37 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async findRawComponentOf(
-    slug: string
-  ): Promise<RepositoryResult<Array<{ equipment: Database["public"]["Tables"]["equipment"]["Row"]; totalQuantity: number }>>> {
+  async findRawComponentOf(slug: string): Promise<
+    RepositoryResult<
+      Array<{
+        equipment: Database["public"]["Tables"]["equipment"]["Row"];
+        totalQuantity: number;
+      }>
+    >
+  > {
     try {
-      const finalProducts: Map<string, { equipment: Database["public"]["Tables"]["equipment"]["Row"]; totalQuantity: number }> = new Map();
+      const finalProducts: Map<
+        string,
+        {
+          equipment: Database["public"]["Tables"]["equipment"]["Row"];
+          totalQuantity: number;
+        }
+      > = new Map();
 
       // Recursive helper function
-      const traverse = async (componentSlug: string, multiplier: number = 1, path: string[] = []): Promise<void> => {
+      const traverse = async (
+        componentSlug: string,
+        multiplier: number = 1,
+        path: string[] = []
+      ): Promise<void> => {
         // Prevent circular dependencies by checking current path
         if (path.includes(componentSlug)) {
           return;
@@ -395,7 +504,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         const newPath = [...path, componentSlug];
 
         // Find what equipment requires this component
-        const requiredForResult = await this.findEquipmentThatRequires(componentSlug);
+        const requiredForResult = await this.findEquipmentThatRequires(
+          componentSlug
+        );
         if (requiredForResult.error) {
           // Propagate database errors up with the full error structure
           const error = new Error(requiredForResult.error.message);
@@ -413,7 +524,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
           const newMultiplier = multiplier * quantity;
 
           // Check if this equipment is used in other recipes
-          const nextLevelResult = await this.findEquipmentThatRequires(equipment.slug);
+          const nextLevelResult = await this.findEquipmentThatRequires(
+            equipment.slug
+          );
 
           if (nextLevelResult.error) {
             // Propagate database errors up with the full error structure
@@ -431,7 +544,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
             } else {
               finalProducts.set(equipment.slug, {
                 equipment,
-                totalQuantity: newMultiplier
+                totalQuantity: newMultiplier,
               });
             }
           } else {
@@ -445,14 +558,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
       return {
         data: Array.from(finalProducts.values()),
-        error: null
+        error: null,
       };
     } catch (error) {
       log.error(`Unexpected error finding raw component of ${slug}:`, error);
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           code: (error as any).code,
           details: (error as any).details || error,
         },
@@ -465,8 +579,10 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     records: Database["public"]["Tables"]["equipment"]["Row"][]
   ): Database["public"]["Tables"]["equipment"]["Row"][] {
     return records.sort((l, r) =>
-      EQUIPMENT_QUALITIES.indexOf(l.quality) !== EQUIPMENT_QUALITIES.indexOf(r.quality)
-        ? EQUIPMENT_QUALITIES.indexOf(l.quality) - EQUIPMENT_QUALITIES.indexOf(r.quality)
+      EQUIPMENT_QUALITIES.indexOf(l.quality) !==
+      EQUIPMENT_QUALITIES.indexOf(r.quality)
+        ? EQUIPMENT_QUALITIES.indexOf(l.quality) -
+          EQUIPMENT_QUALITIES.indexOf(r.quality)
         : l.name.localeCompare(r.name)
     );
   }
@@ -487,9 +603,13 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   // JSON export functionality
-  async getAllAsJson(ids?: string[]): Promise<RepositoryResult<EquipmentRecord[]>> {
+  async getAllAsJson(
+    ids?: string[]
+  ): Promise<RepositoryResult<EquipmentRecord[]>> {
     try {
-      let equipmentResult: RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>;
+      let equipmentResult: RepositoryResult<
+        Database["public"]["Tables"]["equipment"]["Row"][]
+      >;
 
       if (ids && ids.length > 0) {
         // Get specific equipment by IDs
@@ -541,12 +661,19 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         };
 
         // Add campaign_sources if present
-        if (equipment.campaign_sources && equipment.campaign_sources.length > 0) {
+        if (
+          equipment.campaign_sources &&
+          equipment.campaign_sources.length > 0
+        ) {
           jsonRecord.campaign_sources = equipment.campaign_sources;
         }
 
         // Add stats for equipable items
-        if (equipment.type === "equipable" && statsResult.data && statsResult.data.length > 0) {
+        if (
+          equipment.type === "equipable" &&
+          statsResult.data &&
+          statsResult.data.length > 0
+        ) {
           jsonRecord.stats = {};
           for (const stat of statsResult.data) {
             jsonRecord.stats[stat.stat] = stat.value;
@@ -561,7 +688,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
             required_items: {},
           };
           for (const required of requiredItemsResult.data) {
-            jsonRecord.crafting.required_items[required.required_slug] = required.quantity;
+            jsonRecord.crafting.required_items[required.required_slug] =
+              required.quantity;
           }
         }
 
@@ -582,7 +710,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -590,7 +719,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   // Relationship methods
-  async findWithStats(slug: string): Promise<RepositoryResult<EquipmentWithStats>> {
+  async findWithStats(
+    slug: string
+  ): Promise<RepositoryResult<EquipmentWithStats>> {
     try {
       const [equipmentResult, statsResult] = await Promise.all([
         this.findById(slug),
@@ -619,18 +750,24 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding equipment with stats for ${slug}:`, error);
+      log.error(
+        `Unexpected error finding equipment with stats for ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async findWithRequiredItems(slug: string): Promise<RepositoryResult<EquipmentWithRequiredItems>> {
+  async findWithRequiredItems(
+    slug: string
+  ): Promise<RepositoryResult<EquipmentWithRequiredItems>> {
     try {
       const [equipmentResult, requiredItemsResult] = await Promise.all([
         this.findById(slug),
@@ -659,24 +796,31 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding equipment with required items for ${slug}:`, error);
+      log.error(
+        `Unexpected error finding equipment with required items for ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
     }
   }
 
-  async findWithFullDetails(slug: string): Promise<RepositoryResult<EquipmentWithFullDetails>> {
+  async findWithFullDetails(
+    slug: string
+  ): Promise<RepositoryResult<EquipmentWithFullDetails>> {
     try {
-      const [equipmentResult, statsResult, requiredItemsResult] = await Promise.all([
-        this.findById(slug),
-        this.findStatsByEquipmentSlug(slug),
-        this.findRequiredItemsByEquipmentSlug(slug),
-      ]);
+      const [equipmentResult, statsResult, requiredItemsResult] =
+        await Promise.all([
+          this.findById(slug),
+          this.findStatsByEquipmentSlug(slug),
+          this.findRequiredItemsByEquipmentSlug(slug),
+        ]);
 
       if (equipmentResult.error) {
         return {
@@ -708,11 +852,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding equipment with full details for ${slug}:`, error);
+      log.error(
+        `Unexpected error finding equipment with full details for ${slug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -732,10 +880,14 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       buy_value_coin: jsonEquipment.buy_value_coin ?? null,
       sell_value: jsonEquipment.sell_value,
       guild_activity_points: jsonEquipment.guild_activity_points,
-      hero_level_required: isEquipable(jsonEquipment) ? jsonEquipment.hero_level_required : null,
+      hero_level_required: isEquipable(jsonEquipment)
+        ? jsonEquipment.hero_level_required
+        : null,
       campaign_sources: jsonEquipment.campaign_sources || null,
       crafting_gold_cost:
-        "crafting" in jsonEquipment && jsonEquipment.crafting?.gold_cost ? jsonEquipment.crafting.gold_cost : null,
+        "crafting" in jsonEquipment && jsonEquipment.crafting?.gold_cost
+          ? jsonEquipment.crafting.gold_cost
+          : null,
     };
   }
 
@@ -754,13 +906,19 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   static transformRequiredItemsFromJSON(
     jsonEquipment: EquipmentRecord
   ): Database["public"]["Tables"]["equipment_required_item"]["Insert"][] {
-    if (!("crafting" in jsonEquipment) || !jsonEquipment.crafting?.required_items) return [];
+    if (
+      !("crafting" in jsonEquipment) ||
+      !jsonEquipment.crafting?.required_items
+    )
+      return [];
 
-    return Object.entries(jsonEquipment.crafting.required_items).map(([required_slug, quantity]) => ({
-      base_slug: jsonEquipment.slug,
-      required_slug,
-      quantity: quantity as number,
-    }));
+    return Object.entries(jsonEquipment.crafting.required_items).map(
+      ([required_slug, quantity]) => ({
+        base_slug: jsonEquipment.slug,
+        required_slug,
+        quantity: quantity as number,
+      })
+    );
   }
 
   // Bulk operations for admin data loading
@@ -768,7 +926,10 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     statsData: Database["public"]["Tables"]["equipment_stat"]["Insert"][]
   ): Promise<RepositoryResult<EquipmentStat[]>> {
     try {
-      const { data, error } = await this.supabase.from("equipment_stat").insert(statsData).select();
+      const { data, error } = await this.supabase
+        .from("equipment_stat")
+        .insert(statsData)
+        .select();
 
       if (error) {
         log.error("Error bulk creating equipment stats:", error);
@@ -787,7 +948,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -798,7 +960,10 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     requiredItemsData: Database["public"]["Tables"]["equipment_required_item"]["Insert"][]
   ): Promise<RepositoryResult<EquipmentRequiredItem[]>> {
     try {
-      const { data, error } = await this.supabase.from("equipment_required_item").insert(requiredItemsData).select();
+      const { data, error } = await this.supabase
+        .from("equipment_required_item")
+        .insert(requiredItemsData)
+        .select();
 
       if (error) {
         log.error("Error bulk creating equipment required items:", error);
@@ -813,11 +978,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error("Unexpected error bulk creating equipment required items:", error);
+      log.error(
+        "Unexpected error bulk creating equipment required items:",
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -833,12 +1002,20 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   > {
     try {
       // Transform all data
-      const equipmentData = jsonData.map((item) => EquipmentRepository.transformEquipmentFromJSON(item));
-      const statsData = jsonData.flatMap((item) => EquipmentRepository.transformStatsFromJSON(item));
-      const requiredItemsData = jsonData.flatMap((item) => EquipmentRepository.transformRequiredItemsFromJSON(item));
+      const equipmentData = jsonData.map((item) =>
+        EquipmentRepository.transformEquipmentFromJSON(item)
+      );
+      const statsData = jsonData.flatMap((item) =>
+        EquipmentRepository.transformStatsFromJSON(item)
+      );
+      const requiredItemsData = jsonData.flatMap((item) =>
+        EquipmentRepository.transformRequiredItemsFromJSON(item)
+      );
 
       // Bulk create equipment first with skipExisting to handle duplicates
-      const equipmentResult = await this.bulkCreate(equipmentData, { skipExisting: true });
+      const equipmentResult = await this.bulkCreate(equipmentData, {
+        skipExisting: true,
+      });
 
       if (equipmentResult.error) {
         return {
@@ -880,7 +1057,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -888,7 +1066,9 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   // Helper methods for stats and required items
-  private async findStatsByEquipmentSlug(equipmentSlug: string): Promise<RepositoryResult<EquipmentStat[]>> {
+  private async findStatsByEquipmentSlug(
+    equipmentSlug: string
+  ): Promise<RepositoryResult<EquipmentStat[]>> {
     try {
       const { data, error } = await this.supabase
         .from("equipment_stat")
@@ -909,11 +1089,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding stats for equipment ${equipmentSlug}:`, error);
+      log.error(
+        `Unexpected error finding stats for equipment ${equipmentSlug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -931,7 +1115,10 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         .order("required_slug");
 
       if (error) {
-        log.error(`Error finding required items for equipment ${equipmentSlug}:`, error);
+        log.error(
+          `Error finding required items for equipment ${equipmentSlug}:`,
+          error
+        );
         return {
           data: null,
           error: this.handleError(error),
@@ -943,11 +1130,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         error: null,
       };
     } catch (error) {
-      log.error(`Unexpected error finding required items for equipment ${equipmentSlug}:`, error);
+      log.error(
+        `Unexpected error finding required items for equipment ${equipmentSlug}:`,
+        error
+      );
       return {
         data: null,
         error: {
-          message: error instanceof Error ? error.message : "Unknown error occurred",
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
           details: error,
         },
       };
@@ -963,15 +1154,28 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   > {
     try {
       // Count existing records before deletion
-      const [equipmentCount, statsCount, requiredItemsCount] = await Promise.all([
-        this.supabase.from("equipment").select("slug", { count: "exact", head: true }),
-        this.supabase.from("equipment_stat").select("equipment_slug", { count: "exact", head: true }),
-        this.supabase.from("equipment_required_item").select("base_slug", { count: "exact", head: true }),
-      ]);
+      const [equipmentCount, statsCount, requiredItemsCount] =
+        await Promise.all([
+          this.supabase
+            .from("equipment")
+            .select("slug", { count: "exact", head: true }),
+          this.supabase
+            .from("equipment_stat")
+            .select("equipment_slug", { count: "exact", head: true }),
+          this.supabase
+            .from("equipment_required_item")
+            .select("base_slug", { count: "exact", head: true }),
+        ]);
 
       // Delete in proper order (dependent tables first)
-      await this.supabase.from("equipment_stat").delete().neq("equipment_slug", "");
-      await this.supabase.from("equipment_required_item").delete().neq("base_slug", "");
+      await this.supabase
+        .from("equipment_stat")
+        .delete()
+        .neq("equipment_slug", "");
+      await this.supabase
+        .from("equipment_required_item")
+        .delete()
+        .neq("base_slug", "");
       await this.supabase.from("equipment").delete().neq("slug", "");
 
       return {

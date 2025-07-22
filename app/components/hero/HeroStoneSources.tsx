@@ -9,7 +9,10 @@ interface HeroStoneSourcesProps {
   campaignSources: MissionRecord[];
 }
 
-export default function HeroStoneSources({ stoneSource, campaignSources }: HeroStoneSourcesProps) {
+export default function HeroStoneSources({
+  stoneSource,
+  campaignSources,
+}: HeroStoneSourcesProps) {
   return (
     <Card>
       <CardHeader>

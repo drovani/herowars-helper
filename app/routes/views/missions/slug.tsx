@@ -42,7 +42,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   // Find the mission
   const [missionsResult, missionResult] = await Promise.all([
     missionRepo.findAll({ orderBy: { column: "slug", ascending: true } }),
-    missionRepo.findById(slug)
+    missionRepo.findById(slug),
   ]);
 
   if (missionsResult.error) {
@@ -62,24 +62,27 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   // Get chapter title
   const chapterResult = await missionRepo.findChapterById(mission.chapter_id);
-  const chapterTitle = chapterResult.data?.title || `Chapter ${mission.chapter_id}`;
+  const chapterTitle =
+    chapterResult.data?.title || `Chapter ${mission.chapter_id}`;
 
   // Get equipment that can be found in this mission
   const equipmentRepo = new EquipmentRepository(request);
   const allEquipmentResult = await equipmentRepo.getAllAsJson();
-  
+
   if (allEquipmentResult.error) {
     throw new Response("Failed to load equipment for mission", { status: 500 });
   }
-  
-  const equipmentInMission = allEquipmentResult.data?.filter(eq => 
-    eq.campaign_sources?.includes(slug)
-  ) || [];
+
+  const equipmentInMission =
+    allEquipmentResult.data?.filter((eq) =>
+      eq.campaign_sources?.includes(slug)
+    ) || [];
 
   // Get previous and next missions for navigation
   const missionIndex = missions.findIndex((m) => m.slug === slug);
   const prevMission = missionIndex > 0 ? missions[missionIndex - 1] : null;
-  const nextMission = missionIndex < missions.length - 1 ? missions[missionIndex + 1] : null;
+  const nextMission =
+    missionIndex < missions.length - 1 ? missions[missionIndex + 1] : null;
 
   return {
     mission,
@@ -91,13 +94,22 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 };
 
 export default function MissionDetails({ loaderData }: Route.ComponentProps) {
-  const { mission, chapterTitle, equipmentInMission, prevMission, nextMission } = loaderData;
+  const {
+    mission,
+    chapterTitle,
+    equipmentInMission,
+    prevMission,
+    nextMission,
+  } = loaderData;
   const navigate = useNavigate();
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       // Skip if user is typing in an input or textarea
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
 
@@ -138,7 +150,10 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
         {mission.hero_slug && (
           <div className="text-center">
             <div className="relative w-16 h-16 mx-auto">
-              <Link to={`/heroes/${generateSlug(mission.hero_slug)}`} viewTransition>
+              <Link
+                to={`/heroes/${generateSlug(mission.hero_slug)}`}
+                viewTransition
+              >
                 <img
                   src={getHeroImageUrl(mission.hero_slug)}
                   alt={mission.hero_slug}
@@ -146,14 +161,18 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
                 />
               </Link>
             </div>
-            <p className="mt-1 text-sm font-medium capitalize">Boss: {mission.hero_slug}</p>
+            <p className="mt-1 text-sm font-medium capitalize">
+              Boss: {mission.hero_slug}
+            </p>
           </div>
         )}
       </div>
 
       {/* Equipment Found Here */}
       <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Equipment Found in This Mission</h3>
+        <h3 className="text-xl font-semibold">
+          Equipment Found in This Mission
+        </h3>
         {equipmentInMission.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {equipmentInMission.map((equipment: EquipmentRecord) => (
@@ -169,13 +188,19 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground">No equipment found in this mission.</p>
+          <p className="text-muted-foreground">
+            No equipment found in this mission.
+          </p>
         )}
       </div>
 
       <RequireEditor>
         <div className="flex gap-4">
-          <Link to={`/missions/${mission.slug}/edit`} className={buttonVariants({ variant: "default" })} viewTransition>
+          <Link
+            to={`/missions/${mission.slug}/edit`}
+            className={buttonVariants({ variant: "default" })}
+            viewTransition
+          >
             Edit
           </Link>
         </div>
@@ -184,19 +209,31 @@ export default function MissionDetails({ loaderData }: Route.ComponentProps) {
       {/* Navigation */}
       <div className="flex justify-between items-center pt-4">
         {prevMission ? (
-          <Link to={`/missions/${prevMission.slug}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+          <Link
+            to={`/missions/${prevMission.slug}`}
+            className={buttonVariants({ variant: "outline" })}
+            viewTransition
+          >
             ← {prevMission.slug}
           </Link>
         ) : (
           <div />
         )}
 
-        <Link to="/missions" className={buttonVariants({ variant: "secondary" })} viewTransition>
+        <Link
+          to="/missions"
+          className={buttonVariants({ variant: "secondary" })}
+          viewTransition
+        >
           All Missions
         </Link>
 
         {nextMission ? (
-          <Link to={`/missions/${nextMission.slug}`} className={buttonVariants({ variant: "outline" })} viewTransition>
+          <Link
+            to={`/missions/${nextMission.slug}`}
+            className={buttonVariants({ variant: "outline" })}
+            viewTransition
+          >
             {nextMission.slug} →
           </Link>
         ) : (

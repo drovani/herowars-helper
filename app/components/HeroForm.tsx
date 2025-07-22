@@ -5,7 +5,11 @@ import log from "loglevel";
 import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
 import type { EquipmentRecord } from "~/data/equipment.zod";
-import { HeroMutationSchema, type HeroMutation, type HeroRecord } from "~/data/hero.zod";
+import {
+  HeroMutationSchema,
+  type HeroMutation,
+  type HeroRecord,
+} from "~/data/hero.zod";
 import ArtifactsField from "./hero-form/ArtifactsField";
 import GlyphsField from "./hero-form/GlyphsField";
 import ItemsField from "./hero-form/ItemsField";

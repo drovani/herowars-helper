@@ -3,14 +3,17 @@
 Analyze and resolve a GitHub issue by implementing the necessary code changes, tests, and creating a pull request.
 
 ## Usage
+
 ```
 issue [ISSUE_NUMBER]
 ```
 
 ## Arguments
+
 - `ISSUE_NUMBER` (required): The GitHub issue number to analyze and resolve
 
 ## What this command does:
+
 1. Retrieves issue details using `gh issue view` to understand the problem
 2. **ALWAYS** Creates a new branch for this feature, bug, or other enhancement.
 3. Analyzes the issue description, requirements, and acceptance criteria
@@ -23,6 +26,7 @@ issue [ISSUE_NUMBER]
 10. **Links the issue and PR** using GitHub CLI for proper tracking and automatic closure
 
 ## Examples
+
 ```bash
 # Analyze and fix issue 15
 issue 15
@@ -35,13 +39,16 @@ issue 123
 ```
 
 ## Requirements
+
 - GitHub CLI (`gh`) must be authenticated
 - User must have write permissions to the repository
 - Issue must contain sufficient detail to understand the problem/requirement
 - Development environment must be properly set up with dependencies
 
 ## Output
+
 The command will:
+
 - Display issue details and analysis of the problem
 - Show which files are being modified during implementation
 - Report test results and type checking status
@@ -50,6 +57,7 @@ The command will:
 - Confirm issue and PR linking with assignee and labels
 
 ## Implementation Steps
+
 1. **Issue Analysis**: Fetch and parse issue details to understand requirements
 2. **Codebase Search**: Identify relevant files and existing patterns
 3. **Code Implementation**: Make necessary changes following project conventions
@@ -63,6 +71,7 @@ The command will:
    - Update PR description with "Resolves #[ISSUE_NUMBER]" for automatic closure
 
 ## Safety Notes
+
 - **ALWAYS** creates a new branch for changes (never commits directly to main)
 - Runs comprehensive tests before creating the PR
 - Links the PR to the original issue for proper tracking

@@ -1,6 +1,13 @@
-import { AuthError, type User } from '@supabase/supabase-js';
-import log from 'loglevel';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { AuthError, type User } from "@supabase/supabase-js";
+import log from "loglevel";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { createClient } from "~/lib/supabase/client";
 interface AuthContextType {
   user: {
@@ -19,7 +26,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children, request }: { children: React.ReactNode, request: Request }) {
+export function AuthProvider({
+  children,
+  request,
+}: {
+  children: React.ReactNode;
+  request: Request;
+}) {
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { supabase } = createClient(request);
@@ -33,7 +46,9 @@ export function AuthProvider({ children, request }: { children: React.ReactNode,
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSupabaseUser(session?.user ?? null);
       setLoading(false);
     });
@@ -50,23 +65,24 @@ export function AuthProvider({ children, request }: { children: React.ReactNode,
     const appMetadata = supabaseUser.app_metadata || {};
 
     // Get name from metadata or use fallback
-    const fullName = String(userMetadata.full_name ||
-      userMetadata.name ||
-      "Anonymous Shroom");
+    const fullName = String(
+      userMetadata.full_name || userMetadata.name || "Anonymous Shroom"
+    );
 
     // Create fallback initials from name
-    const fallback = fullName
-      .split(" ")
-      .map((n) => n[0])
-      .join("") || "AS";
+    const fallback =
+      fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("") || "AS";
 
     return {
       id: supabaseUser.id,
       email: supabaseUser.email || "anonymousshroom@example.com",
       name: fullName,
-      roles: appMetadata.roles || ['user'],
+      roles: appMetadata.roles || ["user"],
       fallback: fallback,
-      avatar: userMetadata.avatar_url || '/images/heroes/mushy-and-shroom.png',
+      avatar: userMetadata.avatar_url || "/images/heroes/mushy-and-shroom.png",
     };
   }, [supabaseUser]);
 
@@ -76,23 +92,25 @@ export function AuthProvider({ children, request }: { children: React.ReactNode,
       if (error) throw error;
     } catch (error) {
       const authError = error as AuthError;
-      log.error('Sign out error:', authError.message);
+      log.error("Sign out error:", authError.message);
     }
   }, [supabase.auth]);
 
-  const updateProfile = useCallback(async (data: { full_name: string }) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        data: { full_name: data.full_name }
-      });
-      if (error) throw error;
-    } catch (error) {
-      const authError = error as AuthError;
-      log.error('Update profile error:', authError.message);
-      throw error;
-    }
-  }, [supabase.auth]);
-
+  const updateProfile = useCallback(
+    async (data: { full_name: string }) => {
+      try {
+        const { error } = await supabase.auth.updateUser({
+          data: { full_name: data.full_name },
+        });
+        if (error) throw error;
+      } catch (error) {
+        const authError = error as AuthError;
+        log.error("Update profile error:", authError.message);
+        throw error;
+      }
+    },
+    [supabase.auth]
+  );
 
   const value = useMemo(
     () => ({
@@ -105,11 +123,7 @@ export function AuthProvider({ children, request }: { children: React.ReactNode,
     [transformedUser, supabaseUser, loading, signOut, updateProfile]
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

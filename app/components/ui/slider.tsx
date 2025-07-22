@@ -10,7 +10,14 @@ const Slider = forwardRef<
     className?: ClassValue;
   }
 >(({ className, ...props }, ref) => (
-  <Root ref={ref} className={cn("relative flex w-full touch-none select-none items-center", className)} {...props}>
+  <Root
+    ref={ref}
+    className={cn(
+      "relative flex w-full touch-none select-none items-center",
+      className
+    )}
+    {...props}
+  >
     <Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
       <Range className="absolute h-full bg-primary" />
     </Track>

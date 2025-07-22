@@ -36,7 +36,9 @@ function EquipmentImage({ equipment, size = "default" }: Props) {
       <img
         alt={`${equipment.name || "unknown"} icon border`}
         src={`/images/equipment/border-${equipment.quality || "gray"}${
-          equipment.type === "fragment" && equipment.quality !== "gray" ? "-fragment" : ""
+          equipment.type === "fragment" && equipment.quality !== "gray"
+            ? "-fragment"
+            : ""
         }.png`}
         className="absolute top-0 left-0 h-full w-full"
       />

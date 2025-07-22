@@ -5,51 +5,51 @@ import {
   redirect,
   useFetcher,
   useSearchParams,
-} from 'react-router'
-import { Button } from '~/components/ui/button'
+} from "react-router";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '~/components/ui/card'
-import { Input } from '~/components/ui/input'
-import { Label } from '~/components/ui/label'
-import { createClient } from '~/lib/supabase/client'
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { createClient } from "~/lib/supabase/client";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData()
-  const email = formData.get('email') as string
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
 
-  const { supabase, headers } = createClient(request)
-  const origin = new URL(request.url).origin
+  const { supabase, headers } = createClient(request);
+  const origin = new URL(request.url).origin;
 
   // Send the actual reset password email
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/confirm?next=/update-password`,
-  })
+  });
 
   if (error) {
     return data(
       {
-        error: error instanceof Error ? error.message : 'An error occurred',
+        error: error instanceof Error ? error.message : "An error occurred",
         data: { email },
       },
       { headers }
-    )
+    );
   }
 
-  return redirect('/forgot-password?success')
-}
+  return redirect("/forgot-password?success");
+};
 
 export default function ForgotPassword() {
-  const fetcher = useFetcher<typeof action>()
-  let [searchParams] = useSearchParams()
+  const fetcher = useFetcher<typeof action>();
+  let [searchParams] = useSearchParams();
 
-  const success = !!searchParams.has('success')
-  const error = fetcher.data?.error
-  const loading = fetcher.state === 'submitting'
+  const success = !!searchParams.has("success");
+  const error = fetcher.data?.error;
+  const loading = fetcher.state === "submitting";
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -59,12 +59,14 @@ export default function ForgotPassword() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Check Your Email</CardTitle>
-                <CardDescription>Password reset instructions sent</CardDescription>
+                <CardDescription>
+                  Password reset instructions sent
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  If you registered using your email and password, you will receive a password reset
-                  email.
+                  If you registered using your email and password, you will
+                  receive a password reset email.
                 </p>
               </CardContent>
             </Card>
@@ -73,7 +75,8 @@ export default function ForgotPassword() {
               <CardHeader>
                 <CardTitle className="text-2xl">Reset Your Password</CardTitle>
                 <CardDescription>
-                  Type in your email and we&apos;ll send you a link to reset your password
+                  Type in your email and we&apos;ll send you a link to reset
+                  your password
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -91,11 +94,11 @@ export default function ForgotPassword() {
                     </div>
                     {error && <p className="text-sm text-red-500">{error}</p>}
                     <Button type="submit" className="w-full" disabled={loading}>
-                      {loading ? 'Sending...' : 'Send reset email'}
+                      {loading ? "Sending..." : "Send reset email"}
                     </Button>
                   </div>
                   <div className="mt-4 text-center text-sm">
-                    Already have an account?{' '}
+                    Already have an account?{" "}
                     <Link to="/login" className="underline underline-offset-4">
                       Login
                     </Link>
@@ -107,5 +110,5 @@ export default function ForgotPassword() {
         </div>
       </div>
     </div>
-  )
+  );
 }

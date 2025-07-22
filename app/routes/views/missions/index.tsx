@@ -4,9 +4,19 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { cn, getHeroImageUrl } from "~/lib/utils";
-import { MissionRepository, type Mission } from "~/repositories/MissionRepository";
+import {
+  MissionRepository,
+  type Mission,
+} from "~/repositories/MissionRepository";
 import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
@@ -14,8 +24,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const missionsResult = await missionRepo.findAll({
     orderBy: [
       { column: "chapter_id", ascending: true },
-      { column: "level", ascending: true }
-    ]
+      { column: "level", ascending: true },
+    ],
   });
 
   if (missionsResult.error) {
@@ -31,12 +41,17 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   }
 
   const chapters = chaptersResult.data || [];
-  const chapterMap = new Map(chapters.map(c => [c.id, c.title]));
+  const chapterMap = new Map(chapters.map((c) => [c.id, c.title]));
 
   // Get unique boss names for the select dropdown
   const uniqueBosses = Array.from(
     new Set(
-      missions.filter((m): m is Mission & Required<Pick<Mission, "hero_slug">> => !!m.hero_slug).map((m) => m.hero_slug!)
+      missions
+        .filter(
+          (m): m is Mission & Required<Pick<Mission, "hero_slug">> =>
+            !!m.hero_slug
+        )
+        .map((m) => m.hero_slug!)
     )
   ).sort();
 
@@ -44,7 +59,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const missionsByChapter = missions.reduce((acc, mission) => {
     if (!acc[mission.chapter_id]) {
       acc[mission.chapter_id] = {
-        title: chapterMap.get(mission.chapter_id) || `Chapter ${mission.chapter_id}`,
+        title:
+          chapterMap.get(mission.chapter_id) || `Chapter ${mission.chapter_id}`,
         missions: [],
       };
     }
@@ -80,7 +96,8 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
       const chapterNum = Number(chapter);
       const filteredMissions = data.missions.filter((mission) => {
         const matchesSearch =
-          mission.slug.toLowerCase().includes(lowercaseQuery) || mission.name.toLowerCase().includes(lowercaseQuery);
+          mission.slug.toLowerCase().includes(lowercaseQuery) ||
+          mission.name.toLowerCase().includes(lowercaseQuery);
 
         const matchesBoss = !selectedBoss || mission.hero_slug === selectedBoss;
 
@@ -116,7 +133,9 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
         <div className="w-full sm:w-[200px]">
           <Select
             value={selectedBoss || "all"}
-            onValueChange={(value) => setSelectedBoss(value === "all" ? null : value)}
+            onValueChange={(value) =>
+              setSelectedBoss(value === "all" ? null : value)
+            }
           >
             <SelectTrigger>
               <SelectValue placeholder="Filter by Hero skin" />
@@ -137,54 +156,71 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
 
       {/* Results */}
       {Object.entries(filteredMissionsByChapter).length > 0 ? (
-        Object.entries(filteredMissionsByChapter).map(([chapter, { title, missions }]) => (
-          <div key={chapter} className="space-y-4" id={`chapter-${chapter}`}>
-            <div className="flex items-center gap-2">
-              <MapIcon className="h-6 w-6" />
-              <h2 className="text-2xl font-bold">
-                Chapter {chapter}: {title}
-              </h2>
-            </div>
-            <div className="gap-2 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {missions.map((mission) => (
-                <Link to={`/missions/${mission.slug}`} key={mission.slug} viewTransition>
-                  <Card className="h-28 w-28 relative hover:scale-110 transition-all duration-500 overflow-hidden">
-                    {mission.hero_slug && (
-                      <div className="absolute inset-0">
-                        <img
-                          src={getHeroImageUrl(mission.hero_slug)}
-                          alt={mission.hero_slug}
-                          className="object-cover w-full h-full opacity-50"
-                        />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span
-                        className={cn("text-2xl font-bold", mission.hero_slug ? "text-foreground" : "text-muted-foreground")}
-                      >
-                        {mission.slug}
-                      </span>
-                    </div>
-                    <CardHeader
-                      className={cn(
-                        cardVariants({
-                          variant: mission.hero_slug ? "boss" : "default",
-                        })
+        Object.entries(filteredMissionsByChapter).map(
+          ([chapter, { title, missions }]) => (
+            <div key={chapter} className="space-y-4" id={`chapter-${chapter}`}>
+              <div className="flex items-center gap-2">
+                <MapIcon className="h-6 w-6" />
+                <h2 className="text-2xl font-bold">
+                  Chapter {chapter}: {title}
+                </h2>
+              </div>
+              <div className="gap-2 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                {missions.map((mission) => (
+                  <Link
+                    to={`/missions/${mission.slug}`}
+                    key={mission.slug}
+                    viewTransition
+                  >
+                    <Card className="h-28 w-28 relative hover:scale-110 transition-all duration-500 overflow-hidden">
+                      {mission.hero_slug && (
+                        <div className="absolute inset-0">
+                          <img
+                            src={getHeroImageUrl(mission.hero_slug)}
+                            alt={mission.hero_slug}
+                            className="object-cover w-full h-full opacity-50"
+                          />
+                        </div>
                       )}
-                    >
-                      <CardTitle className="text-sm truncate">
-                        {mission.name}
-                        {mission.hero_slug && <span className="block text-xs opacity-75 capitalize">{mission.hero_slug}</span>}
-                      </CardTitle>
-                    </CardHeader>
-                  </Card>
-                </Link>
-              ))}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span
+                          className={cn(
+                            "text-2xl font-bold",
+                            mission.hero_slug
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          {mission.slug}
+                        </span>
+                      </div>
+                      <CardHeader
+                        className={cn(
+                          cardVariants({
+                            variant: mission.hero_slug ? "boss" : "default",
+                          })
+                        )}
+                      >
+                        <CardTitle className="text-sm truncate">
+                          {mission.name}
+                          {mission.hero_slug && (
+                            <span className="block text-xs opacity-75 capitalize">
+                              {mission.hero_slug}
+                            </span>
+                          )}
+                        </CardTitle>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          )
+        )
       ) : (
-        <div className="text-center text-muted-foreground py-8">No missions found matching your search criteria</div>
+        <div className="text-center text-muted-foreground py-8">
+          No missions found matching your search criteria
+        </div>
       )}
     </div>
   );

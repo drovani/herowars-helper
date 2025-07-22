@@ -169,7 +169,15 @@ const DropdownMenuLabel = forwardRef<
     className?: ClassValue;
   }
 >(({ className, inset, ...props }, ref) => (
-  <Label ref={ref} className={cn("px-2 py-1.5 text-sm font-semibold", inset && "pl-8", className)} {...props} />
+  <Label
+    ref={ref}
+    className={cn(
+      "px-2 py-1.5 text-sm font-semibold",
+      inset && "pl-8",
+      className
+    )}
+    {...props}
+  />
 ));
 DropdownMenuLabel.displayName = Label.displayName;
 
@@ -179,12 +187,24 @@ const DropdownMenuSeparator = forwardRef<
     className?: ClassValue;
   }
 >(({ className, ...props }, ref) => (
-  <Separator ref={ref} className={cn("-mx-1 my-1 h-px bg-muted", className)} {...props} />
+  <Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-muted", className)}
+    {...props}
+  />
 ));
 DropdownMenuSeparator.displayName = Separator.displayName;
 
-const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
-  return <span className={cn("ml-auto text-xs tracking-widest opacity-60", className)} {...props} />;
+const DropdownMenuShortcut = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) => {
+  return (
+    <span
+      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
+      {...props}
+    />
+  );
 };
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut";
 
@@ -203,6 +223,5 @@ export {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 };
-

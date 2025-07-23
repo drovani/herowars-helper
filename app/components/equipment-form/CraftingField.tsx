@@ -1,13 +1,32 @@
 import { PlusCircleIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "~/components/ui/hover-card";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "~/components/ui/hover-card";
 import { Input } from "~/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import type { EquipmentMutation, EquipmentRecord } from "~/data/equipment.zod";
 
 interface CraftingFieldProps {
@@ -16,19 +35,28 @@ interface CraftingFieldProps {
   disabled?: boolean;
 }
 
-export default function CraftingField({ form, existingItems, disabled = false }: CraftingFieldProps) {
+export default function CraftingField({
+  form,
+  existingItems,
+  disabled = false,
+}: CraftingFieldProps) {
   const [open, setOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [lastAddedItem, setLastAddedItem] = useState<string | null>(null);
-  const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(
+    undefined
+  );
   const inputRefs = useRef<Record<string, HTMLInputElement>>({});
 
   const craftingData = form.watch("crafting");
   const requiredItems = craftingData?.required_items || {};
-  const hasRequirements = craftingData && (craftingData.gold_cost > 0 || Object.keys(requiredItems).length > 0);
+  const hasRequirements =
+    craftingData &&
+    (craftingData.gold_cost > 0 || Object.keys(requiredItems).length > 0);
 
   // Watch for form errors
-  const craftingErrors = "crafting" in form.formState.errors ? form.formState.errors.crafting : null;
+  const craftingErrors =
+    "crafting" in form.formState.errors ? form.formState.errors.crafting : null;
 
   // Close accordion when component becomes disabled
   useEffect(() => {
@@ -61,7 +89,11 @@ export default function CraftingField({ form, existingItems, disabled = false }:
   };
 
   const filteredItems = existingItems
-    .filter((item) => item.name.toLowerCase().includes(inputValue.toLowerCase()) && !requiredItems[item.slug])
+    .filter(
+      (item) =>
+        item.name.toLowerCase().includes(inputValue.toLowerCase()) &&
+        !requiredItems[item.slug]
+    )
     .sort((a, b) => a.name.localeCompare(b.name));
 
   const onSelectItem = (item: EquipmentRecord) => {
@@ -88,7 +120,10 @@ export default function CraftingField({ form, existingItems, disabled = false }:
     delete newRequiredItems[slug];
 
     // If this was the last item and gold cost is 0, remove crafting object entirely
-    if (Object.keys(newRequiredItems).length === 0 && (!craftingData?.gold_cost || craftingData.gold_cost === 0)) {
+    if (
+      Object.keys(newRequiredItems).length === 0 &&
+      (!craftingData?.gold_cost || craftingData.gold_cost === 0)
+    ) {
       form.setValue("crafting", undefined);
     } else {
       form.setValue("crafting.required_items", newRequiredItems);
@@ -103,7 +138,10 @@ export default function CraftingField({ form, existingItems, disabled = false }:
   }, [lastAddedItem]);
 
   const updateQuantity = (slug: string, quantity: number) => {
-    form.setValue("crafting.required_items", { ...requiredItems, [slug]: quantity });
+    form.setValue("crafting.required_items", {
+      ...requiredItems,
+      [slug]: quantity,
+    });
   };
 
   const handleGoldCostChange = (value: number) => {
@@ -136,11 +174,18 @@ export default function CraftingField({ form, existingItems, disabled = false }:
       const item = getItemBySlug(slug);
       return item ? { ...item, quantity } : null;
     })
-    .filter((item): item is EquipmentRecord & { quantity: number } => item !== null);
+    .filter(
+      (item): item is EquipmentRecord & { quantity: number } => item !== null
+    );
 
   return (
     <div className="pt-6">
-      <Accordion type="single" collapsible value={accordionValue} onValueChange={setAccordionValue}>
+      <Accordion
+        type="single"
+        collapsible
+        value={accordionValue}
+        onValueChange={setAccordionValue}
+      >
         <AccordionItem value="crafting" className="border rounded-md px-4">
           <AccordionTrigger disabled={disabled} className="disabled:opacity-70">
             <div className="flex items-center gap-2 text-base">
@@ -149,8 +194,15 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                 {hasRequirements ? (
                   <>
                     {craftingData.gold_cost > 0 && (
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        <img src="/images/gold.webp" alt="Gold" className="w-4 h-4" />
+                      <Badge
+                        variant="secondary"
+                        className="flex items-center gap-1"
+                      >
+                        <img
+                          src="/images/gold.webp"
+                          alt="Gold"
+                          className="w-4 h-4"
+                        />
                         {craftingData.gold_cost.toLocaleString()}
                       </Badge>
                     )}
@@ -159,16 +211,28 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                         <HoverCardTrigger>
                           <Badge variant="secondary">
                             {Object.keys(requiredItems).length}{" "}
-                            {Object.keys(requiredItems).length === 1 ? "item" : "items"}
+                            {Object.keys(requiredItems).length === 1
+                              ? "item"
+                              : "items"}
                           </Badge>
                         </HoverCardTrigger>
                         <HoverCardContent className="w-64">
                           <div className="space-y-2">
-                            <h4 className="text-sm font-semibold">Required Items:</h4>
+                            <h4 className="text-sm font-semibold">
+                              Required Items:
+                            </h4>
                             <div className="space-y-1">
                               {selectedItemsDetails.map((item) => (
-                                <div key={item.slug} className="flex items-center gap-2 text-sm">
-                                  <Badge variant="secondary" className={`${getQualityColor(item.quality)}`}>
+                                <div
+                                  key={item.slug}
+                                  className="flex items-center gap-2 text-sm"
+                                >
+                                  <Badge
+                                    variant="secondary"
+                                    className={`${getQualityColor(
+                                      item.quality
+                                    )}`}
+                                  >
                                     {item.quantity}x
                                   </Badge>
                                   <span>{item.name}</span>
@@ -202,7 +266,9 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                           type="number"
                           {...field}
                           value={field.value || 0}
-                          onChange={(e) => handleGoldCostChange(Number(e.target.value))}
+                          onChange={(e) =>
+                            handleGoldCostChange(Number(e.target.value))
+                          }
                           className="pl-10"
                         />
                         <img
@@ -242,7 +308,9 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                               <Input
                                 type="number"
                                 value={quantity}
-                                onChange={(e) => updateQuantity(slug, Number(e.target.value))}
+                                onChange={(e) =>
+                                  updateQuantity(slug, Number(e.target.value))
+                                }
                                 className="w-20"
                                 min={1}
                                 ref={(el) => {
@@ -250,7 +318,12 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                                 }}
                               />
                             </FormControl>
-                            <Button type="button" variant="ghost" size="icon" onClick={() => removeItem(slug)}>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeItem(slug)}
+                            >
                               <XIcon className="size-4" />
                             </Button>
                           </div>
@@ -259,12 +332,21 @@ export default function CraftingField({ form, existingItems, disabled = false }:
 
                       <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild disabled={disabled}>
-                          <Button type="button" variant="outline" size="sm" className="w-full">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
                             <PlusCircleIcon className="size-4 mr-2" />
                             Add Required Item
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-96" align="start" onCloseAutoFocus={handleCloseAutoFocus}>
+                        <PopoverContent
+                          className="w-96"
+                          align="start"
+                          onCloseAutoFocus={handleCloseAutoFocus}
+                        >
                           <div className="space-y-2 p-2">
                             <Input
                               placeholder="Search items..."
@@ -283,7 +365,9 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                                   >
                                     <Badge
                                       variant="secondary"
-                                      className={`mr-2 px-3 py-1.5 ${getQualityColor(item.quality)}`}
+                                      className={`mr-2 px-3 py-1.5 ${getQualityColor(
+                                        item.quality
+                                      )}`}
                                     >
                                       {item.name}
                                     </Badge>
@@ -291,7 +375,9 @@ export default function CraftingField({ form, existingItems, disabled = false }:
                                 ))
                               ) : (
                                 <div className="text-sm text-muted-foreground p-2 text-center">
-                                  {inputValue ? "No items found" : "Start typing to search items"}
+                                  {inputValue
+                                    ? "No items found"
+                                    : "Start typing to search items"}
                                 </div>
                               )}
                             </div>

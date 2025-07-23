@@ -17,7 +17,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "checks":"react-router typegen && tsc && vitest run && cross-env NODE_ENV=development node ./dev-server.js"
+    "lint": "prettier . --write --ignore-path .gitignore",
+    "checks": "react-router typegen && tsc && vitest run && cross-env NODE_ENV=development node ./dev-server.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

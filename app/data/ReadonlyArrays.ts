@@ -18,7 +18,7 @@ export const Stats = [
   "toughness",
   "magic reflection",
   "crushing",
-  "magic crit hit chance"
+  "magic crit hit chance",
 ] as const;
 
 export const WeaponTeamBuff = [
@@ -85,8 +85,23 @@ export const HeroRankLevel = [
   "orange+4",
 ] as const;
 
-export const HeroClass = ["tank", "warrior", "mage", "support", "control", "marksman", "healer"] as const;
-export const HeroFaction = ["nature", "chaos", "honor", "eternity", "mystery", "progress"] as const;
+export const HeroClass = [
+  "tank",
+  "warrior",
+  "mage",
+  "support",
+  "control",
+  "marksman",
+  "healer",
+] as const;
+export const HeroFaction = [
+  "nature",
+  "chaos",
+  "honor",
+  "eternity",
+  "mystery",
+  "progress",
+] as const;
 export const HeroMainStat = ["strength", "agility", "intelligence"] as const;
 export const AttackType = ["physical", "magic", "pure"] as const;
 

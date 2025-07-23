@@ -1,9 +1,10 @@
 import { AlertCircle, ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useEffect, Suspense } from "react";
-import { Link, useNavigate, Await, type UIMatch } from "react-router";
+import { Suspense, useEffect } from "react";
+import { Await, Link, useNavigate, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
+import { EquipmentDetailSkeleton } from "~/components/skeletons/EquipmentDetailSkeleton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import {
@@ -15,15 +16,14 @@ import {
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import type { EquipmentRecord } from "~/data/equipment.zod";
+import {
+  transformBasicHeroToRecord,
+  transformCompleteHeroToRecord,
+} from "~/lib/hero-transformations";
 import { generateSlug } from "~/lib/utils";
-import { EquipmentDetailSkeleton } from "~/components/skeletons/EquipmentDetailSkeleton";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import {
-  transformCompleteHeroToRecord,
-  transformBasicHeroToRecord,
-} from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {

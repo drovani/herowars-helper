@@ -28,7 +28,7 @@ describe("useRoles", () => {
 
     it("hasRole returns false for any role", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("admin")).toBe(false);
       expect(result.current.hasRole("editor")).toBe(false);
       expect(result.current.hasRole(["admin", "editor"])).toBe(false);
@@ -36,19 +36,19 @@ describe("useRoles", () => {
 
     it("canEdit returns false", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.canEdit()).toBe(false);
     });
 
     it("isAdmin returns false", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isAdmin()).toBe(false);
     });
 
     it("isUser returns false", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isUser()).toBe(false);
     });
   });
@@ -73,14 +73,14 @@ describe("useRoles", () => {
 
     it("hasRole returns true for user role", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("user")).toBe(true);
       expect(result.current.hasRole(["user", "editor"])).toBe(true);
     });
 
     it("hasRole returns false for admin/editor roles", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("admin")).toBe(false);
       expect(result.current.hasRole("editor")).toBe(false);
       expect(result.current.hasRole(["admin", "editor"])).toBe(false);
@@ -88,19 +88,19 @@ describe("useRoles", () => {
 
     it("canEdit returns false", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.canEdit()).toBe(false);
     });
 
     it("isAdmin returns false", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isAdmin()).toBe(false);
     });
 
     it("isUser returns true", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isUser()).toBe(true);
     });
   });
@@ -125,7 +125,7 @@ describe("useRoles", () => {
 
     it("hasRole returns true for user and editor roles", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("user")).toBe(true);
       expect(result.current.hasRole("editor")).toBe(true);
       expect(result.current.hasRole(["user", "editor"])).toBe(true);
@@ -133,25 +133,25 @@ describe("useRoles", () => {
 
     it("hasRole returns false for admin role", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("admin")).toBe(false);
     });
 
     it("canEdit returns true", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.canEdit()).toBe(true);
     });
 
     it("isAdmin returns false", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isAdmin()).toBe(false);
     });
 
     it("isUser returns true", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isUser()).toBe(true);
     });
   });
@@ -176,7 +176,7 @@ describe("useRoles", () => {
 
     it("hasRole returns true for user and admin roles", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("user")).toBe(true);
       expect(result.current.hasRole("admin")).toBe(true);
       expect(result.current.hasRole(["admin", "editor"])).toBe(true);
@@ -184,19 +184,19 @@ describe("useRoles", () => {
 
     it("canEdit returns true", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.canEdit()).toBe(true);
     });
 
     it("isAdmin returns true", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isAdmin()).toBe(true);
     });
 
     it("isUser returns true", () => {
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.isUser()).toBe(true);
     });
   });
@@ -219,7 +219,7 @@ describe("useRoles", () => {
       });
 
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("user")).toBe(false);
       expect(result.current.canEdit()).toBe(false);
       expect(result.current.isAdmin()).toBe(false);
@@ -243,7 +243,7 @@ describe("useRoles", () => {
       });
 
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole("editor")).toBe(true);
       expect(result.current.hasRole("admin")).toBe(false);
     });
@@ -265,7 +265,7 @@ describe("useRoles", () => {
       });
 
       const { result } = renderHook(() => useRoles());
-      
+
       expect(result.current.hasRole(["admin", "editor"])).toBe(true);
       expect(result.current.hasRole(["admin", "moderator"])).toBe(false);
     });

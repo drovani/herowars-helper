@@ -31,42 +31,45 @@ interface SkeletonGridProps {
 /**
  * Skeleton placeholder for responsive grid layouts with configurable item count and spacing.
  * Matches existing grid layouts used in heroes/equipment pages with proper responsive behavior.
- * 
+ *
  * @param props - Configuration options for the skeleton grid
  * @returns A responsive skeleton grid with proper accessibility and loading announcements
  */
-export const SkeletonGrid = memo(function SkeletonGrid({ 
+export const SkeletonGrid = memo(function SkeletonGrid({
   className,
   items = 12,
   columns = {
     mobile: 3,
     tablet: 4,
-    desktop: 5
+    desktop: 5,
   },
   itemSize = "md",
   showHeaders = false,
-  gap = "md"
+  gap = "md",
 }: SkeletonGridProps) {
   // Cap items to prevent performance issues and memoize the indices
   const cappedItems = Math.min(items, 100);
-  const itemIndices = useMemo(() => Array.from({ length: cappedItems }, (_, i) => i), [cappedItems]);
+  const itemIndices = useMemo(
+    () => Array.from({ length: cappedItems }, (_, i) => i),
+    [cappedItems]
+  );
   const gapClasses = {
     sm: "gap-1",
-    md: "gap-2", 
-    lg: "gap-4"
+    md: "gap-2",
+    lg: "gap-4",
   };
 
   // Static grid column mappings to ensure Tailwind CSS classes exist
   const getGridCols = (cols: number) => {
     const colsMap: Record<number, string> = {
       1: "grid-cols-1",
-      2: "grid-cols-2", 
+      2: "grid-cols-2",
       3: "grid-cols-3",
       4: "grid-cols-4",
       5: "grid-cols-5",
       6: "grid-cols-6",
       7: "grid-cols-7",
-      8: "grid-cols-8"
+      8: "grid-cols-8",
     };
     return colsMap[cols] || "grid-cols-3";
   };
@@ -74,13 +77,13 @@ export const SkeletonGrid = memo(function SkeletonGrid({
   const getMdGridCols = (cols: number) => {
     const colsMap: Record<number, string> = {
       1: "md:grid-cols-1",
-      2: "md:grid-cols-2", 
+      2: "md:grid-cols-2",
       3: "md:grid-cols-3",
       4: "md:grid-cols-4",
       5: "md:grid-cols-5",
       6: "md:grid-cols-6",
       7: "md:grid-cols-7",
-      8: "md:grid-cols-8"
+      8: "md:grid-cols-8",
     };
     return colsMap[cols] || "md:grid-cols-4";
   };
@@ -88,13 +91,13 @@ export const SkeletonGrid = memo(function SkeletonGrid({
   const getLgGridCols = (cols: number) => {
     const colsMap: Record<number, string> = {
       1: "lg:grid-cols-1",
-      2: "lg:grid-cols-2", 
+      2: "lg:grid-cols-2",
       3: "lg:grid-cols-3",
       4: "lg:grid-cols-4",
       5: "lg:grid-cols-5",
       6: "lg:grid-cols-6",
       7: "lg:grid-cols-7",
-      8: "lg:grid-cols-8"
+      8: "lg:grid-cols-8",
     };
     return colsMap[cols] || "lg:grid-cols-5";
   };
@@ -109,9 +112,17 @@ export const SkeletonGrid = memo(function SkeletonGrid({
   );
 
   return (
-    <div className="space-y-4" role="status" aria-live="polite" aria-label="Loading content">
+    <div
+      className="space-y-4"
+      role="status"
+      aria-live="polite"
+      aria-label="Loading content"
+    >
       {showHeaders && (
-        <div className="flex justify-between items-center" aria-label="Loading search controls">
+        <div
+          className="flex justify-between items-center"
+          aria-label="Loading search controls"
+        >
           <Skeleton className="h-8 w-48" aria-label="Loading search input" />
           <div className="flex gap-2" aria-label="Loading action buttons">
             <Skeleton className="h-10 w-32" aria-label="Loading button" />
@@ -119,10 +130,14 @@ export const SkeletonGrid = memo(function SkeletonGrid({
           </div>
         </div>
       )}
-      <div className={gridClasses} role="grid" aria-label={`Loading ${cappedItems} items`}>
+      <div
+        className={gridClasses}
+        role="grid"
+        aria-label={`Loading ${cappedItems} items`}
+      >
         {itemIndices.map((index) => (
-          <SkeletonCard 
-            key={index} 
+          <SkeletonCard
+            key={index}
             size={itemSize}
             showHeader={false}
             showContent={false}

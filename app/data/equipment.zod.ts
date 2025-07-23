@@ -1,6 +1,12 @@
 import { z } from "zod";
 import { generateSlug } from "~/lib/utils";
-export const EQUIPMENT_QUALITIES = ["gray", "green", "blue", "violet", "orange"] as const;
+export const EQUIPMENT_QUALITIES = [
+  "gray",
+  "green",
+  "blue",
+  "violet",
+  "orange",
+] as const;
 
 const BaseEquipmentProperties = z.object({
   name: z.string(),
@@ -16,9 +22,11 @@ const CraftedProperties = z.object({
   crafting: z
     .object({
       gold_cost: z.number().int().min(0),
-      required_items: z.record(z.string(), z.number().int().min(1)).refine((items) => Object.keys(items).length > 0, {
-        message: "At least one required item must be provided",
-      }),
+      required_items: z
+        .record(z.string(), z.number().int().min(1))
+        .refine((items) => Object.keys(items).length > 0, {
+          message: "At least one required item must be provided",
+        }),
     })
     .optional(),
 });
@@ -27,17 +35,23 @@ const CampaignSourcedProperties = z.object({
   campaign_sources: z.array(z.string()).nullable().optional(),
 });
 
-const EquipableEquipmentSchema = BaseEquipmentProperties.merge(CampaignSourcedProperties)
+const EquipableEquipmentSchema = BaseEquipmentProperties.merge(
+  CampaignSourcedProperties
+)
   .merge(CraftedProperties)
   .extend({
     type: z.literal("equipable"),
-    stats: z.record(z.string(), z.number()).refine((stats) => Object.keys(stats).length > 0, {
-      message: "At least one stat must be provided",
-    }),
+    stats: z
+      .record(z.string(), z.number())
+      .refine((stats) => Object.keys(stats).length > 0, {
+        message: "At least one stat must be provided",
+      }),
     hero_level_required: z.number().int().min(1).max(120),
   });
 
-const FragmentEquipmentSchema = BaseEquipmentProperties.merge(CampaignSourcedProperties).extend({
+const FragmentEquipmentSchema = BaseEquipmentProperties.merge(
+  CampaignSourcedProperties
+).extend({
   type: z.literal("fragment"),
   name: z.string().refine((name) => name.endsWith(" (Fragment)"), {
     message: "Fragment names must end with ' (Fragment)'",
@@ -54,7 +68,11 @@ const RecipeEquipmentSchema = BaseEquipmentProperties.merge(CraftedProperties)
   });
 
 export const EquipmentMutationSchema = z
-  .discriminatedUnion("type", [EquipableEquipmentSchema, FragmentEquipmentSchema, RecipeEquipmentSchema])
+  .discriminatedUnion("type", [
+    EquipableEquipmentSchema,
+    FragmentEquipmentSchema,
+    RecipeEquipmentSchema,
+  ])
   .transform((mutation) => {
     return {
       ...mutation,
@@ -67,7 +85,9 @@ export type EquipmentMutation = z.input<typeof EquipmentMutationSchema>;
 export type EquipmentRecord = z.infer<typeof EquipmentMutationSchema>;
 
 // Schema for equipment table only (without stats, which are stored separately)
-const EquipableEquipmentTableSchema = BaseEquipmentProperties.merge(CampaignSourcedProperties)
+const EquipableEquipmentTableSchema = BaseEquipmentProperties.merge(
+  CampaignSourcedProperties
+)
   .merge(CraftedProperties)
   .extend({
     type: z.literal("equipable"),
@@ -76,7 +96,9 @@ const EquipableEquipmentTableSchema = BaseEquipmentProperties.merge(CampaignSour
     updated_on: z.string().optional(),
   });
 
-const FragmentEquipmentTableSchema = BaseEquipmentProperties.merge(CampaignSourcedProperties).extend({
+const FragmentEquipmentTableSchema = BaseEquipmentProperties.merge(
+  CampaignSourcedProperties
+).extend({
   type: z.literal("fragment"),
   name: z.string().refine((name) => name.endsWith(" (Fragment)"), {
     message: "Fragment names must end with ' (Fragment)'",
@@ -85,7 +107,9 @@ const FragmentEquipmentTableSchema = BaseEquipmentProperties.merge(CampaignSourc
   updated_on: z.string().optional(),
 });
 
-const RecipeEquipmentTableSchema = BaseEquipmentProperties.merge(CraftedProperties)
+const RecipeEquipmentTableSchema = BaseEquipmentProperties.merge(
+  CraftedProperties
+)
   .merge(CampaignSourcedProperties)
   .extend({
     type: z.literal("recipe"),
@@ -97,17 +121,23 @@ const RecipeEquipmentTableSchema = BaseEquipmentProperties.merge(CraftedProperti
   });
 
 export const EquipmentTableSchema = z.discriminatedUnion("type", [
-  EquipableEquipmentTableSchema, 
-  FragmentEquipmentTableSchema, 
-  RecipeEquipmentTableSchema
+  EquipableEquipmentTableSchema,
+  FragmentEquipmentTableSchema,
+  RecipeEquipmentTableSchema,
 ]);
 
-export function isFragment(equipment: EquipmentMutation): equipment is z.infer<typeof FragmentEquipmentSchema> {
+export function isFragment(
+  equipment: EquipmentMutation
+): equipment is z.infer<typeof FragmentEquipmentSchema> {
   return equipment.type === "fragment";
 }
-export function isRecipe(equipment: EquipmentMutation): equipment is z.infer<typeof RecipeEquipmentSchema> {
+export function isRecipe(
+  equipment: EquipmentMutation
+): equipment is z.infer<typeof RecipeEquipmentSchema> {
   return equipment.type === "recipe";
 }
-export function isEquipable(equipment: EquipmentMutation): equipment is z.infer<typeof EquipableEquipmentSchema> {
+export function isEquipable(
+  equipment: EquipmentMutation
+): equipment is z.infer<typeof EquipableEquipmentSchema> {
   return equipment.type === "equipable";
 }

@@ -1,35 +1,24 @@
-import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest'
-import { z } from 'zod'
-import log from 'loglevel'
-import { BaseRepository } from '../BaseRepository'
-import type { CreateInput, UpdateInput } from '../types'
-
-const mockSupabaseClient = {
-  from: vi.fn().mockReturnThis(),
-  select: vi.fn().mockReturnThis(),
-  insert: vi.fn().mockReturnThis(),
-  update: vi.fn().mockReturnThis(),
-  upsert: vi.fn().mockReturnThis(),
-  delete: vi.fn().mockReturnThis(),
-  eq: vi.fn().mockReturnThis(),
-  order: vi.fn().mockReturnThis(),
-  limit: vi.fn().mockReturnThis(),
-  range: vi.fn().mockReturnThis(),
-  single: vi.fn(),
-}
-
-vi.mock('~/lib/supabase/client', () => ({
-  createClient: vi.fn(() => ({ 
-    supabase: mockSupabaseClient, 
-    headers: undefined 
-  })),
-}))
+import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
+import { z } from "zod";
+import log from "loglevel";
+import { BaseRepository } from "../BaseRepository";
+import type { CreateInput, UpdateInput } from "../types";
+import {
+  server,
+  resetStores,
+  setEquipmentStore,
+} from "~/__tests__/mocks/msw/server";
+import {
+  createMockEquipment,
+  createMockEquipmentList,
+} from "~/__tests__/mocks/msw/factories";
+import { http, HttpResponse } from "msw";
 
 const mockEquipmentSchema = z.object({
   name: z.string(),
   slug: z.string(),
-  quality: z.enum(['gray', 'green', 'blue', 'violet', 'orange']),
-  type: z.enum(['equipable', 'fragment', 'recipe']),
+  quality: z.enum(["gray", "green", "blue", "violet", "orange"]),
+  type: z.enum(["equipable", "fragment", "recipe"]),
   sell_value: z.number(),
   guild_activity_points: z.number(),
   buy_value_coin: z.number().nullable().optional(),
@@ -37,883 +26,629 @@ const mockEquipmentSchema = z.object({
   campaign_sources: z.array(z.string()).nullable().optional(),
   crafting_gold_cost: z.number().nullable().optional(),
   hero_level_required: z.number().nullable().optional(),
-})
+});
 
-class TestEquipmentRepository extends BaseRepository<'equipment'> {
+class TestEquipmentRepository extends BaseRepository<"equipment"> {
   constructor(request: Request | null = null) {
-    super('equipment', mockEquipmentSchema, request, 'slug')
+    super("equipment", mockEquipmentSchema, request, "slug");
   }
 }
 
-describe('BaseRepository', () => {
-  let repository: TestEquipmentRepository
-  let capturedLogs: Array<{level: string, message: string, args: any[]}> = []
-  let originalMethodFactory: any
+describe("BaseRepository", () => {
+  let repository: TestEquipmentRepository;
+  let capturedLogs: Array<{ level: string; message: string; args: any[] }> = [];
+  let originalMethodFactory: any;
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    
+    // Reset MSW store for clean tests
+    resetStores();
+
     // Capture logs to in-memory array instead of console
-    capturedLogs = []
-    originalMethodFactory = log.methodFactory
-    log.methodFactory = function(methodName, _logLevel, _loggerName) {
-      return function(message, ...args) {
-        capturedLogs.push({level: methodName, message, args})
+    capturedLogs = [];
+    originalMethodFactory = log.methodFactory;
+    log.methodFactory = function (methodName, _logLevel, _loggerName) {
+      return function (message, ...args) {
+        capturedLogs.push({ level: methodName, message, args });
         // Silent - don't output to console
-      }
-    }
-    log.rebuild()
-    
-    repository = new TestEquipmentRepository()
-  })
+      };
+    };
+    log.rebuild();
+
+    repository = new TestEquipmentRepository();
+  });
 
   afterEach(() => {
     // Restore original logging behavior
-    log.methodFactory = originalMethodFactory
-    log.rebuild()
-  })
+    log.methodFactory = originalMethodFactory;
+    log.rebuild();
+  });
 
-  describe('findAll', () => {
-    it('should find all records successfully', async () => {
-      const mockData = [
-        {
-          name: 'Test Equipment 1',
-          slug: 'test-equipment-1',
-          quality: 'green',
-          type: 'equipable',
-          sell_value: 100,
-          guild_activity_points: 5,
-        },
-      ]
+  describe("findAll", () => {
+    it("should find all records successfully", async () => {
+      const mockData = createMockEquipmentList(2, {
+        quality: "green",
+        type: "equipable",
+      });
+      setEquipmentStore(mockData);
 
-      mockSupabaseClient.select.mockResolvedValueOnce({
-        data: mockData,
-        error: null,
-      })
+      const result = await repository.findAll();
 
-      const result = await repository.findAll()
+      expect(result.data).toEqual(mockData);
+      expect(result.error).toBeNull();
+    });
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
-      expect(result.data).toEqual(mockData)
-      expect(result.error).toBeNull()
-    })
+    it("should handle database errors gracefully", async () => {
+      // Override handler to return error
+      server.use(
+        http.get("*/rest/v1/equipment", () => {
+          return HttpResponse.json(
+            {
+              code: "CONNECTION_ERROR",
+              message: "Database connection failed",
+              details: "Connection timeout",
+            },
+            { status: 500 }
+          );
+        })
+      );
 
-    it('should handle database errors gracefully', async () => {
-      const mockError = {
-        message: 'Database connection failed',
-        code: 'CONNECTION_ERROR',
-        details: 'Connection timeout',
-      }
+      const result = await repository.findAll();
 
-      mockSupabaseClient.select.mockResolvedValueOnce({
-        data: null,
-        error: mockError,
-      })
-
-      const result = await repository.findAll()
-
-      expect(result.data).toBeNull()
+      expect(result.data).toBeNull();
       expect(result.error).toEqual({
-        message: 'Database connection failed',
-        code: 'CONNECTION_ERROR',
-        details: 'Connection timeout',
-      })
-    })
+        message: "Database connection failed",
+        code: "CONNECTION_ERROR",
+        details: "Connection timeout",
+      });
+    });
 
-    it('should apply where conditions', async () => {
-      const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
+    it("should apply where conditions", async () => {
+      const mockData = createMockEquipmentList(1, {
+        quality: "green",
+        slug: "green-equipment",
+      });
+      setEquipmentStore(mockData);
 
-      // Mock the final call in the chain to resolve the promise
-      mockSupabaseClient.eq.mockResolvedValueOnce({ data: mockData, error: null })
+      // Add handler to validate the filter query param
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const qualityFilter = url.searchParams.get("quality");
+          expect(qualityFilter).toBe("eq.green");
 
-      const result = await repository.findAll({ where: { quality: 'green' } })
+          return HttpResponse.json(mockData);
+        })
+      );
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
-      expect(mockSupabaseClient.eq).toHaveBeenCalledWith('quality', 'green')
-      expect(result.data).toEqual(mockData)
-      expect(result.error).toBeNull()
-    })
+      const result = await repository.findAll({ where: { quality: "green" } });
 
-    it('should apply ordering', async () => {
-      const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
+      expect(result.data).toEqual(mockData);
+      expect(result.error).toBeNull();
+    });
 
-      mockSupabaseClient.order.mockResolvedValueOnce({ data: mockData, error: null })
+    it("should apply ordering", async () => {
+      const mockData = createMockEquipmentList(2);
+      setEquipmentStore(mockData);
 
-      const result = await repository.findAll({ orderBy: { column: 'name', ascending: true } })
+      // Add handler to validate the order query param
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const orderParam = url.searchParams.get("order");
+          expect(orderParam).toBe("name.asc");
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
-      expect(mockSupabaseClient.order).toHaveBeenCalledWith('name', { ascending: true })
-      expect(result.data).toEqual(mockData)
-      expect(result.error).toBeNull()
-    })
+          return HttpResponse.json(mockData);
+        })
+      );
 
-    it('should apply multiple ordering criteria', async () => {
-      const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
+      const result = await repository.findAll({
+        orderBy: { column: "name", ascending: true },
+      });
 
-      // Mock the chain to return mockData on the final call
-      mockSupabaseClient.order.mockReturnValueOnce(mockSupabaseClient)
-      mockSupabaseClient.order.mockResolvedValueOnce({ data: mockData, error: null })
+      expect(result.data).toEqual(mockData);
+      expect(result.error).toBeNull();
+    });
 
-      const result = await repository.findAll({ 
+    it("should apply multiple ordering criteria", async () => {
+      const mockData = createMockEquipmentList(2);
+      setEquipmentStore(mockData);
+
+      // Add handler to validate multiple order params
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const orderParams = url.searchParams.getAll("order");
+          // Supabase combines multiple orders into a single comma-separated parameter
+          expect(orderParams).toContain("quality.asc,name.desc");
+
+          return HttpResponse.json(mockData);
+        })
+      );
+
+      const result = await repository.findAll({
         orderBy: [
-          { column: 'quality', ascending: true },
-          { column: 'name', ascending: false }
-        ]
-      })
+          { column: "quality", ascending: true },
+          { column: "name", ascending: false },
+        ],
+      });
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
-      expect(mockSupabaseClient.order).toHaveBeenCalledWith('quality', { ascending: true })
-      expect(mockSupabaseClient.order).toHaveBeenCalledWith('name', { ascending: false })
-      expect(result.data).toEqual(mockData)
-      expect(result.error).toBeNull()
-    })
+      expect(result.data).toEqual(mockData);
+      expect(result.error).toBeNull();
+    });
 
-    it('should apply limit', async () => {
-      const mockData = [{ name: 'Test', slug: 'test', quality: 'green', type: 'equipable', sell_value: 100, guild_activity_points: 5 }]
+    it("should apply limit", async () => {
+      const mockData = createMockEquipmentList(1);
+      setEquipmentStore(mockData);
 
-      mockSupabaseClient.limit.mockResolvedValueOnce({ data: mockData, error: null })
+      // Add handler to validate the limit query param
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const limitParam = url.searchParams.get("limit");
+          expect(limitParam).toBe("10");
 
-      const result = await repository.findAll({ limit: 10 })
+          return HttpResponse.json(mockData);
+        })
+      );
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
-      expect(mockSupabaseClient.limit).toHaveBeenCalledWith(10)
-      expect(result.data).toEqual(mockData)
-      expect(result.error).toBeNull()
-    })
-  })
+      const result = await repository.findAll({ limit: 10 });
 
-  describe('findById', () => {
-    it('should find record by id successfully', async () => {
-      const mockData = {
-        name: 'Test Equipment',
-        slug: 'test-equipment',
-        quality: 'green',
-        type: 'equipable',
-        sell_value: 100,
-        guild_activity_points: 5,
-      }
+      expect(result.data).toEqual(mockData);
+      expect(result.error).toBeNull();
+    });
+  });
 
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: mockData,
-        error: null,
-      })
+  describe("findById", () => {
+    it("should find record by id successfully", async () => {
+      const mockData = createMockEquipment({
+        slug: "test-equipment",
+        name: "Test Equipment",
+      });
 
-      const result = await repository.findById('test-equipment')
+      // Handler will return single record when slug filter is applied
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+          expect(slugFilter).toBe("eq.test-equipment");
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.select).toHaveBeenCalledWith('*')
-      expect(mockSupabaseClient.eq).toHaveBeenCalledWith('slug', 'test-equipment')
-      expect(mockSupabaseClient.single).toHaveBeenCalled()
-      expect(result.data).toEqual(mockData)
-      expect(result.error).toBeNull()
-    })
+          // Check for single object request
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
 
-    it('should handle not found errors', async () => {
-      const mockError = {
-        message: 'Record not found',
-        code: 'PGRST116',
-        details: 'No rows found',
-      }
+          return HttpResponse.json(mockData);
+        })
+      );
 
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: null,
-        error: mockError,
-      })
+      const result = await repository.findById("test-equipment");
 
-      const result = await repository.findById('nonexistent')
+      expect(result.data).toEqual(mockData);
+      expect(result.error).toBeNull();
+    });
 
-      expect(result.data).toBeNull()
+    it("should handle not found errors", async () => {
+      server.use(
+        http.get("*/rest/v1/equipment", () => {
+          return HttpResponse.json(
+            {
+              code: "PGRST116",
+              message: "Record not found",
+              details: "No rows found",
+            },
+            { status: 404 }
+          );
+        })
+      );
+
+      const result = await repository.findById("nonexistent");
+
+      expect(result.data).toBeNull();
       expect(result.error).toEqual({
-        message: 'Record not found',
-        code: 'PGRST116',
-        details: 'No rows found',
-      })
-    })
-  })
+        message: "Record not found",
+        code: "PGRST116",
+        details: "No rows found",
+      });
+    });
+  });
 
-  describe('create', () => {
-    it('should create record successfully', async () => {
-      const inputData: CreateInput<'equipment'> = {
-        name: 'New Equipment',
-        slug: 'new-equipment',
-        quality: 'green',
-        type: 'equipable',
+  describe("create", () => {
+    it("should create record successfully", async () => {
+      const inputData: CreateInput<"equipment"> = {
+        name: "New Equipment",
+        slug: "new-equipment",
+        quality: "green",
+        type: "equipable",
         sell_value: 100,
         guild_activity_points: 5,
-      }
+      };
 
-      const mockCreatedData = {
-        ...inputData,
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
+      const mockCreatedData = createMockEquipment(inputData);
 
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: mockCreatedData,
-        error: null,
-      })
+      server.use(
+        http.post("*/rest/v1/equipment", async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual(inputData);
 
-      const result = await repository.create(inputData)
+          const acceptHeader = request.headers.get("Accept");
+          expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.insert).toHaveBeenCalledWith(inputData)
-      expect(mockSupabaseClient.select).toHaveBeenCalled()
-      expect(mockSupabaseClient.single).toHaveBeenCalled()
-      expect(result.data).toEqual(mockCreatedData)
-      expect(result.error).toBeNull()
-    })
+          return HttpResponse.json(mockCreatedData, { status: 201 });
+        })
+      );
 
-    it('should handle validation errors', async () => {
+      const result = await repository.create(inputData);
+
+      expect(result.data).toEqual(mockCreatedData);
+      expect(result.error).toBeNull();
+    });
+
+    it("should handle validation errors", async () => {
       const invalidData = {
-        name: 'Invalid Equipment',
-        slug: 'invalid-equipment',
-        quality: 'invalid-quality',
-        type: 'equipable',
+        name: "Invalid Equipment",
+        slug: "invalid-equipment",
+        quality: "invalid-quality",
+        type: "equipable",
         sell_value: 100,
         guild_activity_points: 5,
-      } as unknown as CreateInput<'equipment'>
+      } as unknown as CreateInput<"equipment">;
 
-      const result = await repository.create(invalidData)
+      const result = await repository.create(invalidData);
 
-      expect(result.data).toBeNull()
-      expect(result.error).toBeDefined()
-      expect(result.error?.message).toBe('Validation failed')
-      expect(result.error?.code).toBe('VALIDATION_ERROR')
-    })
+      expect(result.data).toBeNull();
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toBe("Validation failed");
+      expect(result.error?.code).toBe("VALIDATION_ERROR");
+    });
 
-    it('should handle database insert errors', async () => {
-      const inputData: CreateInput<'equipment'> = {
-        name: 'New Equipment',
-        slug: 'new-equipment',
-        quality: 'green',
-        type: 'equipable',
+    it("should handle database insert errors", async () => {
+      const inputData: CreateInput<"equipment"> = {
+        name: "New Equipment",
+        slug: "new-equipment",
+        quality: "green",
+        type: "equipable",
         sell_value: 100,
         guild_activity_points: 5,
-      }
+      };
 
-      const mockError = {
-        message: 'Unique constraint violation',
-        code: '23505',
-        details: 'Key (slug)=(new-equipment) already exists',
-      }
+      server.use(
+        http.post("*/rest/v1/equipment", () => {
+          return HttpResponse.json(
+            {
+              code: "23505",
+              message: "Unique constraint violation",
+              details: "Key (slug)=(new-equipment) already exists",
+            },
+            { status: 409 }
+          );
+        })
+      );
 
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: null,
-        error: mockError,
-      })
+      const result = await repository.create(inputData);
 
-      const result = await repository.create(inputData)
-
-      expect(result.data).toBeNull()
+      expect(result.data).toBeNull();
       expect(result.error).toEqual({
-        message: 'Unique constraint violation',
-        code: 'CONSTRAINT_VIOLATION',
-        details: 'Unique constraint violation',
-      })
-    })
-  })
+        message: "Unique constraint violation",
+        code: "CONSTRAINT_VIOLATION",
+        details: "Unique constraint violation",
+      });
+    });
+  });
 
-  describe('create with skipExisting', () => {
-    it('should skip existing record when skipExisting is true', async () => {
-      const inputData: CreateInput<'equipment'> = {
-        name: 'Existing Equipment',
-        slug: 'existing-equipment',
-        quality: 'green',
-        type: 'equipable',
+  describe("create with skipExisting", () => {
+    it("should skip existing record when skipExisting is true", async () => {
+      const inputData: CreateInput<"equipment"> = {
+        name: "Existing Equipment",
+        slug: "existing-equipment",
+        quality: "green",
+        type: "equipable",
         sell_value: 100,
         guild_activity_points: 5,
-      }
+      };
 
-      const existingData = {
-        ...inputData,
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
+      const existingData = createMockEquipment(inputData);
 
       // Mock findById to return existing record
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: existingData,
-        error: null,
-      })
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
 
-      const result = await repository.create(inputData, { skipExisting: true })
+          if (slugFilter === "eq.existing-equipment") {
+            return HttpResponse.json(existingData);
+          }
 
-      expect(result.data).toEqual(existingData)
-      expect(result.error).toBeNull()
-      expect(result.skipped).toBe(true)
-      expect(mockSupabaseClient.insert).not.toHaveBeenCalled()
-    })
+          return HttpResponse.json([]);
+        })
+      );
 
-    it('should create new record when skipExisting is true but record does not exist', async () => {
-      const inputData: CreateInput<'equipment'> = {
-        name: 'New Equipment',
-        slug: 'new-equipment',
-        quality: 'green',
-        type: 'equipable',
+      const result = await repository.create(inputData, { skipExisting: true });
+
+      expect(result.data).toEqual(existingData);
+      expect(result.error).toBeNull();
+      expect(result.skipped).toBe(true);
+    });
+
+    it("should create new record when skipExisting is true but record does not exist", async () => {
+      const inputData: CreateInput<"equipment"> = {
+        name: "New Equipment",
+        slug: "new-equipment",
+        quality: "green",
+        type: "equipable",
         sell_value: 100,
         guild_activity_points: 5,
-      }
+      };
 
-      const createdData = {
-        ...inputData,
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
+      const createdData = createMockEquipment(inputData);
 
-      // Mock findById to return no record
-      mockSupabaseClient.single
-        .mockResolvedValueOnce({
-          data: null,
-          error: { message: 'Not found', code: 'PGRST116' }
+      // Mock findById to return no record, then successful create
+      server.use(
+        http.get("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+
+          if (slugFilter === "eq.new-equipment") {
+            return HttpResponse.json(
+              { code: "PGRST116", message: "Not found" },
+              { status: 404 }
+            );
+          }
+
+          return HttpResponse.json([]);
+        }),
+        http.post("*/rest/v1/equipment", () => {
+          return HttpResponse.json(createdData, { status: 201 });
         })
-        .mockResolvedValueOnce({
-          data: createdData,
-          error: null,
+      );
+
+      const result = await repository.create(inputData, { skipExisting: true });
+
+      expect(result.data).toEqual(createdData);
+      expect(result.error).toBeNull();
+      expect(result.skipped).toBe(false);
+    });
+  });
+
+  describe("update", () => {
+    it("should update record successfully", async () => {
+      const updateData: UpdateInput<"equipment"> = {
+        name: "Updated Equipment",
+        sell_value: 150,
+      };
+
+      const mockUpdatedData = createMockEquipment({
+        slug: "test-equipment",
+        name: "Updated Equipment",
+        sell_value: 150,
+      });
+
+      server.use(
+        http.patch("*/rest/v1/equipment", async ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+          expect(slugFilter).toBe("eq.test-equipment");
+
+          const body = await request.json();
+          expect(body).toEqual(updateData);
+
+          return HttpResponse.json(mockUpdatedData);
         })
+      );
 
-      const result = await repository.create(inputData, { skipExisting: true })
+      const result = await repository.update("test-equipment", updateData);
 
-      expect(result.data).toEqual(createdData)
-      expect(result.error).toBeNull()
-      expect(result.skipped).toBe(false)
-      expect(mockSupabaseClient.insert).toHaveBeenCalledWith(inputData)
-    })
+      expect(result.data).toEqual(mockUpdatedData);
+      expect(result.error).toBeNull();
+    });
 
-    it('should return error when skipExisting is false and record exists', async () => {
-      const inputData: CreateInput<'equipment'> = {
-        name: 'Existing Equipment',
-        slug: 'existing-equipment',
-        quality: 'green',
-        type: 'equipable',
-        sell_value: 100,
-        guild_activity_points: 5,
-      }
-
-      const mockError = {
-        message: 'Unique constraint violation',
-        code: '23505',
-        details: 'Key (slug)=(existing-equipment) already exists',
-      }
-
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: null,
-        error: mockError,
-      })
-
-      const result = await repository.create(inputData, { skipExisting: false })
-
-      expect(result.data).toBeNull()
-      expect(result.error).toEqual({
-        message: 'Unique constraint violation',
-        code: 'CONSTRAINT_VIOLATION',
-        details: 'Unique constraint violation',
-      })
-      expect(result.skipped).toBeUndefined()
-    })
-  })
-
-  describe('bulkCreate with skipExisting', () => {
-    it('should handle mixed creation and skipping', async () => {
-      const inputData: CreateInput<'equipment'>[] = [
-        {
-          name: 'New Equipment',
-          slug: 'new-equipment',
-          quality: 'green',
-          type: 'equipable',
-          sell_value: 100,
-          guild_activity_points: 5,
-        },
-        {
-          name: 'Existing Equipment',
-          slug: 'existing-equipment',
-          quality: 'blue',
-          type: 'fragment',
-          sell_value: 200,
-          guild_activity_points: 10,
-        },
-      ]
-
-      const newEquipmentData = { ...inputData[0], buy_value_coin: null, buy_value_gold: null, campaign_sources: null, crafting_gold_cost: null, hero_level_required: null }
-      const existingEquipmentData = { ...inputData[1], buy_value_coin: null, buy_value_gold: null, campaign_sources: null, crafting_gold_cost: null, hero_level_required: null }
-
-      // Mock responses for create calls
-      mockSupabaseClient.single
-        // First item - findById returns null (doesn't exist), then insert succeeds  
-        .mockResolvedValueOnce({ data: null, error: { message: 'Not found', code: 'PGRST116' } })
-        .mockResolvedValueOnce({ data: newEquipmentData, error: null })
-        // Second item - findById returns existing record (no insert call)
-        .mockResolvedValueOnce({ data: existingEquipmentData, error: null })
-
-      const result = await repository.bulkCreate(inputData, { skipExisting: true })
-
-      // Should have exactly 1 created item and 1 skipped item
-      expect(result.data).toHaveLength(1)
-      expect(result.error).toBeDefined()
-      expect(result.error?.code).toBe('BULK_PARTIAL_SUCCESS')
-      expect((result.error?.details as any)?.skipped).toHaveLength(1)
-      
-      // The created item should have the properties we expect
-      expect(result.data?.[0]).toBeDefined()
-      expect((result.error?.details as any)?.skipped[0]).toBeDefined()
-    })
-  })
-
-  describe('update', () => {
-    it('should update record successfully', async () => {
-      const updateData: UpdateInput<'equipment'> = {
-        name: 'Updated Equipment',
-        sell_value: 150,
-      }
-
-      const mockUpdatedData = {
-        name: 'Updated Equipment',
-        slug: 'test-equipment',
-        quality: 'green',
-        type: 'equipable',
-        sell_value: 150,
-        guild_activity_points: 5,
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
-
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: mockUpdatedData,
-        error: null,
-      })
-
-      const result = await repository.update('test-equipment', updateData)
-
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.update).toHaveBeenCalledWith(updateData)
-      expect(mockSupabaseClient.eq).toHaveBeenCalledWith('slug', 'test-equipment')
-      expect(mockSupabaseClient.select).toHaveBeenCalled()
-      expect(mockSupabaseClient.single).toHaveBeenCalled()
-      expect(result.data).toEqual(mockUpdatedData)
-      expect(result.error).toBeNull()
-    })
-
-    it('should handle validation errors for updates', async () => {
+    it("should handle validation errors for updates", async () => {
       const invalidUpdateData = {
-        quality: 'invalid-quality',
-      } as unknown as UpdateInput<'equipment'>
+        quality: "invalid-quality",
+      } as unknown as UpdateInput<"equipment">;
 
-      const result = await repository.update('test-equipment', invalidUpdateData)
+      const result = await repository.update(
+        "test-equipment",
+        invalidUpdateData
+      );
 
-      expect(result.data).toBeNull()
-      expect(result.error).toBeDefined()
-      expect(result.error?.message).toBe('Validation failed')
-      expect(result.error?.code).toBe('VALIDATION_ERROR')
-    })
-  })
+      expect(result.data).toBeNull();
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toBe("Validation failed");
+      expect(result.error?.code).toBe("VALIDATION_ERROR");
+    });
+  });
 
-  describe('delete', () => {
-    it('should delete record successfully', async () => {
-      mockSupabaseClient.eq.mockResolvedValueOnce({
-        error: null,
-      })
+  describe("delete", () => {
+    it("should delete record successfully", async () => {
+      server.use(
+        http.delete("*/rest/v1/equipment", ({ request }) => {
+          const url = new URL(request.url);
+          const slugFilter = url.searchParams.get("slug");
+          expect(slugFilter).toBe("eq.test-equipment");
 
-      const result = await repository.delete('test-equipment')
+          return HttpResponse.json(null, { status: 204 });
+        })
+      );
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.delete).toHaveBeenCalled()
-      expect(mockSupabaseClient.eq).toHaveBeenCalledWith('slug', 'test-equipment')
-      expect(result.data).toBe(true)
-      expect(result.error).toBeNull()
-    })
+      const result = await repository.delete("test-equipment");
 
-    it('should handle delete errors', async () => {
-      const mockError = {
-        message: 'Record not found',
-        code: 'PGRST116',
-        details: 'No rows found',
-      }
+      expect(result.data).toBe(true);
+      expect(result.error).toBeNull();
+    });
 
-      mockSupabaseClient.eq.mockResolvedValueOnce({
-        error: mockError,
-      })
+    it("should handle delete errors", async () => {
+      server.use(
+        http.delete("*/rest/v1/equipment", () => {
+          return HttpResponse.json(
+            {
+              code: "PGRST116",
+              message: "Record not found",
+              details: "No rows found",
+            },
+            { status: 404 }
+          );
+        })
+      );
 
-      const result = await repository.delete('nonexistent')
+      const result = await repository.delete("nonexistent");
 
-      expect(result.data).toBeNull()
+      expect(result.data).toBeNull();
       expect(result.error).toEqual({
-        message: 'Not found',
-        code: 'NOT_FOUND',
-        details: 'Record not found',
-      })
-    })
-  })
+        message: "Not found",
+        code: "NOT_FOUND",
+        details: "Record not found",
+      });
+    });
+  });
 
-  describe('bulkCreate', () => {
-    it('should handle bulk create successfully', async () => {
-      const inputData: CreateInput<'equipment'>[] = [
+  describe("bulkCreate", () => {
+    it("should handle bulk create successfully", async () => {
+      const inputData: CreateInput<"equipment">[] = [
         {
-          name: 'Equipment 1',
-          slug: 'equipment-1',
-          quality: 'green',
-          type: 'equipable',
+          name: "Equipment 1",
+          slug: "equipment-1",
+          quality: "green",
+          type: "equipable",
           sell_value: 100,
           guild_activity_points: 5,
         },
-      ]
+      ];
 
-      const mockCreatedData = {
-        ...inputData[0],
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
+      const mockCreatedData = createMockEquipment(inputData[0]);
 
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: mockCreatedData,
-        error: null,
-      })
-
-      const result = await repository.bulkCreate(inputData)
-
-      expect(result.data).toEqual([mockCreatedData])
-      expect(result.error).toBeNull()
-    })
-
-    it('should handle partial failures in bulk operations', async () => {
-      const inputData: CreateInput<'equipment'>[] = [
-        {
-          name: 'Equipment 1',
-          slug: 'equipment-1',
-          quality: 'green',
-          type: 'equipable',
-          sell_value: 100,
-          guild_activity_points: 5,
-        },
-        {
-          name: 'Equipment 2',
-          slug: 'equipment-2',
-          quality: 'blue',
-          type: 'fragment',
-          sell_value: 200,
-          guild_activity_points: 10,
-        },
-      ]
-
-      const mockSuccessData = {
-        ...inputData[0],
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
-
-      const mockError = {
-        message: 'Constraint violation',
-        code: '23505',
-        details: 'Duplicate key',
-      }
-
-      mockSupabaseClient.single
-        .mockResolvedValueOnce({
-          data: mockSuccessData,
-          error: null,
+      server.use(
+        http.post("*/rest/v1/equipment", () => {
+          return HttpResponse.json(mockCreatedData, { status: 201 });
         })
-        .mockResolvedValueOnce({
-          data: null,
-          error: mockError,
-        })
+      );
 
-      const result = await repository.bulkCreate(inputData)
+      const result = await repository.bulkCreate(inputData);
 
-      expect(result.data).toEqual([mockSuccessData])
-      expect(result.error).toBeDefined()
-      expect(result.error?.message).toContain('1 errors')
-      expect(result.error?.code).toBe('BULK_PARTIAL_FAILURE')
-    })
+      expect(result.data).toEqual([mockCreatedData]);
+      expect(result.error).toBeNull();
+    });
 
-    it('should call onProgress callback during bulk operations', async () => {
-      const inputData: CreateInput<'equipment'>[] = [
+    it("should call onProgress callback during bulk operations", async () => {
+      const inputData: CreateInput<"equipment">[] = [
         {
-          name: 'Equipment 1',
-          slug: 'equipment-1',
-          quality: 'green',
-          type: 'equipable',
+          name: "Equipment 1",
+          slug: "equipment-1",
+          quality: "green",
+          type: "equipable",
           sell_value: 100,
           guild_activity_points: 5,
         },
-      ]
+      ];
 
-      const mockCreatedData = {
-        ...inputData[0],
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
+      const mockCreatedData = createMockEquipment(inputData[0]);
 
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: mockCreatedData,
-        error: null,
-      })
+      server.use(
+        http.post("*/rest/v1/equipment", () => {
+          return HttpResponse.json(mockCreatedData, { status: 201 });
+        })
+      );
 
-      const progressCallback = vi.fn()
+      const progressCallback = vi.fn();
       const result = await repository.bulkCreate(inputData, {
         onProgress: progressCallback,
-      })
+      });
 
-      expect(progressCallback).toHaveBeenCalledWith(1, 1)
-      expect(result.data).toEqual([mockCreatedData])
-      expect(result.error).toBeNull()
-    })
-  })
+      expect(progressCallback).toHaveBeenCalledWith(1, 1);
+      expect(result.data).toEqual([mockCreatedData]);
+      expect(result.error).toBeNull();
+    });
+  });
 
-  describe('upsert', () => {
-    it('should upsert record successfully', async () => {
-      const inputData: CreateInput<'equipment'> = {
-        name: 'Test Equipment',
-        slug: 'test-equipment',
-        quality: 'green',
-        type: 'equipable',
+  describe("upsert", () => {
+    it("should upsert record successfully", async () => {
+      const inputData: CreateInput<"equipment"> = {
+        name: "Test Equipment",
+        slug: "test-equipment",
+        quality: "green",
+        type: "equipable",
         sell_value: 100,
         guild_activity_points: 5,
-      }
+      };
 
-      const mockUpsertedData = {
-        ...inputData,
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
+      const mockUpsertedData = createMockEquipment(inputData);
 
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: mockUpsertedData,
-        error: null,
-      })
+      server.use(
+        http.post("*/rest/v1/equipment", async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual(inputData);
 
-      const result = await repository.upsert(inputData)
+          return HttpResponse.json(mockUpsertedData, { status: 201 });
+        })
+      );
 
-      expect(mockSupabaseClient.from).toHaveBeenCalledWith('equipment')
-      expect(mockSupabaseClient.upsert).toHaveBeenCalledWith(inputData, {
-        onConflict: 'slug',
-        ignoreDuplicates: false,
-      })
-      expect(mockSupabaseClient.select).toHaveBeenCalled()
-      expect(mockSupabaseClient.single).toHaveBeenCalled()
-      expect(result.data).toEqual(mockUpsertedData)
-      expect(result.error).toBeNull()
-    })
+      const result = await repository.upsert(inputData);
 
-    it('should handle upsert validation errors', async () => {
+      expect(result.data).toEqual(mockUpsertedData);
+      expect(result.error).toBeNull();
+    });
+
+    it("should handle upsert validation errors", async () => {
       const invalidData = {
-        name: 'Test Equipment',
-        slug: 'test-equipment',
-        quality: 'invalid-quality',
-        type: 'equipable',
+        name: "Test Equipment",
+        slug: "test-equipment",
+        quality: "invalid-quality",
+        type: "equipable",
         sell_value: 100,
         guild_activity_points: 5,
-      } as unknown as CreateInput<'equipment'>
+      } as unknown as CreateInput<"equipment">;
 
-      const result = await repository.upsert(invalidData)
+      const result = await repository.upsert(invalidData);
 
-      expect(result.data).toBeNull()
-      expect(result.error).toBeDefined()
-      expect(result.error?.message).toBe('Validation failed')
-      expect(result.error?.code).toBe('VALIDATION_ERROR')
-    })
+      expect(result.data).toBeNull();
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toBe("Validation failed");
+      expect(result.error?.code).toBe("VALIDATION_ERROR");
+    });
+  });
 
-    it('should handle upsert database errors', async () => {
-      const inputData: CreateInput<'equipment'> = {
-        name: 'Test Equipment',
-        slug: 'test-equipment',
-        quality: 'green',
-        type: 'equipable',
-        sell_value: 100,
-        guild_activity_points: 5,
-      }
+  describe("protected methods", () => {
+    it("should build basic select clause", () => {
+      expect((repository as any).buildSelectClause()).toBe("*");
+    });
 
-      const mockError = {
-        message: 'Constraint violation',
-        code: '23505',
-        details: 'Duplicate key',
-      }
-
-      mockSupabaseClient.single.mockResolvedValueOnce({
-        data: null,
-        error: mockError,
-      })
-
-      const result = await repository.upsert(inputData)
-
-      expect(result.data).toBeNull()
-      expect(result.error).toEqual({
-        message: 'Unique constraint violation',
-        code: 'CONSTRAINT_VIOLATION',
-        details: 'Constraint violation',
-      })
-    })
-  })
-
-  describe('bulkUpsert', () => {
-    it('should handle bulk upsert successfully', async () => {
-      const inputData: CreateInput<'equipment'>[] = [
-        {
-          name: 'Equipment 1',
-          slug: 'equipment-1',
-          quality: 'green',
-          type: 'equipable',
-          sell_value: 100,
-          guild_activity_points: 5,
-        },
-        {
-          name: 'Equipment 2',
-          slug: 'equipment-2',
-          quality: 'blue',
-          type: 'fragment',
-          sell_value: 200,
-          guild_activity_points: 10,
-        },
-      ]
-
-      const mockUpsertedData = inputData.map(item => ({
-        ...item,
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }))
-
-      mockSupabaseClient.single
-        .mockResolvedValueOnce({
-          data: mockUpsertedData[0],
-          error: null,
-        })
-        .mockResolvedValueOnce({
-          data: mockUpsertedData[1],
-          error: null,
-        })
-
-      const result = await repository.bulkUpsert(inputData)
-
-      expect(result.data).toEqual(mockUpsertedData)
-      expect(result.error).toBeNull()
-    })
-
-    it('should handle partial failures in bulk upsert operations', async () => {
-      const inputData: CreateInput<'equipment'>[] = [
-        {
-          name: 'Equipment 1',
-          slug: 'equipment-1',
-          quality: 'green',
-          type: 'equipable',
-          sell_value: 100,
-          guild_activity_points: 5,
-        },
-        {
-          name: 'Equipment 2',
-          slug: 'equipment-2',
-          quality: 'blue',
-          type: 'fragment',
-          sell_value: 200,
-          guild_activity_points: 10,
-        },
-      ]
-
-      const mockSuccessData = {
-        ...inputData[0],
-        buy_value_coin: null,
-        buy_value_gold: null,
-        campaign_sources: null,
-        crafting_gold_cost: null,
-        hero_level_required: null,
-      }
-
-      const mockError = {
-        message: 'Permission denied',
-        code: '42501',
-        details: 'RLS violation',
-      }
-
-      mockSupabaseClient.single
-        .mockResolvedValueOnce({
-          data: mockSuccessData,
-          error: null,
-        })
-        .mockResolvedValueOnce({
-          data: null,
-          error: mockError,
-        })
-
-      const result = await repository.bulkUpsert(inputData)
-
-      expect(result.data).toEqual([mockSuccessData])
-      expect(result.error).toBeDefined()
-      expect(result.error?.message).toContain('1 errors')
-      expect(result.error?.code).toBe('BULK_PARTIAL_FAILURE')
-    })
-  })
-
-  describe('protected methods', () => {
-    it('should build basic select clause', () => {
-      expect((repository as any).buildSelectClause()).toBe('*')
-    })
-
-    it('should build select clause with includes', () => {
+    it("should build select clause with includes", () => {
       // Override getTableRelationships for this test
-      ;(repository as any).getTableRelationships = vi.fn().mockReturnValue({
+      (repository as any).getTableRelationships = vi.fn().mockReturnValue({
         equipment_stats: true,
         required_items: true,
-      })
-      
+      });
+
       const include = {
         equipment_stats: true,
         required_items: true,
-      }
-      const result = (repository as any).buildSelectClause(include)
-      expect(result).toContain('equipment_stats(*)')
-      expect(result).toContain('required_items(*)')
-    })
-  })
+      };
+      const result = (repository as any).buildSelectClause(include);
+      expect(result).toContain("equipment_stats(*)");
+      expect(result).toContain("required_items(*)");
+    });
+  });
 
-  describe('log capturing', () => {
-    it('should capture error logs instead of outputting to console', async () => {
+  describe("log capturing", () => {
+    it("should capture error logs instead of outputting to console", async () => {
       // Simulate a database error that would trigger log.error
-      const mockError = {
-        message: 'Database connection failed',
-        code: 'CONNECTION_ERROR',
-        details: 'Connection timeout',
-      }
+      server.use(
+        http.get("*/rest/v1/equipment", () => {
+          return HttpResponse.json(
+            {
+              code: "CONNECTION_ERROR",
+              message: "Database connection failed",
+              details: "Connection timeout",
+            },
+            { status: 500 }
+          );
+        })
+      );
 
-      mockSupabaseClient.select.mockResolvedValueOnce({
-        data: null,
-        error: mockError,
-      })
-
-      await repository.findAll()
+      await repository.findAll();
 
       // Verify that the error was captured in our log array
-      expect(capturedLogs).toHaveLength(1)
-      expect(capturedLogs[0].level).toBe('error')
-      expect(capturedLogs[0].message).toContain('Error finding all equipment')
-      expect(capturedLogs[0].args).toEqual([mockError])
-    })
-  })
-})
+      expect(capturedLogs).toHaveLength(1);
+      expect(capturedLogs[0].level).toBe("error");
+      expect(capturedLogs[0].message).toContain("Error finding all equipment");
+    });
+  });
+});

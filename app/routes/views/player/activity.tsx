@@ -1,9 +1,29 @@
 // ABOUTME: Player activity page displays chronological event history for hero collection changes
 // ABOUTME: Shows all user actions including hero additions, updates, and removals with timestamps
 import { Badge } from "~/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "~/components/ui/pagination";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "~/components/ui/pagination";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
 import { getAuthenticatedUser } from "~/lib/auth/utils";
@@ -19,8 +39,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
   // Parse pagination parameters from URL
   const url = new URL(request.url);
-  const pageParam = url.searchParams.get('page');
-  const limitParam = url.searchParams.get('limit');
+  const pageParam = url.searchParams.get("page");
+  const limitParam = url.searchParams.get("limit");
   const page = pageParam ? parseInt(pageParam, 10) : 1;
   const limit = limitParam ? parseInt(limitParam, 10) : 10;
   const offset = (page - 1) * limit;
@@ -29,7 +49,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   let totalCount = 0;
 
   if (user) {
-    const eventsResult = await playerEventRepo.findRecentEvents(user.id, limit, offset);
+    const eventsResult = await playerEventRepo.findRecentEvents(
+      user.id,
+      limit,
+      offset
+    );
     if (!eventsResult.error && eventsResult.data) {
       events = eventsResult.data;
     }
@@ -47,8 +71,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
       page,
       limit,
       totalCount,
-      totalPages: Math.ceil(totalCount / limit)
-    }
+      totalPages: Math.ceil(totalCount / limit),
+    },
   };
 };
 
@@ -57,7 +81,7 @@ export const action = async (_: Route.ActionArgs) => {
 };
 
 export const meta = (_: Route.MetaArgs) => {
-  return [{ title: formatTitle('Activity Log') }];
+  return [{ title: formatTitle("Activity Log") }];
 };
 
 export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
@@ -66,14 +90,14 @@ export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
 
   const formatEventType = (eventType: string) => {
     switch (eventType) {
-      case 'CLAIM_HERO':
-        return 'Claimed Hero';
-      case 'UNCLAIM_HERO':
-        return 'Unclaimed Hero';
-      case 'UPDATE_HERO_STARS':
-        return 'Updated Stars';
-      case 'UPDATE_HERO_EQUIPMENT':
-        return 'Updated Equipment';
+      case "CLAIM_HERO":
+        return "Claimed Hero";
+      case "UNCLAIM_HERO":
+        return "Unclaimed Hero";
+      case "UPDATE_HERO_STARS":
+        return "Updated Stars";
+      case "UPDATE_HERO_EQUIPMENT":
+        return "Updated Equipment";
       default:
         return eventType;
     }
@@ -81,16 +105,16 @@ export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
 
   const getEventTypeColor = (eventType: string) => {
     switch (eventType) {
-      case 'CLAIM_HERO':
-        return 'bg-green-100 text-green-800';
-      case 'UNCLAIM_HERO':
-        return 'bg-red-100 text-red-800';
-      case 'UPDATE_HERO_STARS':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'UPDATE_HERO_EQUIPMENT':
-        return 'bg-blue-100 text-blue-800';
+      case "CLAIM_HERO":
+        return "bg-green-100 text-green-800";
+      case "UNCLAIM_HERO":
+        return "bg-red-100 text-red-800";
+      case "UPDATE_HERO_STARS":
+        return "bg-yellow-100 text-yellow-800";
+      case "UPDATE_HERO_EQUIPMENT":
+        return "bg-blue-100 text-blue-800";
       default:
-        return 'bg-gray-100 text-gray-800';
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -101,9 +125,7 @@ export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
         <Card>
           <CardHeader>
             <CardTitle>Loading...</CardTitle>
-            <CardDescription>
-              Loading your activity history.
-            </CardDescription>
+            <CardDescription>Loading your activity history.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="animate-pulse space-y-4">
@@ -144,7 +166,8 @@ export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
         <CardHeader>
           <CardTitle>Activity Log ({pagination.totalCount})</CardTitle>
           <CardDescription>
-            Track all changes to your hero collection including additions, updates, and removals.
+            Track all changes to your hero collection including additions,
+            updates, and removals.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -161,9 +184,13 @@ export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
               {events.map((event) => (
                 <TableRow key={event.id}>
                   <TableCell className="font-medium">
-                    {event.created_at ? new Date(event.created_at).toLocaleDateString() : 'Unknown'}
+                    {event.created_at
+                      ? new Date(event.created_at).toLocaleDateString()
+                      : "Unknown"}
                     <div className="text-sm text-muted-foreground">
-                      {event.created_at ? new Date(event.created_at).toLocaleTimeString() : 'Unknown'}
+                      {event.created_at
+                        ? new Date(event.created_at).toLocaleTimeString()
+                        : "Unknown"}
                     </div>
                   </TableCell>
                   <TableCell>
@@ -173,7 +200,8 @@ export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
                   </TableCell>
                   <TableCell>{event.hero_slug}</TableCell>
                   <TableCell>
-                    {event.event_data && Object.keys(event.event_data).length > 0 ? (
+                    {event.event_data &&
+                    Object.keys(event.event_data).length > 0 ? (
                       <div className="text-sm text-muted-foreground">
                         {JSON.stringify(event.event_data)}
                       </div>
@@ -192,27 +220,38 @@ export default function PlayerActivity({ loaderData }: Route.ComponentProps) {
                 <PaginationContent>
                   {pagination.page > 1 && (
                     <PaginationItem>
-                      <PaginationPrevious href={`?page=${pagination.page - 1}&limit=${pagination.limit}`} />
+                      <PaginationPrevious
+                        href={`?page=${pagination.page - 1}&limit=${
+                          pagination.limit
+                        }`}
+                      />
                     </PaginationItem>
                   )}
 
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                    const pageNum = i + 1;
-                    return (
-                      <PaginationItem key={pageNum}>
-                        <PaginationLink
-                          href={`?page=${pageNum}&limit=${pagination.limit}`}
-                          isActive={pageNum === pagination.page}
-                        >
-                          {pageNum}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
+                  {Array.from(
+                    { length: Math.min(5, pagination.totalPages) },
+                    (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink
+                            href={`?page=${pageNum}&limit=${pagination.limit}`}
+                            isActive={pageNum === pagination.page}
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+                  )}
 
                   {pagination.page < pagination.totalPages && (
                     <PaginationItem>
-                      <PaginationNext href={`?page=${pagination.page + 1}&limit=${pagination.limit}`} />
+                      <PaginationNext
+                        href={`?page=${pagination.page + 1}&limit=${
+                          pagination.limit
+                        }`}
+                      />
                     </PaginationItem>
                   )}
                 </PaginationContent>

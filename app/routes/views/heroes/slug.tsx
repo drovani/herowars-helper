@@ -1,10 +1,10 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useEffect, Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import {
-  Link,
-  useNavigate,
-  useFetcher,
   Await,
+  Link,
+  useFetcher,
+  useNavigate,
   type UIMatch,
 } from "react-router";
 import invariant from "tiny-invariant";
@@ -15,23 +15,23 @@ import HeroItems from "~/components/hero/HeroItems";
 import HeroSkins from "~/components/hero/HeroSkins";
 import HeroStoneSources from "~/components/hero/HeroStoneSources";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
+import { HeroDetailSkeleton } from "~/components/skeletons/HeroDetailSkeleton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { useAuth } from "~/contexts/AuthContext";
-import { HeroDetailSkeleton } from "~/components/skeletons/HeroDetailSkeleton";
-import { MissionRepository } from "~/repositories/MissionRepository";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
-import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import {
-  transformCompleteHeroToRecord,
-  transformBasicHeroToRecord,
-  sortHeroRecords,
-} from "~/lib/hero-transformations";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
+import {
+  sortHeroRecords,
+  transformBasicHeroToRecord,
+  transformCompleteHeroToRecord,
+} from "~/lib/hero-transformations";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { MissionRepository } from "~/repositories/MissionRepository";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -128,6 +128,7 @@ async function loadDetailedHeroData(
       equipmentSlugs.push(...itemSlugs);
     }
   }
+
   const equipmentRepo = new EquipmentRepository(request);
   const equipmentUsedResult = await equipmentRepo.getAllAsJson();
 

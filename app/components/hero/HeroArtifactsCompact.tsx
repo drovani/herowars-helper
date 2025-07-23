@@ -1,5 +1,9 @@
 import type { ClassValue } from "clsx";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "~/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "~/components/ui/hover-card";
 import type { HeroRecord } from "~/data/hero.zod";
 import { ArtifactBookStats, HeroMainStat } from "~/data/ReadonlyArrays";
 import { cn, generateSlug } from "~/lib/utils";
@@ -30,7 +34,12 @@ function HeroArtifactMini({
             {artifactStats
               .filter((stat) => stat != null)
               .map((stat) => (
-                <img key={stat} src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="size-6" />
+                <img
+                  key={stat}
+                  src={`/images/stats/${generateSlug(stat)}.png`}
+                  alt={stat}
+                  className="size-6"
+                />
               ))}
           </div>
         </div>
@@ -48,7 +57,11 @@ function HeroArtifactMini({
               .filter((stat) => stat != null)
               .map((stat) => (
                 <div key={stat} className="capitalize flex gap-1">
-                  <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />
+                  <img
+                    src={`/images/stats/${generateSlug(stat)}.png`}
+                    alt={stat}
+                    className="w-6 h-6"
+                  />
                   {stat}
                 </div>
               ))}
@@ -59,17 +72,30 @@ function HeroArtifactMini({
   );
 }
 
-export default function HeroArtifactsCompact({ artifacts, main_stat, className }: HeroArtifactsProps) {
+export default function HeroArtifactsCompact({
+  artifacts,
+  main_stat,
+  className,
+}: HeroArtifactsProps) {
   if (artifacts === undefined) return <div className={cn(className)} />;
 
   return (
     <div className={cn("flex flex-col justify-between", className)}>
       <HeroArtifactMini
         artifactName={artifacts.weapon.name}
-        artifactStats={[artifacts.weapon.team_buff, artifacts.weapon.team_buff_secondary]}
+        artifactStats={[
+          artifacts.weapon.team_buff,
+          artifacts.weapon.team_buff_secondary,
+        ]}
       />
-      <HeroArtifactMini artifactName={artifacts.book} artifactStats={ArtifactBookStats[artifacts.book]} />
-      <HeroArtifactMini artifactName={`Ring of ${main_stat}`} artifactStats={[main_stat]} />
+      <HeroArtifactMini
+        artifactName={artifacts.book}
+        artifactStats={ArtifactBookStats[artifacts.book]}
+      />
+      <HeroArtifactMini
+        artifactName={`Ring of ${main_stat}`}
+        artifactStats={[main_stat]}
+      />
     </div>
   );
 }

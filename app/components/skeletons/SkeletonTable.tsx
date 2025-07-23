@@ -2,7 +2,14 @@
 // ABOUTME: Supports table headers, data cells, and action columns for comprehensive table loading states
 
 import { Skeleton } from "~/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
 import { cn } from "~/lib/utils";
 
 interface SkeletonTableProps {
@@ -14,13 +21,13 @@ interface SkeletonTableProps {
   actionColumn?: boolean;
 }
 
-export function SkeletonTable({ 
+export function SkeletonTable({
   className,
   rows = 5,
   columns = 4,
   showHeader = true,
   headerTitles,
-  actionColumn = false
+  actionColumn = false,
 }: SkeletonTableProps) {
   const totalColumns = actionColumn ? columns + 1 : columns;
 
@@ -47,12 +54,12 @@ export function SkeletonTable({
             <TableRow key={rowIndex}>
               {Array.from({ length: columns }).map((_, colIndex) => (
                 <TableCell key={colIndex}>
-                  <Skeleton className={cn(
-                    "h-4",
-                    colIndex === 0 ? "w-24" : 
-                    colIndex === 1 ? "w-32" :
-                    "w-16"
-                  )} />
+                  <Skeleton
+                    className={cn(
+                      "h-4",
+                      colIndex === 0 ? "w-24" : colIndex === 1 ? "w-32" : "w-16"
+                    )}
+                  />
                 </TableCell>
               ))}
               {actionColumn && (

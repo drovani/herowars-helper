@@ -14,13 +14,13 @@ interface SkeletonDetailProps {
   layout?: "single" | "two-column";
 }
 
-export function SkeletonDetail({ 
+export function SkeletonDetail({
   className,
   showBreadcrumbs = true,
   showImage = true,
   contentSections = 3,
   sectionTitles,
-  layout = "single"
+  layout = "single",
 }: SkeletonDetailProps) {
   const renderContentSection = (index: number) => (
     <Card key={index} className="w-full">
@@ -62,17 +62,25 @@ export function SkeletonDetail({
         </div>
       )}
 
-      <div className={cn(
-        "gap-6",
-        layout === "two-column" ? "grid grid-cols-1 lg:grid-cols-2" : "space-y-6"
-      )}>
+      <div
+        className={cn(
+          "gap-6",
+          layout === "two-column"
+            ? "grid grid-cols-1 lg:grid-cols-2"
+            : "space-y-6"
+        )}
+      >
         {/* Header Section */}
         <Card className="w-full">
           <CardContent className="p-6">
-            <div className={cn(
-              "gap-4",
-              showImage ? "flex flex-col sm:flex-row items-start" : "space-y-4"
-            )}>
+            <div
+              className={cn(
+                "gap-4",
+                showImage
+                  ? "flex flex-col sm:flex-row items-start"
+                  : "space-y-4"
+              )}
+            >
               {showImage && (
                 <Skeleton className="size-32 rounded-lg flex-shrink-0" />
               )}
@@ -91,7 +99,7 @@ export function SkeletonDetail({
 
         {/* Content Sections */}
         <div className="space-y-6">
-          {Array.from({ length: contentSections }).map((_, index) => 
+          {Array.from({ length: contentSections }).map((_, index) =>
             renderContentSection(index)
           )}
         </div>

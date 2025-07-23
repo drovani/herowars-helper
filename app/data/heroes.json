@@ -1,2281 +1,1850 @@
 [
-    {
-        "name": "Aidan",
-        "class": "healer",
-        "faction": "chaos",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 62,
-        "slug": "aidan",
-        "artifacts": {
-            "weapon": {
-                "name": "Phoenix Seal",
-                "team_buff": "magic defense"
-            },
-            "book": "Tome of Arcane Knowledge",
-            "ring": null
-        },
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "intelligence",
-                "has_plus": false
-            },
-            {
-                "name": "Solar Skin",
-                "stat": "magic attack",
-                "has_plus": false
-            },
-            {
-                "name": "Celestial Skin",
-                "stat": "health",
-                "has_plus": false
-            }
-        ],
-        "glyphs": [
-            "magic attack",
-            "armor",
-            "magic defense",
-            "health",
-            "intelligence"
-        ],
-        "updated_on": "2025-01-27T22:00:36.876Z",
-        "items": {
-            "white": [
-                "wooden-shield",
-                "steel-pauldron",
-                "apprentices-mantle",
-                "oil-lamp",
-                "travellers-staff",
-                "lucky-dice"
-            ],
-            "green": [
-                "apprentices-mantle",
-                "lucky-dice",
-                "travellers-staff",
-                "censer",
-                "lost-ring",
-                "elven-bow"
-            ],
-            "green+1": [
-                "wooden-shield",
-                "censer",
-                "lost-ring",
-                "soul-catcher",
-                "victors-helmet",
-                "soul-catcher"
-            ]
-        }
-    },
-    {
-        "name": "Alvanor",
-        "class": "support",
-        "faction": "nature",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Special Events",
-            "Dungeon Shop"
-        ],
-        "order_rank": 23,
-        "slug": "alvanor",
-        "artifacts": {
-            "weapon": {
-                "name": "Soul of the Forest",
-                "team_buff": "magic attack"
-            },
-            "book": "Manuscript of the Void",
-            "ring": null
-        },
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "intelligence",
-                "has_plus": false
-            },
-            {
-                "name": "Spring Skin",
-                "stat": "magic attack",
-                "has_plus": false
-            },
-            {
-                "name": "Lunar Skin",
-                "stat": "armor",
-                "has_plus": false
-            },
-            {
-                "name": "Winter Skin",
-                "stat": "health",
-                "has_plus": false
-            },
-            {
-                "name": "Dark Depths Skin",
-                "stat": "magic penetration",
-                "has_plus": true
-            }
-        ],
-        "glyphs": [
-            "magic attack",
-            "health",
-            "magic penetration",
-            "magic defense",
-            "intelligence"
-        ],
-        "updated_on": "2025-01-22T21:06:53.594Z"
-    },
-    {
-        "name": "Amira",
-        "class": "support",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 43,
-        "slug": "amira",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Andvari",
-        "class": "control",
-        "faction": "mystery",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 17,
-        "slug": "andvari",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Arachne",
-        "class": "control",
-        "faction": "progress",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Heroic Chest"
-        ],
-        "order_rank": 25,
-        "slug": "arachne",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Artemis",
-        "class": "marksman",
-        "faction": "honor",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 59,
-        "slug": "artemis",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Astaroth",
-        "slug": "astaroth",
-        "class": "tank",
-        "faction": "chaos",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 9,
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "strength",
-                "has_plus": false
-            },
-            {
-                "name": "Demonic Skin",
-                "stat": "magic attack",
-                "has_plus": false
-            },
-            {
-                "name": "Barbarian Skin",
-                "stat": "armor",
-                "has_plus": false
-            },
-            {
-                "name": "Lunar Skin",
-                "stat": "magic defense",
-                "has_plus": false
-            },
-            {
-                "name": "Cybernetic Skin",
-                "stat": "health",
-                "has_plus": false
-            },
-            {
-                "name": "Thunder Skin",
-                "stat": "health",
-                "has_plus": true
-            }
-        ],
-        "items": {
-            "white": [
-                "wooden-shield",
-                "giants-belt",
-                "apprentices-mantle",
-                "steel-pauldron",
-                "lucky-dice",
-                "imperial-shield"
-            ],
-            "green": [
-                "imperial-shield",
-                "orcish-yatagan",
-                "sledgehammer",
-                "orcish-hammer",
-                "cuirass",
-                "cains-seal"
-            ],
-            "green+1": [
-                "orcish-hammer",
-                "orcish-yatagan",
-                "cuirass",
-                "cains-seal",
-                "shining-armor",
-                "traitors-shield"
-            ],
-            "blue": [
-                "guardians-shield",
-                "shining-armor",
-                "voodoo-doll",
-                "brothers",
-                "serenity-stone",
-                "enchanted-lute"
-            ],
-            "blue+1": [
-                "lost-ring",
-                "wall-breaker",
-                "brothers",
-                "wyverns-heart",
-                "serenity-stone",
-                "dark-grail"
-            ],
-            "blue+2": [
-                "elven-armor",
-                "voodoo-doll",
-                "serenity-stone",
-                "enchanted-lute",
-                "prosperos-helmet",
-                "prince-of-thieves-armor"
-            ],
-            "violet": [
-                "raven-kings-cloak",
-                "prosperos-helmet",
-                "storm-hammer",
-                "lion-armor",
-                "dragon-shield",
-                "sirens-song"
-            ],
-            "violet+1": [
-                "raven-kings-cloak",
-                "elven-shield",
-                "sages-crown",
-                "storm-hammer",
-                "executioners-sword",
-                "talisman"
-            ],
-            "violet+2": [
-                "book-of-tales",
-                "raven-kings-cloak",
-                "lion-armor",
-                "talisman",
-                "executioners-sword",
-                "world-tremor"
-            ],
-            "violet+3": [
-                "prince-of-thieves-armor",
-                "sages-crown",
-                "talisman",
-                "book-of-tales",
-                "book-of-prophecies",
-                "cosmic-tremor"
-            ],
-            "orange": [
-                "talisman",
-                "executioners-sword",
-                "book-of-tales",
-                "cosmic-tremor",
-                "harunian-helm",
-                "citadel-guardian"
-            ],
-            "orange+1": [
-                "trine",
-                "governor",
-                "book-of-prophecies",
-                "harunian-helm",
-                "citadel-guardian",
-                "asklepius-staff"
-            ],
-            "orange+2": [
-                "lion-helmet",
-                "cosmic-tremor",
-                "alchemists-set",
-                "citadel-guardian",
-                "asklepius-staff",
-                "radiant-armor"
-            ],
-            "orange+3": [
-                "all-seer",
-                "lion-helmet",
-                "asklepius-staff",
-                "sphere-of-power",
-                "oracles-censer",
-                "oppressors-crown"
-            ],
-            "orange+4": [
-                "flaming-heart",
-                "giant-slayer",
-                "asklepius-staff",
-                "sphere-of-power",
-                "oppressors-crown",
-                "evil-genius-cuirass"
-            ]
-        },
-        "glyphs": [
-            "magic attack",
-            "armor",
-            "health",
-            "magic defense",
-            "strength"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Scythe of Redemption",
-                "team_buff": "armor"
-            },
-            "book": "Defender's Covenant",
-            "ring": null
-        },
-        "updated_on": "2025-01-22T21:23:13.672Z"
-    },
-    {
-        "name": "Astrid and Lucas",
-        "class": "marksman",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Arena Shop",
-            "Heroic Chest"
-        ],
-        "order_rank": 53,
-        "slug": "astrid-and-lucas",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Aurora",
-        "updated_on": "2024-09-10T17:16:56.000Z",
-        "slug": "aurora",
-        "class": "tank",
-        "faction": "nature",
-        "main_stat": "strength",
-        "attack_type": [
-            "magic"
-        ],
-        "stone_source": [
-            "Campaign"
-        ],
-        "order_rank": 2,
-        "artifacts": {
-            "weapon": {
-                "name": "Selias' Legacy",
-                "team_buff": "dodge"
-            },
-            "book": "Book of Illusions",
-            "ring": null
-        },
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "strength",
-                "source": "Default"
-            },
-            {
-                "name": "Nordic Skin",
-                "stat": "dodge"
-            },
-            {
-                "name": "Spring Skin",
-                "stat": "health"
-            },
-            {
-                "name": "Demonic Skin",
-                "stat": "armor"
-            },
-            {
-                "name": "Romantic Skin",
-                "stat": "magic penetration"
-            },
-            {
-                "name": "Thunder Skin",
-                "stat": "health"
-            }
-        ],
-        "items": {
-            "white": [
-                "orcish-knuckles",
-                "apprentices-mantle",
-                "giants-belt",
-                "wooden-shield",
-                "imperial-shield",
-                "oil-lamp"
-            ],
-            "green": [
-                "wooden-shield",
-                "apprentices-mantle",
-                "sledgehammer",
-                "orcish-hammer",
-                "fire-sword",
-                "cuirass"
-            ],
-            "green+1": [
-                "imperial-shield",
-                "wizards-staff",
-                "cuirass",
-                "cains-seal",
-                "screaming-blade",
-                "soul-catcher"
-            ],
-            "blue": [
-                "midnight-crystal",
-                "wall-breaker",
-                "soul-catcher",
-                "silent-guardian",
-                "sacred-rosary",
-                "enchanted-lute"
-            ],
-            "blue+1": [
-                "midnight-crystal",
-                "wall-breaker",
-                "soul-catcher",
-                "wyverns-heart",
-                "portal-gem",
-                "voodoo-staff"
-            ],
-            "blue+2": [
-                "poleaxe",
-                "voodoo-doll",
-                "wyverns-heart",
-                "portal-gem",
-                "voodoo-staff",
-                "hand-of-midas"
-            ],
-            "violet": [
-                "wyverns-heart",
-                "portal-gem",
-                "voodoo-staff",
-                "globus-cruciger",
-                "pastors-seal",
-                "minotaurs-head"
-            ],
-            "violet+1": [
-                "enchanted-lute",
-                "branch-of-the-world-tree",
-                "prince-of-thieves-armor",
-                "flaming-heart",
-                "funeral-totem",
-                "book-of-tales"
-            ],
-            "violet+2": [
-                "voodoo-staff",
-                "voodoo-staff",
-                "hand-of-midas",
-                "primordial-word",
-                "trine",
-                "book-of-prophecies"
-            ],
-            "violet+3": [
-                "voodoo-staff",
-                "globus-cruciger",
-                "primordial-word",
-                "elephant-guard",
-                "book-of-prophecies",
-                "cosmic-tremor"
-            ],
-            "orange": [
-                "trine",
-                "all-seer",
-                "executioners-sword",
-                "book-of-prophecies",
-                "harunian-helm",
-                "enchanted-chain"
-            ],
-            "orange+1": [
-                "elephant-guard",
-                "trine",
-                "book-of-prophecies",
-                "harunian-helm",
-                "thieves-guild-sign",
-                "staff-of-neutralization"
-            ],
-            "orange+2": [
-                "talisman",
-                "executioners-sword",
-                "enchanted-chain",
-                "la-morts-map",
-                "tricksters-cane",
-                "radiant-armor"
-            ],
-            "orange+3": [
-                "talisman",
-                "executioners-sword",
-                "enchanted-chain",
-                "tricksters-cane",
-                "oracles-censer",
-                "oppressors-crown"
-            ],
-            "orange+4": [
-                "executioners-sword",
-                "apostles-mace",
-                "tricksters-cane",
-                "staff-of-neutralization",
-                "oppressors-crown",
-                "evil-genius-cuirass"
-            ]
-        },
-        "glyphs": [
-            "magic attack",
-            "health",
-            "magic penetration",
-            "dodge",
-            "strength"
-        ]
-    },
-    {
-        "name": "Cascade",
-        "class": "marksman",
-        "faction": "mystery",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 46,
-        "slug": "cascade",
-        "artifact_team_buff": [
-            "magic penetration",
-            "armor penetration"
-        ],
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Celeste",
-        "class": "support",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Heroic Chest"
-        ],
-        "order_rank": 32,
-        "slug": "celeste",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Chabba",
-        "slug": "chabba",
-        "class": "tank",
-        "faction": "nature",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "stone_source": [
-            "Arena Shop"
-        ],
-        "order_rank": 1,
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "strength",
-                "has_plus": false
-            },
-            {
-                "name": "Demonic Skin",
-                "stat": "physical attack",
-                "has_plus": false
-            },
-            {
-                "name": "Winter Skin",
-                "stat": "armor",
-                "has_plus": false
-            },
-            {
-                "name": "Masquerade Skin",
-                "stat": "health",
-                "has_plus": false
-            },
-            {
-                "name": "Lunar Skin",
-                "stat": "magic defense",
-                "has_plus": false
-            },
-            {
-                "name": "Romantic Skin",
-                "stat": "health",
-                "has_plus": true
-            }
-        ],
-        "items": {
-            "white": [
-                "orcish-knuckles",
-                "wooden-shield",
-                "travellers-shoes",
-                "steel-pauldron",
-                "lucky-dice",
-                "dagger"
-            ],
-            "green": [
-                "imperial-shield",
-                "orcish-yatagan",
-                "sledgehammer",
-                "orcish-hammer",
-                "fire-sword",
-                "cains-seal"
-            ],
-            "green+1": [
-                "orcish-hammer",
-                "orcish-hammer",
-                "fire-sword",
-                "cains-seal",
-                "wall-breaker",
-                "guardians-shield"
-            ],
-            "blue": [
-                "branch-of-antiaris",
-                "wall-breaker",
-                "screaming-blade",
-                "brothers",
-                "wyverns-heart",
-                "enchanted-lute"
-            ],
-            "blue+1": [
-                "branch-of-antiaris",
-                "shining-armor",
-                "wall-breaker",
-                "needle",
-                "enchanted-lute",
-                "trackers-shield"
-            ],
-            "blue+2": [
-                "branch-of-antiaris",
-                "shining-armor",
-                "wyverns-heart",
-                "needle",
-                "thunderfoot-boots",
-                "prince-of-thieves-armor"
-            ],
-            "violet": [
-                "storm-hammer",
-                "dark-grail",
-                "thunderfoot-boots",
-                "hand-of-midas",
-                "giant-slayer",
-                "minotaurs-head"
-            ],
-            "violet+1": [
-                "sirens-song",
-                "thunderfoot-boots",
-                "hand-of-midas",
-                "prince-of-thieves-armor",
-                "giant-slayer",
-                "lion-helmet"
-            ],
-            "violet+2": [
-                "dark-grail",
-                "trackers-shield",
-                "trackers-shield",
-                "hand-of-midas",
-                "world-tremor",
-                "angels-mace"
-            ],
-            "violet+3": [
-                "prince-of-thieves-armor",
-                "trackers-shield",
-                "world-tremor",
-                "flaming-heart",
-                "lion-helmet",
-                "archangels-mace"
-            ],
-            "orange": [
-                "executioners-sword",
-                "lion-helmet",
-                "world-tremor",
-                "angels-mace",
-                "alchemists-set",
-                "harunian-helm"
-            ],
-            "orange+1": [
-                "flaming-heart",
-                "executioners-sword",
-                "angels-mace",
-                "harunian-helm",
-                "riversars-tiara",
-                "alucards-amulet"
-            ],
-            "orange+2": [
-                "trine",
-                "governor",
-                "alchemists-set",
-                "asklepius-staff",
-                "asklepius-staff",
-                "shining-armor"
-            ],
-            "orange+3": [
-                "lion-helmet",
-                "archangels-mace",
-                "alucards-amulet",
-                "asklepius-staff",
-                "lycanthropes-fang",
-                "unity-of-extremes"
-            ],
-            "orange+4": [
-                "angels-mace",
-                "archangels-mace",
-                "alucards-amulet",
-                "asklepius-staff",
-                "alucards-amulet",
-                "evil-genius-cuirass"
-            ]
-        },
-        "glyphs": [
-            "physical attack",
-            "armor",
-            "magic defense",
-            "health",
-            "strength"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Bracers of Hunger",
-                "team_buff": "armor"
-            },
-            "book": "Defender's Covenant",
-            "ring": null
-        },
-        "updated_on": "2025-01-06T20:45:00.000Z"
-    },
-    {
-        "name": "Cleaver",
-        "class": "tank",
-        "faction": "chaos",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Heroic Chest"
-        ],
-        "order_rank": 3,
-        "slug": "cleaver",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Cornelius",
-        "class": "mage",
-        "faction": "honor",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Highwayman Shop"
-        ],
-        "order_rank": 54,
-        "slug": "cornelius",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Corvus",
-        "class": "tank",
-        "faction": "eternity",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Special Events",
-            "Dungeon Shop"
-        ],
-        "order_rank": 5,
-        "slug": "corvus",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Dante",
-        "class": "marksman",
-        "faction": "eternity",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Spear of Fate",
-                "team_buff": "dodge"
-            },
-            "book": "Book of Illusions",
-            "ring": null
-        },
-        "stone_source": [
-            "Tower Shop"
-        ],
-        "order_rank": 26,
-        "slug": "dante",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Daredevil",
-        "class": "marksman",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 48,
-        "slug": "daredevil",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Dark Star",
-        "class": "marksman",
-        "faction": "nature",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Arena Shop"
-        ],
-        "order_rank": 51,
-        "slug": "dark-star",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Dorian",
-        "class": "healer",
-        "faction": "chaos",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Town Shop",
-            "Heroic Chest"
-        ],
-        "order_rank": 60,
-        "slug": "dorian",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Elmir",
-        "class": "warrior",
-        "faction": "nature",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor penetration"
-        ],
-        "stone_source": [
-            "Outland Shop"
-        ],
-        "order_rank": 16,
-        "slug": "elmir",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Faceless",
-        "class": "control",
-        "faction": "eternity",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic penetration"
-        ],
-        "stone_source": [
-            "Highwayman Shop"
-        ],
-        "order_rank": 55,
-        "slug": "faceless",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Fafnir",
-        "class": "support",
-        "faction": "honor",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 65,
-        "slug": "fafnir",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Folio",
-        "class": "mage",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 44,
-        "slug": "folio",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Fox",
-        "class": "marksman",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor penetration"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 56,
-        "slug": "fox",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Galahad",
-        "slug": "galahad",
-        "class": "warrior",
-        "faction": "honor",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "strength",
-                "has_plus": false
-            },
-            {
-                "name": "Angel Skin",
-                "stat": "physical attack",
-                "has_plus": false
-            },
-            {
-                "name": "Champion's Skin",
-                "stat": "health",
-                "has_plus": false
-            },
-            {
-                "name": "Romantic Skin",
-                "stat": "armor",
-                "has_plus": false
-            },
-            {
-                "name": "Celestial Skin",
-                "stat": "magic defense",
-                "has_plus": false
-            },
-            {
-                "name": "Thunder Skin",
-                "stat": "physical attack",
-                "has_plus": false
-            }
-        ],
-        "items": {
-            "white": [
-                "orcish-knuckles",
-                "wooden-shield",
-                "steel-pauldron",
-                "lucky-dice",
-                "orcish-yatagan",
-                "dagger"
-            ],
-            "green": [
-                "imperial-shield",
-                "lucky-dice",
-                "sledgehammer",
-                "orcish-hammer",
-                "cuirass",
-                "fire-sword"
-            ],
-            "green+1": [
-                "sledgehammer",
-                "orcish-hammer",
-                "cains-seal",
-                "fire-sword",
-                "poleaxe",
-                "shining-armor"
-            ],
-            "blue": [
-                "branch-of-antiaris",
-                "screaming-blade",
-                "elven-armor",
-                "traitors-shield",
-                "needle",
-                "serenity-stone"
-            ],
-            "blue+1": [
-                "wall-breaker",
-                "shining-armor",
-                "poleaxe",
-                "needle",
-                "serenity-stone",
-                "sacrificial-dagger"
-            ],
-            "blue+2": [
-                "screaming-blade",
-                "poleaxe",
-                "needle",
-                "thunderfoot-boots",
-                "sacrificial-dagger",
-                "hand-of-midas"
-            ],
-            "violet": [
-                "storm-hammer",
-                "dark-grail",
-                "sacrificial-dagger",
-                "prince-of-thieves-armor",
-                "giant-slayer",
-                "dragon-shield"
-            ],
-            "violet+1": [
-                "dragonslayers-spear",
-                "sacrificial-dagger",
-                "prince-of-thieves-armor",
-                "dragon-shield",
-                "flaming-heart",
-                "lion-helmet"
-            ],
-            "violet+2": [
-                "sacrificial-dagger",
-                "prince-of-thieves-armor",
-                "flaming-heart",
-                "apostles-mace",
-                "executioners-sword",
-                "world-tremor"
-            ],
-            "violet+3": [
-                "hand-of-midas",
-                "apostles-mace",
-                "executioners-sword",
-                "wasp",
-                "world-tremor",
-                "cosmic-tremor"
-            ],
-            "orange": [
-                "lion-helmet",
-                "executioners-sword",
-                "apostles-mace",
-                "cosmic-tremor",
-                "harunian-helm",
-                "lycanthropes-fang"
-            ],
-            "orange+1": [
-                "governor",
-                "wasp",
-                "cosmic-tremor",
-                "harunian-helm",
-                "lycanthropes-fang",
-                "blued-plate-armor"
-            ],
-            "orange+2": [
-                "executioners-sword",
-                "lion-helmet",
-                "harunian-helm",
-                "citadel-guardian",
-                "alucards-amulet",
-                "shining-armor"
-            ],
-            "orange+3": [
-                "world-tremor",
-                "executioners-sword",
-                "riversars-tiara",
-                "blued-plate-armor",
-                "rulers-globus",
-                "unity-of-extremes"
-            ],
-            "orange+4": [
-                "executioners-sword",
-                "angels-mace",
-                "alchemists-set",
-                "blued-plate-armor",
-                "unity-of-extremes",
-                "evil-genius-cuirass"
-            ]
-        },
-        "glyphs": [
-            "physical attack",
-            "armor",
-            "health",
-            "magic defense",
-            "strength"
-        ],
-        "order_rank": 10,
-        "updated_on": "2025-01-06T22:30:00.000Z",
-        "artifacts": {
-            "weapon": {
-                "name": "Harunian Sword",
-                "team_buff": "physical attack"
-            },
-            "book": "Defender's Covenant",
-            "ring": null
-        }
-    },
-    {
-        "name": "Ginger",
-        "class": "marksman",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 49,
-        "slug": "ginger",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Heidi",
-        "class": "mage",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "dodge"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 38,
-        "slug": "heidi",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Helios",
-        "class": "support",
-        "faction": "honor",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 66,
-        "slug": "helios",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Iris",
-        "class": "mage",
-        "faction": "eternity",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Tome of Enslaved Souls",
-                "team_buff": "magic attack"
-            },
-            "book": "Tome of Arcane Knowledge",
-            "ring": null
-        },
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 41,
-        "slug": "iris",
-        "glyphs": [
-            "magic attack",
-            "health",
-            "magic penetration",
-            "magic defense",
-            "intelligence"
-        ],
-        "updated_on": "2025-01-23T21:41:54.500Z",
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "armor penetration",
-                "has_plus": false
-            }
-        ]
-    },
-    {
-        "name": "Isaac",
-        "class": "marksman",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 45,
-        "slug": "isaac",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "updated_on": "2024-09-10T17:16:56.000Z",
-        "name": "Ishmael",
-        "class": "warrior",
-        "faction": "honor",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Hidden Demon's Katars",
-                "team_buff": "crit hit chance"
-            },
-            "book": "Alchemist's Folio",
-            "ring": null
-        },
-        "stone_source": [
-            "Grand Arena Shop"
-        ],
-        "order_rank": 13,
-        "slug": "ishmael"
-    },
-    {
-        "name": "Jet",
-        "class": "support",
-        "faction": "progress",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Soul Shop"
-        ],
-        "order_rank": 63,
-        "slug": "jet",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Jhu",
-        "class": "marksman",
-        "faction": "nature",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Zarakkar Bones",
-                "team_buff": "crit hit chance"
-            },
-            "book": "Warrior's Code",
-            "ring": null
-        },
-        "stone_source": [
-            "Guild War Shop"
-        ],
-        "order_rank": 34,
-        "slug": "jhu",
-        "updated_on": "2025-01-27T22:19:22.780Z",
-        "skins": [
-            {
-                "name": "Default Skin",
-                "stat": "strength",
-                "has_plus": false
-            },
-            {
-                "name": "Winter Skin",
-                "stat": "armor penetration",
-                "has_plus": false
-            },
-            {
-                "name": "Champion's Skin",
-                "stat": "magic defense",
-                "has_plus": false
-            },
-            {
-                "name": "Solar Skin",
-                "stat": "crit hit chance",
-                "has_plus": false
-            },
-            {
-                "name": "Masquerade Skin",
-                "stat": "physical attack",
-                "has_plus": false
-            }
-        ],
-        "glyphs": [
-            "physical attack",
-            "health",
-            "armor penetration",
-            "crit hit chance",
-            "strength"
-        ],
-        "items": {
-            "white": [
-                "orcish-knuckles",
-                "steel-pauldron",
-                "dagger",
-                "orcish-yatagan",
-                "wooden-shield",
-                "lucky-dice"
-            ],
-            "green": [
-                "guardians-shield",
-                "orcish-hammer",
-                "dagger",
-                "fire-sword",
-                "orcish-yatagan",
-                "orcish-yatagan"
-            ],
-            "green+1": [
-                "orcish-yatagan",
-                "fire-sword",
-                "screaming-blade",
-                "cuirass",
-                "poleaxe",
-                "orcish-hammer"
-            ],
-            "blue": [
-                "guardians-shield",
-                "infernal-messenger",
-                "cains-seal",
-                "needle",
-                "spear-of-thunder",
-                "wall-breaker"
-            ],
-            "blue+1": [
-                "wall-breaker",
-                "needle",
-                "brothers",
-                "serenity-stone",
-                "infernal-messenger",
-                "hunter"
-            ],
-            "blue+2": [
-                "reaper",
-                "hunter",
-                "poleaxe",
-                "thunderfoot-boots",
-                "needle",
-                "hand-of-midas"
-            ],
-            "violet": [
-                "storm-hammer",
-                "prince-of-thieves-armor",
-                "hunter",
-                "giant-slayer",
-                "punishing-hand",
-                "dragon-shield"
-            ],
-            "violet+1": [
-                "giant-slayer",
-                "advisor",
-                "thunderfoot-boots",
-                "dragon-tooth",
-                "prince-of-thieves-armor",
-                "lion-helmet"
-            ],
-            "violet+2": [
-                "governor",
-                "executioners-sword",
-                "sirens-song",
-                "lion-helmet",
-                "dragon-tooth",
-                "world-tremor"
-            ],
-            "violet+3": [
-                "dragon-tooth",
-                "blade-bow",
-                "sirens-song",
-                "apostles-mace",
-                "executioners-sword",
-                "cosmic-tremor"
-            ],
-            "orange": [
-                "lion-helmet",
-                "cosmic-tremor",
-                "governor",
-                "gro-bulgors-poleaxe",
-                "executioners-sword",
-                "hellion-harpoon"
-            ],
-            "orange+1": [
-                "governor",
-                "gro-bulgors-poleaxe",
-                "lion-helmet",
-                "hellion-harpoon",
-                "cosmic-tremor",
-                "blade-of-the-immortals"
-            ],
-            "orange+2": [
-                "executioners-sword",
-                "hellion-harpoon",
-                "executioners-sword",
-                "aquants-trident",
-                "gro-bulgors-poleaxe",
-                "radiant-armor"
-            ],
-            "orange+3": [
-                "governor",
-                "harunian-helm",
-                "world-tremor",
-                "rulers-globus",
-                "harunian-helm",
-                "staff-of-stubbornness"
-            ],
-            "orange+4": [
-                "world-tremor",
-                "blade-of-the-immortals",
-                "lion-helmet",
-                "staff-of-stubbornness",
-                "alucards-amulet",
-                "evil-genius-cuirass"
-            ]
-        }
-    },
-    {
-        "name": "Jorgen",
-        "class": "control",
-        "faction": "chaos",
-        "main_stat": "strength",
-        "attack_type": [
-            "magic"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Shavarakk's Blood",
-                "team_buff": "magic attack"
-            },
-            "book": "Defender's Covenant",
-            "ring": null
-        },
-        "stone_source": [
-            "Outland Shop"
-        ],
-        "order_rank": 39,
-        "slug": "jorgen",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Judge",
-        "class": "control",
-        "faction": "progress",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Arena Shop"
-        ],
-        "order_rank": 29,
-        "slug": "judge",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Julius",
-        "class": "tank",
-        "faction": "progress",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "crit hit chance"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 8,
-        "slug": "julius",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "K'arkh",
-        "class": "warrior",
-        "faction": "eternity",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Guild War Shop"
-        ],
-        "order_rank": 14,
-        "slug": "karkh",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Kai",
-        "class": "mage",
-        "faction": "nature",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Tower Shop"
-        ],
-        "order_rank": 33,
-        "slug": "kai",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Kayla",
-        "class": "warrior",
-        "faction": "chaos",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 18,
-        "slug": "kayla",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Keira",
-        "class": "marksman",
-        "faction": "eternity",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 28,
-        "slug": "keira",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Krista",
-        "class": "support",
-        "faction": "chaos",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 27,
-        "slug": "krista",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Lara Croft",
-        "class": "marksman",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 50,
-        "slug": "lara-croft",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Lars",
-        "class": "mage",
-        "faction": "chaos",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic penetration"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 52,
-        "slug": "lars",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Lian",
-        "class": "control",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Grand Arena Shop"
-        ],
-        "order_rank": 57,
-        "slug": "lian",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Lilith",
-        "class": "mage",
-        "faction": "chaos",
-        "main_stat": "strength",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic penetration"
-        ],
-        "stone_source": [
-            "Highwayman Shop",
-            "Heroic Chest"
-        ],
-        "order_rank": 67,
-        "slug": "lilith",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Luther",
-        "class": "tank",
-        "faction": "honor",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Outland Shop"
-        ],
-        "order_rank": 4,
-        "slug": "luther",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Markus",
-        "class": "healer",
-        "faction": "honor",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Grand Arena Shop"
-        ],
-        "order_rank": 15,
-        "slug": "markus",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Martha",
-        "class": "healer",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "physical"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Zarakkari Teapot",
-                "team_buff": "armor"
-            },
-            "book": "Tome of Arcane Knowledge",
-            "ring": null
-        },
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 68,
-        "slug": "martha",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Maya",
-        "class": "healer",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "pure"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Mother Tree's Branch",
-                "team_buff": "magic defense"
-            },
-            "book": "Tome of Arcane Knowledge",
-            "ring": null
-        },
-        "stone_source": [
-            "Tower Shop",
-            "Heroic Chest"
-        ],
-        "order_rank": 24,
-        "slug": "maya",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Mojo",
-        "class": "mage",
-        "faction": "nature",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic penetration"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 37,
-        "slug": "mojo",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Morrigan",
-        "class": "healer",
-        "faction": "eternity",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor penetration"
-        ],
-        "stone_source": [
-            "Hydra Shop"
-        ],
-        "order_rank": 31,
-        "slug": "morrigan",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Mushy and Shroom",
-        "class": "tank",
-        "faction": "nature",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 22,
-        "slug": "mushy-and-shroom",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Nebula",
-        "class": "support",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Unborn Stars",
-                "team_buff": "physical attack"
-            },
-            "book": "Book of Illusions",
-            "ring": null
-        },
-        "stone_source": [
-            "Guild War Shop"
-        ],
-        "order_rank": 36,
-        "slug": "nebula",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Ninja Turtles",
-        "class": "warrior",
-        "faction": "nature",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor penetration"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 16.5,
-        "slug": "ninja-turtles",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Octavia",
-        "class": "support",
-        "faction": "eternity",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Mirror of Truth",
-                "team_buff": "dodge"
-            },
-            "book": "Book of Illusions",
-            "ring": null
-        },
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 69,
-        "slug": "octavia",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Orion",
-        "class": "mage",
-        "faction": "progress",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic penetration"
-        ],
-        "stone_source": [
-            "Tower Shop"
-        ],
-        "order_rank": 47,
-        "slug": "orion",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Oya",
-        "class": "warrior",
-        "faction": "nature",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "crit hit chance"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 12,
-        "slug": "oya",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Peppy",
-        "class": "control",
-        "faction": "chaos",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 61,
-        "slug": "peppy",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Phobos",
-        "class": "control",
-        "faction": "eternity",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 58,
-        "slug": "phobos",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Qing Mao",
-        "class": "warrior",
-        "faction": "honor",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "armor penetration"
-        ],
-        "stone_source": [
-            "Outland Shop"
-        ],
-        "order_rank": 20,
-        "slug": "qing-mao",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Rufus",
-        "class": "tank",
-        "faction": "mystery",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Grand Arena Shop"
-        ],
-        "order_rank": 7,
-        "slug": "rufus",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Satori",
-        "class": "mage",
-        "faction": "mystery",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Highwayman Shop",
-            "Heroic Chest"
-        ],
-        "order_rank": 21,
-        "slug": "satori",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Sebastian",
-        "class": "support",
-        "faction": "progress",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 35,
-        "slug": "sebastian",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Soleil",
-        "class": "support",
-        "faction": "honor",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Prison of the Ancient God",
-                "team_buff": "magic attack"
-            },
-            "book": "Tome of Arcane Knowledge",
-            "ring": null
-        },
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 40,
-        "slug": "soleil",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Tempus",
-        "class": "support",
-        "faction": "eternity",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 30,
-        "slug": "tempus",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Thea",
-        "class": "healer",
-        "faction": "nature",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic defense"
-        ],
-        "stone_source": [
-            "Campaign",
-            "Heroic Chest"
-        ],
-        "order_rank": 64,
-        "slug": "thea",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Tristan",
-        "class": "warrior",
-        "faction": "honor",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifacts": {
-            "weapon": {
-                "name": "Demonic Reliquary",
-                "team_buff": "armor penetration"
-            },
-            "book": "Alchemist's Folio",
-            "ring": null
-        },
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 11,
-        "slug": "tristan",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Xe'Sha",
-        "class": "mage",
-        "faction": "chaos",
-        "main_stat": "intelligence",
-        "attack_type": [
-            "magic"
-        ],
-        "artifact_team_buff": [
-            "magic attack"
-        ],
-        "stone_source": [
-            "Special Events"
-        ],
-        "order_rank": 42,
-        "slug": "xesha",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Yasmine",
-        "class": "warrior",
-        "faction": "nature",
-        "main_stat": "agility",
-        "attack_type": [
-            "physical",
-            "pure"
-        ],
-        "artifact_team_buff": [
-            "physical attack"
-        ],
-        "stone_source": [
-            "Hydra Shop"
-        ],
-        "order_rank": 19,
-        "slug": "yasmine",
-        "updated_on": "2024-09-10T17:16:56.000Z"
-    },
-    {
-        "name": "Ziri",
-        "class": "tank",
-        "faction": "mystery",
-        "main_stat": "strength",
-        "attack_type": [
-            "physical"
-        ],
-        "artifact_team_buff": [
-            "armor"
-        ],
-        "stone_source": [
-            "Guild War Shop"
-        ],
-        "order_rank": 6,
-        "slug": "ziri",
-        "updated_on": "2024-09-10T17:16:56.000Z"
+  {
+    "name": "Aidan",
+    "class": "healer",
+    "faction": "chaos",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Special Events"],
+    "order_rank": 62,
+    "slug": "aidan",
+    "artifacts": {
+      "weapon": {
+        "name": "Phoenix Seal",
+        "team_buff": "magic defense"
+      },
+      "book": "Tome of Arcane Knowledge",
+      "ring": null
+    },
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "intelligence",
+        "has_plus": false
+      },
+      {
+        "name": "Solar Skin",
+        "stat": "magic attack",
+        "has_plus": false
+      },
+      {
+        "name": "Celestial Skin",
+        "stat": "health",
+        "has_plus": false
+      }
+    ],
+    "glyphs": [
+      "magic attack",
+      "armor",
+      "magic defense",
+      "health",
+      "intelligence"
+    ],
+    "updated_on": "2025-01-27T22:00:36.876Z",
+    "items": {
+      "white": [
+        "wooden-shield",
+        "steel-pauldron",
+        "apprentices-mantle",
+        "oil-lamp",
+        "travellers-staff",
+        "lucky-dice"
+      ],
+      "green": [
+        "apprentices-mantle",
+        "lucky-dice",
+        "travellers-staff",
+        "censer",
+        "lost-ring",
+        "elven-bow"
+      ],
+      "green+1": [
+        "wooden-shield",
+        "censer",
+        "lost-ring",
+        "soul-catcher",
+        "victors-helmet",
+        "soul-catcher"
+      ]
     }
+  },
+  {
+    "name": "Alvanor",
+    "class": "support",
+    "faction": "nature",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Special Events", "Dungeon Shop"],
+    "order_rank": 23,
+    "slug": "alvanor",
+    "artifacts": {
+      "weapon": {
+        "name": "Soul of the Forest",
+        "team_buff": "magic attack"
+      },
+      "book": "Manuscript of the Void",
+      "ring": null
+    },
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "intelligence",
+        "has_plus": false
+      },
+      {
+        "name": "Spring Skin",
+        "stat": "magic attack",
+        "has_plus": false
+      },
+      {
+        "name": "Lunar Skin",
+        "stat": "armor",
+        "has_plus": false
+      },
+      {
+        "name": "Winter Skin",
+        "stat": "health",
+        "has_plus": false
+      },
+      {
+        "name": "Dark Depths Skin",
+        "stat": "magic penetration",
+        "has_plus": true
+      }
+    ],
+    "glyphs": [
+      "magic attack",
+      "health",
+      "magic penetration",
+      "magic defense",
+      "intelligence"
+    ],
+    "updated_on": "2025-01-22T21:06:53.594Z"
+  },
+  {
+    "name": "Amira",
+    "class": "support",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Special Events"],
+    "order_rank": 43,
+    "slug": "amira",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Andvari",
+    "class": "control",
+    "faction": "mystery",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Special Events"],
+    "order_rank": 17,
+    "slug": "andvari",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Arachne",
+    "class": "control",
+    "faction": "progress",
+    "main_stat": "intelligence",
+    "attack_type": ["magic", "pure"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Heroic Chest"],
+    "order_rank": 25,
+    "slug": "arachne",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Artemis",
+    "class": "marksman",
+    "faction": "honor",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 59,
+    "slug": "artemis",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Astaroth",
+    "slug": "astaroth",
+    "class": "tank",
+    "faction": "chaos",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 9,
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "strength",
+        "has_plus": false
+      },
+      {
+        "name": "Demonic Skin",
+        "stat": "magic attack",
+        "has_plus": false
+      },
+      {
+        "name": "Barbarian Skin",
+        "stat": "armor",
+        "has_plus": false
+      },
+      {
+        "name": "Lunar Skin",
+        "stat": "magic defense",
+        "has_plus": false
+      },
+      {
+        "name": "Cybernetic Skin",
+        "stat": "health",
+        "has_plus": false
+      },
+      {
+        "name": "Thunder Skin",
+        "stat": "health",
+        "has_plus": true
+      }
+    ],
+    "items": {
+      "white": [
+        "wooden-shield",
+        "giants-belt",
+        "apprentices-mantle",
+        "steel-pauldron",
+        "lucky-dice",
+        "imperial-shield"
+      ],
+      "green": [
+        "imperial-shield",
+        "orcish-yatagan",
+        "sledgehammer",
+        "orcish-hammer",
+        "cuirass",
+        "cains-seal"
+      ],
+      "green+1": [
+        "orcish-hammer",
+        "orcish-yatagan",
+        "cuirass",
+        "cains-seal",
+        "shining-armor",
+        "traitors-shield"
+      ],
+      "blue": [
+        "guardians-shield",
+        "shining-armor",
+        "voodoo-doll",
+        "brothers",
+        "serenity-stone",
+        "enchanted-lute"
+      ],
+      "blue+1": [
+        "lost-ring",
+        "wall-breaker",
+        "brothers",
+        "wyverns-heart",
+        "serenity-stone",
+        "dark-grail"
+      ],
+      "blue+2": [
+        "elven-armor",
+        "voodoo-doll",
+        "serenity-stone",
+        "enchanted-lute",
+        "prosperos-helmet",
+        "prince-of-thieves-armor"
+      ],
+      "violet": [
+        "raven-kings-cloak",
+        "prosperos-helmet",
+        "storm-hammer",
+        "lion-armor",
+        "dragon-shield",
+        "sirens-song"
+      ],
+      "violet+1": [
+        "raven-kings-cloak",
+        "elven-shield",
+        "sages-crown",
+        "storm-hammer",
+        "executioners-sword",
+        "talisman"
+      ],
+      "violet+2": [
+        "book-of-tales",
+        "raven-kings-cloak",
+        "lion-armor",
+        "talisman",
+        "executioners-sword",
+        "world-tremor"
+      ],
+      "violet+3": [
+        "prince-of-thieves-armor",
+        "sages-crown",
+        "talisman",
+        "book-of-tales",
+        "book-of-prophecies",
+        "cosmic-tremor"
+      ],
+      "orange": [
+        "talisman",
+        "executioners-sword",
+        "book-of-tales",
+        "cosmic-tremor",
+        "harunian-helm",
+        "citadel-guardian"
+      ],
+      "orange+1": [
+        "trine",
+        "governor",
+        "book-of-prophecies",
+        "harunian-helm",
+        "citadel-guardian",
+        "asklepius-staff"
+      ],
+      "orange+2": [
+        "lion-helmet",
+        "cosmic-tremor",
+        "alchemists-set",
+        "citadel-guardian",
+        "asklepius-staff",
+        "radiant-armor"
+      ],
+      "orange+3": [
+        "all-seer",
+        "lion-helmet",
+        "asklepius-staff",
+        "sphere-of-power",
+        "oracles-censer",
+        "oppressors-crown"
+      ],
+      "orange+4": [
+        "flaming-heart",
+        "giant-slayer",
+        "asklepius-staff",
+        "sphere-of-power",
+        "oppressors-crown",
+        "evil-genius-cuirass"
+      ]
+    },
+    "glyphs": ["magic attack", "armor", "health", "magic defense", "strength"],
+    "artifacts": {
+      "weapon": {
+        "name": "Scythe of Redemption",
+        "team_buff": "armor"
+      },
+      "book": "Defender's Covenant",
+      "ring": null
+    },
+    "updated_on": "2025-01-22T21:23:13.672Z"
+  },
+  {
+    "name": "Astrid and Lucas",
+    "class": "marksman",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Arena Shop", "Heroic Chest"],
+    "order_rank": 53,
+    "slug": "astrid-and-lucas",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Aurora",
+    "updated_on": "2024-09-10T17:16:56.000Z",
+    "slug": "aurora",
+    "class": "tank",
+    "faction": "nature",
+    "main_stat": "strength",
+    "attack_type": ["magic"],
+    "stone_source": ["Campaign"],
+    "order_rank": 2,
+    "artifacts": {
+      "weapon": {
+        "name": "Selias' Legacy",
+        "team_buff": "dodge"
+      },
+      "book": "Book of Illusions",
+      "ring": null
+    },
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "strength",
+        "source": "Default"
+      },
+      {
+        "name": "Nordic Skin",
+        "stat": "dodge"
+      },
+      {
+        "name": "Spring Skin",
+        "stat": "health"
+      },
+      {
+        "name": "Demonic Skin",
+        "stat": "armor"
+      },
+      {
+        "name": "Romantic Skin",
+        "stat": "magic penetration"
+      },
+      {
+        "name": "Thunder Skin",
+        "stat": "health"
+      }
+    ],
+    "items": {
+      "white": [
+        "orcish-knuckles",
+        "apprentices-mantle",
+        "giants-belt",
+        "wooden-shield",
+        "imperial-shield",
+        "oil-lamp"
+      ],
+      "green": [
+        "wooden-shield",
+        "apprentices-mantle",
+        "sledgehammer",
+        "orcish-hammer",
+        "fire-sword",
+        "cuirass"
+      ],
+      "green+1": [
+        "imperial-shield",
+        "wizards-staff",
+        "cuirass",
+        "cains-seal",
+        "screaming-blade",
+        "soul-catcher"
+      ],
+      "blue": [
+        "midnight-crystal",
+        "wall-breaker",
+        "soul-catcher",
+        "silent-guardian",
+        "sacred-rosary",
+        "enchanted-lute"
+      ],
+      "blue+1": [
+        "midnight-crystal",
+        "wall-breaker",
+        "soul-catcher",
+        "wyverns-heart",
+        "portal-gem",
+        "voodoo-staff"
+      ],
+      "blue+2": [
+        "poleaxe",
+        "voodoo-doll",
+        "wyverns-heart",
+        "portal-gem",
+        "voodoo-staff",
+        "hand-of-midas"
+      ],
+      "violet": [
+        "wyverns-heart",
+        "portal-gem",
+        "voodoo-staff",
+        "globus-cruciger",
+        "pastors-seal",
+        "minotaurs-head"
+      ],
+      "violet+1": [
+        "enchanted-lute",
+        "branch-of-the-world-tree",
+        "prince-of-thieves-armor",
+        "flaming-heart",
+        "funeral-totem",
+        "book-of-tales"
+      ],
+      "violet+2": [
+        "voodoo-staff",
+        "voodoo-staff",
+        "hand-of-midas",
+        "primordial-word",
+        "trine",
+        "book-of-prophecies"
+      ],
+      "violet+3": [
+        "voodoo-staff",
+        "globus-cruciger",
+        "primordial-word",
+        "elephant-guard",
+        "book-of-prophecies",
+        "cosmic-tremor"
+      ],
+      "orange": [
+        "trine",
+        "all-seer",
+        "executioners-sword",
+        "book-of-prophecies",
+        "harunian-helm",
+        "enchanted-chain"
+      ],
+      "orange+1": [
+        "elephant-guard",
+        "trine",
+        "book-of-prophecies",
+        "harunian-helm",
+        "thieves-guild-sign",
+        "staff-of-neutralization"
+      ],
+      "orange+2": [
+        "talisman",
+        "executioners-sword",
+        "enchanted-chain",
+        "la-morts-map",
+        "tricksters-cane",
+        "radiant-armor"
+      ],
+      "orange+3": [
+        "talisman",
+        "executioners-sword",
+        "enchanted-chain",
+        "tricksters-cane",
+        "oracles-censer",
+        "oppressors-crown"
+      ],
+      "orange+4": [
+        "executioners-sword",
+        "apostles-mace",
+        "tricksters-cane",
+        "staff-of-neutralization",
+        "oppressors-crown",
+        "evil-genius-cuirass"
+      ]
+    },
+    "glyphs": [
+      "magic attack",
+      "health",
+      "magic penetration",
+      "dodge",
+      "strength"
+    ]
+  },
+  {
+    "name": "Cascade",
+    "class": "marksman",
+    "faction": "mystery",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "stone_source": ["Special Events"],
+    "order_rank": 46,
+    "slug": "cascade",
+    "artifact_team_buff": ["magic penetration", "armor penetration"],
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Celeste",
+    "class": "support",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Heroic Chest"],
+    "order_rank": 32,
+    "slug": "celeste",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Chabba",
+    "slug": "chabba",
+    "class": "tank",
+    "faction": "nature",
+    "main_stat": "strength",
+    "attack_type": ["physical", "pure"],
+    "stone_source": ["Arena Shop"],
+    "order_rank": 1,
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "strength",
+        "has_plus": false
+      },
+      {
+        "name": "Demonic Skin",
+        "stat": "physical attack",
+        "has_plus": false
+      },
+      {
+        "name": "Winter Skin",
+        "stat": "armor",
+        "has_plus": false
+      },
+      {
+        "name": "Masquerade Skin",
+        "stat": "health",
+        "has_plus": false
+      },
+      {
+        "name": "Lunar Skin",
+        "stat": "magic defense",
+        "has_plus": false
+      },
+      {
+        "name": "Romantic Skin",
+        "stat": "health",
+        "has_plus": true
+      }
+    ],
+    "items": {
+      "white": [
+        "orcish-knuckles",
+        "wooden-shield",
+        "travellers-shoes",
+        "steel-pauldron",
+        "lucky-dice",
+        "dagger"
+      ],
+      "green": [
+        "imperial-shield",
+        "orcish-yatagan",
+        "sledgehammer",
+        "orcish-hammer",
+        "fire-sword",
+        "cains-seal"
+      ],
+      "green+1": [
+        "orcish-hammer",
+        "orcish-hammer",
+        "fire-sword",
+        "cains-seal",
+        "wall-breaker",
+        "guardians-shield"
+      ],
+      "blue": [
+        "branch-of-antiaris",
+        "wall-breaker",
+        "screaming-blade",
+        "brothers",
+        "wyverns-heart",
+        "enchanted-lute"
+      ],
+      "blue+1": [
+        "branch-of-antiaris",
+        "shining-armor",
+        "wall-breaker",
+        "needle",
+        "enchanted-lute",
+        "trackers-shield"
+      ],
+      "blue+2": [
+        "branch-of-antiaris",
+        "shining-armor",
+        "wyverns-heart",
+        "needle",
+        "thunderfoot-boots",
+        "prince-of-thieves-armor"
+      ],
+      "violet": [
+        "storm-hammer",
+        "dark-grail",
+        "thunderfoot-boots",
+        "hand-of-midas",
+        "giant-slayer",
+        "minotaurs-head"
+      ],
+      "violet+1": [
+        "sirens-song",
+        "thunderfoot-boots",
+        "hand-of-midas",
+        "prince-of-thieves-armor",
+        "giant-slayer",
+        "lion-helmet"
+      ],
+      "violet+2": [
+        "dark-grail",
+        "trackers-shield",
+        "trackers-shield",
+        "hand-of-midas",
+        "world-tremor",
+        "angels-mace"
+      ],
+      "violet+3": [
+        "prince-of-thieves-armor",
+        "trackers-shield",
+        "world-tremor",
+        "flaming-heart",
+        "lion-helmet",
+        "archangels-mace"
+      ],
+      "orange": [
+        "executioners-sword",
+        "lion-helmet",
+        "world-tremor",
+        "angels-mace",
+        "alchemists-set",
+        "harunian-helm"
+      ],
+      "orange+1": [
+        "flaming-heart",
+        "executioners-sword",
+        "angels-mace",
+        "harunian-helm",
+        "riversars-tiara",
+        "alucards-amulet"
+      ],
+      "orange+2": [
+        "trine",
+        "governor",
+        "alchemists-set",
+        "asklepius-staff",
+        "asklepius-staff",
+        "shining-armor"
+      ],
+      "orange+3": [
+        "lion-helmet",
+        "archangels-mace",
+        "alucards-amulet",
+        "asklepius-staff",
+        "lycanthropes-fang",
+        "unity-of-extremes"
+      ],
+      "orange+4": [
+        "angels-mace",
+        "archangels-mace",
+        "alucards-amulet",
+        "asklepius-staff",
+        "alucards-amulet",
+        "evil-genius-cuirass"
+      ]
+    },
+    "glyphs": [
+      "physical attack",
+      "armor",
+      "magic defense",
+      "health",
+      "strength"
+    ],
+    "artifacts": {
+      "weapon": {
+        "name": "Bracers of Hunger",
+        "team_buff": "armor"
+      },
+      "book": "Defender's Covenant",
+      "ring": null
+    },
+    "updated_on": "2025-01-06T20:45:00.000Z"
+  },
+  {
+    "name": "Cleaver",
+    "class": "tank",
+    "faction": "chaos",
+    "main_stat": "strength",
+    "attack_type": ["physical", "pure"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Heroic Chest"],
+    "order_rank": 3,
+    "slug": "cleaver",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Cornelius",
+    "class": "mage",
+    "faction": "honor",
+    "main_stat": "intelligence",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Highwayman Shop"],
+    "order_rank": 54,
+    "slug": "cornelius",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Corvus",
+    "class": "tank",
+    "faction": "eternity",
+    "main_stat": "strength",
+    "attack_type": ["physical", "pure"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Special Events", "Dungeon Shop"],
+    "order_rank": 5,
+    "slug": "corvus",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Dante",
+    "class": "marksman",
+    "faction": "eternity",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifacts": {
+      "weapon": {
+        "name": "Spear of Fate",
+        "team_buff": "dodge"
+      },
+      "book": "Book of Illusions",
+      "ring": null
+    },
+    "stone_source": ["Tower Shop"],
+    "order_rank": 26,
+    "slug": "dante",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Daredevil",
+    "class": "marksman",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 48,
+    "slug": "daredevil",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Dark Star",
+    "class": "marksman",
+    "faction": "nature",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Arena Shop"],
+    "order_rank": 51,
+    "slug": "dark-star",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Dorian",
+    "class": "healer",
+    "faction": "chaos",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Town Shop", "Heroic Chest"],
+    "order_rank": 60,
+    "slug": "dorian",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Elmir",
+    "class": "warrior",
+    "faction": "nature",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor penetration"],
+    "stone_source": ["Outland Shop"],
+    "order_rank": 16,
+    "slug": "elmir",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Faceless",
+    "class": "control",
+    "faction": "eternity",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic penetration"],
+    "stone_source": ["Highwayman Shop"],
+    "order_rank": 55,
+    "slug": "faceless",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Fafnir",
+    "class": "support",
+    "faction": "honor",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Special Events"],
+    "order_rank": 65,
+    "slug": "fafnir",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Folio",
+    "class": "mage",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Special Events"],
+    "order_rank": 44,
+    "slug": "folio",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Fox",
+    "class": "marksman",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor penetration"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 56,
+    "slug": "fox",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Galahad",
+    "slug": "galahad",
+    "class": "warrior",
+    "faction": "honor",
+    "main_stat": "strength",
+    "attack_type": ["physical", "pure"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "strength",
+        "has_plus": false
+      },
+      {
+        "name": "Angel Skin",
+        "stat": "physical attack",
+        "has_plus": false
+      },
+      {
+        "name": "Champion's Skin",
+        "stat": "health",
+        "has_plus": false
+      },
+      {
+        "name": "Romantic Skin",
+        "stat": "armor",
+        "has_plus": false
+      },
+      {
+        "name": "Celestial Skin",
+        "stat": "magic defense",
+        "has_plus": false
+      },
+      {
+        "name": "Thunder Skin",
+        "stat": "physical attack",
+        "has_plus": false
+      }
+    ],
+    "items": {
+      "white": [
+        "orcish-knuckles",
+        "wooden-shield",
+        "steel-pauldron",
+        "lucky-dice",
+        "orcish-yatagan",
+        "dagger"
+      ],
+      "green": [
+        "imperial-shield",
+        "lucky-dice",
+        "sledgehammer",
+        "orcish-hammer",
+        "cuirass",
+        "fire-sword"
+      ],
+      "green+1": [
+        "sledgehammer",
+        "orcish-hammer",
+        "cains-seal",
+        "fire-sword",
+        "poleaxe",
+        "shining-armor"
+      ],
+      "blue": [
+        "branch-of-antiaris",
+        "screaming-blade",
+        "elven-armor",
+        "traitors-shield",
+        "needle",
+        "serenity-stone"
+      ],
+      "blue+1": [
+        "wall-breaker",
+        "shining-armor",
+        "poleaxe",
+        "needle",
+        "serenity-stone",
+        "sacrificial-dagger"
+      ],
+      "blue+2": [
+        "screaming-blade",
+        "poleaxe",
+        "needle",
+        "thunderfoot-boots",
+        "sacrificial-dagger",
+        "hand-of-midas"
+      ],
+      "violet": [
+        "storm-hammer",
+        "dark-grail",
+        "sacrificial-dagger",
+        "prince-of-thieves-armor",
+        "giant-slayer",
+        "dragon-shield"
+      ],
+      "violet+1": [
+        "dragonslayers-spear",
+        "sacrificial-dagger",
+        "prince-of-thieves-armor",
+        "dragon-shield",
+        "flaming-heart",
+        "lion-helmet"
+      ],
+      "violet+2": [
+        "sacrificial-dagger",
+        "prince-of-thieves-armor",
+        "flaming-heart",
+        "apostles-mace",
+        "executioners-sword",
+        "world-tremor"
+      ],
+      "violet+3": [
+        "hand-of-midas",
+        "apostles-mace",
+        "executioners-sword",
+        "wasp",
+        "world-tremor",
+        "cosmic-tremor"
+      ],
+      "orange": [
+        "lion-helmet",
+        "executioners-sword",
+        "apostles-mace",
+        "cosmic-tremor",
+        "harunian-helm",
+        "lycanthropes-fang"
+      ],
+      "orange+1": [
+        "governor",
+        "wasp",
+        "cosmic-tremor",
+        "harunian-helm",
+        "lycanthropes-fang",
+        "blued-plate-armor"
+      ],
+      "orange+2": [
+        "executioners-sword",
+        "lion-helmet",
+        "harunian-helm",
+        "citadel-guardian",
+        "alucards-amulet",
+        "shining-armor"
+      ],
+      "orange+3": [
+        "world-tremor",
+        "executioners-sword",
+        "riversars-tiara",
+        "blued-plate-armor",
+        "rulers-globus",
+        "unity-of-extremes"
+      ],
+      "orange+4": [
+        "executioners-sword",
+        "angels-mace",
+        "alchemists-set",
+        "blued-plate-armor",
+        "unity-of-extremes",
+        "evil-genius-cuirass"
+      ]
+    },
+    "glyphs": [
+      "physical attack",
+      "armor",
+      "health",
+      "magic defense",
+      "strength"
+    ],
+    "order_rank": 10,
+    "updated_on": "2025-01-06T22:30:00.000Z",
+    "artifacts": {
+      "weapon": {
+        "name": "Harunian Sword",
+        "team_buff": "physical attack"
+      },
+      "book": "Defender's Covenant",
+      "ring": null
+    }
+  },
+  {
+    "name": "Ginger",
+    "class": "marksman",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 49,
+    "slug": "ginger",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Heidi",
+    "class": "mage",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["pure"],
+    "artifact_team_buff": ["dodge"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 38,
+    "slug": "heidi",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Helios",
+    "class": "support",
+    "faction": "honor",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 66,
+    "slug": "helios",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Iris",
+    "class": "mage",
+    "faction": "eternity",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifacts": {
+      "weapon": {
+        "name": "Tome of Enslaved Souls",
+        "team_buff": "magic attack"
+      },
+      "book": "Tome of Arcane Knowledge",
+      "ring": null
+    },
+    "stone_source": ["Special Events"],
+    "order_rank": 41,
+    "slug": "iris",
+    "glyphs": [
+      "magic attack",
+      "health",
+      "magic penetration",
+      "magic defense",
+      "intelligence"
+    ],
+    "updated_on": "2025-01-23T21:41:54.500Z",
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "armor penetration",
+        "has_plus": false
+      }
+    ]
+  },
+  {
+    "name": "Isaac",
+    "class": "marksman",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Special Events"],
+    "order_rank": 45,
+    "slug": "isaac",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "updated_on": "2024-09-10T17:16:56.000Z",
+    "name": "Ishmael",
+    "class": "warrior",
+    "faction": "honor",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifacts": {
+      "weapon": {
+        "name": "Hidden Demon's Katars",
+        "team_buff": "crit hit chance"
+      },
+      "book": "Alchemist's Folio",
+      "ring": null
+    },
+    "stone_source": ["Grand Arena Shop"],
+    "order_rank": 13,
+    "slug": "ishmael"
+  },
+  {
+    "name": "Jet",
+    "class": "support",
+    "faction": "progress",
+    "main_stat": "intelligence",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Soul Shop"],
+    "order_rank": 63,
+    "slug": "jet",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Jhu",
+    "class": "marksman",
+    "faction": "nature",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifacts": {
+      "weapon": {
+        "name": "Zarakkar Bones",
+        "team_buff": "crit hit chance"
+      },
+      "book": "Warrior's Code",
+      "ring": null
+    },
+    "stone_source": ["Guild War Shop"],
+    "order_rank": 34,
+    "slug": "jhu",
+    "updated_on": "2025-01-27T22:19:22.780Z",
+    "skins": [
+      {
+        "name": "Default Skin",
+        "stat": "strength",
+        "has_plus": false
+      },
+      {
+        "name": "Winter Skin",
+        "stat": "armor penetration",
+        "has_plus": false
+      },
+      {
+        "name": "Champion's Skin",
+        "stat": "magic defense",
+        "has_plus": false
+      },
+      {
+        "name": "Solar Skin",
+        "stat": "crit hit chance",
+        "has_plus": false
+      },
+      {
+        "name": "Masquerade Skin",
+        "stat": "physical attack",
+        "has_plus": false
+      }
+    ],
+    "glyphs": [
+      "physical attack",
+      "health",
+      "armor penetration",
+      "crit hit chance",
+      "strength"
+    ],
+    "items": {
+      "white": [
+        "orcish-knuckles",
+        "steel-pauldron",
+        "dagger",
+        "orcish-yatagan",
+        "wooden-shield",
+        "lucky-dice"
+      ],
+      "green": [
+        "guardians-shield",
+        "orcish-hammer",
+        "dagger",
+        "fire-sword",
+        "orcish-yatagan",
+        "orcish-yatagan"
+      ],
+      "green+1": [
+        "orcish-yatagan",
+        "fire-sword",
+        "screaming-blade",
+        "cuirass",
+        "poleaxe",
+        "orcish-hammer"
+      ],
+      "blue": [
+        "guardians-shield",
+        "infernal-messenger",
+        "cains-seal",
+        "needle",
+        "spear-of-thunder",
+        "wall-breaker"
+      ],
+      "blue+1": [
+        "wall-breaker",
+        "needle",
+        "brothers",
+        "serenity-stone",
+        "infernal-messenger",
+        "hunter"
+      ],
+      "blue+2": [
+        "reaper",
+        "hunter",
+        "poleaxe",
+        "thunderfoot-boots",
+        "needle",
+        "hand-of-midas"
+      ],
+      "violet": [
+        "storm-hammer",
+        "prince-of-thieves-armor",
+        "hunter",
+        "giant-slayer",
+        "punishing-hand",
+        "dragon-shield"
+      ],
+      "violet+1": [
+        "giant-slayer",
+        "advisor",
+        "thunderfoot-boots",
+        "dragon-tooth",
+        "prince-of-thieves-armor",
+        "lion-helmet"
+      ],
+      "violet+2": [
+        "governor",
+        "executioners-sword",
+        "sirens-song",
+        "lion-helmet",
+        "dragon-tooth",
+        "world-tremor"
+      ],
+      "violet+3": [
+        "dragon-tooth",
+        "blade-bow",
+        "sirens-song",
+        "apostles-mace",
+        "executioners-sword",
+        "cosmic-tremor"
+      ],
+      "orange": [
+        "lion-helmet",
+        "cosmic-tremor",
+        "governor",
+        "gro-bulgors-poleaxe",
+        "executioners-sword",
+        "hellion-harpoon"
+      ],
+      "orange+1": [
+        "governor",
+        "gro-bulgors-poleaxe",
+        "lion-helmet",
+        "hellion-harpoon",
+        "cosmic-tremor",
+        "blade-of-the-immortals"
+      ],
+      "orange+2": [
+        "executioners-sword",
+        "hellion-harpoon",
+        "executioners-sword",
+        "aquants-trident",
+        "gro-bulgors-poleaxe",
+        "radiant-armor"
+      ],
+      "orange+3": [
+        "governor",
+        "harunian-helm",
+        "world-tremor",
+        "rulers-globus",
+        "harunian-helm",
+        "staff-of-stubbornness"
+      ],
+      "orange+4": [
+        "world-tremor",
+        "blade-of-the-immortals",
+        "lion-helmet",
+        "staff-of-stubbornness",
+        "alucards-amulet",
+        "evil-genius-cuirass"
+      ]
+    }
+  },
+  {
+    "name": "Jorgen",
+    "class": "control",
+    "faction": "chaos",
+    "main_stat": "strength",
+    "attack_type": ["magic"],
+    "artifacts": {
+      "weapon": {
+        "name": "Shavarakk's Blood",
+        "team_buff": "magic attack"
+      },
+      "book": "Defender's Covenant",
+      "ring": null
+    },
+    "stone_source": ["Outland Shop"],
+    "order_rank": 39,
+    "slug": "jorgen",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Judge",
+    "class": "control",
+    "faction": "progress",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Arena Shop"],
+    "order_rank": 29,
+    "slug": "judge",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Julius",
+    "class": "tank",
+    "faction": "progress",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["crit hit chance"],
+    "stone_source": ["Special Events"],
+    "order_rank": 8,
+    "slug": "julius",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "K'arkh",
+    "class": "warrior",
+    "faction": "eternity",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Guild War Shop"],
+    "order_rank": 14,
+    "slug": "karkh",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Kai",
+    "class": "mage",
+    "faction": "nature",
+    "main_stat": "intelligence",
+    "attack_type": ["magic", "pure"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Tower Shop"],
+    "order_rank": 33,
+    "slug": "kai",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Kayla",
+    "class": "warrior",
+    "faction": "chaos",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Special Events"],
+    "order_rank": 18,
+    "slug": "kayla",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Keira",
+    "class": "marksman",
+    "faction": "eternity",
+    "main_stat": "agility",
+    "attack_type": ["physical", "pure"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 28,
+    "slug": "keira",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Krista",
+    "class": "support",
+    "faction": "chaos",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 27,
+    "slug": "krista",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Lara Croft",
+    "class": "marksman",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Special Events"],
+    "order_rank": 50,
+    "slug": "lara-croft",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Lars",
+    "class": "mage",
+    "faction": "chaos",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic penetration"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 52,
+    "slug": "lars",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Lian",
+    "class": "control",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["magic", "pure"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Grand Arena Shop"],
+    "order_rank": 57,
+    "slug": "lian",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Lilith",
+    "class": "mage",
+    "faction": "chaos",
+    "main_stat": "strength",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic penetration"],
+    "stone_source": ["Highwayman Shop", "Heroic Chest"],
+    "order_rank": 67,
+    "slug": "lilith",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Luther",
+    "class": "tank",
+    "faction": "honor",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Outland Shop"],
+    "order_rank": 4,
+    "slug": "luther",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Markus",
+    "class": "healer",
+    "faction": "honor",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Grand Arena Shop"],
+    "order_rank": 15,
+    "slug": "markus",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Martha",
+    "class": "healer",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["physical"],
+    "artifacts": {
+      "weapon": {
+        "name": "Zarakkari Teapot",
+        "team_buff": "armor"
+      },
+      "book": "Tome of Arcane Knowledge",
+      "ring": null
+    },
+    "stone_source": ["Special Events"],
+    "order_rank": 68,
+    "slug": "martha",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Maya",
+    "class": "healer",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["pure"],
+    "artifacts": {
+      "weapon": {
+        "name": "Mother Tree's Branch",
+        "team_buff": "magic defense"
+      },
+      "book": "Tome of Arcane Knowledge",
+      "ring": null
+    },
+    "stone_source": ["Tower Shop", "Heroic Chest"],
+    "order_rank": 24,
+    "slug": "maya",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Mojo",
+    "class": "mage",
+    "faction": "nature",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic penetration"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 37,
+    "slug": "mojo",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Morrigan",
+    "class": "healer",
+    "faction": "eternity",
+    "main_stat": "intelligence",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor penetration"],
+    "stone_source": ["Hydra Shop"],
+    "order_rank": 31,
+    "slug": "morrigan",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Mushy and Shroom",
+    "class": "tank",
+    "faction": "nature",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Special Events"],
+    "order_rank": 22,
+    "slug": "mushy-and-shroom",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Nebula",
+    "class": "support",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifacts": {
+      "weapon": {
+        "name": "Unborn Stars",
+        "team_buff": "physical attack"
+      },
+      "book": "Book of Illusions",
+      "ring": null
+    },
+    "stone_source": ["Guild War Shop"],
+    "order_rank": 36,
+    "slug": "nebula",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Ninja Turtles",
+    "class": "warrior",
+    "faction": "nature",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor penetration"],
+    "stone_source": ["Special Events"],
+    "order_rank": 16.5,
+    "slug": "ninja-turtles",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Octavia",
+    "class": "support",
+    "faction": "eternity",
+    "main_stat": "agility",
+    "attack_type": ["physical"],
+    "artifacts": {
+      "weapon": {
+        "name": "Mirror of Truth",
+        "team_buff": "dodge"
+      },
+      "book": "Book of Illusions",
+      "ring": null
+    },
+    "stone_source": ["Special Events"],
+    "order_rank": 69,
+    "slug": "octavia",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Orion",
+    "class": "mage",
+    "faction": "progress",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic penetration"],
+    "stone_source": ["Tower Shop"],
+    "order_rank": 47,
+    "slug": "orion",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Oya",
+    "class": "warrior",
+    "faction": "nature",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["crit hit chance"],
+    "stone_source": ["Special Events"],
+    "order_rank": 12,
+    "slug": "oya",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Peppy",
+    "class": "control",
+    "faction": "chaos",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 61,
+    "slug": "peppy",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Phobos",
+    "class": "control",
+    "faction": "eternity",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 58,
+    "slug": "phobos",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Qing Mao",
+    "class": "warrior",
+    "faction": "honor",
+    "main_stat": "agility",
+    "attack_type": ["physical", "pure"],
+    "artifact_team_buff": ["armor penetration"],
+    "stone_source": ["Outland Shop"],
+    "order_rank": 20,
+    "slug": "qing-mao",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Rufus",
+    "class": "tank",
+    "faction": "mystery",
+    "main_stat": "strength",
+    "attack_type": ["physical", "pure"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Grand Arena Shop"],
+    "order_rank": 7,
+    "slug": "rufus",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Satori",
+    "class": "mage",
+    "faction": "mystery",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Highwayman Shop", "Heroic Chest"],
+    "order_rank": 21,
+    "slug": "satori",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Sebastian",
+    "class": "support",
+    "faction": "progress",
+    "main_stat": "agility",
+    "attack_type": ["physical", "pure"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Special Events"],
+    "order_rank": 35,
+    "slug": "sebastian",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Soleil",
+    "class": "support",
+    "faction": "honor",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifacts": {
+      "weapon": {
+        "name": "Prison of the Ancient God",
+        "team_buff": "magic attack"
+      },
+      "book": "Tome of Arcane Knowledge",
+      "ring": null
+    },
+    "stone_source": ["Special Events"],
+    "order_rank": 40,
+    "slug": "soleil",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Tempus",
+    "class": "support",
+    "faction": "eternity",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Special Events"],
+    "order_rank": 30,
+    "slug": "tempus",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Thea",
+    "class": "healer",
+    "faction": "nature",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic defense"],
+    "stone_source": ["Campaign", "Heroic Chest"],
+    "order_rank": 64,
+    "slug": "thea",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Tristan",
+    "class": "warrior",
+    "faction": "honor",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifacts": {
+      "weapon": {
+        "name": "Demonic Reliquary",
+        "team_buff": "armor penetration"
+      },
+      "book": "Alchemist's Folio",
+      "ring": null
+    },
+    "stone_source": ["Special Events"],
+    "order_rank": 11,
+    "slug": "tristan",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Xe'Sha",
+    "class": "mage",
+    "faction": "chaos",
+    "main_stat": "intelligence",
+    "attack_type": ["magic"],
+    "artifact_team_buff": ["magic attack"],
+    "stone_source": ["Special Events"],
+    "order_rank": 42,
+    "slug": "xesha",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Yasmine",
+    "class": "warrior",
+    "faction": "nature",
+    "main_stat": "agility",
+    "attack_type": ["physical", "pure"],
+    "artifact_team_buff": ["physical attack"],
+    "stone_source": ["Hydra Shop"],
+    "order_rank": 19,
+    "slug": "yasmine",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  },
+  {
+    "name": "Ziri",
+    "class": "tank",
+    "faction": "mystery",
+    "main_stat": "strength",
+    "attack_type": ["physical"],
+    "artifact_team_buff": ["armor"],
+    "stone_source": ["Guild War Shop"],
+    "order_rank": 6,
+    "slug": "ziri",
+    "updated_on": "2024-09-10T17:16:56.000Z"
+  }
 ]

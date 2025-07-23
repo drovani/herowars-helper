@@ -3,13 +3,15 @@ import {
   UserRoundMinusIcon,
   UserRoundXIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
+  Await,
   redirect,
   useFetcher,
   useLoaderData,
   useRevalidator,
 } from "react-router";
+import { AdminUserTableSkeleton } from "~/components/skeletons/AdminUserTableSkeleton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,7 +57,7 @@ import { useAuth } from "~/contexts/AuthContext";
 import { ASSIGNABLE_ROLES } from "~/lib/supabase/admin";
 import { createClient } from "~/lib/supabase/client";
 
-export const loader = async ({ request }: { request: Request }) => {
+async function loadUsersData(request: Request) {
   const { supabase } = createClient(request);
 
   // Check if user is authenticated and has admin role
@@ -106,6 +108,12 @@ export const loader = async ({ request }: { request: Request }) => {
       hasServiceRole: false,
     };
   }
+}
+
+export const loader = async ({ request }: { request: Request }) => {
+  return {
+    usersData: loadUsersData(request),
+  };
 };
 
 export const action = async ({ request }: { request: Request }) => {
@@ -159,12 +167,15 @@ interface UserData {
   banned_until?: string | null;
 }
 
-export default function AdminUsers() {
-  const { users, error, hasServiceRole } = useLoaderData() as {
-    users: UserData[];
-    error: string | null;
-    hasServiceRole: boolean;
-  };
+function AdminUsersContent({
+  users,
+  error,
+  hasServiceRole,
+}: {
+  users: UserData[];
+  error: string | null;
+  hasServiceRole: boolean;
+}) {
   const { user: currentUser } = useAuth();
   const fetcher = useFetcher();
   const createUserFetcher = useFetcher();
@@ -533,13 +544,12 @@ export default function AdminUsers() {
         <CardContent className="p-3 sm:p-6">
           {message && (
             <div
-              className={`mb-4 p-3 rounded border break-words text-sm ${
-                hasServiceRole
+              className={`mb-4 p-3 rounded border break-words text-sm ${hasServiceRole
                   ? message.includes("success")
                     ? "bg-green-100 text-green-800 border-green-300"
                     : "bg-red-100 text-red-800 border-red-300"
                   : "bg-yellow-100 text-yellow-800 border-yellow-300"
-              }`}
+                }`}
             >
               {!hasServiceRole && (
                 <strong className="block sm:inline">
@@ -949,5 +959,33 @@ export default function AdminUsers() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AdminUsers() {
+  const loaderData = useLoaderData() as {
+    usersData: Promise<{
+      users: UserData[];
+      error: string | null;
+      hasServiceRole: boolean;
+    }>;
+  };
+
+  return (
+    <Suspense fallback={<AdminUserTableSkeleton />}>
+      <Await resolve={loaderData.usersData}>
+        {(data: {
+          users: UserData[];
+          error: string | null;
+          hasServiceRole: boolean;
+        }) => (
+          <AdminUsersContent
+            users={data.users}
+            error={data.error}
+            hasServiceRole={data.hasServiceRole}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 }

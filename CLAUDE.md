@@ -109,6 +109,68 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Sidebar Navigation**: Collapsible sidebar with role-based menu items
 - **Responsive Design**: Mobile-first approach with custom hooks (`useIsMobile.tsx`)
 
+#### Skeleton Loading Components
+
+- **Location**: All skeleton components are in `app/components/skeletons/`
+- **Purpose**: Provide immediate visual feedback during data loading phases to improve perceived performance
+- **Architecture**: Component-based approach with generic building blocks and page-specific implementations
+- **Integration**: Use React Router v7 Suspense/Await pattern with skeleton components as fallback UI
+
+##### Available Skeleton Components
+
+- **Core Building Blocks**:
+
+  - `SkeletonCard` - Card-based content placeholders with configurable dimensions
+  - `SkeletonGrid` - Responsive grid layouts with configurable item counts and column mappings
+  - `SkeletonTable` - Table layouts with rows, columns, and action areas
+  - `SkeletonForm` - Form fields, sections, and button placeholders
+  - `SkeletonDetail` - Detail page layouts with headers and content sections
+
+- **Page-Specific Skeletons**:
+
+  - `HeroIndexSkeleton` - Hero grid with cards/tiles modes, matches hero display patterns
+  - `EquipmentIndexSkeleton` - Equipment card grid layouts matching equipment browsing
+  - `MissionIndexSkeleton` - Chapter-organized mission grids with boss placeholders
+  - `HeroDetailSkeleton` - Comprehensive hero detail layouts (ready for future use)
+  - `EquipmentDetailSkeleton` - Equipment detail with stats and relationships (ready for future use)
+
+- **Admin & Navigation**:
+  - `AdminSetupSkeleton` - Multi-step setup process layouts with progress indicators
+  - `AdminUserTableSkeleton` - User management table layouts
+  - `NavigationSkeleton` - Sidebar, header, and breadcrumb layouts (ready for auth integration)
+
+##### Skeleton Loading Implementation Guidelines
+
+- **When to Use**: For any data-heavy pages with loading times > 200ms
+- **Pattern**: Use Suspense/Await in route components with skeleton fallback
+- **Layout Matching**: Skeleton dimensions must match final content to prevent layout shift
+- **Performance**: Components are optimized with useMemo for arrays and reasonable item caps
+- **Accessibility**: All skeletons include proper ARIA labels and loading announcements
+- **Responsive**: Skeleton components match existing breakpoints and responsive behavior
+
+##### Implementation Example
+
+```tsx
+// In route component
+import { HeroIndexSkeleton } from "~/components/skeletons";
+
+export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
+  return (
+    <Suspense fallback={<HeroIndexSkeleton />}>
+      <Await resolve={loaderData?.heroesData}>
+        {(data) => <HeroesContent data={data} />}
+      </Await>
+    </Suspense>
+  );
+}
+```
+
+##### Integration Status
+
+- **Fully Integrated**: Heroes Index, Equipment Index, Mission Index, Admin Users
+- **Ready for Integration**: Hero/Equipment Detail pages, Authentication flows, Form submissions
+- **Testing**: 46 skeleton component tests covering rendering, accessibility, and responsive behavior
+
 ### Data Layer
 
 - **Repository Pattern**: BaseRepository class with type-safe database operations (`app/repositories/BaseRepository.ts`)

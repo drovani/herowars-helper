@@ -7,7 +7,13 @@ import {
   createMockEquipment,
   createMockMission,
 } from "~/__tests__/mocks/msw/factories";
-import { resetStores, server, setChapterStore, setEquipmentStore, setMissionStore } from "~/__tests__/mocks/msw/server";
+import {
+  resetStores,
+  server,
+  setChapterStore,
+  setEquipmentStore,
+  setMissionStore,
+} from "~/__tests__/mocks/msw/server";
 import { MissionRepository } from "../MissionRepository";
 
 describe("MissionRepository", () => {
@@ -322,7 +328,9 @@ describe("MissionRepository", () => {
         })
       );
 
-      const result = await repository.findByCampaignSource("non-existent-equipment");
+      const result = await repository.findByCampaignSource(
+        "non-existent-equipment"
+      );
 
       expect(result.data).toBeNull();
       expect(result.error).toEqual({
@@ -444,7 +452,10 @@ describe("MissionRepository", () => {
           expect(acceptHeader).toContain("application/vnd.pgrst.object+json");
 
           // Return chapter with missions relationship
-          const chapterWithMissions = { ...mockChapter, missions: mockMissions };
+          const chapterWithMissions = {
+            ...mockChapter,
+            missions: mockMissions,
+          };
           return HttpResponse.json(chapterWithMissions);
         })
       );
@@ -463,7 +474,9 @@ describe("MissionRepository", () => {
         { id: 2, title: "Chapter 2" },
       ];
 
-      const mockCreatedChapters = inputChapters.map((c) => createMockChapter(c));
+      const mockCreatedChapters = inputChapters.map((c) =>
+        createMockChapter(c)
+      );
 
       let callCount = 0;
       server.use(
@@ -504,10 +517,15 @@ describe("MissionRepository", () => {
 
           if (callCount === 1) {
             // First chapter succeeds
-            return HttpResponse.json(createMockChapter(expectedChapter), { status: 201 });
+            return HttpResponse.json(createMockChapter(expectedChapter), {
+              status: 201,
+            });
           } else {
             // Second chapter fails validation (handled by repository validation)
-            return HttpResponse.json({ message: "Validation failed", code: "VALIDATION_ERROR" }, { status: 400 });
+            return HttpResponse.json(
+              { message: "Validation failed", code: "VALIDATION_ERROR" },
+              { status: 400 }
+            );
           }
         })
       );
@@ -541,7 +559,9 @@ describe("MissionRepository", () => {
         },
       ];
 
-      const mockCreatedMissions = inputMissions.map((m) => createMockMission(m));
+      const mockCreatedMissions = inputMissions.map((m) =>
+        createMockMission(m)
+      );
 
       server.use(
         http.post("*/rest/v1/mission", async ({ request }) => {
@@ -679,7 +699,9 @@ describe("MissionRepository", () => {
       const result = await repository.purgeMissionDomain();
 
       expect(result.data).toBeNull();
-      expect(result.error?.message).toBe("Failed to purge missions: Unexpected database error");
+      expect(result.error?.message).toBe(
+        "Failed to purge missions: Unexpected database error"
+      );
     });
 
     it("should handle empty delete results", async () => {
@@ -715,7 +737,10 @@ describe("MissionRepository", () => {
         { id: 2, title: "New Chapter" },
       ];
 
-      const existingChapter = createMockChapter({ id: 1, title: "Existing Chapter" });
+      const existingChapter = createMockChapter({
+        id: 1,
+        title: "Existing Chapter",
+      });
       const newChapter = createMockChapter({ id: 2, title: "New Chapter" });
 
       let findCallCount = 0;
@@ -735,7 +760,10 @@ describe("MissionRepository", () => {
             return HttpResponse.json(existingChapter);
           } else if (idFilter === "eq.2") {
             // Second chapter doesn't exist
-            return HttpResponse.json({ message: "Not found", code: "PGRST116" }, { status: 404 });
+            return HttpResponse.json(
+              { message: "Not found", code: "PGRST116" },
+              { status: 404 }
+            );
           }
 
           return HttpResponse.json(null, { status: 404 });
@@ -756,7 +784,9 @@ describe("MissionRepository", () => {
       expect(result.data).toEqual([newChapter]);
       expect(result.error).toBeDefined();
       expect(result.error?.code).toBe("BULK_PARTIAL_SUCCESS");
-      expect((result.error?.details as any)?.skipped).toEqual([existingChapter]);
+      expect((result.error?.details as any)?.skipped).toEqual([
+        existingChapter,
+      ]);
       expect(findCallCount).toBe(2);
     });
   });

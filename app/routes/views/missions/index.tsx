@@ -1,7 +1,8 @@
 import { cva } from "class-variance-authority";
 import { MapIcon, SearchIcon } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Suspense, useMemo, useState } from "react";
+import { Await, Link } from "react-router";
+import { MissionIndexSkeleton } from "~/components/skeletons/MissionIndexSkeleton";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import {
@@ -19,7 +20,7 @@ import {
 } from "~/repositories/MissionRepository";
 import type { Route } from "./+types/index";
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+async function loadMissionsData(request: Request) {
   const missionRepo = new MissionRepository(request);
   const missionsResult = await missionRepo.findAll({
     orderBy: [
@@ -69,6 +70,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   }, {} as Record<number, { title: string; missions: Mission[] }>);
 
   return { missionsByChapter, uniqueBosses };
+}
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  return {
+    missionsData: loadMissionsData(request),
+  };
 };
 
 const cardVariants = cva("p-1 bottom-0 absolute w-full text-center", {
@@ -83,8 +90,13 @@ const cardVariants = cva("p-1 bottom-0 absolute w-full text-center", {
   },
 });
 
-export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
-  const { missionsByChapter, uniqueBosses } = loaderData;
+function MissionsContent({
+  missionsByChapter,
+  uniqueBosses,
+}: {
+  missionsByChapter: Record<number, { title: string; missions: Mission[] }>;
+  uniqueBosses: string[];
+}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBoss, setSelectedBoss] = useState<string | null>(null);
 
@@ -223,5 +235,26 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
+  return (
+    <Suspense fallback={<MissionIndexSkeleton />}>
+      <Await resolve={loaderData?.missionsData}>
+        {(data: {
+          missionsByChapter: Record<
+            number,
+            { title: string; missions: Mission[] }
+          >;
+          uniqueBosses: string[];
+        }) => (
+          <MissionsContent
+            missionsByChapter={data.missionsByChapter}
+            uniqueBosses={data.uniqueBosses}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 }

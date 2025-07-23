@@ -7,12 +7,14 @@ This planning document outlines the implementation strategy for refactoring repo
 ## Problem Statement
 
 ### Current Issues with Supabase Client Mocking
+
 - **Tight coupling**: Tests directly mock internal Supabase client methods
 - **Fragile setup**: Complex method chaining mocks break easily with updates
 - **Limited realism**: Doesn't validate actual HTTP requests/responses
 - **Maintenance burden**: Each Supabase update may break existing mocks
 
 ### Benefits of MSW Approach
+
 - **Network-level interception**: Tests actual HTTP requests to Supabase REST API
 - **Realistic responses**: Mock responses match actual Supabase API format
 - **Maintainable**: Less dependent on Supabase client internals
@@ -22,51 +24,63 @@ This planning document outlines the implementation strategy for refactoring repo
 ## Implementation Phases
 
 ### Phase 1: Setup and Dependencies
+
 **Priority**: High  
 **Estimated Time**: 2-3 hours
 
 #### Tasks
+
 1. Install MSW dependencies
+
    ```bash
    npm install --save-dev msw
    ```
 
 2. Create MSW configuration files:
+
    - `app/__tests__/mocks/msw/server.ts` - MSW server setup
    - `app/__tests__/mocks/msw/handlers.ts` - Request handlers
    - `app/__tests__/mocks/msw/factories.ts` - Test data factories
 
 3. Update Vitest configuration to integrate MSW
+
    - Modify `vitest.config.ts` to include MSW setup
    - Add global test setup file
 
 4. Create utility functions for common MSW operations
 
 #### Deliverables
+
 - [x] MSW installed and configured
 - [x] Base handler structure created
 - [x] Test data factories implemented
 - [x] Vitest integration complete
 
 ### Phase 2: Refactor BaseRepository Tests ✅ COMPLETE
+
 **Priority**: High  
 **Estimated Time**: 4-5 hours
 
 #### Current State Analysis
+
 - File: `app/repositories/__tests__/BaseRepository.test.ts`
 - ✅ Converted from direct Supabase client mocking to MSW patterns
 - ✅ Tests CRUD operations, error handling, and logging with MSW
 
 #### Refactoring Strategy
+
 1. **✅ Replace Supabase mocks with MSW handlers**
+
    - ✅ Converted `mockSupabaseClient` usage to MSW request handlers
    - ✅ Created handlers for GET, POST, PATCH, DELETE operations
 
 2. **✅ Implement test data factories**
+
    - ✅ Created factory functions for generating test data
    - ✅ Support different response scenarios (success, error, empty)
 
 3. **✅ Preserve existing test coverage**
+
    - ✅ Maintained all current test scenarios
    - ✅ Log capturing pattern remains intact
    - ✅ Kept error handling test cases
@@ -77,26 +91,32 @@ This planning document outlines the implementation strategy for refactoring repo
    - ✅ Check URL construction and query parameters
 
 #### Key Changes
+
 - ✅ Removed `createMockSupabaseClient` calls
 - ✅ Replaced `mockFrom.select.mockResolvedValue()` with MSW handlers
 - ✅ Updated test setup to use MSW server
 - ✅ Added request interceptors for validation
 
 ### Phase 3: Refactor MissionRepository Tests ✅ COMPLETE
+
 **Priority**: High  
 **Estimated Time**: 3-4 hours
 
 #### Current State Analysis
+
 - File: `app/repositories/__tests__/MissionRepository.test.ts`
 - ✅ Converted from legacy Supabase mocking to MSW patterns
 - ✅ All 23 tests now use HTTP request interception
 
 #### Refactoring Strategy
+
 1. **✅ Apply BaseRepository refactoring patterns**
+
    - ✅ Used established MSW handler patterns from Phase 2
    - ✅ Reused common test data factories
 
 2. **✅ Handle mission-specific operations**
+
    - ✅ Created handlers for mission table operations
    - ✅ Support chapter relationship queries
    - ✅ Handle slug-based primary key operations
@@ -107,15 +127,19 @@ This planning document outlines the implementation strategy for refactoring repo
    - ✅ Ensured relationship testing remains robust
 
 ### Phase 4: Enhanced Testing Features
+
 **Priority**: Medium  
 **Estimated Time**: 2-3 hours
 
 #### Request Validation Enhancement
+
 1. **HTTP Method Validation**
+
    - Verify correct REST methods (GET, POST, PATCH, DELETE)
    - Ensure proper HTTP status codes in responses
 
 2. **Payload Validation**
+
    - Validate request body structure
    - Check query parameter construction
    - Verify header inclusion (Authorization, apikey, etc.)
@@ -127,7 +151,9 @@ This planning document outlines the implementation strategy for refactoring repo
    - Rate limiting scenarios (429 errors)
 
 #### Advanced Mock Scenarios
+
 1. **Dynamic Response Generation**
+
    - Implement handlers that modify responses based on request
    - Support CRUD operations that affect subsequent requests
 
@@ -136,10 +162,12 @@ This planning document outlines the implementation strategy for refactoring repo
    - Implement realistic database-like behavior
 
 ### Phase 5: Implementation Checklist ✅ COMPLETE
+
 **Priority**: Medium  
 **Estimated Time**: 1-2 hours
 
 #### Verification Tasks
+
 - [x] All existing tests pass with MSW implementation
 - [x] Test coverage remains at 100% for repositories
 - [x] No direct Supabase client mocking remains
@@ -149,21 +177,26 @@ This planning document outlines the implementation strategy for refactoring repo
 - [x] Test execution time is acceptable
 
 #### Quality Assurance
+
 - [x] Run full test suite: `npm run test:run`
 - [x] Generate coverage report: `npm run test:coverage`
 - [x] Verify no console noise during tests
 - [x] Check TypeScript compilation: `npm run tsc`
 
 ### Phase 6: Advanced Testing Scenarios
+
 **Priority**: Low  
 **Estimated Time**: 2-4 hours
 
 #### Integration Testing Enhancement
+
 1. **Multi-Repository Scenarios**
+
    - Test scenarios involving multiple repositories
    - Validate cross-table relationship operations
 
 2. **Performance Testing**
+
    - Implement request timing validation
    - Add handlers for testing query optimization
 
@@ -195,57 +228,62 @@ app/
 ## Technical Considerations
 
 ### MSW Handler Patterns
+
 ```typescript
 // Example handler structure
 export const handlers = [
   // GET requests
-  http.get('/rest/v1/mission', ({ request }) => {
+  http.get("/rest/v1/mission", ({ request }) => {
     // Handler implementation
   }),
-  
-  // POST requests  
-  http.post('/rest/v1/mission', ({ request }) => {
+
+  // POST requests
+  http.post("/rest/v1/mission", ({ request }) => {
     // Handler implementation
   }),
-  
+
   // Error scenarios
-  http.get('/rest/v1/mission', () => {
-    return HttpResponse.json({ error: 'Network error' }, { status: 500 })
-  })
-]
+  http.get("/rest/v1/mission", () => {
+    return HttpResponse.json({ error: "Network error" }, { status: 500 });
+  }),
+];
 ```
 
 ### Test Data Factories
+
 ```typescript
 // Example factory pattern
 export const createMissionData = (overrides = {}) => ({
-  slug: 'test-mission',
-  name: 'Test Mission',
+  slug: "test-mission",
+  name: "Test Mission",
   chapter_id: 1,
   energy_cost: 6,
-  ...overrides
-})
+  ...overrides,
+});
 ```
 
 ### Request Validation Utilities
+
 ```typescript
 // Example validation helper
 export const validateSupabaseRequest = (request: Request) => {
-  expect(request.headers.get('apikey')).toBeDefined()
-  expect(request.headers.get('Authorization')).toBeDefined()
-  expect(request.url).toContain('/rest/v1/')
-}
+  expect(request.headers.get("apikey")).toBeDefined();
+  expect(request.headers.get("Authorization")).toBeDefined();
+  expect(request.url).toContain("/rest/v1/");
+};
 ```
 
 ## Migration Strategy
 
 ### Step-by-Step Approach
+
 1. **Parallel Implementation**: Keep existing tests running while building MSW versions
 2. **Incremental Testing**: Test each phase thoroughly before proceeding
 3. **Rollback Plan**: Maintain ability to revert if issues arise
 4. **Documentation**: Update testing documentation with new patterns
 
 ### Risk Mitigation
+
 - **Test Coverage Monitoring**: Ensure no regression in coverage
 - **Performance Impact**: Monitor test execution time
 - **CI/CD Compatibility**: Verify all tests pass in automated environments
@@ -254,12 +292,14 @@ export const validateSupabaseRequest = (request: Request) => {
 ## Success Criteria ✅ COMPLETE
 
 ### Functional Requirements
+
 - [x] All existing repository tests pass with MSW
 - [x] Test coverage maintains 100% for repository files
 - [x] Test execution time does not significantly increase
 - [x] No direct Supabase client mocking remains in codebase
 
 ### Technical Requirements
+
 - [x] MSW properly intercepts Supabase REST API calls
 - [x] Request validation works correctly
 - [x] Error scenarios are properly handled
@@ -267,6 +307,7 @@ export const validateSupabaseRequest = (request: Request) => {
 - [x] TypeScript compilation succeeds without errors
 
 ### Documentation Requirements
+
 - [x] Updated CLAUDE.md with MSW testing patterns
 - [x] Code comments explain MSW setup and usage
 - [x] Examples provided for future test development
@@ -277,7 +318,7 @@ export const validateSupabaseRequest = (request: Request) => {
 
 - **Phase 1**: 2-3 hours (Setup)
 - **Phase 2**: 4-5 hours (BaseRepository)
-- **Phase 3**: 3-4 hours (MissionRepository) 
+- **Phase 3**: 3-4 hours (MissionRepository)
 - **Phase 4**: 2-3 hours (Enhanced features)
 - **Phase 5**: 1-2 hours (Verification)
 - **Phase 6**: 2-4 hours (Advanced scenarios)
@@ -291,4 +332,4 @@ export const validateSupabaseRequest = (request: Request) => {
 
 ---
 
-*This planning document will be updated as implementation progresses and new requirements are discovered.*
+_This planning document will be updated as implementation progresses and new requirements are discovered._

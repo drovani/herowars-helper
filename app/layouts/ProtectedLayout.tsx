@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import { UnauthorizedAccess } from "~/components/auth/UnauthorizedAccess";
 import { useAuth } from "~/contexts/AuthContext";
+import { NavigationSkeleton } from "~/components/skeletons";
 
 export default function ProtectedLayout({ roles = [] }: { roles?: string[] }) {
   const { isAuthenticated, user, isLoading } = useAuth();
@@ -8,11 +9,43 @@ export default function ProtectedLayout({ roles = [] }: { roles?: string[] }) {
   // Show loading state while auth is initializing
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+      <div
+        className="min-h-screen bg-background"
+        role="status"
+        aria-live="polite"
+        aria-label="Loading application"
+      >
+        <div className="flex">
+          {/* Sidebar skeleton */}
+          <div className="w-64 border-r bg-card">
+            <NavigationSkeleton type="sidebar" />
+          </div>
+
+          {/* Main content skeleton */}
+          <div className="flex-1">
+            {/* Header skeleton */}
+            <div className="border-b bg-card">
+              <NavigationSkeleton type="header" />
+            </div>
+
+            {/* Page content loading */}
+            <div className="p-6 space-y-6">
+              <NavigationSkeleton type="breadcrumbs" />
+              <div className="space-y-4">
+                <div className="h-8 bg-muted rounded animate-pulse" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-32 bg-muted rounded animate-pulse"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+        <span className="sr-only">Application is loading, please wait.</span>
       </div>
     );
   }

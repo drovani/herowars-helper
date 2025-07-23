@@ -1,9 +1,10 @@
 import { AlertCircle, ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useEffect } from "react";
-import { Link, useNavigate, type UIMatch } from "react-router";
+import { Suspense, useEffect } from "react";
+import { Await, Link, useNavigate, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
+import { EquipmentDetailSkeleton } from "~/components/skeletons/EquipmentDetailSkeleton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import {
@@ -15,18 +16,19 @@ import {
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import type { EquipmentRecord } from "~/data/equipment.zod";
+import {
+  transformBasicHeroToRecord,
+  transformCompleteHeroToRecord,
+} from "~/lib/hero-transformations";
 import { generateSlug } from "~/lib/utils";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import {
-  transformCompleteHeroToRecord,
-  transformBasicHeroToRecord,
-} from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
-  return [{ title: data?.equipment.name }];
+  const equipmentName = data?.basicEquipment?.name || "Equipment Details";
+  return [{ title: equipmentName }];
 };
 
 export const handle = {
@@ -34,11 +36,42 @@ export const handle = {
     match: UIMatch<Route.ComponentProps["loaderData"], unknown>
   ) => ({
     href: match.pathname,
-    title: match.data?.equipment.name,
+    title: match.data?.basicEquipment?.name || "Equipment Details",
   }),
 };
 
-export const loader = async ({ params, request }: Route.LoaderArgs) => {
+async function loadBasicEquipmentData(
+  params: { slug: string },
+  request: Request
+) {
+  invariant(params.slug, "Missing equipment slug param");
+
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentJsonResult = await equipmentRepo.getAllAsJson([params.slug]);
+
+  if (
+    equipmentJsonResult.error ||
+    !equipmentJsonResult.data ||
+    equipmentJsonResult.data.length === 0
+  ) {
+    throw new Response(null, {
+      status: 404,
+      statusText: `Equipment with id ${params.slug} not found.`,
+    });
+  }
+
+  const equipment = equipmentJsonResult.data[0];
+  return {
+    name: equipment.name,
+    slug: equipment.slug,
+    type: equipment.type,
+  };
+}
+
+async function loadDetailedEquipmentData(
+  params: { slug: string },
+  request: Request
+) {
   invariant(params.slug, "Missing equipment slug param");
 
   const equipmentRepo = new EquipmentRepository(request);
@@ -155,6 +188,15 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     nextEquipment,
     heroesUsingItem,
   };
+}
+
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const basicEquipment = await loadBasicEquipmentData(params, request);
+
+  return {
+    basicEquipment, // Available immediately for meta/breadcrumbs
+    detailedData: loadDetailedEquipmentData(params, request), // Deferred for skeleton loading
+  };
 };
 
 // Component to render either a valid equipment item or a placeholder
@@ -198,18 +240,27 @@ const EquipmentItem = ({
   );
 };
 
-export default function Equipment({ loaderData }: Route.ComponentProps) {
-  const {
-    equipment,
-    requiredEquipment,
-    requiredEquipmentRaw,
-    requiredFor,
-    rawComponentOf,
-    missionSources,
-    prevEquipment,
-    nextEquipment,
-    heroesUsingItem,
-  } = loaderData;
+function EquipmentContent({
+  equipment,
+  requiredEquipment,
+  requiredEquipmentRaw,
+  requiredFor,
+  rawComponentOf,
+  missionSources,
+  prevEquipment,
+  nextEquipment,
+  heroesUsingItem,
+}: {
+  equipment: any;
+  requiredEquipment: any[];
+  requiredEquipmentRaw: any;
+  requiredFor: any[];
+  rawComponentOf: any[];
+  missionSources: any[];
+  prevEquipment: any;
+  nextEquipment: any;
+  heroesUsingItem: any[];
+}) {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -318,7 +369,9 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                     />
                     <span className="capitalize">{stat}:</span>
                   </div>
-                  <span className="font-semibold">{value}</span>
+                  <span className="font-semibold">
+                    {value as React.ReactNode}
+                  </span>
                 </div>
               ))}
             </CardContent>
@@ -394,7 +447,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                     </span>
                   </div>
                   <div className="inline-grid gap-x-2 gap-y-1 grid-cols-[min-content_auto]">
-                    {requiredEquipmentRaw.required_items.map((item) => {
+                    {requiredEquipmentRaw.required_items.map((item: any) => {
                       return [
                         <span>{item.quantity}x</span>,
                         <Link
@@ -561,5 +614,37 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Equipment({ loaderData }: Route.ComponentProps) {
+  return (
+    <Suspense fallback={<EquipmentDetailSkeleton showEditButton={true} />}>
+      <Await resolve={loaderData?.detailedData}>
+        {(data: {
+          equipment: any;
+          requiredEquipment: any[];
+          requiredEquipmentRaw: any;
+          requiredFor: any[];
+          rawComponentOf: any[];
+          missionSources: any[];
+          prevEquipment: any;
+          nextEquipment: any;
+          heroesUsingItem: any[];
+        }) => (
+          <EquipmentContent
+            equipment={data.equipment}
+            requiredEquipment={data.requiredEquipment}
+            requiredEquipmentRaw={data.requiredEquipmentRaw}
+            requiredFor={data.requiredFor}
+            rawComponentOf={data.rawComponentOf}
+            missionSources={data.missionSources}
+            prevEquipment={data.prevEquipment}
+            nextEquipment={data.nextEquipment}
+            heroesUsingItem={data.heroesUsingItem}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 }

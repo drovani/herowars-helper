@@ -17,6 +17,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
+    "lint": "prettier . --write --ignore-path .gitignore",
     "checks": "react-router typegen && tsc && vitest run && cross-env NODE_ENV=development node ./dev-server.js"
   },
   "dependencies": {

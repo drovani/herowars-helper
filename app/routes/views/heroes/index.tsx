@@ -5,14 +5,15 @@ import {
   LayoutGridIcon,
   LayoutListIcon,
 } from "lucide-react";
-import { useState } from "react";
-import { Link, useFetcher } from "react-router";
+import { Suspense, useState } from "react";
+import { Await, Link, useFetcher } from "react-router";
 import HeroArtifactsCompact from "~/components/hero/HeroArtifactsCompact";
 import HeroCard from "~/components/hero/HeroCard";
 import HeroGlyphsCompact from "~/components/hero/HeroGlyphsCompact";
 import HeroItemsCompact from "~/components/hero/HeroItemsCompact";
 import HeroSkinsCompact from "~/components/hero/HeroSkinsCompact";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
+import { HeroIndexSkeleton } from "~/components/skeletons/HeroIndexSkeleton";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -34,7 +35,7 @@ import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { BasicHero } from "~/repositories/types";
 import type { Route } from "./+types/index";
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+async function loadHeroesData(request: Request) {
   const url = new URL(request.url);
   const mode = url.searchParams.get("mode") || "cards";
   const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
@@ -114,11 +115,17 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     pagination:
       mode === "tiles"
         ? {
-            currentPage: page,
-            limit,
-            hasMore: hasMoreResults,
-          }
+          currentPage: page,
+          limit,
+          hasMore: hasMoreResults,
+        }
         : undefined,
+  };
+}
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  return {
+    heroesData: loadHeroesData(request),
   };
 };
 
@@ -151,14 +158,19 @@ export const action = async ({ request }: Route.ActionArgs) => {
   return { error: "Invalid action" };
 };
 
-export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
-  const {
-    heroes,
-    equipment,
-    userCollection,
-    mode: initialMode,
-    pagination,
-  } = loaderData;
+function HeroesContent({
+  heroes,
+  equipment,
+  userCollection,
+  mode: initialMode,
+  pagination,
+}: {
+  heroes: any[];
+  equipment: any[];
+  userCollection: string[];
+  mode: string;
+  pagination?: any;
+}) {
   const { user } = useAuth();
   const fetcher = useFetcher();
 
@@ -175,8 +187,8 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
 
   const filteredHeroes = search
     ? heroes.filter((hero) =>
-        hero.name.toLowerCase().includes(search.toLowerCase())
-      )
+      hero.name.toLowerCase().includes(search.toLowerCase())
+    )
     : heroes;
 
   const HeroCardWithButton = ({
@@ -224,7 +236,7 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
     equipment,
   }: {
     hero: any;
-    equipment: typeof loaderData.equipment;
+    equipment: any[];
   }) => {
     const isSubmittingThisHero =
       fetcher.state === "submitting" &&
@@ -381,5 +393,29 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
         </div>
       )}
     </div>
+  );
+}
+
+export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
+  return (
+    <Suspense fallback={<HeroIndexSkeleton />}>
+      <Await resolve={loaderData?.heroesData}>
+        {(data: {
+          heroes: any[];
+          equipment: any[];
+          userCollection: string[];
+          mode: string;
+          pagination?: any;
+        }) => (
+          <HeroesContent
+            heroes={data.heroes}
+            equipment={data.equipment}
+            userCollection={data.userCollection}
+            mode={data.mode}
+            pagination={data.pagination}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 }

@@ -1,7 +1,13 @@
 //components/hero-form/GlyphsField.tsx
 import { type UseFormReturn } from "react-hook-form";
 import { FormField, FormLabel, FormMessage } from "~/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import type { HeroMutation, HeroRecord } from "~/data/hero.zod";
 import { Stats, type HeroStat } from "~/data/ReadonlyArrays";
 import { generateSlug } from "~/lib/utils";
@@ -15,7 +21,11 @@ interface GlyphsFieldProps {
 function StatDisplay({ stat }: { stat: string }) {
   return (
     <div className="flex items-center gap-2">
-      <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />
+      <img
+        src={`/images/stats/${generateSlug(stat)}.png`}
+        alt={stat}
+        className="w-6 h-6"
+      />
       <span className="capitalize">{stat}</span>
     </div>
   );
@@ -52,25 +62,44 @@ export default function GlyphsField({ form, hero }: GlyphsFieldProps) {
               key={index}
               render={({ fieldState }) => (
                 <div key={index} className="space-y-2">
-                  <FormLabel className="text-sm text-muted-foreground">Glyph {index + 1}</FormLabel>
+                  <FormLabel className="text-sm text-muted-foreground">
+                    Glyph {index + 1}
+                  </FormLabel>
                   <FormMessage />
                   {index === 4 ? (
                     <div className="h-10 px-3 py-2 border rounded-md bg-muted flex items-center gap-2">
                       <img
-                        src={`/images/stats/${generateSlug(hero.main_stat)}.png`}
+                        src={`/images/stats/${generateSlug(
+                          hero.main_stat
+                        )}.png`}
                         alt={hero.main_stat}
                         className="w-6 h-6"
                       />
                       <span className="capitalize">{hero.main_stat}</span>
                     </div>
                   ) : (
-                    <Select value={glyph || undefined} onValueChange={(value) => updateGlyph(index, value as HeroStat)}>
-                      <SelectTrigger className={fieldState.error && "border-destructive"}>
-                        {glyph ? <StatDisplay stat={glyph} /> : <SelectValue placeholder="Select stat" />}
+                    <Select
+                      value={glyph || undefined}
+                      onValueChange={(value) =>
+                        updateGlyph(index, value as HeroStat)
+                      }
+                    >
+                      <SelectTrigger
+                        className={fieldState.error && "border-destructive"}
+                      >
+                        {glyph ? (
+                          <StatDisplay stat={glyph} />
+                        ) : (
+                          <SelectValue placeholder="Select stat" />
+                        )}
                       </SelectTrigger>
                       <SelectContent>
                         {availableStats.map((stat) => (
-                          <SelectItem key={stat} value={stat} disabled={isStatDisabled(stat, index)}>
+                          <SelectItem
+                            key={stat}
+                            value={stat}
+                            disabled={isStatDisabled(stat, index)}
+                          >
                             <StatDisplay stat={stat} />
                           </SelectItem>
                         ))}

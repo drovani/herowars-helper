@@ -7,8 +7,15 @@ import log from "loglevel";
 import { ZodError } from "zod";
 import MissionForm from "~/components/MissionForm";
 import { Badge } from "~/components/ui/badge";
-import { MissionMutationSchema, type MissionMutation } from "~/data/mission.zod";
-import { MissionRepository, type Mission, type MissionUpdate } from "~/repositories/MissionRepository";
+import {
+  MissionMutationSchema,
+  type MissionMutation,
+} from "~/data/mission.zod";
+import {
+  MissionRepository,
+  type Mission,
+  type MissionUpdate,
+} from "~/repositories/MissionRepository";
 import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
@@ -24,7 +31,9 @@ export const meta = ({ data }: Route.MetaArgs) => {
 };
 
 export const handle = {
-  breadcrumb: (matches: UIMatch<Route.ComponentProps["loaderData"], unknown>) => [
+  breadcrumb: (
+    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>
+  ) => [
     {
       href: `/missions/${matches.params.slug}`,
       title: matches.data?.mission?.name || "Mission",
@@ -37,10 +46,10 @@ export const handle = {
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing slug param.");
-  
+
   const missionRepo = new MissionRepository(request);
   const missionResult = await missionRepo.findById(params.slug);
-  
+
   if (missionResult.error) {
     throw data(null, {
       status: 500,
@@ -74,7 +83,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   const missionData = JSON.parse(formData.get("mission") as string);
 
   const missionRepo = new MissionRepository(request);
-  
+
   // Convert MissionMutation format to Repository format
   const updateData: MissionUpdate = {
     name: missionData.name,
@@ -83,16 +92,22 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   };
 
   const updateResult = await missionRepo.update(params.slug, updateData);
-  
+
   if (updateResult.error) {
     log.error("Mission update failed:", updateResult.error);
-    return data({ errors: { _form: [updateResult.error.message] } }, { status: 400 });
+    return data(
+      { errors: { _form: [updateResult.error.message] } },
+      { status: 400 }
+    );
   }
 
   return redirect(`/missions/${updateResult.data?.slug}`);
 };
 
-export default function EditMission({ loaderData, actionData }: Route.ComponentProps) {
+export default function EditMission({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { mission } = loaderData;
 
   try {
@@ -101,7 +116,7 @@ export default function EditMission({ loaderData, actionData }: Route.ComponentP
       defaultValues: {
         chapter: mission.chapter_id,
         chapter_title: "", // This would need to be fetched from the chapter table
-        mission_number: parseInt(mission.slug.split('-')[1]), // Extract from slug
+        mission_number: parseInt(mission.slug.split("-")[1]), // Extract from slug
         name: mission.name,
         boss: mission.hero_slug || "",
       },

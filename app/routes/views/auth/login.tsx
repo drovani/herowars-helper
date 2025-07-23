@@ -1,43 +1,43 @@
-import { type ActionFunctionArgs, Link, redirect } from 'react-router'
-import { LoginForm } from '~/components/auth/LoginForm'
+import { type ActionFunctionArgs, Link, redirect } from "react-router";
+import { LoginForm } from "~/components/auth/LoginForm";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '~/components/ui/card'
-import { createClient } from '~/lib/supabase/client'
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { createClient } from "~/lib/supabase/client";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { supabase, headers } = createClient(request)
+  const { supabase, headers } = createClient(request);
 
-  const formData = await request.formData()
+  const formData = await request.formData();
 
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const redirectTo = formData.get('redirectTo') as string
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const redirectTo = formData.get("redirectTo") as string;
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
-  })
+  });
 
   if (error) {
     return {
-      error: error instanceof Error ? error.message : 'An error occurred',
-    }
+      error: error instanceof Error ? error.message : "An error occurred",
+    };
   }
 
   // If redirectTo is provided (from modal), return success with headers
   // The modal will handle the page reload
   if (redirectTo) {
-    return Response.json({ success: true, redirectTo }, { headers })
+    return Response.json({ success: true, redirectTo }, { headers });
   }
-  
+
   // Otherwise, redirect to account page (for dedicated login page)
-  return redirect('/account', { headers })
-}
+  return redirect("/account", { headers });
+};
 
 export default function Login() {
   return (
@@ -47,7 +47,9 @@ export default function Login() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Login</CardTitle>
-              <CardDescription>Enter your email below to login to your account</CardDescription>
+              <CardDescription>
+                Enter your email below to login to your account
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <LoginForm />
@@ -60,7 +62,7 @@ export default function Login() {
                 </Link>
               </div>
               <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{' '}
+                Don&apos;t have an account?{" "}
                 <Link to="/sign-up" className="underline underline-offset-4">
                   Sign up
                 </Link>
@@ -70,5 +72,5 @@ export default function Login() {
         </div>
       </div>
     </div>
-  )
+  );
 }

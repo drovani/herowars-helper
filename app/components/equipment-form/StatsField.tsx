@@ -2,9 +2,19 @@ import { PlusCircleIcon, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import { Button } from "~/components/ui/button";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { type EquipmentMutation } from "~/data/equipment.zod";
 import { Stats } from "~/data/ReadonlyArrays";
 import { generateSlug } from "~/lib/utils";
@@ -14,7 +24,10 @@ interface StatsFieldProps {
   disabled?: boolean;
 }
 
-export default function StatsField({ form, disabled = false }: StatsFieldProps) {
+export default function StatsField({
+  form,
+  disabled = false,
+}: StatsFieldProps) {
   const [open, setOpen] = useState(false);
   const [lastAddedStat, setLastAddedStat] = useState<string | null>(null);
   const inputRefs = useRef<Record<string, HTMLInputElement>>({});
@@ -59,7 +72,11 @@ export default function StatsField({ form, disabled = false }: StatsFieldProps) 
             {Object.entries(stats).map(([stat, value]) => (
               <div key={stat} className="flex items-center gap-2">
                 <div className="flex items-center gap-2 w-40">
-                  <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />
+                  <img
+                    src={`/images/stats/${generateSlug(stat)}.png`}
+                    alt={stat}
+                    className="w-6 h-6"
+                  />
                   <span className="capitalize">{stat}</span>
                 </div>
                 <FormControl>
@@ -78,7 +95,12 @@ export default function StatsField({ form, disabled = false }: StatsFieldProps) 
                     className="w-20"
                   />
                 </FormControl>
-                <Button type="button" variant="ghost" size="icon" onClick={() => removeStat(stat)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeStat(stat)}
+                >
                   <XIcon className="h-4 w-4" />
                 </Button>
               </div>
@@ -86,7 +108,10 @@ export default function StatsField({ form, disabled = false }: StatsFieldProps) 
 
             {/* Add new stat */}
             <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild disabled={disabled || availableStats.length === 0}>
+              <PopoverTrigger
+                asChild
+                disabled={disabled || availableStats.length === 0}
+              >
                 <Button
                   type="button"
                   variant="outline"
@@ -98,7 +123,11 @@ export default function StatsField({ form, disabled = false }: StatsFieldProps) 
                   Add Stat
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-64" align="start" onCloseAutoFocus={handleCloseAutoFocus}>
+              <PopoverContent
+                className="w-64"
+                align="start"
+                onCloseAutoFocus={handleCloseAutoFocus}
+              >
                 <div className="space-y-1 p-2">
                   {availableStats.map((stat) => (
                     <Button
@@ -109,7 +138,11 @@ export default function StatsField({ form, disabled = false }: StatsFieldProps) 
                       onClick={() => onSelectStat(stat)}
                     >
                       <div className="flex items-center gap-2">
-                        <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />
+                        <img
+                          src={`/images/stats/${generateSlug(stat)}.png`}
+                          alt={stat}
+                          className="w-6 h-6"
+                        />
                         <span className="capitalize">{stat}</span>
                       </div>
                     </Button>

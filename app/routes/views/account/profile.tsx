@@ -3,7 +3,13 @@ import { useAuth } from "~/contexts/AuthContext";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { formatTitle } from "~/config/site";
 import type { Route } from "./+types/profile";
 
@@ -16,7 +22,7 @@ export const action = async (_: Route.ActionArgs) => {
 };
 
 export const meta = (_: Route.MetaArgs) => {
-  return [{ title: formatTitle('Account') }];
+  return [{ title: formatTitle("Account") }];
 };
 
 export default function AccountIndex(_: Route.ComponentProps) {
@@ -86,7 +92,7 @@ export default function AccountIndex(_: Route.ComponentProps) {
             <Label htmlFor="email">Email</Label>
             <Input id="email" value={user?.email || ""} disabled />
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="displayName">Display Name</Label>
@@ -97,13 +103,19 @@ export default function AccountIndex(_: Route.ComponentProps) {
                 placeholder="Enter your display name"
               />
             </div>
-            
+
             <Button type="submit" disabled={isUpdating}>
               {isUpdating ? "Updating..." : "Update Display Name"}
             </Button>
-            
+
             {message && (
-              <p className={`text-sm ${message.includes("successfully") ? "text-green-600" : "text-red-600"}`}>
+              <p
+                className={`text-sm ${
+                  message.includes("successfully")
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
                 {message}
               </p>
             )}

@@ -12,12 +12,20 @@ interface ButtonProps {
   variant?: "primary" | "secondary";
 }
 
-function ExampleButton({ onClick, disabled, loading, children, variant = "primary" }: ButtonProps) {
+function ExampleButton({
+  onClick,
+  disabled,
+  loading,
+  children,
+  variant = "primary",
+}: ButtonProps) {
   return (
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className={`btn ${variant === "primary" ? "btn-primary" : "btn-secondary"}`}
+      className={`btn ${
+        variant === "primary" ? "btn-primary" : "btn-secondary"
+      }`}
       data-testid="example-button"
     >
       {loading ? "Loading..." : children}
@@ -38,7 +46,9 @@ describe("Modern Component Testing Examples", () => {
     it("should handle click events", () => {
       const mockClick = vi.fn();
       // ✅ Use result object from render return value
-      const result = render(<ExampleButton onClick={mockClick}>Click me</ExampleButton>);
+      const result = render(
+        <ExampleButton onClick={mockClick}>Click me</ExampleButton>
+      );
 
       fireEvent.click(result.getByRole("button"));
       expect(mockClick).toHaveBeenCalledTimes(1);
@@ -55,7 +65,9 @@ describe("Modern Component Testing Examples", () => {
     });
 
     it("should handle disabled state", () => {
-      const result = render(<ExampleButton disabled={true}>Click me</ExampleButton>);
+      const result = render(
+        <ExampleButton disabled={true}>Click me</ExampleButton>
+      );
 
       const button = result.getByRole("button");
       expect(button).toBeDisabled();
@@ -69,7 +81,9 @@ describe("Modern Component Testing Examples", () => {
       expect(result.getByTestId("example-button")).toHaveClass("btn-primary");
 
       // ✅ Rerender to test different props
-      result.rerender(<ExampleButton variant="secondary">Secondary</ExampleButton>);
+      result.rerender(
+        <ExampleButton variant="secondary">Secondary</ExampleButton>
+      );
       expect(result.getByTestId("example-button")).toHaveClass("btn-secondary");
     });
 
@@ -143,9 +157,7 @@ describe("Modern Component Testing Examples", () => {
         </div>
       );
 
-      const result = render(
-        <ConditionalExample showButton={false} />
-      );
+      const result = render(<ConditionalExample showButton={false} />);
 
       expect(result.getByText("Always visible")).toBeInTheDocument();
       expect(result.queryByText("Conditional")).not.toBeInTheDocument();
@@ -185,7 +197,7 @@ describe("Modern Component Testing Examples", () => {
   describe("Best Practices Summary", () => {
     it("demonstrates comprehensive testing approach", () => {
       const mockClick = vi.fn();
-      
+
       // ✅ Use result object from render return value
       const result = render(
         <ExampleButton onClick={mockClick} variant="primary">
@@ -196,21 +208,21 @@ describe("Modern Component Testing Examples", () => {
       // ✅ Test rendering
       expect(result.getByRole("button")).toBeInTheDocument();
       expect(result.getByText("Test Button")).toBeInTheDocument();
-      
+
       // ✅ Test styling/classes
       expect(result.getByTestId("example-button")).toHaveClass("btn-primary");
-      
+
       // ✅ Test interactions
       fireEvent.click(result.getByRole("button"));
       expect(mockClick).toHaveBeenCalledTimes(1);
-      
+
       // ✅ Test state changes with rerender
       result.rerender(
         <ExampleButton onClick={mockClick} loading={true}>
           Test Button
         </ExampleButton>
       );
-      
+
       expect(result.getByText("Loading...")).toBeInTheDocument();
       expect(result.queryByText("Test Button")).not.toBeInTheDocument();
       expect(result.getByRole("button")).toBeDisabled();

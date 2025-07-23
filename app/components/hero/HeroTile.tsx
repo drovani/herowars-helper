@@ -17,13 +17,29 @@ export default function HeroTile({ hero, equipment }: HeroTileProps) {
     <Card className="w-full grid grid-cols-2 md:grid-cols-5">
       <Link to={`/heroes/${hero.slug}`} key={hero.slug} viewTransition>
         <div className="flex flex-col items-start p-2">
-          <img src={`/images/heroes/${hero.slug}.png`} alt={hero.name} className="size-28 rounded-md" />
+          <img
+            src={`/images/heroes/${hero.slug}.png`}
+            alt={hero.name}
+            className="size-28 rounded-md"
+          />
           <CardTitle className="flex flex-col">{hero.name}</CardTitle>
         </div>
       </Link>
-      <HeroItemsCompact items={hero.items} equipment={equipment} className="bg-muted p-2" />
-      <HeroSkinsCompact skins={hero.skins} heroSlug={hero.slug} className="p-2" />
-      <HeroArtifactsCompact artifacts={hero.artifacts} main_stat={hero.main_stat} className="bg-muted p-2" />
+      <HeroItemsCompact
+        items={hero.items}
+        equipment={equipment}
+        className="bg-muted p-2"
+      />
+      <HeroSkinsCompact
+        skins={hero.skins}
+        heroSlug={hero.slug}
+        className="p-2"
+      />
+      <HeroArtifactsCompact
+        artifacts={hero.artifacts}
+        main_stat={hero.main_stat}
+        className="bg-muted p-2"
+      />
       <HeroGlyphsCompact glyphs={hero.glyphs} className="p-2" />
     </Card>
   );

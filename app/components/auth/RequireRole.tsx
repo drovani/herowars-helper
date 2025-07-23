@@ -10,7 +10,11 @@ interface RequireRoleProps {
 /**
  * Component that conditionally renders children based on user roles
  */
-export function RequireRole({ roles, children, fallback = null }: RequireRoleProps) {
+export function RequireRole({
+  roles,
+  children,
+  fallback = null,
+}: RequireRoleProps) {
   const { hasRole } = useRoles();
 
   if (hasRole(roles)) {
@@ -23,7 +27,13 @@ export function RequireRole({ roles, children, fallback = null }: RequireRolePro
 /**
  * Component that renders children only if user has editor permissions (admin or editor role)
  */
-export function RequireEditor({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+export function RequireEditor({
+  children,
+  fallback = null,
+}: {
+  children: ReactNode;
+  fallback?: ReactNode;
+}) {
   return (
     <RequireRole roles={["admin", "editor"]} fallback={fallback}>
       {children}

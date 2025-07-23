@@ -10,14 +10,7 @@
       "magic attack": 25
     },
     "hero_level_required": 1,
-    "campaign_sources": [
-      "1-3",
-      "2-4",
-      "3-8",
-      "4-11",
-      "9-4",
-      "9-12"
-    ],
+    "campaign_sources": ["1-3", "2-4", "3-8", "4-11", "9-4", "9-12"],
     "type": "equipable",
     "slug": "apprentices-mantle",
     "updated_on": "2024-09-10T17:16:56.000Z"
@@ -31,14 +24,7 @@
     "sell_value": 1,
     "guild_activity_points": 2,
     "buy_value_gold": 3,
-    "campaign_sources": [
-      "1-10",
-      "3-1",
-      "3-7",
-      "5-8",
-      "9-8",
-      "10-11"
-    ],
+    "campaign_sources": ["1-10", "3-1", "3-7", "5-8", "9-8", "10-11"],
     "stats": {
       "intelligence": 1,
       "agility": 5,
@@ -59,13 +45,7 @@
     "buy_value_gold": 1250,
     "sell_value": 250,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "1-7",
-      "2-13",
-      "3-15",
-      "4-3",
-      "5-4"
-    ],
+    "campaign_sources": ["1-7", "2-13", "3-15", "4-3", "5-4"],
     "buy_value_coin": 0,
     "type": "equipable"
   },
@@ -101,14 +81,7 @@
       "strength": 7
     },
     "hero_level_required": 3,
-    "campaign_sources": [
-      "1-6",
-      "1-7",
-      "2-12",
-      "3-15",
-      "4-2",
-      "5-3"
-    ],
+    "campaign_sources": ["1-6", "1-7", "2-12", "3-15", "4-2", "5-3"],
     "buy_value_gold": 1250,
     "sell_value": 250,
     "guild_activity_points": 2,
@@ -149,13 +122,7 @@
       "health": 385
     },
     "hero_level_required": 3,
-    "campaign_sources": [
-      "1-5",
-      "1-8",
-      "3-2",
-      "3-12",
-      "4-14"
-    ],
+    "campaign_sources": ["1-5", "1-8", "3-2", "3-12", "4-14"],
     "buy_value_gold": 1250,
     "sell_value": 250,
     "guild_activity_points": 2,
@@ -171,13 +138,7 @@
       "agility": 7
     },
     "hero_level_required": 3,
-    "campaign_sources": [
-      "1-8",
-      "2-14",
-      "3-15",
-      "4-4",
-      "5-5"
-    ],
+    "campaign_sources": ["1-8", "2-14", "3-15", "4-4", "5-5"],
     "buy_value_gold": 1250,
     "sell_value": 250,
     "guild_activity_points": 2,
@@ -193,14 +154,7 @@
       "magic defense": 25
     },
     "hero_level_required": 1,
-    "campaign_sources": [
-      "1-4",
-      "2-7",
-      "3-11",
-      "4-13",
-      "9-6",
-      "10-5"
-    ],
+    "campaign_sources": ["1-4", "2-7", "3-11", "4-13", "9-6", "10-5"],
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
@@ -218,13 +172,7 @@
       "intelligence": 5
     },
     "hero_level_required": 2,
-    "campaign_sources": [
-      "1-1",
-      "1-6",
-      "2-9",
-      "3-10",
-      "4-7"
-    ],
+    "campaign_sources": ["1-1", "1-6", "2-9", "3-10", "4-7"],
     "type": "equipable",
     "slug": "oil-lamp",
     "updated_on": "2024-11-06T22:42:17.694Z"
@@ -261,13 +209,7 @@
       "physical attack": 12
     },
     "hero_level_required": 1,
-    "campaign_sources": [
-      "1-2",
-      "2-1",
-      "2-2",
-      "9-9",
-      "10-8"
-    ],
+    "campaign_sources": ["1-2", "2-1", "2-2", "9-9", "10-8"],
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
@@ -283,13 +225,7 @@
       "physical attack": 25
     },
     "hero_level_required": 3,
-    "campaign_sources": [
-      "1-5",
-      "1-9",
-      "3-3",
-      "3-13",
-      "5-1"
-    ],
+    "campaign_sources": ["1-5", "1-9", "3-3", "3-13", "5-1"],
     "buy_value_gold": 1250,
     "sell_value": 250,
     "guild_activity_points": 2,
@@ -305,13 +241,7 @@
       "agility": 5
     },
     "hero_level_required": 2,
-    "campaign_sources": [
-      "1-1",
-      "1-4",
-      "2-8",
-      "3-6",
-      "4-5"
-    ],
+    "campaign_sources": ["1-1", "1-4", "2-8", "3-6", "4-5"],
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
@@ -329,14 +259,7 @@
       "strength": 5
     },
     "hero_level_required": 5,
-    "campaign_sources": [
-      "1-9",
-      "2-10",
-      "3-4",
-      "5-7",
-      "9-7",
-      "10-9"
-    ],
+    "campaign_sources": ["1-9", "2-10", "3-4", "5-7", "9-7", "10-9"],
     "buy_value_gold": 1250,
     "sell_value": 250,
     "guild_activity_points": 2,
@@ -352,14 +275,7 @@
       "armor": 25
     },
     "hero_level_required": 1,
-    "campaign_sources": [
-      "1-3",
-      "2-5",
-      "3-9",
-      "4-12",
-      "9-5",
-      "9-14"
-    ],
+    "campaign_sources": ["1-3", "2-5", "3-9", "4-12", "9-5", "9-14"],
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
@@ -377,14 +293,7 @@
       "strength": 5
     },
     "hero_level_required": 2,
-    "campaign_sources": [
-      "1-1",
-      "1-6",
-      "2-11",
-      "4-8",
-      "9-3",
-      "10-14"
-    ],
+    "campaign_sources": ["1-1", "1-6", "2-11", "4-8", "9-3", "10-14"],
     "type": "equipable",
     "slug": "travellers-shoes",
     "updated_on": "2024-11-06T22:43:15.321Z"
@@ -400,13 +309,7 @@
       "strength": 1
     },
     "hero_level_required": 5,
-    "campaign_sources": [
-      "1-10",
-      "2-15",
-      "3-5",
-      "4-9",
-      "5-9"
-    ],
+    "campaign_sources": ["1-10", "2-15", "3-5", "4-9", "5-9"],
     "buy_value_gold": 1250,
     "sell_value": 250,
     "guild_activity_points": 2,
@@ -445,13 +348,7 @@
     "stats": {
       "health": 200
     },
-    "campaign_sources": [
-      "1-3",
-      "2-3",
-      "2-6",
-      "9-2",
-      "10-10"
-    ],
+    "campaign_sources": ["1-3", "2-3", "2-6", "9-2", "10-10"],
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
@@ -492,14 +389,7 @@
       "dodge": 15
     },
     "hero_level_required": 24,
-    "campaign_sources": [
-      "3-2",
-      "4-13",
-      "6-6",
-      "7-3",
-      "9-7",
-      "9-13"
-    ],
+    "campaign_sources": ["3-2", "4-13", "6-6", "7-3", "9-7", "9-13"],
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
@@ -513,14 +403,7 @@
       "strength": 10
     },
     "hero_level_required": 12,
-    "campaign_sources": [
-      "2-1",
-      "2-8",
-      "4-1",
-      "4-2",
-      "5-8",
-      "6-8"
-    ],
+    "campaign_sources": ["2-1", "2-8", "4-1", "4-2", "5-8", "6-8"],
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
@@ -556,13 +439,7 @@
   {
     "name": "Brothers (Fragment)",
     "quality": "green",
-    "campaign_sources": [
-      "3-9",
-      "5-3",
-      "7-6",
-      "7-13",
-      "10-3"
-    ],
+    "campaign_sources": ["3-9", "5-3", "7-6", "7-13", "10-3"],
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 2,
@@ -578,14 +455,7 @@
       "magic defense": 50
     },
     "hero_level_required": 10,
-    "campaign_sources": [
-      "2-7",
-      "4-11",
-      "5-15",
-      "6-3",
-      "7-2",
-      "9-2"
-    ],
+    "campaign_sources": ["2-7", "4-11", "5-15", "6-3", "7-2", "9-2"],
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
@@ -601,14 +471,7 @@
       "armor": 50
     },
     "hero_level_required": 10,
-    "campaign_sources": [
-      "2-5",
-      "3-10",
-      "4-9",
-      "5-10",
-      "6-1",
-      "6-15"
-    ],
+    "campaign_sources": ["2-5", "3-10", "4-9", "5-10", "6-1", "6-15"],
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
@@ -624,13 +487,7 @@
       "armor penetration": 50
     },
     "hero_level_required": 24,
-    "campaign_sources": [
-      "3-4",
-      "4-14",
-      "6-10",
-      "7-4",
-      "10-12"
-    ],
+    "campaign_sources": ["3-4", "4-14", "6-10", "7-4", "10-12"],
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
@@ -665,13 +522,7 @@
   {
     "name": "Dawnguard (Fragment)",
     "quality": "green",
-    "campaign_sources": [
-      "5-5",
-      "6-4",
-      "7-15",
-      "10-2",
-      "10-13"
-    ],
+    "campaign_sources": ["5-5", "6-4", "7-15", "10-2", "10-13"],
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 2,
@@ -780,14 +631,7 @@
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "2-3",
-      "3-1",
-      "4-7",
-      "5-2",
-      "5-13",
-      "6-13"
-    ],
+    "campaign_sources": ["2-3", "3-1", "4-7", "5-2", "5-13", "6-13"],
     "type": "equipable",
     "stats": {
       "physical attack": 33
@@ -803,14 +647,7 @@
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "2-2",
-      "2-15",
-      "4-5",
-      "4-15",
-      "5-12",
-      "6-12"
-    ],
+    "campaign_sources": ["2-2", "2-15", "4-5", "4-15", "5-12", "6-12"],
     "type": "equipable",
     "stats": {
       "health": 500
@@ -850,14 +687,7 @@
       "intelligence": 10
     },
     "hero_level_required": 12,
-    "campaign_sources": [
-      "2-6",
-      "2-9",
-      "4-3",
-      "4-6",
-      "5-9",
-      "6-9"
-    ],
+    "campaign_sources": ["2-6", "2-9", "4-3", "4-6", "5-9", "6-9"],
     "buy_value_gold": 1500,
     "sell_value": 300,
     "guild_activity_points": 3,
@@ -876,14 +706,7 @@
       "magic attack": 50
     },
     "hero_level_required": 10,
-    "campaign_sources": [
-      "2-4",
-      "3-6",
-      "4-8",
-      "5-6",
-      "5-14",
-      "6-14"
-    ],
+    "campaign_sources": ["2-4", "3-6", "4-8", "5-6", "5-14", "6-14"],
     "type": "equipable",
     "slug": "lost-ring",
     "updated_on": "2024-12-12T03:29:01.917Z",
@@ -899,14 +722,7 @@
       "magic penetration": 50
     },
     "hero_level_required": 24,
-    "campaign_sources": [
-      "3-7",
-      "5-1",
-      "6-5",
-      "7-1",
-      "7-5",
-      "9-4"
-    ],
+    "campaign_sources": ["3-7", "5-1", "6-5", "7-1", "7-5", "9-4"],
     "type": "equipable",
     "slug": "midnight-crystal",
     "updated_on": "2024-12-12T03:30:29.786Z",
@@ -942,12 +758,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "2-14",
-      "5-11",
-      "7-8",
-      "9-8"
-    ],
+    "campaign_sources": ["2-14", "5-11", "7-8", "9-8"],
     "type": "recipe",
     "slug": "poleaxe-recipe",
     "updated_on": "2024-12-12T03:32:27.352Z",
@@ -986,14 +797,7 @@
       "crit hit chance": 15
     },
     "hero_level_required": 24,
-    "campaign_sources": [
-      "2-13",
-      "4-12",
-      "6-2",
-      "7-2",
-      "9-11",
-      "10-6"
-    ],
+    "campaign_sources": ["2-13", "4-12", "6-2", "7-2", "9-11", "10-6"],
     "type": "equipable",
     "slug": "reaper",
     "updated_on": "2024-12-12T03:26:09.480Z",
@@ -1029,12 +833,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "2-12",
-      "6-7",
-      "7-7",
-      "9-5"
-    ],
+    "campaign_sources": ["2-12", "6-7", "7-7", "9-5"],
     "type": "recipe",
     "slug": "screaming-blade-recipe",
     "updated_on": "2024-12-12T03:35:52.728Z",
@@ -1115,14 +914,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "3-11",
-      "5-4",
-      "6-3",
-      "7-10",
-      "7-14",
-      "10-7"
-    ],
+    "campaign_sources": ["3-11", "5-4", "6-3", "7-10", "7-14", "10-7"],
     "type": "fragment",
     "slug": "skull-crusher-fragment",
     "updated_on": "2024-12-12T04:02:18.143Z",
@@ -1158,12 +950,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "3-8",
-      "5-14",
-      "7-12",
-      "10-2"
-    ],
+    "campaign_sources": ["3-8", "5-14", "7-12", "10-2"],
     "type": "recipe",
     "slug": "soul-catcher-recipe",
     "updated_on": "2024-12-12T04:05:40.413Z",
@@ -1221,14 +1008,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "3-13",
-      "5-7",
-      "6-5",
-      "8-1",
-      "9-9",
-      "10-4"
-    ],
+    "campaign_sources": ["3-13", "5-7", "6-5", "8-1", "9-9", "10-4"],
     "type": "fragment",
     "slug": "sword-of-storms-fragment",
     "updated_on": "2024-12-12T04:14:55.873Z",
@@ -1241,14 +1021,7 @@
       "agility": 10
     },
     "hero_level_required": 12,
-    "campaign_sources": [
-      "2-10",
-      "2-11",
-      "4-4",
-      "4-10",
-      "5-11",
-      "6-11"
-    ],
+    "campaign_sources": ["2-10", "2-11", "4-4", "4-10", "5-11", "6-11"],
     "buy_value_gold": 1400,
     "sell_value": 300,
     "guild_activity_points": 3,
@@ -1287,12 +1060,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "3-3",
-      "5-12",
-      "7-9",
-      "9-3"
-    ],
+    "campaign_sources": ["3-3", "5-12", "7-9", "9-3"],
     "type": "recipe",
     "slug": "traitors-shield-recipe",
     "updated_on": "2024-12-12T04:18:39.987Z",
@@ -1374,12 +1142,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 2,
-    "campaign_sources": [
-      "3-5",
-      "5-13",
-      "7-11",
-      "9-15"
-    ],
+    "campaign_sources": ["3-5", "5-13", "7-11", "9-15"],
     "type": "recipe",
     "slug": "voodoo-doll-recipe",
     "updated_on": "2024-12-12T04:22:32.543Z",
@@ -1527,13 +1290,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "5-3",
-      "7-5",
-      "9-12",
-      "11-13",
-      "12-15"
-    ],
+    "campaign_sources": ["5-3", "7-5", "9-12", "11-13", "12-15"],
     "type": "fragment",
     "slug": "dragonslayers-spear-recipe-fragment",
     "updated_on": "2024-12-13T01:35:48.684Z",
@@ -1589,13 +1346,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-5",
-      "5-2",
-      "6-12",
-      "8-8",
-      "12-6"
-    ],
+    "campaign_sources": ["4-5", "5-2", "6-12", "8-8", "12-6"],
     "type": "fragment",
     "slug": "enchanted-lute-fragment",
     "updated_on": "2024-12-13T01:32:38.270Z",
@@ -1649,13 +1400,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "5-5",
-      "7-11",
-      "9-13",
-      "11-15",
-      "13-2"
-    ],
+    "campaign_sources": ["5-5", "7-11", "9-13", "11-15", "13-2"],
     "type": "fragment",
     "slug": "folding-crossbow-recipe-fragment",
     "updated_on": "2024-12-13T01:54:36.159Z",
@@ -1758,14 +1503,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-14",
-      "6-15",
-      "9-10",
-      "10-7",
-      "11-11",
-      "12-13"
-    ],
+    "campaign_sources": ["4-14", "6-15", "9-10", "10-7", "11-11", "12-13"],
     "type": "fragment",
     "slug": "hand-of-midas-recipe-fragment",
     "updated_on": "2024-12-13T02:04:28.685Z",
@@ -1842,13 +1580,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "5-4",
-      "7-8",
-      "10-4",
-      "11-14",
-      "13-1"
-    ],
+    "campaign_sources": ["5-4", "7-8", "10-4", "11-14", "13-1"],
     "type": "fragment",
     "slug": "lion-armor-recipe-fragment",
     "updated_on": "2024-12-13T02:09:27.408Z",
@@ -1883,14 +1615,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-11",
-      "7-7",
-      "8-9",
-      "10-14",
-      "11-8",
-      "12-10"
-    ],
+    "campaign_sources": ["4-11", "7-7", "8-9", "10-14", "11-8", "12-10"],
     "type": "fragment",
     "slug": "magic-hat-fragment",
     "updated_on": "2024-12-13T02:00:21.517Z",
@@ -2027,13 +1752,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "5-7",
-      "7-13",
-      "9-14",
-      "12-1",
-      "13-3"
-    ],
+    "campaign_sources": ["5-7", "7-13", "9-14", "12-1", "13-3"],
     "type": "fragment",
     "slug": "prince-of-thieves-armor-recipe-fragment",
     "updated_on": "2024-12-15T03:59:18.631Z",
@@ -2135,15 +1854,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-3",
-      "4-10",
-      "6-9",
-      "8-4",
-      "10-8",
-      "11-2",
-      "12-4"
-    ],
+    "campaign_sources": ["4-3", "4-10", "6-9", "8-4", "10-8", "11-2", "12-4"],
     "type": "fragment",
     "slug": "sacred-rosary-fragment",
     "updated_on": "2024-12-13T01:48:33.103Z",
@@ -2176,13 +1887,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-13",
-      "7-12",
-      "8-14",
-      "11-10",
-      "12-12"
-    ],
+    "campaign_sources": ["4-13", "7-12", "8-14", "11-10", "12-12"],
     "type": "fragment",
     "slug": "sacrificial-dagger-fragment",
     "updated_on": "2024-12-13T02:13:58.369Z",
@@ -2237,14 +1942,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "5-1",
-      "7-3",
-      "9-11",
-      "10-3",
-      "11-12",
-      "12-14"
-    ],
+    "campaign_sources": ["5-1", "7-3", "9-11", "10-3", "11-12", "12-14"],
     "type": "fragment",
     "slug": "sages-crown-recipe-fragment",
     "updated_on": "2024-12-13T15:26:59.103Z",
@@ -2279,14 +1977,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-12",
-      "7-9",
-      "8-12",
-      "10-1",
-      "11-9",
-      "12-11"
-    ],
+    "campaign_sources": ["4-12", "7-9", "8-12", "10-1", "11-9", "12-11"],
     "type": "fragment",
     "slug": "scorching-quiver-fragment",
     "updated_on": "2024-12-13T01:40:04.926Z",
@@ -2319,15 +2010,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-4",
-      "4-15",
-      "6-11",
-      "8-5",
-      "10-9",
-      "11-3",
-      "12-5"
-    ],
+    "campaign_sources": ["4-4", "4-15", "6-11", "8-5", "10-9", "11-3", "12-5"],
     "type": "fragment",
     "slug": "serenity-stone-fragment",
     "updated_on": "2024-12-13T01:46:42.047Z",
@@ -2360,15 +2043,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-7",
-      "5-6",
-      "6-13",
-      "8-11",
-      "10-11",
-      "11-5",
-      "12-7"
-    ],
+    "campaign_sources": ["4-7", "5-6", "6-13", "8-11", "10-11", "11-5", "12-7"],
     "type": "fragment",
     "slug": "splitter-fragment",
     "updated_on": "2024-12-13T01:52:00.251Z",
@@ -2403,14 +2078,7 @@
     "buy_value_gold": 1000,
     "sell_value": 200,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "4-9",
-      "7-4",
-      "8-7",
-      "10-13",
-      "11-7",
-      "12-9"
-    ],
+    "campaign_sources": ["4-9", "7-4", "8-7", "10-13", "11-7", "12-9"],
     "type": "fragment",
     "slug": "storm-hammer-fragment",
     "updated_on": "2024-12-13T02:01:45.991Z",
@@ -2512,13 +2180,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 3,
-    "campaign_sources": [
-      "3-14",
-      "4-1",
-      "8-2",
-      "8-6",
-      "12-2"
-    ],
+    "campaign_sources": ["3-14", "4-1", "8-2", "8-6", "12-2"],
     "type": "fragment",
     "slug": "wyverns-heart-fragment",
     "updated_on": "2024-12-13T01:01:21.589Z",
@@ -2551,12 +2213,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "6-1",
-      "7-3",
-      "7-10",
-      "8-13"
-    ],
+    "campaign_sources": ["6-1", "7-3", "7-10", "8-13"],
     "type": "fragment",
     "slug": "advisor-fragment",
     "updated_on": "2024-12-13T16:13:35.945Z",
@@ -2633,11 +2290,7 @@
     "buy_value_gold": 625,
     "sell_value": 125,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "8-2",
-      "8-12",
-      "13-15"
-    ],
+    "campaign_sources": ["8-2", "8-12", "13-15"],
     "type": "fragment",
     "slug": "angels-mace-recipe-fragment",
     "updated_on": "2024-12-15T04:06:27.480Z",
@@ -2712,12 +2365,7 @@
     "buy_value_gold": 500,
     "sell_value": 100,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "8-8",
-      "9-10",
-      "11-4",
-      "13-8"
-    ],
+    "campaign_sources": ["8-8", "9-10", "11-4", "13-8"],
     "type": "fragment",
     "slug": "archangels-mace-recipe-fragment",
     "updated_on": "2024-12-15T04:13:47.386Z",
@@ -2792,12 +2440,7 @@
     "buy_value_gold": 500,
     "sell_value": 100,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "8-5",
-      "9-6",
-      "11-3",
-      "13-7"
-    ],
+    "campaign_sources": ["8-5", "9-6", "11-3", "13-7"],
     "type": "fragment",
     "slug": "book-of-fate-recipe-fragment",
     "updated_on": "2024-12-15T04:21:03.695Z",
@@ -2849,14 +2492,7 @@
     "buy_value_gold": 625,
     "sell_value": 125,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "8-3",
-      "8-14",
-      "10-15",
-      "11-6",
-      "13-10",
-      "13-14"
-    ],
+    "campaign_sources": ["8-3", "8-14", "10-15", "11-6", "13-10", "13-14"],
     "type": "fragment",
     "slug": "book-of-prophecies-recipe-fragment",
     "updated_on": "2024-12-15T04:22:47.531Z",
@@ -2932,13 +2568,7 @@
     "buy_value_gold": 500,
     "sell_value": 100,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "8-4",
-      "10-10",
-      "11-8",
-      "13-4",
-      "13-12"
-    ],
+    "campaign_sources": ["8-4", "10-10", "11-8", "13-4", "13-12"],
     "type": "fragment",
     "slug": "cosmic-tremor-recipe-fragment",
     "updated_on": "2024-12-15T04:31:19.903Z",
@@ -2971,13 +2601,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "5-14",
-      "7-2",
-      "7-6",
-      "8-11",
-      "9-1"
-    ],
+    "campaign_sources": ["5-14", "7-2", "7-6", "8-11", "9-1"],
     "type": "fragment",
     "slug": "desert-blade-fragment",
     "updated_on": "2024-12-15T04:17:38.265Z",
@@ -3031,11 +2655,7 @@
     "buy_value_gold": 625,
     "sell_value": 125,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "7-12",
-      "8-7",
-      "10-1"
-    ],
+    "campaign_sources": ["7-12", "8-7", "10-1"],
     "type": "fragment",
     "slug": "diviners-orb-recipe-fragment",
     "updated_on": "2024-12-15T04:41:17.011Z",
@@ -3086,12 +2706,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "6-5",
-      "7-5",
-      "8-4",
-      "8-15"
-    ],
+    "campaign_sources": ["6-5", "7-5", "8-4", "8-15"],
     "type": "fragment",
     "slug": "dragon-shield-recipe-fragment",
     "updated_on": "2024-12-15T04:49:43.948Z",
@@ -3142,11 +2757,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "6-11",
-      "7-8",
-      "8-9"
-    ],
+    "campaign_sources": ["6-11", "7-8", "8-9"],
     "type": "fragment",
     "slug": "dragon-tooth-recipe-fragment",
     "updated_on": "2024-12-15T04:52:19.487Z",
@@ -3227,13 +2838,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "5-8",
-      "5-15",
-      "6-4",
-      "7-14",
-      "8-1"
-    ],
+    "campaign_sources": ["5-8", "5-15", "6-4", "7-14", "8-1"],
     "type": "fragment",
     "slug": "flaming-heart-fragment",
     "updated_on": "2024-12-15T04:24:06.464Z",
@@ -3266,12 +2871,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "6-3",
-      "7-4",
-      "7-15",
-      "8-15"
-    ],
+    "campaign_sources": ["6-3", "7-4", "7-15", "8-15"],
     "type": "fragment",
     "slug": "funeral-totem-fragment",
     "updated_on": "2024-12-15T04:54:29.820Z",
@@ -3304,13 +2904,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "5-9",
-      "6-2",
-      "6-7",
-      "8-2",
-      "8-6"
-    ],
+    "campaign_sources": ["5-9", "6-2", "6-7", "8-2", "8-6"],
     "type": "fragment",
     "slug": "giant-slayer-fragment",
     "updated_on": "2024-12-15T04:09:47.483Z",
@@ -3366,14 +2960,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "5-13",
-      "6-12",
-      "6-14",
-      "7-1",
-      "8-8",
-      "9-1"
-    ],
+    "campaign_sources": ["5-13", "6-12", "6-14", "7-1", "8-8", "9-1"],
     "type": "fragment",
     "slug": "hand-of-glory-fragment",
     "updated_on": "2024-12-13T18:47:18.333Z",
@@ -3429,12 +3016,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "5-12",
-      "6-10",
-      "8-5",
-      "9-1"
-    ],
+    "campaign_sources": ["5-12", "6-10", "8-5", "9-1"],
     "type": "fragment",
     "slug": "minotaurs-head-fragment",
     "updated_on": "2024-12-15T04:32:46.159Z",
@@ -3487,14 +3069,7 @@
     "buy_value_gold": 500,
     "sell_value": 100,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "8-13",
-      "10-6",
-      "11-1",
-      "11-7",
-      "13-5",
-      "13-11"
-    ],
+    "campaign_sources": ["8-13", "10-6", "11-1", "11-7", "13-5", "13-11"],
     "type": "fragment",
     "slug": "panoptic-orb-recipe-fragment",
     "updated_on": "2024-12-15T12:27:41.974Z",
@@ -3527,13 +3102,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "5-11",
-      "6-6",
-      "6-9",
-      "8-3",
-      "8-10"
-    ],
+    "campaign_sources": ["5-11", "6-6", "6-9", "8-3", "8-10"],
     "type": "fragment",
     "slug": "pastors-seal-fragment",
     "updated_on": "2024-12-15T04:02:41.642Z",
@@ -3584,11 +3153,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "6-13",
-      "7-11",
-      "8-12"
-    ],
+    "campaign_sources": ["6-13", "7-11", "8-12"],
     "type": "fragment",
     "slug": "primordial-word-recipe-fragment",
     "updated_on": "2024-12-15T12:30:45.036Z",
@@ -3664,11 +3229,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "6-8",
-      "7-7",
-      "8-7"
-    ],
+    "campaign_sources": ["6-8", "7-7", "8-7"],
     "type": "fragment",
     "slug": "sirens-song-recipe-fragment",
     "updated_on": "2024-12-13T16:47:30.736Z",
@@ -3721,12 +3282,7 @@
     "buy_value_gold": 500,
     "sell_value": 100,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "8-11",
-      "9-15",
-      "11-5",
-      "13-9"
-    ],
+    "campaign_sources": ["8-11", "9-15", "11-5", "13-9"],
     "type": "fragment",
     "slug": "staff-of-moranas-nimbus-recipe-fragment",
     "updated_on": "2024-12-15T12:34:26.553Z",
@@ -3780,10 +3336,7 @@
     "buy_value_gold": 625,
     "sell_value": 125,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "7-14",
-      "8-9"
-    ],
+    "campaign_sources": ["7-14", "8-9"],
     "type": "fragment",
     "slug": "staff-of-selenas-halo-recipe-fragment",
     "updated_on": "2024-12-15T12:36:46.244Z",
@@ -3928,12 +3481,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "6-15",
-      "7-13",
-      "8-14",
-      "13-13"
-    ],
+    "campaign_sources": ["6-15", "7-13", "8-14", "13-13"],
     "type": "fragment",
     "slug": "wasp-recipe-fragment",
     "updated_on": "2024-12-15T12:45:20.691Z",
@@ -3987,11 +3535,7 @@
     "buy_value_gold": 625,
     "sell_value": 125,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "7-9",
-      "11-2",
-      "13-6"
-    ],
+    "campaign_sources": ["7-9", "11-2", "13-6"],
     "type": "fragment",
     "slug": "world-tremor-recipe-fragment",
     "updated_on": "2024-12-15T04:35:35.759Z",
@@ -4024,14 +3568,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-2",
-      "10-9",
-      "10-15",
-      "11-11",
-      "11-13",
-      "13-3"
-    ],
+    "campaign_sources": ["9-2", "10-9", "10-15", "11-11", "11-13", "13-3"],
     "type": "fragment",
     "slug": "alchemists-set-fragment",
     "updated_on": "2024-12-18T17:42:50.434Z",
@@ -4085,12 +3622,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "12-8",
-      "12-10",
-      "13-5",
-      "13-12"
-    ],
+    "campaign_sources": ["12-8", "12-10", "13-5", "13-12"],
     "type": "fragment",
     "slug": "all-seeing-eye-recipe-fragment",
     "updated_on": "2024-12-18T17:46:31.793Z",
@@ -4143,12 +3675,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-3",
-      "11-6",
-      "12-2",
-      "12-9"
-    ],
+    "campaign_sources": ["9-3", "11-6", "12-2", "12-9"],
     "type": "fragment",
     "slug": "alucards-amulet-recipe-fragment",
     "updated_on": "2024-12-18T17:51:20.070Z",
@@ -4202,12 +3729,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "10-13",
-      "13-2",
-      "13-12",
-      "13-14"
-    ],
+    "campaign_sources": ["10-13", "13-2", "13-12", "13-14"],
     "type": "fragment",
     "slug": "aquants-trident-recipe-fragment",
     "updated_on": "2024-12-18T18:01:10.730Z",
@@ -4260,12 +3782,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "10-8",
-      "12-1",
-      "13-3",
-      "13-9"
-    ],
+    "campaign_sources": ["10-8", "12-1", "13-3", "13-9"],
     "type": "fragment",
     "slug": "asklepius-staff-recipe-fragment",
     "updated_on": "2024-12-18T18:06:14.009Z",
@@ -4318,12 +3835,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "10-3",
-      "11-10",
-      "12-4",
-      "12-13"
-    ],
+    "campaign_sources": ["10-3", "11-10", "12-4", "12-13"],
     "type": "fragment",
     "slug": "blade-of-the-immortals-recipe-fragment",
     "updated_on": "2024-12-18T18:08:43.049Z",
@@ -4376,12 +3888,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "10-7",
-      "11-15",
-      "13-1",
-      "13-8"
-    ],
+    "campaign_sources": ["10-7", "11-15", "13-1", "13-8"],
     "type": "fragment",
     "slug": "blued-plate-armor-recipe-fragment",
     "updated_on": "2024-12-18T18:14:52.808Z",
@@ -4414,13 +3921,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-4",
-      "10-1",
-      "11-8",
-      "11-12",
-      "12-4"
-    ],
+    "campaign_sources": ["9-4", "10-1", "11-8", "11-12", "12-4"],
     "type": "fragment",
     "slug": "citadel-guardian-fragment",
     "updated_on": "2024-12-18T18:23:00.853Z",
@@ -4474,12 +3975,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "12-9",
-      "12-15",
-      "13-11",
-      "13-13"
-    ],
+    "campaign_sources": ["12-9", "12-15", "13-11", "13-13"],
     "type": "fragment",
     "slug": "creators-feathering-recipe-fragment",
     "updated_on": "2024-12-18T18:28:21.026Z",
@@ -4532,12 +4028,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "12-1",
-      "12-12",
-      "12-14",
-      "13-15"
-    ],
+    "campaign_sources": ["12-1", "12-12", "12-14", "13-15"],
     "type": "fragment",
     "slug": "dwarven-hardbane-recipe-fragment",
     "updated_on": "2024-12-18T19:00:24.985Z",
@@ -4570,13 +4061,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-7",
-      "10-6",
-      "10-11",
-      "11-9",
-      "12-3"
-    ],
+    "campaign_sources": ["9-7", "10-6", "10-11", "11-9", "12-3"],
     "type": "fragment",
     "slug": "enchanted-chain-fragment",
     "updated_on": "2024-12-18T19:02:44.382Z",
@@ -4609,9 +4094,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-14"
-    ],
+    "campaign_sources": ["9-14"],
     "type": "fragment",
     "slug": "enigmas-chronicles-fragment",
     "updated_on": "2024-12-18T17:47:37.161Z",
@@ -4696,14 +4179,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-5",
-      "10-10",
-      "10-14",
-      "11-5",
-      "12-2",
-      "13-7"
-    ],
+    "campaign_sources": ["9-5", "10-10", "10-14", "11-5", "12-2", "13-7"],
     "type": "fragment",
     "slug": "gro-bulgors-poleaxe-fragment",
     "updated_on": "2024-12-18T19:42:04.488Z",
@@ -4736,9 +4212,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-4"
-    ],
+    "campaign_sources": ["9-4"],
     "type": "fragment",
     "slug": "harunian-helm-fragment",
     "updated_on": "2024-12-18T19:10:01.354Z",
@@ -4771,13 +4245,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-10",
-      "9-13",
-      "11-11",
-      "11-13",
-      "12-7"
-    ],
+    "campaign_sources": ["9-10", "9-13", "11-11", "11-13", "12-7"],
     "type": "fragment",
     "slug": "hellion-harpoon-fragment",
     "updated_on": "2024-12-18T18:02:30.550Z",
@@ -4862,13 +4330,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-9",
-      "10-5",
-      "11-2",
-      "11-4",
-      "13-5"
-    ],
+    "campaign_sources": ["9-9", "10-5", "11-2", "11-4", "13-5"],
     "type": "fragment",
     "slug": "la-morts-map-fragment",
     "updated_on": "2024-12-18T19:46:08.245Z",
@@ -4922,10 +4384,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "13-2",
-      "13-8"
-    ],
+    "campaign_sources": ["13-2", "13-8"],
     "type": "fragment",
     "slug": "light-of-distant-stars-recipe-fragment",
     "updated_on": "2024-12-18T19:49:07.021Z",
@@ -4958,14 +4417,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-12",
-      "10-2",
-      "11-1",
-      "11-3",
-      "11-14",
-      "13-4"
-    ],
+    "campaign_sources": ["9-12", "10-2", "11-1", "11-3", "11-14", "13-4"],
     "type": "fragment",
     "slug": "lycanthropes-fang-fragment",
     "updated_on": "2024-12-18T17:52:52.868Z",
@@ -5020,10 +4472,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "13-6",
-      "13-9"
-    ],
+    "campaign_sources": ["13-6", "13-9"],
     "type": "fragment",
     "slug": "oppressors-crown-recipe-fragment",
     "updated_on": "2024-12-18T19:57:16.615Z",
@@ -5076,11 +4525,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "12-6",
-      "12-13",
-      "13-1"
-    ],
+    "campaign_sources": ["12-6", "12-13", "13-1"],
     "type": "fragment",
     "slug": "oracles-censer-recipe-fragment",
     "updated_on": "2024-12-18T19:52:42.623Z",
@@ -5134,12 +4579,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "12-6",
-      "12-7",
-      "13-4",
-      "13-11"
-    ],
+    "campaign_sources": ["12-6", "12-7", "13-4", "13-11"],
     "type": "fragment",
     "slug": "radiant-armor-recipe-fragment",
     "updated_on": "2024-12-18T19:08:42.826Z",
@@ -5172,13 +4612,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-11",
-      "9-15",
-      "11-7",
-      "11-9",
-      "12-5"
-    ],
+    "campaign_sources": ["9-11", "9-15", "11-7", "11-9", "12-5"],
     "type": "fragment",
     "slug": "riversars-tiara-fragment",
     "updated_on": "2024-12-18T20:00:15.752Z",
@@ -5230,12 +4664,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "11-15",
-      "12-11",
-      "13-10",
-      "13-14"
-    ],
+    "campaign_sources": ["11-15", "12-11", "13-10", "13-14"],
     "type": "fragment",
     "slug": "rulers-globus-recipe-fragment",
     "updated_on": "2024-12-18T20:01:44.818Z",
@@ -5340,12 +4769,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-8",
-      "12-3",
-      "12-11",
-      "13-10"
-    ],
+    "campaign_sources": ["9-8", "12-3", "12-11", "13-10"],
     "type": "fragment",
     "slug": "sphere-of-power-recipe-fragment",
     "updated_on": "2024-12-18T19:50:11.766Z",
@@ -5398,12 +4822,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "10-4",
-      "12-5",
-      "12-12",
-      "13-15"
-    ],
+    "campaign_sources": ["10-4", "12-5", "12-12", "13-15"],
     "type": "fragment",
     "slug": "staff-of-neutralization-recipe-fragment",
     "updated_on": "2024-12-18T20:07:48.435Z",
@@ -5456,10 +4875,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "12-10",
-      "12-14"
-    ],
+    "campaign_sources": ["12-10", "12-14"],
     "type": "fragment",
     "slug": "staff-of-stubbornness-recipe-fragment",
     "updated_on": "2024-12-18T20:09:58.023Z",
@@ -5492,13 +4908,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "9-6",
-      "9-14",
-      "11-12",
-      "11-14",
-      "12-8"
-    ],
+    "campaign_sources": ["9-6", "9-14", "11-12", "11-14", "12-8"],
     "type": "fragment",
     "slug": "thieves-guild-sign-fragment",
     "updated_on": "2024-12-18T20:16:35.793Z",
@@ -5531,9 +4941,7 @@
     "buy_value_gold": 0,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "10-9"
-    ],
+    "campaign_sources": ["10-9"],
     "type": "fragment",
     "slug": "throwing-knives-fragment",
     "updated_on": "2024-12-18T18:29:12.940Z",
@@ -5587,12 +4995,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "10-12",
-      "11-10",
-      "13-6",
-      "13-13"
-    ],
+    "campaign_sources": ["10-12", "11-10", "13-6", "13-13"],
     "type": "fragment",
     "slug": "tricksters-cane-recipe-fragment",
     "updated_on": "2024-12-18T20:18:21.602Z",
@@ -5645,10 +5048,7 @@
     "buy_value_gold": 750,
     "sell_value": 150,
     "guild_activity_points": 4,
-    "campaign_sources": [
-      "12-15",
-      "13-7"
-    ],
+    "campaign_sources": ["12-15", "13-7"],
     "type": "fragment",
     "slug": "unity-of-extremes-recipe-fragment",
     "updated_on": "2024-12-18T20:21:08.502Z",

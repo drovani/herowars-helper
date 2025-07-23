@@ -1,12 +1,18 @@
 // ABOUTME: Creates a Supabase client with service role authentication for admin operations
 // ABOUTME: This client bypasses RLS policies and should only be used for trusted admin operations
 
-import { createServerClient, parseCookieHeader, serializeCookieHeader } from "@supabase/ssr";
+import {
+  createServerClient,
+  parseCookieHeader,
+  serializeCookieHeader,
+} from "@supabase/ssr";
 import type { Database } from "~/types/supabase";
 
 export function createAdminClient(request: Request | null = null) {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY environment variable is required for admin operations");
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY environment variable is required for admin operations"
+    );
   }
 
   if (request != null && typeof process !== "undefined") {
@@ -25,7 +31,10 @@ export function createAdminClient(request: Request | null = null) {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) =>
-              headers.append("Set-Cookie", serializeCookieHeader(name, value, options))
+              headers.append(
+                "Set-Cookie",
+                serializeCookieHeader(name, value, options)
+              )
             );
           },
         },

@@ -70,26 +70,28 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - `npm run supabase:types` - Generate Supabase types from local database
 
 ### Repository Development Commands
+
 - `npm run tsc` - TypeScript checking (run after repository changes)
 - `npm run supabase:types` - Regenerate database types after schema changes
 - `npm run test` - Run repository tests with mocked Supabase client in watch mode
 - `npm run test:run` - Run repository tests with mocked Supabase client as a one-time execution
 - `npm run test:coverage` - Run repository tests with mocked Supabase client and generate test coverage JSON report
 
-
 ## Architecture
 
 ### Authentication & Authorization
+
 - **Supabase Auth**: Complete authentication system with email/password, OAuth providers
 - **AuthContext**: Centralized auth state management (`app/contexts/AuthContext.tsx`)
 - **Role-based Access**: Users have roles array, routes can be restricted by role
 - **Default Roles**: New users get `['user']` role, admins can assign `admin` and `editor` roles
-- **Protected Layouts**: 
+- **Protected Layouts**:
   - `ProtectedUserLayout.tsx` - General authenticated users
   - `ProtectedAdminLayout.tsx` - Admin-only routes
 - **User Management**: Admin page at `/admin/users` (requires Supabase service role for full functionality)
 
 ### Routing Structure
+
 - **React Router v7**: File-based routing with layouts and nested routes
 - **Route Configuration**: Centralized in `app/routes.ts`
 - **Resource Routes**: Routes without a UI component in `app/routes/resources`, including API endpoints, webhooks, etc.
@@ -99,6 +101,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Game Data Routes**: Heroes, Equipment, Missions, Titans with JSON export capabilities
 
 ### UI Components
+
 - **shadcn/ui**: Complete component library in `app/components/ui/`
 - **Component Search**: ALWAYS check to see if a component already is installed before attempting to install it again; some components have been extended beyond the initial component installed by shadcn/ui
 - **Component Installation**: ALWAYS use `npx shadcn@latest add [component-name]` to install shadcn/ui components
@@ -107,13 +110,16 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Responsive Design**: Mobile-first approach with custom hooks (`useIsMobile.tsx`)
 
 #### Skeleton Loading Components
+
 - **Location**: All skeleton components are in `app/components/skeletons/`
 - **Purpose**: Provide immediate visual feedback during data loading phases to improve perceived performance
 - **Architecture**: Component-based approach with generic building blocks and page-specific implementations
 - **Integration**: Use React Router v7 Suspense/Await pattern with skeleton components as fallback UI
 
 ##### Available Skeleton Components
+
 - **Core Building Blocks**:
+
   - `SkeletonCard` - Card-based content placeholders with configurable dimensions
   - `SkeletonGrid` - Responsive grid layouts with configurable item counts and column mappings
   - `SkeletonTable` - Table layouts with rows, columns, and action areas
@@ -121,6 +127,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
   - `SkeletonDetail` - Detail page layouts with headers and content sections
 
 - **Page-Specific Skeletons**:
+
   - `HeroIndexSkeleton` - Hero grid with cards/tiles modes, matches hero display patterns
   - `EquipmentIndexSkeleton` - Equipment card grid layouts matching equipment browsing
   - `MissionIndexSkeleton` - Chapter-organized mission grids with boss placeholders
@@ -133,6 +140,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
   - `NavigationSkeleton` - Sidebar, header, and breadcrumb layouts (ready for auth integration)
 
 ##### Skeleton Loading Implementation Guidelines
+
 - **When to Use**: For any data-heavy pages with loading times > 200ms
 - **Pattern**: Use Suspense/Await in route components with skeleton fallback
 - **Layout Matching**: Skeleton dimensions must match final content to prevent layout shift
@@ -141,6 +149,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Responsive**: Skeleton components match existing breakpoints and responsive behavior
 
 ##### Implementation Example
+
 ```tsx
 // In route component
 import { HeroIndexSkeleton } from "~/components/skeletons";
@@ -157,11 +166,13 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
 ```
 
 ##### Integration Status
+
 - **Fully Integrated**: Heroes Index, Equipment Index, Mission Index, Admin Users
 - **Ready for Integration**: Hero/Equipment Detail pages, Authentication flows, Form submissions
 - **Testing**: 46 skeleton component tests covering rendering, accessibility, and responsive behavior
 
 ### Data Layer
+
 - **Repository Pattern**: BaseRepository class with type-safe database operations (`app/repositories/BaseRepository.ts`)
 - **JSON Data Storage**: Static data files for heroes, equipment, and missions in `app/data/`; used for initial database hydration, not for regular runtime
 - **Zod Schema Validation**: Type-safe validation schemas for all game data
@@ -169,18 +180,21 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
 - **Type Safety**: Generated Supabase types and strict TypeScript
 
 ### Repository Architecture
+
 - **BaseRepository Class**: Located in `app/repositories/BaseRepository.ts`
 - **Repository Pattern**: Extends BaseRepository<TableName> for type-safe database operations
 - **Repository Types**: Defined in `app/repositories/types.ts`
 - **Current Status**: Repository pattern fully implemented and in use
 
 #### Database Schema Key Points
+
 - **Mission Table**: Uses `slug` as primary key, `chapter_id` as foreign key
 - **Chapter Table**: Uses `id` as primary key, contains `title`
 - **Equipment Table**: Uses `slug` as primary key, `campaign_sources` string array references mission slugs
 - **Relationships**: Mission belongs to Chapter, Equipment references Missions via campaign_sources
 
 ### Database Schema Quick Reference
+
 ```sql
 -- Core tables for mission system
 mission: slug (PK), name, chapter_id (FK), hero_slug, energy_cost, level
@@ -189,6 +203,7 @@ equipment: slug (PK), name, campaign_sources (string[])
 ```
 
 ### Current Architecture State
+
 - **BaseRepository**: ✅ Implemented in `feature/base-repository-class`
 - **MissionRepository**: ✅ Implemented in (Issue [#37](https://github.com/drovani/herowars-helper/issues/37))
 - **EquipmentRepository**: ✅ Implemented in (Issue [#36](https://github.com/drovani/herowars-helper/issues/36))
@@ -196,6 +211,7 @@ equipment: slug (PK), name, campaign_sources (string[])
 - **Repository Migration**: ✅ Complete - All hero routes migrated from legacy services (Issue [#39](https://github.com/drovani/herowars-helper/issues/39))
 
 ### Navigation System
+
 - **Dynamic Navigation**: Role-based menu items defined in `app/data/navigation.ts`
 - **Game-Focused Menu**: Hero Wars Helper Tools and Guild Coordination Tools sections
 - **Admin Features**: Data setup, user management, and test coverage tools
@@ -216,10 +232,12 @@ equipment: slug (PK), name, campaign_sources (string[])
 ## Environment Setup
 
 Required environment variables:
+
 - `VITE_SUPABASE_DATABASE_URL` - Supabase project URL
 - `VITE_SUPABASE_ANON_KEY` - Supabase anon public key
 
 Optional for full user management:
+
 - `SUPABASE_SERVICE_ROLE_KEY` - Service role key for admin user management functions
 
 ## Node.js Version Requirements
@@ -229,6 +247,7 @@ Optional for full user management:
 ## Game Data Structure
 
 ### Heroes
+
 - **Hero Properties**: name, class, faction, main_stat, attack_type, artifact_team_buff
 - **Equipment Slots**: heroes have 6 equipment slots per tier; there is no relationship to the equipment's name and a traditional "slot" (i.e. weapon, armor, helmet, etc.)
 - **Artifacts**: weapon (provides a buff to the whole team on activation), book (provides a fixed pair of stats), ring (always boosted the main stat: strength, agility, intelligence)
@@ -237,6 +256,7 @@ Optional for full user management:
 - **Stone Sources**: where to obtain hero soul stones
 
 ### Equipment
+
 - **Equipment Types**: internal classification that maps to Typescript classes, determining which data fields are required.
   - fragment: a certain number of fragments are required to craft the item itself (i.e. "Brothers" item requires 5x "Brothers (Fragment)" to craft). Fragments are never equipable on a hero.
   - recipe: some items require a recipe as a component. These are never equipable on a hero.
@@ -245,6 +265,7 @@ Optional for full user management:
 - **Sources**: campaign chapters, events, merchants
 
 ### Missions
+
 - **Chapters**: missions are grouped into chapters; players must complete each mission sequentially
 - **Rewards**: missions have a pool of items that can award from (found via equipment.campaign_sources)
 - **Boss**: some missions have a boss, which is the hero that a player can receive souls stones of (i.e. defeating chapter 1-1 can award soul stones for Astaroth)
@@ -285,17 +306,20 @@ Optional for full user management:
 The project uses **Vitest** for unit and integration testing:
 
 ### Unit & Integration Testing (Vitest)
+
 - `npm test` - Run tests in watch mode
 - `npm run test:run` - Run tests once
 - `npm run test:coverage` - Run tests with coverage report
 - `npm run test:ui` - Run tests with UI interface
 
 #### Test Structure
+
 - **Unit Tests**: Components, hooks, utility functions
 - **Integration Tests**: API business logic, auth flows (mocked)
 - **Repository Tests**: Supabase database operations (mocked)
 
 #### Repository Testing Patterns
+
 - **Location**: `app/repositories/__tests__/`
 - **Mock Pattern**: Use `app/__tests__/mocks/supabase.ts` for Supabase client mocking
 - **Log Capturing**: Repository tests use loglevel's `methodFactory` to capture log output to in-memory arrays during tests, preventing console noise while preserving debugging capability
@@ -303,6 +327,7 @@ The project uses **Vitest** for unit and integration testing:
 - **Example**: See `BaseRepository.test.ts` for patterns extending BaseRepository
 
 #### Test Files Location
+
 - Component tests: `app/components/**/*.test.tsx`
 - Hook tests: `app/hooks/**/*.test.tsx`
 - Context tests: `app/contexts/**/*.test.tsx`
@@ -311,51 +336,55 @@ The project uses **Vitest** for unit and integration testing:
 - Mocks: `app/__tests__/mocks/`
 
 #### Mocking Patterns
+
 - **Supabase Client**: Use `app/__tests__/mocks/supabase.ts` for database operations
 - **Auth Context**: Mock authentication state for component testing
 - **External APIs**: Use MSW for HTTP request mocking
 - **Browser APIs**: Mock matchMedia, IntersectionObserver, etc.
 
 #### Log Capturing Pattern for Repository Tests
+
 Repository tests use a standardized log capturing approach to prevent console noise during test execution:
 
 ```typescript
-import log from 'loglevel'
+import log from "loglevel";
 
-describe('RepositoryName', () => {
-  let capturedLogs: Array<{level: string, message: string, args: any[]}> = []
-  let originalMethodFactory: any
+describe("RepositoryName", () => {
+  let capturedLogs: Array<{ level: string; message: string; args: any[] }> = [];
+  let originalMethodFactory: any;
 
   beforeEach(() => {
     // Capture logs to in-memory array instead of console
-    capturedLogs = []
-    originalMethodFactory = log.methodFactory
-    log.methodFactory = function(methodName, _logLevel, _loggerName) {
-      return function(message, ...args) {
-        capturedLogs.push({level: methodName, message, args})
+    capturedLogs = [];
+    originalMethodFactory = log.methodFactory;
+    log.methodFactory = function (methodName, _logLevel, _loggerName) {
+      return function (message, ...args) {
+        capturedLogs.push({ level: methodName, message, args });
         // Silent - don't output to console
-      }
-    }
-    log.rebuild()
-  })
+      };
+    };
+    log.rebuild();
+  });
 
   afterEach(() => {
     // Restore original logging behavior
-    log.methodFactory = originalMethodFactory
-    log.rebuild()
-  })
-})
+    log.methodFactory = originalMethodFactory;
+    log.rebuild();
+  });
+});
 ```
 
 This pattern:
+
 - Prevents log output during tests (clean test output)
 - Preserves logs in `capturedLogs` array for debugging
 - Automatically restores normal logging after each test
 - Should be applied to all repository tests
 
 ### Testing Guidelines
+
 - **Components**: Test rendering, interactions, props, and accessibility
-- **Hooks**: Test state changes, effects, and edge cases  
+- **Hooks**: Test state changes, effects, and edge cases
 - **Business Logic**: Test validation, permissions, and error handling
 - **Supabase Operations**: Mock the client and test query building and data transformation
 - **Repository Tests**: Use loglevel log capturing pattern to ensure clean test output - capture logs to in-memory arrays instead of console during tests
@@ -363,13 +392,15 @@ This pattern:
 ### Modern Component Testing Best Practices
 
 #### Render Result Pattern (REQUIRED)
+
 All component tests MUST use the modern result pattern instead of importing `screen`:
 
 **✅ Correct Pattern:**
+
 ```typescript
 import { render, fireEvent } from "@testing-library/react";
 
-test('should render component', () => {
+test("should render component", () => {
   const result = render(<MyComponent />);
   expect(result.getByText("Hello")).toBeInTheDocument();
   fireEvent.click(result.getByRole("button"));
@@ -378,10 +409,11 @@ test('should render component', () => {
 ```
 
 **❌ Deprecated Pattern (DO NOT USE):**
+
 ```typescript
 import { render, screen, fireEvent } from "@testing-library/react";
 
-test('should render component', () => {
+test("should render component", () => {
   render(<MyComponent />);
   expect(screen.getByText("Hello")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button"));
@@ -390,12 +422,14 @@ test('should render component', () => {
 ```
 
 #### Benefits of Modern Pattern
+
 - **Better Test Isolation**: Queries are scoped to the specific component render
 - **Clearer Intent**: Explicit relationship between render call and queries
 - **Prevents Cross-Test Contamination**: No accidental matches from other components
 - **Improved Debugging**: Easier to trace which render instance queries belong to
 
 #### Component Testing Requirements
+
 - **Always destructure** needed query methods from render return value
 - **Never import `screen`** from React Testing Library in component tests
 - **Use appropriate queries**: `getBy*` for elements that must exist, `queryBy*` for elements that may not exist
@@ -409,6 +443,7 @@ test('should render component', () => {
 ## Hero Wars Helper Features
 
 ### Hero Management
+
 - View hero details including stats, artifacts, skins, and glyphs
 - Export hero data as JSON for external tools
 - Users can also create and edit hero data
@@ -416,18 +451,21 @@ test('should render component', () => {
 - Hero stone source tracking for farming optimization
 
 ### Equipment Management
+
 - Browse equipment catalog with stats and sources
 - Track equipment acquisition and upgrade paths
 - Campaign mission requirements for equipment farming
 - Crafting recipes and material requirements
 
 ### Mission Planning
+
 - Campaign chapter information and rewards
 - Mission energy costs and requirements
 - Equipment drop locations for farming
 - Event mission tracking
 
 ### Guild Features (Planned)
+
 - Guild roster management
 - Hydra raid coordination
 - Member progress tracking
@@ -436,12 +474,12 @@ test('should render component', () => {
 
 - **Initial Admin Setup**: Use SQL Editor in Supabase Dashboard to assign initial admin role:
   ```sql
-  UPDATE auth.users 
+  UPDATE auth.users
   SET raw_app_meta_data = jsonb_set(
-    COALESCE(raw_app_meta_data, '{}'), 
-    '{roles}', 
+    COALESCE(raw_app_meta_data, '{}'),
+    '{roles}',
     '["admin"]'
-  ) 
+  )
   WHERE email = 'your-email@example.com';
   ```
 - **Available Roles**: `admin`, `editor`, `user` (new users default to `user`)

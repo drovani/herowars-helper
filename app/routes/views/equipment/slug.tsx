@@ -1,33 +1,77 @@
 import { AlertCircle, ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useEffect } from "react";
-import { Link, useNavigate, type UIMatch } from "react-router";
+import { useEffect, Suspense } from "react";
+import { Link, useNavigate, Await, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import type { EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug } from "~/lib/utils";
+import { EquipmentDetailSkeleton } from "~/components/skeletons/EquipmentDetailSkeleton";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import { transformCompleteHeroToRecord, transformBasicHeroToRecord } from "~/lib/hero-transformations";
+import {
+  transformCompleteHeroToRecord,
+  transformBasicHeroToRecord,
+} from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
-  return [{ title: data?.equipment.name }];
+  const equipmentName = data?.basicEquipment?.name || "Equipment Details";
+  return [{ title: equipmentName }];
 };
 
 export const handle = {
-  breadcrumb: (match: UIMatch<Route.ComponentProps["loaderData"], unknown>) => ({
+  breadcrumb: (
+    match: UIMatch<Route.ComponentProps["loaderData"], unknown>
+  ) => ({
     href: match.pathname,
-    title: match.data?.equipment.name,
+    title: match.data?.basicEquipment?.name || "Equipment Details",
   }),
 };
 
-export const loader = async ({ params, request }: Route.LoaderArgs) => {
+async function loadBasicEquipmentData(
+  params: { slug: string },
+  request: Request
+) {
+  invariant(params.slug, "Missing equipment slug param");
+
+  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentJsonResult = await equipmentRepo.getAllAsJson([params.slug]);
+
+  if (
+    equipmentJsonResult.error ||
+    !equipmentJsonResult.data ||
+    equipmentJsonResult.data.length === 0
+  ) {
+    throw new Response(null, {
+      status: 404,
+      statusText: `Equipment with id ${params.slug} not found.`,
+    });
+  }
+
+  const equipment = equipmentJsonResult.data[0];
+  return {
+    name: equipment.name,
+    slug: equipment.slug,
+    type: equipment.type,
+  };
+}
+
+async function loadDetailedEquipmentData(
+  params: { slug: string },
+  request: Request
+) {
   invariant(params.slug, "Missing equipment slug param");
 
   const equipmentRepo = new EquipmentRepository(request);
@@ -35,10 +79,14 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   // Get main equipment details in both formats
   const [equipmentJsonResult, equipmentDbResult] = await Promise.all([
     equipmentRepo.getAllAsJson([params.slug]),
-    equipmentRepo.findById(params.slug)
+    equipmentRepo.findById(params.slug),
   ]);
 
-  if (equipmentJsonResult.error || !equipmentJsonResult.data || equipmentJsonResult.data.length === 0) {
+  if (
+    equipmentJsonResult.error ||
+    !equipmentJsonResult.data ||
+    equipmentJsonResult.data.length === 0
+  ) {
     throw new Response(null, {
       status: 404,
       statusText: `Equipment with id ${params.slug} not found.`,
@@ -62,16 +110,27 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
 
   const sortedEquipment = sortedEquipmentResult.data || [];
-  const currentIndex = sortedEquipment.findIndex((e) => e.slug === equipment.slug);
-  const prevEquipment = currentIndex > 0 ? sortedEquipment[currentIndex - 1] : null;
-  const nextEquipment = currentIndex < sortedEquipment.length ? sortedEquipment[currentIndex + 1] : null;
+  const currentIndex = sortedEquipment.findIndex(
+    (e) => e.slug === equipment.slug
+  );
+  const prevEquipment =
+    currentIndex > 0 ? sortedEquipment[currentIndex - 1] : null;
+  const nextEquipment =
+    currentIndex < sortedEquipment.length
+      ? sortedEquipment[currentIndex + 1]
+      : null;
 
   // Get equipment relationships
-  const [requiredForResult, requiredEquipmentResult, requiredEquipmentRawResult, rawComponentOfResult] = await Promise.all([
+  const [
+    requiredForResult,
+    requiredEquipmentResult,
+    requiredEquipmentRawResult,
+    rawComponentOfResult,
+  ] = await Promise.all([
     equipmentRepo.findEquipmentThatRequires(equipment.slug),
     equipmentRepo.findEquipmentRequiredFor(equipmentDb),
     equipmentRepo.findEquipmentRequiredForRaw(equipmentDb),
-    equipmentRepo.findRawComponentOf(equipment.slug)
+    equipmentRepo.findRawComponentOf(equipment.slug),
   ]);
 
   const requiredFor = requiredForResult.data || [];
@@ -86,33 +145,37 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   // Get mission sources using the new repository
   const missionRepo = new MissionRepository(request);
-  const missionSourcesResult = await missionRepo.findByCampaignSource(equipment.slug);
-
+  const missionSourcesResult = await missionRepo.findByCampaignSource(
+    equipment.slug
+  );
 
   if (missionSourcesResult.error) {
     throw new Response("Failed to load mission sources", { status: 500 });
   }
 
-
   const missionSources = missionSourcesResult.data || [];
 
   const heroRepo = new HeroRepository(request);
-  const heroesUsingItemResult = await heroRepo.findHeroesUsingEquipment(equipment.slug);
-  
+  const heroesUsingItemResult = await heroRepo.findHeroesUsingEquipment(
+    equipment.slug
+  );
+
   if (heroesUsingItemResult.error) {
     throw new Response("Failed to load heroes using item", { status: 500 });
   }
 
   // Transform heroes to HeroRecord format
-  const heroesUsingItem = heroesUsingItemResult.data ? await Promise.all(
-    heroesUsingItemResult.data.map(async (hero) => {
-      const completeHeroResult = await heroRepo.findWithAllData(hero.slug);
-      if (completeHeroResult.data) {
-        return transformCompleteHeroToRecord(completeHeroResult.data);
-      }
-      return transformBasicHeroToRecord(hero);
-    })
-  ) : [];
+  const heroesUsingItem = heroesUsingItemResult.data
+    ? await Promise.all(
+        heroesUsingItemResult.data.map(async (hero) => {
+          const completeHeroResult = await heroRepo.findWithAllData(hero.slug);
+          if (completeHeroResult.data) {
+            return transformCompleteHeroToRecord(completeHeroResult.data);
+          }
+          return transformBasicHeroToRecord(hero);
+        })
+      )
+    : [];
 
   return {
     equipment,
@@ -125,10 +188,25 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     nextEquipment,
     heroesUsingItem,
   };
+}
+
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const basicEquipment = await loadBasicEquipmentData(params, request);
+
+  return {
+    basicEquipment, // Available immediately for meta/breadcrumbs
+    detailedData: loadDetailedEquipmentData(params, request), // Deferred for skeleton loading
+  };
 };
 
 // Component to render either a valid equipment item or a placeholder
-const EquipmentItem = ({ item, quantity }: { item: EquipmentRecord | null; quantity: number }) => {
+const EquipmentItem = ({
+  item,
+  quantity,
+}: {
+  item: EquipmentRecord | null;
+  quantity: number;
+}) => {
   if (!item) {
     return (
       <div className="flex flex-col items-center gap-2">
@@ -137,41 +215,61 @@ const EquipmentItem = ({ item, quantity }: { item: EquipmentRecord | null; quant
         </div>
         <div className="text-center">
           <div className="text-muted-foreground">Missing Item</div>
-          <div className="text-sm text-muted-foreground">{quantity}x required</div>
+          <div className="text-sm text-muted-foreground">
+            {quantity}x required
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <Link to={`/equipment/${item.slug}`} className="flex flex-col items-center gap-2 group" viewTransition>
+    <Link
+      to={`/equipment/${item.slug}`}
+      className="flex flex-col items-center gap-2 group"
+      viewTransition
+    >
       <EquipmentImage equipment={item} size="md" />
       <div className="text-center">
         <div className="group-hover:underline">{item.name}</div>
-        <div className="text-sm text-muted-foreground">{quantity}x required</div>
+        <div className="text-sm text-muted-foreground">
+          {quantity}x required
+        </div>
       </div>
     </Link>
   );
 };
 
-export default function Equipment({ loaderData }: Route.ComponentProps) {
-  const {
-    equipment,
-    requiredEquipment,
-    requiredEquipmentRaw,
-    requiredFor,
-    rawComponentOf,
-    missionSources,
-    prevEquipment,
-    nextEquipment,
-    heroesUsingItem,
-  } = loaderData;
+function EquipmentContent({
+  equipment,
+  requiredEquipment,
+  requiredEquipmentRaw,
+  requiredFor,
+  rawComponentOf,
+  missionSources,
+  prevEquipment,
+  nextEquipment,
+  heroesUsingItem,
+}: {
+  equipment: any;
+  requiredEquipment: any[];
+  requiredEquipmentRaw: any;
+  requiredFor: any[];
+  rawComponentOf: any[];
+  missionSources: any[];
+  prevEquipment: any;
+  nextEquipment: any;
+  heroesUsingItem: any[];
+}) {
   const navigate = useNavigate();
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       // Skip if user is typing in an input or textarea
-      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
         return;
       }
 
@@ -202,19 +300,33 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
           <div>
             <h1 className="text-3xl font-bold mb-2">{equipment.name}</h1>
             {"hero_level_required" in equipment && (
-              <p className="text-muted-foreground">Required Level: {equipment.hero_level_required}</p>
+              <p className="text-muted-foreground">
+                Required Level: {equipment.hero_level_required}
+              </p>
             )}
           </div>
 
           <div className="flex gap-4">
             <div className="text-sm space-y-2">
               <div>Buy Value:</div>
-              <div className={`flex items-center gap-2 ${equipment.buy_value_gold === 0 && "opacity-40"}`}>
+              <div
+                className={`flex items-center gap-2 ${
+                  equipment.buy_value_gold === 0 && "opacity-40"
+                }`}
+              >
                 <img src="/images/gold.webp" alt="Gold" className="w-6 h-6" />
                 <span>{(equipment.buy_value_gold ?? 0).toLocaleString()}</span>
               </div>
-              <div className={`flex items-center gap-2 ${equipment.buy_value_coin === 0 && "opacity-40"}`}>
-                <img src="/images/arena-coin.png" alt="Arena Coin" className="w-6 h-6 rounded-full" />
+              <div
+                className={`flex items-center gap-2 ${
+                  equipment.buy_value_coin === 0 && "opacity-40"
+                }`}
+              >
+                <img
+                  src="/images/arena-coin.png"
+                  alt="Arena Coin"
+                  className="w-6 h-6 rounded-full"
+                />
                 <span>{(equipment.buy_value_coin ?? 0).toLocaleString()}</span>
               </div>
             </div>
@@ -226,7 +338,11 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                   <span>{equipment.sell_value.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <img src="/images/guild_activity_points.webp" alt="Guild Activity Points" className="w-6 h-6" />
+                  <img
+                    src="/images/guild_activity_points.webp"
+                    alt="Guild Activity Points"
+                    className="w-6 h-6"
+                  />
                   <span>{equipment.guild_activity_points}</span>
                 </div>
               </div>
@@ -235,24 +351,32 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
         </div>
       </div>
       {/* Stats Section */}
-      {"stats" in equipment && equipment.stats && Object.entries(equipment.stats).length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Stats</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col md:flex-row md:flex-wrap gap-4">
-            {Object.entries(equipment.stats).map(([stat, value]) => (
-              <div key={stat} className="flex items-center gap-2">
-                <div className="flex items-center gap-2">
-                  <img src={`/images/stats/${generateSlug(stat)}.png`} alt={stat} className="w-6 h-6" />
-                  <span className="capitalize">{stat}:</span>
+      {"stats" in equipment &&
+        equipment.stats &&
+        Object.entries(equipment.stats).length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Stats</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col md:flex-row md:flex-wrap gap-4">
+              {Object.entries(equipment.stats).map(([stat, value]) => (
+                <div key={stat} className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={`/images/stats/${generateSlug(stat)}.png`}
+                      alt={stat}
+                      className="w-6 h-6"
+                    />
+                    <span className="capitalize">{stat}:</span>
+                  </div>
+                  <span className="font-semibold">
+                    {value as React.ReactNode}
+                  </span>
                 </div>
-                <span className="font-semibold">{value}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+              ))}
+            </CardContent>
+          </Card>
+        )}
       {/* Campaign Sources Section */}
       {missionSources.length > 0 && (
         <Card>
@@ -268,9 +392,7 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                   className="flex items-center gap-2 p-2 rounded-md hover:bg-accent"
                   viewTransition
                 >
-                  <Badge variant="outline">
-                    {mission.slug}
-                  </Badge>
+                  <Badge variant="outline">{mission.slug}</Badge>
                   <span>{mission.name}</span>
                   {mission.hero_slug && (
                     <Badge variant="secondary" className="ml-auto capitalize">
@@ -290,7 +412,11 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
             <CardTitle>Crafting Requirements</CardTitle>
             {equipment.crafting_gold_cost && (
               <CardDescription className="flex items-center gap-1">
-                <img src="/images/gold.webp" alt="Gold cost" className="w-6 h-6" />
+                <img
+                  src="/images/gold.webp"
+                  alt="Gold cost"
+                  className="w-6 h-6"
+                />
                 {equipment.crafting_gold_cost.toLocaleString()} gold
               </CardDescription>
             )}
@@ -311,16 +437,30 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                 <div>
                   <h4>Raw Components:</h4>
                   <div className="flex items-center">
-                    <img src="/images/gold.webp" alt="Gold cost" className="w-6 h-6" />
-                    <span>{requiredEquipmentRaw.gold_cost.toLocaleString()} gold</span>
+                    <img
+                      src="/images/gold.webp"
+                      alt="Gold cost"
+                      className="w-6 h-6"
+                    />
+                    <span>
+                      {requiredEquipmentRaw.gold_cost.toLocaleString()} gold
+                    </span>
                   </div>
                   <div className="inline-grid gap-x-2 gap-y-1 grid-cols-[min-content_auto]">
-                    {requiredEquipmentRaw.required_items.map((item) => {
+                    {requiredEquipmentRaw.required_items.map((item: any) => {
                       return [
                         <span>{item.quantity}x</span>,
-                        <Link to={`/equipment/${item.equipment.slug}`} className="flex items-center gap-1 group">
-                          <EquipmentImage equipment={item.equipment} size={"xs"} />
-                          <span className="group-hover:underline">{item.equipment.name}</span>
+                        <Link
+                          to={`/equipment/${item.equipment.slug}`}
+                          className="flex items-center gap-1 group"
+                        >
+                          <EquipmentImage
+                            equipment={item.equipment}
+                            size={"xs"}
+                          />
+                          <span className="group-hover:underline">
+                            {item.equipment.name}
+                          </span>
                         </Link>,
                       ];
                     })}
@@ -349,7 +489,9 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                   >
                     <EquipmentImage equipment={item.equipment} size="sm" />
                     <div>
-                      <div className="group-hover:underline whitespace-nowrap">{item.equipment.name}</div>
+                      <div className="group-hover:underline whitespace-nowrap">
+                        {item.equipment.name}
+                      </div>
                       <div className="text-sm text-muted-foreground whitespace-nowrap">
                         Requires {item.quantity}x
                       </div>
@@ -366,15 +508,25 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
                   <div className="inline-grid gap-x-2 gap-y-1 grid-cols-[min-content_1fr]">
                     {rawComponentOf.map((item) => {
                       return [
-                        <span key={`qty-${item.equipment.slug}`} className="whitespace-nowrap">{item.totalQuantity}x for</span>,
+                        <span
+                          key={`qty-${item.equipment.slug}`}
+                          className="whitespace-nowrap"
+                        >
+                          {item.totalQuantity}x for
+                        </span>,
                         <Link
                           key={`link-${item.equipment.slug}`}
                           to={`/equipment/${item.equipment.slug}`}
                           className="flex items-center gap-1 group whitespace-nowrap"
                           viewTransition
                         >
-                          <EquipmentImage equipment={item.equipment} size={"xs"} />
-                          <span className="group-hover:underline">{item.equipment.name}</span>
+                          <EquipmentImage
+                            equipment={item.equipment}
+                            size={"xs"}
+                          />
+                          <span className="group-hover:underline">
+                            {item.equipment.name}
+                          </span>
                         </Link>,
                       ];
                     })}
@@ -386,7 +538,6 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
         </Card>
       )}
 
-
       {heroesUsingItem.length > 0 && (
         <Card>
           <CardHeader>
@@ -394,8 +545,16 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             {heroesUsingItem.map((hero) => (
-              <Link to={`/heroes/${hero.slug}`} key={hero.slug} className="group flex items-center gap-2">
-                <img src={`/images/heroes/${hero.slug}.png`} alt={hero.name[0]} className="size-8" />
+              <Link
+                to={`/heroes/${hero.slug}`}
+                key={hero.slug}
+                className="group flex items-center gap-2"
+              >
+                <img
+                  src={`/images/heroes/${hero.slug}.png`}
+                  alt={hero.name[0]}
+                  className="size-8"
+                />
                 <span className="group-hover:underline">{hero.name}</span>
               </Link>
             ))}
@@ -431,7 +590,11 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
           )}
         </div>
         <div className="flex justify-center w-full sm:w-auto">
-          <Link to="/equipment" className={buttonVariants({ variant: "secondary" })} viewTransition>
+          <Link
+            to="/equipment"
+            className={buttonVariants({ variant: "secondary" })}
+            viewTransition
+          >
             All Equipment
           </Link>
         </div>
@@ -451,5 +614,37 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Equipment({ loaderData }: Route.ComponentProps) {
+  return (
+    <Suspense fallback={<EquipmentDetailSkeleton showEditButton={true} />}>
+      <Await resolve={loaderData?.detailedData}>
+        {(data: {
+          equipment: any;
+          requiredEquipment: any[];
+          requiredEquipmentRaw: any;
+          requiredFor: any[];
+          rawComponentOf: any[];
+          missionSources: any[];
+          prevEquipment: any;
+          nextEquipment: any;
+          heroesUsingItem: any[];
+        }) => (
+          <EquipmentContent
+            equipment={data.equipment}
+            requiredEquipment={data.requiredEquipment}
+            requiredEquipmentRaw={data.requiredEquipmentRaw}
+            requiredFor={data.requiredFor}
+            rawComponentOf={data.rawComponentOf}
+            missionSources={data.missionSources}
+            prevEquipment={data.prevEquipment}
+            nextEquipment={data.nextEquipment}
+            heroesUsingItem={data.heroesUsingItem}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 }

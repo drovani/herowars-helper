@@ -12,10 +12,10 @@ interface HeroDetailSkeletonProps {
   showEditButton?: boolean;
 }
 
-export function HeroDetailSkeleton({ 
+export function HeroDetailSkeleton({
   className,
   showAddButton = false,
-  showEditButton = false
+  showEditButton = false,
 }: HeroDetailSkeletonProps) {
   // Static grid column mapping to ensure Tailwind CSS classes exist
   const getGridColsClass = (cols: number) => {
@@ -27,22 +27,26 @@ export function HeroDetailSkeleton({
       5: "grid-cols-5",
       6: "grid-cols-6",
       7: "grid-cols-7",
-      8: "grid-cols-8"
+      8: "grid-cols-8",
     };
     return colsMap[cols] || "grid-cols-6";
   };
 
   // Memoize arrays for different section sizes to avoid recreation
-  const sectionArrays = useMemo(() => ({
-    3: Array.from({ length: 3 }, (_, i) => i),
-    4: Array.from({ length: 4 }, (_, i) => i), 
-    5: Array.from({ length: 5 }, (_, i) => i),
-    6: Array.from({ length: 6 }, (_, i) => i)
-  }), []);
+  const sectionArrays = useMemo(
+    () => ({
+      3: Array.from({ length: 3 }, (_, i) => i),
+      4: Array.from({ length: 4 }, (_, i) => i),
+      5: Array.from({ length: 5 }, (_, i) => i),
+      6: Array.from({ length: 6 }, (_, i) => i),
+    }),
+    []
+  );
 
   const renderSection = (title: string, gridCols: number = 6) => {
-    const indices = sectionArrays[gridCols as keyof typeof sectionArrays] || sectionArrays[6];
-    
+    const indices =
+      sectionArrays[gridCols as keyof typeof sectionArrays] || sectionArrays[6];
+
     return (
       <Card className="w-full">
         <CardHeader>
@@ -98,7 +102,7 @@ export function HeroDetailSkeleton({
             </div>
           </div>
         </div>
-        
+
         {/* Add to Collection Button */}
         {showAddButton && (
           <div className="flex justify-end">

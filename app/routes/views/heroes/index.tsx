@@ -1,13 +1,19 @@
 import { ToggleGroup } from "@radix-ui/react-toggle-group";
-import { ChevronLeftIcon, ChevronRightIcon, LayoutGridIcon, LayoutListIcon } from "lucide-react";
-import { useState, Suspense } from "react";
-import { Link, useFetcher, Await } from "react-router";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  LayoutGridIcon,
+  LayoutListIcon,
+} from "lucide-react";
+import { Suspense, useState } from "react";
+import { Await, Link, useFetcher } from "react-router";
 import HeroArtifactsCompact from "~/components/hero/HeroArtifactsCompact";
 import HeroCard from "~/components/hero/HeroCard";
 import HeroGlyphsCompact from "~/components/hero/HeroGlyphsCompact";
 import HeroItemsCompact from "~/components/hero/HeroItemsCompact";
 import HeroSkinsCompact from "~/components/hero/HeroSkinsCompact";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
+import { HeroIndexSkeleton } from "~/components/skeletons/HeroIndexSkeleton";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -27,7 +33,6 @@ import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { BasicHero } from "~/repositories/types";
-import { HeroIndexSkeleton } from "~/components/skeletons/HeroIndexSkeleton";
 import type { Route } from "./+types/index";
 
 async function loadHeroesData(request: Request) {
@@ -110,10 +115,10 @@ async function loadHeroesData(request: Request) {
     pagination:
       mode === "tiles"
         ? {
-            currentPage: page,
-            limit,
-            hasMore: hasMoreResults,
-          }
+          currentPage: page,
+          limit,
+          hasMore: hasMoreResults,
+        }
         : undefined,
   };
 }
@@ -153,7 +158,19 @@ export const action = async ({ request }: Route.ActionArgs) => {
   return { error: "Invalid action" };
 };
 
-function HeroesContent({ heroes, equipment, userCollection, mode: initialMode, pagination }: { heroes: any[], equipment: any[], userCollection: string[], mode: string, pagination?: any }) {
+function HeroesContent({
+  heroes,
+  equipment,
+  userCollection,
+  mode: initialMode,
+  pagination,
+}: {
+  heroes: any[];
+  equipment: any[];
+  userCollection: string[];
+  mode: string;
+  pagination?: any;
+}) {
   const { user } = useAuth();
   const fetcher = useFetcher();
 
@@ -170,8 +187,8 @@ function HeroesContent({ heroes, equipment, userCollection, mode: initialMode, p
 
   const filteredHeroes = search
     ? heroes.filter((hero) =>
-        hero.name.toLowerCase().includes(search.toLowerCase())
-      )
+      hero.name.toLowerCase().includes(search.toLowerCase())
+    )
     : heroes;
 
   const HeroCardWithButton = ({
@@ -214,11 +231,19 @@ function HeroesContent({ heroes, equipment, userCollection, mode: initialMode, p
     );
   };
 
-  const HeroTileWithButton = ({ hero, equipment }: { hero: any, equipment: any[] }) => {
-    const isSubmittingThisHero = fetcher.state === "submitting" &&
-      fetcher.formData?.get('heroSlug') === hero.slug;
-    const isOptimisticallyInCollection = userCollection.includes(hero.slug) ||
-      (isSubmittingThisHero && fetcher.formData?.get('action') === 'addHero');
+  const HeroTileWithButton = ({
+    hero,
+    equipment,
+  }: {
+    hero: any;
+    equipment: any[];
+  }) => {
+    const isSubmittingThisHero =
+      fetcher.state === "submitting" &&
+      fetcher.formData?.get("heroSlug") === hero.slug;
+    const isOptimisticallyInCollection =
+      userCollection.includes(hero.slug) ||
+      (isSubmittingThisHero && fetcher.formData?.get("action") === "addHero");
 
     // Only render tiles if hero has complete data (artifacts, skins, etc.)
     if (!hero.artifacts || !hero.skins || !hero.glyphs || !hero.items) {
@@ -375,8 +400,14 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
   return (
     <Suspense fallback={<HeroIndexSkeleton />}>
       <Await resolve={loaderData?.heroesData}>
-        {(data: { heroes: any[], equipment: any[], userCollection: string[], mode: string, pagination?: any }) => (
-          <HeroesContent 
+        {(data: {
+          heroes: any[];
+          equipment: any[];
+          userCollection: string[];
+          mode: string;
+          pagination?: any;
+        }) => (
+          <HeroesContent
             heroes={data.heroes}
             equipment={data.equipment}
             userCollection={data.userCollection}

@@ -10,9 +10,9 @@ interface EquipmentDetailSkeletonProps {
   showEditButton?: boolean;
 }
 
-export function EquipmentDetailSkeleton({ 
+export function EquipmentDetailSkeleton({
   className,
-  showEditButton = false
+  showEditButton = false,
 }: EquipmentDetailSkeletonProps) {
   return (
     <div className={cn("space-y-8", className)}>

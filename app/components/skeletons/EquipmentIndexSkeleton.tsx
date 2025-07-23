@@ -4,6 +4,7 @@
 import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
+import { memo } from "react";
 
 interface EquipmentIndexSkeletonProps {
   /** Additional CSS classes to apply to the skeleton container */
@@ -17,14 +18,14 @@ interface EquipmentIndexSkeletonProps {
 /**
  * Skeleton placeholder for equipment index page with equipment card grid layout.
  * Matches equipment card dimensions and responsive grid behavior with quality color placeholders.
- * 
+ *
  * @param props - Configuration options for the equipment index skeleton
  * @returns A skeleton layout matching the equipment index page structure
  */
-export function EquipmentIndexSkeleton({ 
+export const EquipmentIndexSkeleton = memo(function EquipmentIndexSkeleton({
   className,
   itemCount = 20,
-  showAddButton = false
+  showAddButton = false,
 }: EquipmentIndexSkeletonProps) {
   return (
     <div className={cn("space-y-6", className)}>
@@ -50,4 +51,4 @@ export function EquipmentIndexSkeleton({
       </div>
     </div>
   );
-}
+});

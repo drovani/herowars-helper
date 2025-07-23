@@ -23,22 +23,22 @@ interface SkeletonCardProps {
 /**
  * Skeleton placeholder for card-based content with configurable dimensions and layout options.
  * Provides consistent loading experience that matches shadcn/ui Card component structure.
- * 
+ *
  * @param props - Configuration options for the skeleton card
  * @returns A skeleton card component matching the expected final content layout
  */
-export function SkeletonCard({ 
+export function SkeletonCard({
   className,
   size = "md",
   showHeader = true,
   showContent = true,
   headerHeight = "h-4",
-  contentLines = 3
+  contentLines = 3,
 }: SkeletonCardProps) {
   const sizeClasses = {
     sm: "size-24",
-    md: "size-28", 
-    lg: "size-32"
+    md: "size-28",
+    lg: "size-32",
   };
 
   return (
@@ -52,12 +52,12 @@ export function SkeletonCard({
         <CardContent className="p-2 pt-0">
           <div className="space-y-2">
             {Array.from({ length: contentLines }).map((_, i) => (
-              <Skeleton 
-                key={i} 
+              <Skeleton
+                key={i}
                 className={cn(
                   "h-3",
                   i === contentLines - 1 ? "w-2/3" : "w-full"
-                )} 
+                )}
               />
             ))}
           </div>

@@ -1,7 +1,8 @@
 import { cva } from "class-variance-authority";
 import { MapIcon, SearchIcon } from "lucide-react";
-import { useMemo, useState, Suspense } from "react";
-import { Link, Await } from "react-router";
+import { Suspense, useMemo, useState } from "react";
+import { Await, Link } from "react-router";
+import { MissionIndexSkeleton } from "~/components/skeletons/MissionIndexSkeleton";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import {
@@ -13,9 +14,10 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { cn, getHeroImageUrl } from "~/lib/utils";
-import { MissionRepository, type Mission } from "~/repositories/MissionRepository";
-import { MissionIndexSkeleton } from "~/components/skeletons/MissionIndexSkeleton";
-
+import {
+  MissionRepository,
+  type Mission,
+} from "~/repositories/MissionRepository";
 import type { Route } from "./+types/index";
 
 async function loadMissionsData(request: Request) {
@@ -88,7 +90,13 @@ const cardVariants = cva("p-1 bottom-0 absolute w-full text-center", {
   },
 });
 
-function MissionsContent({ missionsByChapter, uniqueBosses }: { missionsByChapter: Record<number, { title: string; missions: Mission[] }>, uniqueBosses: string[] }) {
+function MissionsContent({
+  missionsByChapter,
+  uniqueBosses,
+}: {
+  missionsByChapter: Record<number, { title: string; missions: Mission[] }>;
+  uniqueBosses: string[];
+}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBoss, setSelectedBoss] = useState<string | null>(null);
 
@@ -234,10 +242,16 @@ export default function MissionsIndex({ loaderData }: Route.ComponentProps) {
   return (
     <Suspense fallback={<MissionIndexSkeleton />}>
       <Await resolve={loaderData?.missionsData}>
-        {(data: { missionsByChapter: Record<number, { title: string; missions: Mission[] }>; uniqueBosses: string[] }) => (
-          <MissionsContent 
-            missionsByChapter={data.missionsByChapter} 
-            uniqueBosses={data.uniqueBosses} 
+        {(data: {
+          missionsByChapter: Record<
+            number,
+            { title: string; missions: Mission[] }
+          >;
+          uniqueBosses: string[];
+        }) => (
+          <MissionsContent
+            missionsByChapter={data.missionsByChapter}
+            uniqueBosses={data.uniqueBosses}
           />
         )}
       </Await>

@@ -10,24 +10,41 @@ interface AdminUserTableSkeletonProps {
   userCount?: number;
 }
 
-export function AdminUserTableSkeleton({ 
+export function AdminUserTableSkeleton({
   className,
-  userCount = 8
+  userCount = 8,
 }: AdminUserTableSkeletonProps) {
   return (
-    <div className={cn("space-y-4", className)} role="status" aria-live="polite" aria-label="Loading user management">
+    <div
+      className={cn("space-y-4", className)}
+      role="status"
+      aria-live="polite"
+      aria-label="Loading user management"
+    >
       {/* Header section */}
-      <div className="flex justify-between items-center" aria-label="Loading page header">
+      <div
+        className="flex justify-between items-center"
+        aria-label="Loading page header"
+      >
         <div className="space-y-2">
           <Skeleton className="h-8 w-48" aria-label="Loading page title" />
-          <Skeleton className="h-4 w-64" aria-label="Loading page description" />
+          <Skeleton
+            className="h-4 w-64"
+            aria-label="Loading page description"
+          />
         </div>
         <Skeleton className="h-10 w-32" aria-label="Loading add user button" />
       </div>
 
       {/* Search/Filter section */}
-      <div className="flex gap-4" aria-label="Loading search and filter controls">
-        <Skeleton className="h-10 flex-1 max-w-sm" aria-label="Loading search input" />
+      <div
+        className="flex gap-4"
+        aria-label="Loading search and filter controls"
+      >
+        <Skeleton
+          className="h-10 flex-1 max-w-sm"
+          aria-label="Loading search input"
+        />
         <Skeleton className="h-10 w-32" />
       </div>
 

@@ -1,6 +1,12 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { useEffect } from "react";
-import { Link, useNavigate, useFetcher, type UIMatch } from "react-router";
+import { Suspense, useEffect } from "react";
+import {
+  Await,
+  Link,
+  useFetcher,
+  useNavigate,
+  type UIMatch,
+} from "react-router";
 import invariant from "tiny-invariant";
 import { RequireEditor } from "~/components/auth/RequireRole";
 import HeroArtifacts from "~/components/hero/HeroArtifacts";
@@ -9,26 +15,28 @@ import HeroItems from "~/components/hero/HeroItems";
 import HeroSkins from "~/components/hero/HeroSkins";
 import HeroStoneSources from "~/components/hero/HeroStoneSources";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
+import { HeroDetailSkeleton } from "~/components/skeletons/HeroDetailSkeleton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { useAuth } from "~/contexts/AuthContext";
-import { MissionRepository } from "~/repositories/MissionRepository";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
-import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import {
-  transformCompleteHeroToRecord,
-  transformBasicHeroToRecord,
-  sortHeroRecords,
-} from "~/lib/hero-transformations";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
+import {
+  sortHeroRecords,
+  transformBasicHeroToRecord,
+  transformCompleteHeroToRecord,
+} from "~/lib/hero-transformations";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { MissionRepository } from "~/repositories/MissionRepository";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
-  return [{ title: data?.hero.name }];
+  const heroName = data?.basicHero?.name || "Hero Details";
+  return [{ title: heroName }];
 };
 
 export const handle = {
@@ -36,11 +44,35 @@ export const handle = {
     match: UIMatch<Route.ComponentProps["loaderData"], unknown>
   ) => ({
     href: match.pathname,
-    title: match.data?.hero.name,
+    title: match.data?.basicHero?.name || "Hero Details",
   }),
 };
 
-export const loader = async ({ params, request }: Route.LoaderArgs) => {
+async function loadBasicHeroData(params: { slug: string }, request: Request) {
+  invariant(params.slug, "Missing hero slug param");
+
+  const heroRepo = new HeroRepository(request);
+  const heroResult = await heroRepo.findById(params.slug);
+
+  if (heroResult.error || !heroResult.data) {
+    throw new Response(null, {
+      status: 404,
+      statusText: `Hero with slug ${params.slug} not found.`,
+    });
+  }
+
+  return {
+    name: heroResult.data.name,
+    slug: heroResult.data.slug,
+    class: heroResult.data.class,
+    faction: heroResult.data.faction,
+  };
+}
+
+async function loadDetailedHeroData(
+  params: { slug: string },
+  request: Request
+) {
   invariant(params.slug, "Missing hero slug param");
 
   const heroRepo = new HeroRepository(request);
@@ -96,6 +128,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
       equipmentSlugs.push(...itemSlugs);
     }
   }
+
   const equipmentRepo = new EquipmentRepository(request);
   const equipmentUsedResult = await equipmentRepo.getAllAsJson();
 
@@ -143,6 +176,15 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     equipmentUsed,
     isInCollection,
   };
+}
+
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const basicHero = await loadBasicHeroData(params, request);
+
+  return {
+    basicHero, // Available immediately for meta/breadcrumbs
+    detailedData: loadDetailedHeroData(params, request), // Deferred for skeleton loading
+  };
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -174,15 +216,21 @@ export const action = async ({ request }: Route.ActionArgs) => {
   return { error: "Invalid action" };
 };
 
-export default function Hero({ loaderData }: Route.ComponentProps) {
-  const {
-    hero,
-    prevHero,
-    nextHero,
-    campaignSources,
-    equipmentUsed,
-    isInCollection,
-  } = loaderData;
+function HeroContent({
+  hero,
+  prevHero,
+  nextHero,
+  campaignSources,
+  equipmentUsed,
+  isInCollection,
+}: {
+  hero: any;
+  prevHero: any;
+  nextHero: any;
+  campaignSources: any[];
+  equipmentUsed: any[];
+  isInCollection: boolean;
+}) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const fetcher = useFetcher();
@@ -257,7 +305,7 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
             <div className="text-sm space-y-2">
               <div>Attack Types:</div>
               <div className="flex gap-2">
-                {hero.attack_type.map((type) => (
+                {hero.attack_type.map((type: string) => (
                   <Badge key={type} variant="outline" className="capitalize">
                     {type}
                   </Badge>
@@ -358,5 +406,37 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Hero({ loaderData }: Route.ComponentProps) {
+  const { user } = useAuth();
+
+  return (
+    <Suspense
+      fallback={
+        <HeroDetailSkeleton showAddButton={!!user} showEditButton={true} />
+      }
+    >
+      <Await resolve={loaderData?.detailedData}>
+        {(data: {
+          hero: any;
+          prevHero: any;
+          nextHero: any;
+          campaignSources: any[];
+          equipmentUsed: any[];
+          isInCollection: boolean;
+        }) => (
+          <HeroContent
+            hero={data.hero}
+            prevHero={data.prevHero}
+            nextHero={data.nextHero}
+            campaignSources={data.campaignSources}
+            equipmentUsed={data.equipmentUsed}
+            isInCollection={data.isInCollection}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 }

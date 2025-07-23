@@ -13,18 +13,16 @@ interface SkeletonFormProps {
   sections?: number;
 }
 
-export function SkeletonForm({ 
+export function SkeletonForm({
   className,
   fields = 4,
   showHeader = true,
   showButtons = true,
-  sections = 1
+  sections = 1,
 }: SkeletonFormProps) {
   const renderFormSection = (sectionIndex: number) => (
     <div key={sectionIndex} className="space-y-4">
-      {sections > 1 && (
-        <Skeleton className="h-6 w-32" />
-      )}
+      {sections > 1 && <Skeleton className="h-6 w-32" />}
       {Array.from({ length: fields }).map((_, fieldIndex) => (
         <div key={fieldIndex} className="space-y-2">
           <Skeleton className="h-4 w-24" />
@@ -43,7 +41,7 @@ export function SkeletonForm({
         </CardHeader>
       )}
       <CardContent className="space-y-6">
-        {Array.from({ length: sections }).map((_, sectionIndex) => 
+        {Array.from({ length: sections }).map((_, sectionIndex) =>
           renderFormSection(sectionIndex)
         )}
         {showButtons && (

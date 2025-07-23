@@ -10,10 +10,10 @@ interface NavigationSkeletonProps {
   itemCount?: number;
 }
 
-export function NavigationSkeleton({ 
+export function NavigationSkeleton({
   className,
   type = "sidebar",
-  itemCount = 6
+  itemCount = 6,
 }: NavigationSkeletonProps) {
   if (type === "breadcrumbs") {
     return (
@@ -60,12 +60,14 @@ export function NavigationSkeleton({
           <div key={sectionIndex} className="space-y-2">
             <Skeleton className="h-5 w-32" />
             <div className="space-y-1 ml-2">
-              {Array.from({ length: Math.ceil(itemCount / 2) }).map((_, itemIndex) => (
-                <div key={itemIndex} className="flex items-center gap-2 p-2">
-                  <Skeleton className="size-4" />
-                  <Skeleton className="h-4 w-20" />
-                </div>
-              ))}
+              {Array.from({ length: Math.ceil(itemCount / 2) }).map(
+                (_, itemIndex) => (
+                  <div key={itemIndex} className="flex items-center gap-2 p-2">
+                    <Skeleton className="size-4" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                )
+              )}
             </div>
           </div>
         ))}

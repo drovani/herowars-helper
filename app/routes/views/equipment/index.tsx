@@ -44,7 +44,6 @@ const cardVariants = cva("p-1 bottom-0 absolute w-full text-center", {
 });
 
 function EquipmentContent({ equipments }: { equipments: any[] }) {
-
   return (
     <div className="space-y-6">
       <RequireEditor>

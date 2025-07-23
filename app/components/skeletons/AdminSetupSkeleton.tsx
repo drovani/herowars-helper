@@ -2,7 +2,13 @@
 // ABOUTME: Matches admin setup layout with form sections, progress indicators, and results display areas
 
 import { Skeleton } from "~/components/ui/skeleton";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 
 interface AdminSetupSkeletonProps {
@@ -10,9 +16,9 @@ interface AdminSetupSkeletonProps {
   mode?: "form" | "processing" | "results";
 }
 
-export function AdminSetupSkeleton({ 
+export function AdminSetupSkeleton({
   className,
-  mode = "form"
+  mode = "form",
 }: AdminSetupSkeletonProps) {
   if (mode === "processing") {
     return (

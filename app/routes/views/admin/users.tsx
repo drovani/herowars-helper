@@ -1,7 +1,28 @@
-import { UserRoundCheckIcon, UserRoundMinusIcon, UserRoundXIcon } from "lucide-react";
-import { useEffect, useState, Suspense } from "react";
-import { redirect, useFetcher, useLoaderData, useRevalidator, Await } from "react-router";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "~/components/ui/alert-dialog";
+import {
+  UserRoundCheckIcon,
+  UserRoundMinusIcon,
+  UserRoundXIcon,
+} from "lucide-react";
+import { Suspense, useEffect, useState } from "react";
+import {
+  Await,
+  redirect,
+  useFetcher,
+  useLoaderData,
+  useRevalidator,
+} from "react-router";
+import { AdminUserTableSkeleton } from "~/components/skeletons/AdminUserTableSkeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -35,7 +56,6 @@ import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
 import { ASSIGNABLE_ROLES } from "~/lib/supabase/admin";
 import { createClient } from "~/lib/supabase/client";
-import { AdminUserTableSkeleton } from "~/components/skeletons/AdminUserTableSkeleton";
 
 async function loadUsersData(request: Request) {
   const { supabase } = createClient(request);
@@ -147,7 +167,15 @@ interface UserData {
   banned_until?: string | null;
 }
 
-function AdminUsersContent({ users, error, hasServiceRole }: { users: UserData[], error: string | null, hasServiceRole: boolean }) {
+function AdminUsersContent({
+  users,
+  error,
+  hasServiceRole,
+}: {
+  users: UserData[];
+  error: string | null;
+  hasServiceRole: boolean;
+}) {
   const { user: currentUser } = useAuth();
   const fetcher = useFetcher();
   const createUserFetcher = useFetcher();
@@ -516,13 +544,12 @@ function AdminUsersContent({ users, error, hasServiceRole }: { users: UserData[]
         <CardContent className="p-3 sm:p-6">
           {message && (
             <div
-              className={`mb-4 p-3 rounded border break-words text-sm ${
-                hasServiceRole
+              className={`mb-4 p-3 rounded border break-words text-sm ${hasServiceRole
                   ? message.includes("success")
                     ? "bg-green-100 text-green-800 border-green-300"
                     : "bg-red-100 text-red-800 border-red-300"
                   : "bg-yellow-100 text-yellow-800 border-yellow-300"
-              }`}
+                }`}
             >
               {!hasServiceRole && (
                 <strong className="block sm:inline">
@@ -936,13 +963,23 @@ function AdminUsersContent({ users, error, hasServiceRole }: { users: UserData[]
 }
 
 export default function AdminUsers() {
-  const loaderData = useLoaderData() as { usersData: Promise<{ users: UserData[], error: string | null, hasServiceRole: boolean }> };
-  
+  const loaderData = useLoaderData() as {
+    usersData: Promise<{
+      users: UserData[];
+      error: string | null;
+      hasServiceRole: boolean;
+    }>;
+  };
+
   return (
     <Suspense fallback={<AdminUserTableSkeleton />}>
       <Await resolve={loaderData.usersData}>
-        {(data: { users: UserData[], error: string | null, hasServiceRole: boolean }) => (
-          <AdminUsersContent 
+        {(data: {
+          users: UserData[];
+          error: string | null;
+          hasServiceRole: boolean;
+        }) => (
+          <AdminUsersContent
             users={data.users}
             error={data.error}
             hasServiceRole={data.hasServiceRole}

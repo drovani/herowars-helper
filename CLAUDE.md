@@ -110,13 +110,16 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Responsive Design**: Mobile-first approach with custom hooks (`useIsMobile.tsx`)
 
 #### Skeleton Loading Components
+
 - **Location**: All skeleton components are in `app/components/skeletons/`
 - **Purpose**: Provide immediate visual feedback during data loading phases to improve perceived performance
 - **Architecture**: Component-based approach with generic building blocks and page-specific implementations
 - **Integration**: Use React Router v7 Suspense/Await pattern with skeleton components as fallback UI
 
 ##### Available Skeleton Components
+
 - **Core Building Blocks**:
+
   - `SkeletonCard` - Card-based content placeholders with configurable dimensions
   - `SkeletonGrid` - Responsive grid layouts with configurable item counts and column mappings
   - `SkeletonTable` - Table layouts with rows, columns, and action areas
@@ -124,6 +127,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
   - `SkeletonDetail` - Detail page layouts with headers and content sections
 
 - **Page-Specific Skeletons**:
+
   - `HeroIndexSkeleton` - Hero grid with cards/tiles modes, matches hero display patterns
   - `EquipmentIndexSkeleton` - Equipment card grid layouts matching equipment browsing
   - `MissionIndexSkeleton` - Chapter-organized mission grids with boss placeholders
@@ -136,6 +140,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
   - `NavigationSkeleton` - Sidebar, header, and breadcrumb layouts (ready for auth integration)
 
 ##### Skeleton Loading Implementation Guidelines
+
 - **When to Use**: For any data-heavy pages with loading times > 200ms
 - **Pattern**: Use Suspense/Await in route components with skeleton fallback
 - **Layout Matching**: Skeleton dimensions must match final content to prevent layout shift
@@ -144,6 +149,7 @@ This is the **Hero Wars Helper** - a React Router v7 application built to help p
 - **Responsive**: Skeleton components match existing breakpoints and responsive behavior
 
 ##### Implementation Example
+
 ```tsx
 // In route component
 import { HeroIndexSkeleton } from "~/components/skeletons";
@@ -160,6 +166,7 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
 ```
 
 ##### Integration Status
+
 - **Fully Integrated**: Heroes Index, Equipment Index, Mission Index, Admin Users
 - **Ready for Integration**: Hero/Equipment Detail pages, Authentication flows, Form submissions
 - **Testing**: 46 skeleton component tests covering rendering, accessibility, and responsive behavior

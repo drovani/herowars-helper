@@ -31,7 +31,7 @@ VALUES
     NOW(),
     NOW(),
     '{"roles": ["admin"]}',
-    '{}',
+    '{"full_name": "Adminishroom"}',
     false,
     'authenticated',
     'authenticated',

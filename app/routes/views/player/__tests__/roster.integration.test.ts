@@ -45,6 +45,7 @@ describe("Player Roster Integration", () => {
       addHeroToCollection: vi.fn(),
       updateHeroProgress: vi.fn(),
       removeFromCollection: vi.fn(),
+      addAllHeroesToCollection: vi.fn(),
     };
 
     vi.mocked(HeroRepository).mockImplementation(() => mockHeroRepo);
@@ -417,6 +418,177 @@ describe("Player Roster Integration", () => {
       });
 
       expect(result.error).toBe("Invalid action");
+    });
+  });
+
+  describe("action - addAllHeroes", () => {
+    it("should successfully add all heroes to collection", async () => {
+      const formData = new FormData();
+      formData.append("action", "addAllHeroes");
+
+      const mockRequest = new Request("http://localhost:3000/player", {
+        method: "POST",
+        body: formData,
+      });
+
+      const mockResult = {
+        data: {
+          totalHeroes: 10,
+          addedCount: 8,
+          skippedCount: 2,
+          errorCount: 0,
+          addedHeroes: ["galahad", "keira", "maya", "qing-mao", "jet", "thea", "aurora", "dante"],
+          skippedHeroes: ["astaroth", "celeste"],
+          errors: [],
+        },
+        error: null,
+      };
+
+      mockPlayerHeroRepo.addAllHeroesToCollection.mockResolvedValue(mockResult);
+
+      const result = await action({
+        request: mockRequest,
+        params: {},
+        context: { VALUE_FROM_NETLIFY: "test" },
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.message).toBe("Successfully added 8 heroes to your collection!");
+      expect(result.data).toEqual(mockResult.data);
+      expect(mockPlayerHeroRepo.addAllHeroesToCollection).toHaveBeenCalledWith("user1");
+    });
+
+    it("should handle case when all heroes already in collection", async () => {
+      const formData = new FormData();
+      formData.append("action", "addAllHeroes");
+
+      const mockRequest = new Request("http://localhost:3000/player", {
+        method: "POST",
+        body: formData,
+      });
+
+      const mockResult = {
+        data: {
+          totalHeroes: 5,
+          addedCount: 0,
+          skippedCount: 5,
+          errorCount: 0,
+          addedHeroes: [],
+          skippedHeroes: ["astaroth", "galahad", "keira", "maya", "qing-mao"],
+          errors: [],
+        },
+        error: null,
+      };
+
+      mockPlayerHeroRepo.addAllHeroesToCollection.mockResolvedValue(mockResult);
+
+      const result = await action({
+        request: mockRequest,
+        params: {},
+        context: { VALUE_FROM_NETLIFY: "test" },
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.message).toBe("All heroes are already in your collection!");
+      expect(result.data).toEqual(mockResult.data);
+    });
+
+    it("should handle partial success with errors", async () => {
+      const formData = new FormData();
+      formData.append("action", "addAllHeroes");
+
+      const mockRequest = new Request("http://localhost:3000/player", {
+        method: "POST",
+        body: formData,
+      });
+
+      const mockResult = {
+        data: {
+          totalHeroes: 5,
+          addedCount: 3,
+          skippedCount: 1,
+          errorCount: 1,
+          addedHeroes: ["galahad", "keira", "maya"],
+          skippedHeroes: ["astaroth"],
+          errors: [
+            {
+              heroSlug: "qing-mao",
+              message: "Database constraint violation",
+              code: "DB_ERROR",
+            },
+          ],
+        },
+        error: {
+          code: "BULK_ADD_PARTIAL",
+          message: "Bulk hero addition partially successful: 3 added, 1 errors",
+        },
+      };
+
+      mockPlayerHeroRepo.addAllHeroesToCollection.mockResolvedValue(mockResult);
+
+      const result = await action({
+        request: mockRequest,
+        params: {},
+        context: { VALUE_FROM_NETLIFY: "test" },
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.message).toBe("Added 3 heroes to your collection. 1 heroes had errors.");
+      expect(result.data).toEqual(mockResult.data);
+    });
+
+    it("should handle complete failure", async () => {
+      const formData = new FormData();
+      formData.append("action", "addAllHeroes");
+
+      const mockRequest = new Request("http://localhost:3000/player", {
+        method: "POST",
+        body: formData,
+      });
+
+      const mockResult = {
+        data: null,
+        error: {
+          code: "FETCH_HEROES_FAILED",
+          message: "Failed to fetch available heroes: Database connection failed",
+        },
+      };
+
+      mockPlayerHeroRepo.addAllHeroesToCollection.mockResolvedValue(mockResult);
+
+      const result = await action({
+        request: mockRequest,
+        params: {},
+        context: { VALUE_FROM_NETLIFY: "test" },
+      });
+
+      expect(result.error).toBe("Failed to fetch available heroes: Database connection failed");
+      expect(result.code).toBe("FETCH_HEROES_FAILED");
+    });
+
+    it("should handle unexpected error cases", async () => {
+      const formData = new FormData();
+      formData.append("action", "addAllHeroes");
+
+      const mockRequest = new Request("http://localhost:3000/player", {
+        method: "POST",
+        body: formData,
+      });
+
+      const mockResult = {
+        data: null,
+        error: null, // Unusual case where both data and error are null
+      };
+
+      mockPlayerHeroRepo.addAllHeroesToCollection.mockResolvedValue(mockResult);
+
+      const result = await action({
+        request: mockRequest,
+        params: {},
+        context: { VALUE_FROM_NETLIFY: "test" },
+      });
+
+      expect(result.error).toBe("Unexpected error during bulk hero addition");
     });
   });
 });

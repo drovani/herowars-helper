@@ -134,6 +134,44 @@ export const action = async ({ request }: Route.ActionArgs) => {
       return { success: true, message: "Hero removed from collection" };
     }
 
+    case "addAllHeroes": {
+      const result = await playerHeroRepo.addAllHeroesToCollection(user.id);
+
+      if (result.error) {
+        // Handle different error types for user-friendly messages
+        if (result.error.code === "BULK_ADD_PARTIAL" && result.data) {
+          return {
+            success: true,
+            message: `Added ${result.data.addedCount} heroes to your collection. ${result.data.errorCount} heroes had errors.`,
+            data: result.data,
+          };
+        } else {
+          return { 
+            error: result.error.message,
+            code: result.error.code,
+          };
+        }
+      }
+
+      if (result.data) {
+        if (result.data.addedCount === 0) {
+          return {
+            success: true,
+            message: "All heroes are already in your collection!",
+            data: result.data,
+          };
+        } else {
+          return {
+            success: true,
+            message: `Successfully added ${result.data.addedCount} heroes to your collection!`,
+            data: result.data,
+          };
+        }
+      }
+
+      return { error: "Unexpected error during bulk hero addition" };
+    }
+
     default:
       return { error: "Invalid action" };
   }

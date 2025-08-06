@@ -129,9 +129,11 @@ describe("Modern Component Testing Examples", () => {
 
   describe("Common Testing Patterns", () => {
     it("should test form interactions", () => {
-      // Example form component testing
+      // Example form component testing with proper form submission handling
+      const handleSubmit = vi.fn((e) => e.preventDefault());
+      
       const FormExample = () => (
-        <form>
+        <form onSubmit={handleSubmit}>
           <input type="text" placeholder="Enter name" />
           <ExampleButton>Submit</ExampleButton>
         </form>
@@ -146,7 +148,9 @@ describe("Modern Component Testing Examples", () => {
       expect(input).toHaveValue("John Doe");
 
       fireEvent.click(submitButton);
-      // Additional assertions would go here
+      
+      // Verify form submission was triggered
+      expect(handleSubmit).toHaveBeenCalledTimes(1);
     });
 
     it("should test conditional rendering", () => {

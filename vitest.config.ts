@@ -11,7 +11,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: [resolve(process.cwd(), "app/__tests__/setup.ts")],
     css: true,
-    exclude: ["e2e/**/*", "node_modules/**/*", ".netlify/**/*"],
+    exclude: ["e2e/**/*", "node_modules/**/*", ".netlify/**/*", "claude-1/**/*", "claude-2/**/*"],
     coverage: {
       provider: "v8",
       clean: false,

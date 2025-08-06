@@ -2,6 +2,7 @@
 // ABOUTME: Allows viewing, filtering, and managing personal hero collection including stars and equipment levels
 import { useState } from "react";
 import { useFetcher } from "react-router";
+import { AddAllHeroesButton } from "~/components/player/AddAllHeroesButton";
 import { HeroCollectionCard } from "~/components/player/HeroCollectionCard";
 import { PlayerCollectionErrorBoundary } from "~/components/player/PlayerCollectionErrorBoundary";
 import {
@@ -192,8 +193,51 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   const [factionFilter, setFactionFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
 
+  // Bulk operation state
+  const [bulkResult, setBulkResult] = useState<{
+    success: boolean;
+    message: string;
+    data?: {
+      totalHeroes: number;
+      addedCount: number;
+      skippedCount: number;
+      errorCount: number;
+    };
+  } | null>(null);
+
   // Use real data from loader
   const collection = playerCollection || [];
+
+  // Calculate how many heroes would be added
+  const existingHeroSlugs = new Set(collection.map((ph) => ph.hero_slug));
+  const heroesToAdd = heroes.filter((hero) => !existingHeroSlugs.has(hero.slug));
+  const expectedAddCount = heroesToAdd.length;
+
+  // Handle bulk hero addition
+  const handleAddAllHeroes = () => {
+    if (user?.id) {
+      setBulkResult(null);
+      fetcher.submit(
+        { action: "addAllHeroes" },
+        { method: "POST" }
+      );
+    }
+  };
+
+  // Process fetcher data for bulk operation results
+  if (fetcher.data && fetcher.state === "idle" && !bulkResult) {
+    if (fetcher.data.success || fetcher.data.error) {
+      setBulkResult({
+        success: !!fetcher.data.success,
+        message: fetcher.data.message || fetcher.data.error,
+        data: fetcher.data.data,
+      });
+    }
+  }
+
+  // Check if bulk operation is running
+  const isBulkLoading = fetcher.state === "submitting" && 
+    fetcher.formData?.get("action") === "addAllHeroes";
 
   // Show loading state while auth is initializing
   if (authLoading) {
@@ -280,6 +324,24 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Bulk Actions */}
+          <div className="flex items-center justify-between border-b pb-4">
+            <div>
+              <h3 className="text-lg font-medium">Quick Actions</h3>
+              <p className="text-sm text-muted-foreground">
+                Add all available heroes to your collection at once
+              </p>
+            </div>
+            <AddAllHeroesButton
+              disabled={!user || expectedAddCount === 0}
+              onConfirm={handleAddAllHeroes}
+              isLoading={isBulkLoading}
+              result={bulkResult || undefined}
+              expectedAddCount={expectedAddCount}
+              className="min-w-fit"
+            />
+          </div>
+
           {/* Filters and Search */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>

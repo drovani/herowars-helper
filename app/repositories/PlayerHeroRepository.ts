@@ -362,9 +362,18 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
    * Adds all available heroes to user's collection that aren't already included
    * Creates heroes with default values (1 star, level 1 equipment) and logs events
    * @param userId The user ID to add heroes for
+   * @param options Configuration options for the bulk operation
+   * @param options.batchSize Number of heroes to process per batch (default: 50)
+   * @param options.parallelism Number of parallel operations per batch (default: 5)
    * @returns Summary of the bulk addition operation including counts and any errors
    */
-  async addAllHeroesToCollection(userId: string): Promise<RepositoryResult<BulkAddResult>> {
+  async addAllHeroesToCollection(
+    userId: string, 
+    options: { 
+      batchSize?: number; 
+      parallelism?: number 
+    } = {}
+  ): Promise<RepositoryResult<BulkAddResult>> {
     try {
       log.info(`Starting bulk hero addition for user ${userId}`);
 
@@ -439,40 +448,84 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         errors: [],
       };
 
-      // Process heroes in batches to avoid overwhelming the database
-      const batchSize = 50;
+      // Configure batch processing options
+      const { batchSize = 50, parallelism = 5 } = options;
+      log.info(`Processing with batch size ${batchSize} and parallelism ${parallelism}`);
+
+      // Helper function to process a single hero
+      const processHero = async (hero: { slug: string }) => {
+        try {
+          const addResult = await this.addHeroToCollection(userId, {
+            hero_slug: hero.slug,
+            stars: 1,
+            equipment_level: 1,
+          });
+
+          if (addResult.error) {
+            log.warn(`Failed to add hero ${hero.slug}:`, addResult.error.message);
+            return {
+              type: 'error' as const,
+              heroSlug: hero.slug,
+              message: addResult.error.message,
+              code: addResult.error.code,
+            };
+          } else {
+            log.debug(`Successfully added hero ${hero.slug}`);
+            return {
+              type: 'success' as const,
+              heroSlug: hero.slug,
+            };
+          }
+        } catch (error) {
+          log.error(`Unexpected error adding hero ${hero.slug}:`, error);
+          return {
+            type: 'error' as const,
+            heroSlug: hero.slug,
+            message: error instanceof Error ? error.message : "Unknown error",
+          };
+        }
+      };
+
+      // Process heroes in batches with parallel execution within batches
       for (let i = 0; i < heroesToAdd.length; i += batchSize) {
         const batch = heroesToAdd.slice(i, i + batchSize);
         
-        // Process each hero in the batch
-        for (const hero of batch) {
-          try {
-            const addResult = await this.addHeroToCollection(userId, {
-              hero_slug: hero.slug,
-              stars: 1,
-              equipment_level: 1,
-            });
-
-            if (addResult.error) {
+        // Split batch into parallel chunks
+        const chunks = [];
+        for (let j = 0; j < batch.length; j += parallelism) {
+          chunks.push(batch.slice(j, j + parallelism));
+        }
+        
+        // Process chunks within the batch
+        for (const chunk of chunks) {
+          const chunkResults = await Promise.allSettled(
+            chunk.map(processHero)
+          );
+          
+          // Aggregate results from parallel processing with better error handling
+          for (const settledResult of chunkResults) {
+            if (settledResult.status === 'fulfilled') {
+              const chunkResult = settledResult.value;
+              if (chunkResult.type === 'error') {
+                result.errorCount++;
+                result.errors.push({
+                  heroSlug: chunkResult.heroSlug,
+                  message: chunkResult.message,
+                  code: chunkResult.code,
+                });
+              } else {
+                result.addedCount++;
+                result.addedHeroes.push(chunkResult.heroSlug);
+              }
+            } else {
+              // Handle Promise.allSettled rejection (should be rare with our error handling)
               result.errorCount++;
               result.errors.push({
-                heroSlug: hero.slug,
-                message: addResult.error.message,
-                code: addResult.error.code,
+                heroSlug: "unknown",
+                message: `Promise rejection: ${settledResult.reason}`,
+                code: "PROMISE_REJECTION",
               });
-              log.warn(`Failed to add hero ${hero.slug}:`, addResult.error.message);
-            } else {
-              result.addedCount++;
-              result.addedHeroes.push(hero.slug);
-              log.debug(`Successfully added hero ${hero.slug}`);
             }
-          } catch (error) {
-            result.errorCount++;
-            result.errors.push({
-              heroSlug: hero.slug,
-              message: error instanceof Error ? error.message : "Unknown error",
-            });
-            log.error(`Unexpected error adding hero ${hero.slug}:`, error);
           }
         }
 
@@ -487,21 +540,30 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         `Bulk hero addition completed: ${result.addedCount} added, ${result.skippedCount} skipped, ${result.errorCount} errors`
       );
 
-      // Determine if operation was successful
-      if (result.addedCount === 0 && result.errorCount > 0) {
+      // Enhanced error categorization logic with better edge case handling
+      if (result.addedCount === 0 && result.errorCount === 0) {
+        // Edge case: All heroes were already in collection (should have been caught earlier)
+        return {
+          data: result,
+          error: null, // This is actually a success case, not an error
+        };
+      } else if (result.addedCount === 0 && result.errorCount > 0) {
+        // Complete failure: No heroes added, only errors
         return {
           data: result,
           error: {
-            message: `Bulk hero addition failed: ${result.errorCount} errors, no heroes added`,
+            message: `Bulk hero addition failed: ${result.errorCount} errors occurred, no heroes were added`,
             code: "BULK_ADD_FAILED",
             details: { result },
           },
         };
-      } else if (result.errorCount > 0) {
+      } else if (result.errorCount > 0 && result.addedCount > 0) {
+        // Partial success: Some heroes added, some errors
+        const successRate = Math.round((result.addedCount / (result.addedCount + result.errorCount)) * 100);
         return {
           data: result,
           error: {
-            message: `Bulk hero addition partially successful: ${result.addedCount} added, ${result.errorCount} errors`,
+            message: `Bulk hero addition partially successful: ${result.addedCount} heroes added, ${result.errorCount} errors (${successRate}% success rate)`,
             code: "BULK_ADD_PARTIAL",
             details: { result },
           },

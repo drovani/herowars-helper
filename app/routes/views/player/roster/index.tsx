@@ -31,7 +31,7 @@ import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
-import type { Route } from "./+types/roster";
+import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);

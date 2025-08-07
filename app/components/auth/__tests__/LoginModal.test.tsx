@@ -1,6 +1,6 @@
-import { render, fireEvent, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LoginModal } from "../LoginModal";
 
 // Mock the LoginForm component
@@ -76,6 +76,8 @@ describe("LoginModal", () => {
 
       expect(result.queryByText("Login")).not.toBeInTheDocument();
       expect(result.queryByTestId("login-form")).not.toBeInTheDocument();
+      expect(result.queryByText("Login")).not.toBeInTheDocument();
+      expect(result.queryByTestId("login-form")).not.toBeInTheDocument();
     });
 
     it("shows modal content when trigger is clicked", async () => {
@@ -87,6 +89,7 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
@@ -111,6 +114,8 @@ describe("LoginModal", () => {
 
       expect(result.getByText("Login")).toBeInTheDocument();
       expect(result.getByTestId("login-form")).toBeInTheDocument();
+      expect(result.getByText("Login")).toBeInTheDocument();
+      expect(result.getByTestId("login-form")).toBeInTheDocument();
     });
 
     it("calls onOpenChange when modal state changes", async () => {
@@ -124,6 +129,7 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
@@ -143,8 +149,10 @@ describe("LoginModal", () => {
       );
 
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
+        expect(result.getByText("redirectTo: /test-path")).toBeInTheDocument();
         expect(result.getByText("redirectTo: /test-path")).toBeInTheDocument();
       });
     });
@@ -159,8 +167,10 @@ describe("LoginModal", () => {
       );
 
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
+        expect(result.getByText("action: /login")).toBeInTheDocument();
         expect(result.getByText("action: /login")).toBeInTheDocument();
       });
     });
@@ -175,8 +185,10 @@ describe("LoginModal", () => {
       );
 
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
+        expect(result.getByText("className: mt-4")).toBeInTheDocument();
         expect(result.getByText("className: mt-4")).toBeInTheDocument();
       });
     });
@@ -197,12 +209,15 @@ describe("LoginModal", () => {
 
       await waitFor(() => {
         expect(result.getByTestId("login-form")).toBeInTheDocument();
+        expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
 
       // Trigger success
       fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
+      fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
 
       await waitFor(() => {
+        expect(result.queryByTestId("login-form")).not.toBeInTheDocument();
         expect(result.queryByTestId("login-form")).not.toBeInTheDocument();
       });
     });
@@ -221,9 +236,11 @@ describe("LoginModal", () => {
 
       await waitFor(() => {
         expect(result.getByTestId("login-form")).toBeInTheDocument();
+        expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
 
       // Trigger success
+      fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
       fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
 
       await waitFor(() => {
@@ -244,6 +261,7 @@ describe("LoginModal", () => {
 
       // Trigger success
       fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
+      fireEvent.click(result.getByRole("button", { name: "Trigger Success" }));
 
       await waitFor(() => {
         expect(mockOnOpenChange).toHaveBeenCalledWith(false);
@@ -262,6 +280,7 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
@@ -310,6 +329,7 @@ describe("LoginModal", () => {
       );
 
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
         expect(
@@ -327,6 +347,7 @@ describe("LoginModal", () => {
         </Wrapper>
       );
 
+      fireEvent.click(result.getByRole("button", { name: "Open Login" }));
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
@@ -369,9 +390,11 @@ describe("LoginModal", () => {
 
       await waitFor(() => {
         expect(result.getByText("Login")).toBeInTheDocument();
+        expect(result.getByText("Login")).toBeInTheDocument();
       });
 
       // Only one modal should be open at a time
+      expect(result.getAllByTestId("login-form")).toHaveLength(1);
       expect(result.getAllByTestId("login-form")).toHaveLength(1);
     });
 
@@ -400,6 +423,7 @@ describe("LoginModal", () => {
       fireEvent.click(result.getByRole("button", { name: "Open Login" }));
 
       await waitFor(() => {
+        expect(result.getByTestId("login-form")).toBeInTheDocument();
         expect(result.getByTestId("login-form")).toBeInTheDocument();
       });
 

@@ -14,6 +14,8 @@ const mockPlayerHero: PlayerHeroWithDetails = {
   hero_slug: "astaroth",
   stars: 4,
   equipment_level: 10,
+  level: 60,
+  talisman_level: 25,
   created_at: "2024-01-15T10:00:00Z",
   updated_at: "2024-01-15T10:00:00Z",
   hero: {
@@ -94,7 +96,7 @@ describe("HeroCollectionCard", () => {
     });
 
     it("should handle unknown factions with warning", () => {
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => { });
 
       const unknownHero = {
         ...mockPlayerHero,

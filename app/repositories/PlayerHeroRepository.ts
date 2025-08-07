@@ -21,6 +21,8 @@ const PlayerHeroInputSchema = z.object({
   hero_slug: z.string(),
   stars: z.number().int().min(1).max(6).optional().default(1),
   equipment_level: z.number().int().min(1).max(16).optional().default(1),
+  level: z.number().int().min(1).max(120).optional().default(1),
+  talisman_level: z.number().int().min(0).max(50).optional().default(0),
 });
 
 // Schema for complete database records
@@ -30,6 +32,8 @@ const PlayerHeroSchema = z.object({
   hero_slug: z.string(),
   stars: z.number().int().min(1).max(6),
   equipment_level: z.number().int().min(1).max(16),
+  level: z.number().int().min(1).max(120),
+  talisman_level: z.number().int().min(0).max(50),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -157,6 +161,8 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         event_data: {
           initial_stars: heroInput.stars || 1,
           initial_equipment_level: heroInput.equipment_level || 1,
+          initial_level: heroInput.level || 1,
+          initial_talisman_level: heroInput.talisman_level || 0,
         },
       });
 
@@ -254,6 +260,45 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         }
       }
 
+      if (updates.level !== undefined && updates.level !== currentHero.level) {
+        const eventResult = await this.eventRepo.createEvent(userId, {
+          event_type: "UPDATE_HERO_LEVEL",
+          hero_slug: heroSlug,
+          event_data: {
+            previous_level: currentHero.level,
+            new_level: updates.level,
+          },
+        });
+
+        if (eventResult.error) {
+          log.warn(
+            "Failed to create UPDATE_HERO_LEVEL event:",
+            eventResult.error
+          );
+        }
+      }
+
+      if (
+        updates.talisman_level !== undefined &&
+        updates.talisman_level !== currentHero.talisman_level
+      ) {
+        const eventResult = await this.eventRepo.createEvent(userId, {
+          event_type: "UPDATE_HERO_TALISMAN",
+          hero_slug: heroSlug,
+          event_data: {
+            previous_talisman_level: currentHero.talisman_level,
+            new_talisman_level: updates.talisman_level,
+          },
+        });
+
+        if (eventResult.error) {
+          log.warn(
+            "Failed to create UPDATE_HERO_TALISMAN event:",
+            eventResult.error
+          );
+        }
+      }
+
       return result;
     } catch (error) {
       return {
@@ -312,6 +357,8 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         event_data: {
           final_stars: currentHero.stars,
           final_equipment_level: currentHero.equipment_level,
+          final_level: currentHero.level,
+          final_talisman_level: currentHero.talisman_level,
         },
       });
 

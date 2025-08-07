@@ -56,6 +56,8 @@ Determine appropriate branch prefix based on work type:
 - `refactor/` - Code improvements
 - `chore/` - Maintenance tasks
 
+If currently in the `main` branch, create a new branch for this work. Otherwise, rename the current branch with the new branch's name.
+
 ## Prerequisites
 
 Files to examine and understand before starting

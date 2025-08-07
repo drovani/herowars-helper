@@ -147,11 +147,15 @@ export interface CreatePlayerHeroInput {
   hero_slug: string;
   stars?: number;
   equipment_level?: number;
+  level?: number;
+  talisman_level?: number;
 }
 
 export interface UpdatePlayerHeroInput {
   stars?: number;
   equipment_level?: number;
+  level?: number;
+  talisman_level?: number;
 }
 
 export interface CreatePlayerEventInput {
@@ -159,7 +163,9 @@ export interface CreatePlayerEventInput {
     | "CLAIM_HERO"
     | "UNCLAIM_HERO"
     | "UPDATE_HERO_STARS"
-    | "UPDATE_HERO_EQUIPMENT";
+    | "UPDATE_HERO_EQUIPMENT"
+    | "UPDATE_HERO_LEVEL"
+    | "UPDATE_HERO_TALISMAN";
   hero_slug: string;
   event_data?: Json;
 }

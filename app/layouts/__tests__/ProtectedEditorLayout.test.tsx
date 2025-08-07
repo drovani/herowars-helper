@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BrowserRouter, Outlet } from "react-router";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAuth } from "~/contexts/AuthContext";
 import ProtectedEditorLayout from "../ProtectedEditorLayout";
 
@@ -67,12 +67,8 @@ describe("ProtectedEditorLayout", () => {
         </Wrapper>
       );
 
-      expect(
-        result.queryByText("Insufficient Permissions")
-      ).not.toBeInTheDocument();
-      expect(
-        result.queryByText("Authentication Required")
-      ).not.toBeInTheDocument();
+      expect(result.queryByText("Insufficient Permissions")).not.toBeInTheDocument();
+      expect(result.queryByText("Authentication Required")).not.toBeInTheDocument();
     });
   });
 
@@ -160,9 +156,7 @@ describe("ProtectedEditorLayout", () => {
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(
-        result.getByText("You need admin or editor role to access this page.")
-      ).toBeInTheDocument();
+      expect(result.getByText("You need admin or editor role to access this page.")).toBeInTheDocument();
     });
 
     it("does not render the outlet content", () => {
@@ -184,9 +178,7 @@ describe("ProtectedEditorLayout", () => {
 
       expect(result.getByText("Current user: Test User")).toBeInTheDocument();
       expect(result.getByText("Your roles: user")).toBeInTheDocument();
-      expect(
-        result.getByText("Required role: admin or editor")
-      ).toBeInTheDocument();
+      expect(result.getByText("Required role: admin or editor")).toBeInTheDocument();
     });
   });
 
@@ -209,9 +201,7 @@ describe("ProtectedEditorLayout", () => {
       );
 
       expect(result.getByText("Authentication Required")).toBeInTheDocument();
-      expect(
-        result.getByText("You must be logged in to access this page.")
-      ).toBeInTheDocument();
+      expect(result.getByText("You must be logged in to access this page.")).toBeInTheDocument();
     });
 
     it("does not render the outlet content", () => {

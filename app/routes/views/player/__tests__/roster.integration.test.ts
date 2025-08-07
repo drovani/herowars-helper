@@ -455,7 +455,10 @@ describe("Player Roster Integration", () => {
       expect(result.success).toBe(true);
       expect(result.message).toBe("Successfully added 8 heroes to your collection!");
       expect(result.data).toEqual(mockResult.data);
-      expect(mockPlayerHeroRepo.addAllHeroesToCollection).toHaveBeenCalledWith("user1");
+      expect(mockPlayerHeroRepo.addAllHeroesToCollection).toHaveBeenCalledWith("user1", {
+        batchSize: 50,
+        parallelism: 5,
+      });
     });
 
     it("should handle case when all heroes already in collection", async () => {

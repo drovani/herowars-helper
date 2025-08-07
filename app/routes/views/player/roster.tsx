@@ -136,7 +136,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
 
     case "addAllHeroes": {
-      const result = await playerHeroRepo.addAllHeroesToCollection(user.id);
+      // Configure batch processing options based on environment
+      const batchSize = parseInt(process.env.BULK_HERO_BATCH_SIZE || "50", 10);
+      const parallelism = parseInt(process.env.BULK_HERO_PARALLELISM || "5", 10);
+      
+      const result = await playerHeroRepo.addAllHeroesToCollection(user.id, {
+        batchSize,
+        parallelism,
+      });
 
       if (result.error) {
         // Handle different error types for user-friendly messages
@@ -193,17 +200,13 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   const [factionFilter, setFactionFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
 
-  // Bulk operation state
-  const [bulkResult, setBulkResult] = useState<{
-    success: boolean;
-    message: string;
-    data?: {
-      totalHeroes: number;
-      addedCount: number;
-      skippedCount: number;
-      errorCount: number;
-    };
-  } | null>(null);
+  // Extract bulk result directly from fetcher data to simplify state management
+  const bulkResult = fetcher.data && fetcher.state === "idle" && 
+    (fetcher.data.success || fetcher.data.error) ? {
+      success: !!fetcher.data.success,
+      message: fetcher.data.message || fetcher.data.error,
+      data: fetcher.data.data,
+    } : null;
 
   // Use real data from loader
   const collection = playerCollection || [];
@@ -213,27 +216,15 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   const heroesToAdd = heroes.filter((hero) => !existingHeroSlugs.has(hero.slug));
   const expectedAddCount = heroesToAdd.length;
 
-  // Handle bulk hero addition
+  // Handle bulk hero addition - simplified to just submit the action
   const handleAddAllHeroes = () => {
     if (user?.id) {
-      setBulkResult(null);
       fetcher.submit(
         { action: "addAllHeroes" },
         { method: "POST" }
       );
     }
   };
-
-  // Process fetcher data for bulk operation results
-  if (fetcher.data && fetcher.state === "idle" && !bulkResult) {
-    if (fetcher.data.success || fetcher.data.error) {
-      setBulkResult({
-        success: !!fetcher.data.success,
-        message: fetcher.data.message || fetcher.data.error,
-        data: fetcher.data.data,
-      });
-    }
-  }
 
   // Check if bulk operation is running
   const isBulkLoading = fetcher.state === "submitting" && 

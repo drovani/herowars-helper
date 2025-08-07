@@ -1,6 +1,6 @@
 // ABOUTME: AddAllHeroesButton component provides bulk hero addition with confirmation and progress feedback
 // ABOUTME: Shows confirmation dialog, loading states, and operation results for bulk hero collection management
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserRoundPlusIcon, LoaderCircle, CheckCircle, AlertTriangle, UsersIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { Alert, AlertDescription } from "~/components/ui/alert";
@@ -70,10 +70,13 @@ export function AddAllHeroesButton({
     }
   };
 
-  // Auto-hide result after delay
-  if (result && !showResult) {
-    setTimeout(() => setShowResult(true), 100);
-  }
+  // Auto-show result after delay with cleanup to prevent memory leaks
+  useEffect(() => {
+    if (result && !showResult) {
+      const timer = setTimeout(() => setShowResult(true), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [result, showResult]);
 
   const buttonText = isLoading 
     ? `Adding Heroes...` 

@@ -2,6 +2,7 @@
 // ABOUTME: Allows viewing, filtering, and managing personal hero collection including stars and equipment levels
 import { useState } from "react";
 import { useFetcher } from "react-router";
+import { AddAllHeroesButton } from "~/components/player/AddAllHeroesButton";
 import { HeroCollectionCard } from "~/components/player/HeroCollectionCard";
 import { PlayerCollectionErrorBoundary } from "~/components/player/PlayerCollectionErrorBoundary";
 import {
@@ -134,6 +135,51 @@ export const action = async ({ request }: Route.ActionArgs) => {
       return { success: true, message: "Hero removed from collection" };
     }
 
+    case "addAllHeroes": {
+      // Configure batch processing options based on environment
+      const batchSize = parseInt(process.env.BULK_HERO_BATCH_SIZE || "50", 10);
+      const parallelism = parseInt(process.env.BULK_HERO_PARALLELISM || "5", 10);
+      
+      const result = await playerHeroRepo.addAllHeroesToCollection(user.id, {
+        batchSize,
+        parallelism,
+      });
+
+      if (result.error) {
+        // Handle different error types for user-friendly messages
+        if (result.error.code === "BULK_ADD_PARTIAL" && result.data) {
+          return {
+            success: true,
+            message: `Added ${result.data.addedCount} heroes to your collection. ${result.data.errorCount} heroes had errors.`,
+            data: result.data,
+          };
+        } else {
+          return { 
+            error: result.error.message,
+            code: result.error.code,
+          };
+        }
+      }
+
+      if (result.data) {
+        if (result.data.addedCount === 0) {
+          return {
+            success: true,
+            message: "All heroes are already in your collection!",
+            data: result.data,
+          };
+        } else {
+          return {
+            success: true,
+            message: `Successfully added ${result.data.addedCount} heroes to your collection!`,
+            data: result.data,
+          };
+        }
+      }
+
+      return { error: "Unexpected error during bulk hero addition" };
+    }
+
     default:
       return { error: "Invalid action" };
   }
@@ -154,8 +200,35 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   const [factionFilter, setFactionFilter] = useState("all");
   const [sortBy, setSortBy] = useState("name");
 
+  // Extract bulk result directly from fetcher data to simplify state management
+  const bulkResult = fetcher.data && fetcher.state === "idle" && 
+    (fetcher.data.success || fetcher.data.error) ? {
+      success: !!fetcher.data.success,
+      message: fetcher.data.message || fetcher.data.error,
+      data: fetcher.data.data,
+    } : null;
+
   // Use real data from loader
   const collection = playerCollection || [];
+
+  // Calculate how many heroes would be added
+  const existingHeroSlugs = new Set(collection.map((ph) => ph.hero_slug));
+  const heroesToAdd = heroes.filter((hero) => !existingHeroSlugs.has(hero.slug));
+  const expectedAddCount = heroesToAdd.length;
+
+  // Handle bulk hero addition - simplified to just submit the action
+  const handleAddAllHeroes = () => {
+    if (user?.id) {
+      fetcher.submit(
+        { action: "addAllHeroes" },
+        { method: "POST" }
+      );
+    }
+  };
+
+  // Check if bulk operation is running
+  const isBulkLoading = fetcher.state === "submitting" && 
+    fetcher.formData?.get("action") === "addAllHeroes";
 
   // Show loading state while auth is initializing
   if (authLoading) {
@@ -242,6 +315,24 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Bulk Actions */}
+          <div className="flex items-center justify-between border-b pb-4">
+            <div>
+              <h3 className="text-lg font-medium">Quick Actions</h3>
+              <p className="text-sm text-muted-foreground">
+                Add all available heroes to your collection at once
+              </p>
+            </div>
+            <AddAllHeroesButton
+              disabled={!user || expectedAddCount === 0}
+              onConfirm={handleAddAllHeroes}
+              isLoading={isBulkLoading}
+              result={bulkResult || undefined}
+              expectedAddCount={expectedAddCount}
+              className="min-w-fit"
+            />
+          </div>
+
           {/* Filters and Search */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>

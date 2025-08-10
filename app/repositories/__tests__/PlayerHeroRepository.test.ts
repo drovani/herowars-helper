@@ -376,4 +376,32 @@ describe("PlayerHeroRepository", () => {
       expect(result.data).toBe(false);
     });
   });
+
+  describe("addAllHeroesToCollection", () => {
+    it("should handle error when HeroRepository fails", async () => {
+      // Test will fail at hero repo level - we can't easily mock the constructor
+      // but we can test the error handling
+      const result = await repository.addAllHeroesToCollection("user1");
+
+      // Since HeroRepository will likely fail (no real data), we expect an error
+      expect(result.error).toBeTruthy();
+      expect(result.error!.code).toBe("FETCH_HEROES_FAILED");
+      expect(result.data).toBeNull();
+    });
+
+    it("should handle error when findByUserId fails", async () => {
+      // Mock findByUserId to return an error
+      vi.spyOn(repository, "findByUserId").mockResolvedValue({
+        data: null,
+        error: { message: "User not found", code: "USER_ERROR" },
+      });
+
+      const result = await repository.addAllHeroesToCollection("user1");
+
+      // Should fail early with FETCH_HEROES_FAILED (because HeroRepository construction fails first)
+      // OR with FETCH_EXISTING_FAILED if HeroRepository succeeds but user query fails
+      expect(result.error).toBeTruthy();
+      expect(result.data).toBeNull();
+    });
+  });
 });

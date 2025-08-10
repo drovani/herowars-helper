@@ -4,8 +4,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import { z } from "zod";
 import { BaseRepository } from "./BaseRepository";
+import { HeroRepository } from "./HeroRepository";
 import { PlayerEventRepository } from "./PlayerEventRepository";
 import type {
+  BulkAddResult,
   CreatePlayerHeroInput,
   PlayerHero,
   PlayerHeroWithDetails,
@@ -34,6 +36,7 @@ const PlayerHeroSchema = z.object({
 
 export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
   private eventRepo: PlayerEventRepository;
+  private requestOrSupabase: Request | SupabaseClient<any> | null;
 
   constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
     if (
@@ -60,6 +63,8 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
       );
       this.eventRepo = new PlayerEventRepository(requestOrSupabase);
     }
+    
+    this.requestOrSupabase = requestOrSupabase;
   }
 
   /**
@@ -351,5 +356,234 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
       data: result.data !== null && result.data.length > 0,
       error: null,
     };
+  }
+
+  /**
+   * Adds all available heroes to user's collection that aren't already included
+   * Creates heroes with default values (1 star, level 1 equipment) and logs events
+   * @param userId The user ID to add heroes for
+   * @param options Configuration options for the bulk operation
+   * @param options.batchSize Number of heroes to process per batch (default: 50)
+   * @param options.parallelism Number of parallel operations per batch (default: 5)
+   * @returns Summary of the bulk addition operation including counts and any errors
+   */
+  async addAllHeroesToCollection(
+    userId: string, 
+    options: { 
+      batchSize?: number; 
+      parallelism?: number 
+    } = {}
+  ): Promise<RepositoryResult<BulkAddResult>> {
+    try {
+      log.info(`Starting bulk hero addition for user ${userId}`);
+
+      // Initialize repositories
+      const heroRepo = new HeroRepository(this.requestOrSupabase);
+
+      // Get all available heroes
+      const allHeroesResult = await heroRepo.findAllBasic();
+      if (allHeroesResult.error || !allHeroesResult.data) {
+        return {
+          data: null,
+          error: {
+            message: `Failed to fetch available heroes: ${allHeroesResult.error?.message || "Unknown error"}`,
+            code: "FETCH_HEROES_FAILED",
+            details: allHeroesResult.error,
+          },
+        };
+      }
+
+      const allHeroes = allHeroesResult.data;
+      log.info(`Found ${allHeroes.length} available heroes`);
+
+      // Get existing heroes in user's collection
+      const existingResult = await this.findByUserId(userId);
+      if (existingResult.error) {
+        return {
+          data: null,
+          error: {
+            message: `Failed to fetch existing hero collection: ${existingResult.error.message}`,
+            code: "FETCH_EXISTING_FAILED",
+            details: existingResult.error,
+          },
+        };
+      }
+
+      const existingHeroSlugs = new Set(
+        (existingResult.data || []).map((ph) => ph.hero_slug)
+      );
+      log.info(`User already has ${existingHeroSlugs.size} heroes in collection`);
+
+      // Filter heroes to add (only those not in collection)
+      const heroesToAdd = allHeroes.filter(
+        (hero) => !existingHeroSlugs.has(hero.slug)
+      );
+      
+      if (heroesToAdd.length === 0) {
+        log.info("All heroes are already in user's collection");
+        return {
+          data: {
+            totalHeroes: allHeroes.length,
+            addedCount: 0,
+            skippedCount: allHeroes.length,
+            errorCount: 0,
+            addedHeroes: [],
+            skippedHeroes: allHeroes.map((h) => h.slug),
+            errors: [],
+          },
+          error: null,
+        };
+      }
+
+      log.info(`Adding ${heroesToAdd.length} new heroes to collection`);
+
+      // Initialize result tracking
+      const result: BulkAddResult = {
+        totalHeroes: allHeroes.length,
+        addedCount: 0,
+        skippedCount: existingHeroSlugs.size,
+        errorCount: 0,
+        addedHeroes: [],
+        skippedHeroes: Array.from(existingHeroSlugs),
+        errors: [],
+      };
+
+      // Configure batch processing options
+      const { batchSize = 50, parallelism = 5 } = options;
+      log.info(`Processing with batch size ${batchSize} and parallelism ${parallelism}`);
+
+      // Helper function to process a single hero
+      const processHero = async (hero: { slug: string }) => {
+        try {
+          const addResult = await this.addHeroToCollection(userId, {
+            hero_slug: hero.slug,
+            stars: 1,
+            equipment_level: 1,
+          });
+
+          if (addResult.error) {
+            log.warn(`Failed to add hero ${hero.slug}:`, addResult.error.message);
+            return {
+              type: 'error' as const,
+              heroSlug: hero.slug,
+              message: addResult.error.message,
+              code: addResult.error.code,
+            };
+          } else {
+            log.debug(`Successfully added hero ${hero.slug}`);
+            return {
+              type: 'success' as const,
+              heroSlug: hero.slug,
+            };
+          }
+        } catch (error) {
+          log.error(`Unexpected error adding hero ${hero.slug}:`, error);
+          return {
+            type: 'error' as const,
+            heroSlug: hero.slug,
+            message: error instanceof Error ? error.message : "Unknown error",
+          };
+        }
+      };
+
+      // Process heroes in batches with parallel execution within batches
+      for (let i = 0; i < heroesToAdd.length; i += batchSize) {
+        const batch = heroesToAdd.slice(i, i + batchSize);
+        
+        // Split batch into parallel chunks
+        const chunks = [];
+        for (let j = 0; j < batch.length; j += parallelism) {
+          chunks.push(batch.slice(j, j + parallelism));
+        }
+        
+        // Process chunks within the batch
+        for (const chunk of chunks) {
+          const chunkResults = await Promise.allSettled(
+            chunk.map(processHero)
+          );
+          
+          // Aggregate results from parallel processing with better error handling
+          for (const settledResult of chunkResults) {
+            if (settledResult.status === 'fulfilled') {
+              const chunkResult = settledResult.value;
+              if (chunkResult.type === 'error') {
+                result.errorCount++;
+                result.errors.push({
+                  heroSlug: chunkResult.heroSlug,
+                  message: chunkResult.message,
+                  code: chunkResult.code,
+                });
+              } else {
+                result.addedCount++;
+                result.addedHeroes.push(chunkResult.heroSlug);
+              }
+            } else {
+              // Handle Promise.allSettled rejection (should be rare with our error handling)
+              result.errorCount++;
+              result.errors.push({
+                heroSlug: "unknown",
+                message: `Promise rejection: ${settledResult.reason}`,
+                code: "PROMISE_REJECTION",
+              });
+            }
+          }
+        }
+
+        // Log progress for large operations
+        if (heroesToAdd.length > 20) {
+          const completed = Math.min(i + batchSize, heroesToAdd.length);
+          log.info(`Processed ${completed}/${heroesToAdd.length} heroes (${Math.round((completed / heroesToAdd.length) * 100)}%)`);
+        }
+      }
+
+      log.info(
+        `Bulk hero addition completed: ${result.addedCount} added, ${result.skippedCount} skipped, ${result.errorCount} errors`
+      );
+
+      // Enhanced error categorization logic with better edge case handling
+      if (result.addedCount === 0 && result.errorCount === 0) {
+        // Edge case: All heroes were already in collection (should have been caught earlier)
+        return {
+          data: result,
+          error: null, // This is actually a success case, not an error
+        };
+      } else if (result.addedCount === 0 && result.errorCount > 0) {
+        // Complete failure: No heroes added, only errors
+        return {
+          data: result,
+          error: {
+            message: `Bulk hero addition failed: ${result.errorCount} errors occurred, no heroes were added`,
+            code: "BULK_ADD_FAILED",
+            details: { result },
+          },
+        };
+      } else if (result.errorCount > 0 && result.addedCount > 0) {
+        // Partial success: Some heroes added, some errors
+        const successRate = Math.round((result.addedCount / (result.addedCount + result.errorCount)) * 100);
+        return {
+          data: result,
+          error: {
+            message: `Bulk hero addition partially successful: ${result.addedCount} heroes added, ${result.errorCount} errors (${successRate}% success rate)`,
+            code: "BULK_ADD_PARTIAL",
+            details: { result },
+          },
+        };
+      }
+
+      return {
+        data: result,
+        error: null,
+      };
+    } catch (error) {
+      log.error("Unexpected error in bulk hero addition:", error);
+      return {
+        data: null,
+        error: {
+          message: `Failed to add all heroes to collection: ${error instanceof Error ? error.message : "Unknown error"}`,
+          code: "BULK_ADD_ERROR",
+          details: error,
+        },
+      };
+    }
   }
 }

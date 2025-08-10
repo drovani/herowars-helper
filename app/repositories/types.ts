@@ -154,6 +154,20 @@ export interface UpdatePlayerHeroInput {
   equipment_level?: number;
 }
 
+export interface BulkAddResult {
+  totalHeroes: number;
+  addedCount: number;
+  skippedCount: number;
+  errorCount: number;
+  addedHeroes: string[];
+  skippedHeroes: string[];
+  errors: Array<{
+    heroSlug: string;
+    message: string;
+    code?: string;
+  }>;
+}
+
 export interface CreatePlayerEventInput {
   event_type:
     | "CLAIM_HERO"

@@ -7,8 +7,9 @@ export interface RecentUpdatesConfig {
 }
 
 export const recentUpdates: RecentUpdatesConfig = {
-  asof: new Date("2025-07-15"),
+  asof: new Date("2025-08-06"),
   updates: [
+    "Added bulk hero addition feature - quickly add all heroes to your roster with one click",
     "Completed Hero Repository migration - all hero data now uses database instead of JSON files",
     "Added equipment database for gray, green, blue, violet, and orange items with crafting trees",
     "Began inputting some hero information",

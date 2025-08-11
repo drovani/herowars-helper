@@ -1,6 +1,6 @@
 // ABOUTME: Example test file demonstrating modern component testing patterns
 // ABOUTME: Shows correct destructured render pattern and common testing scenarios
-import { render, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 // Example component for demonstration
@@ -106,22 +106,22 @@ describe("Modern Component Testing Examples", () => {
 
   /*
   ❌ DEPRECATED: Screen Pattern (DO NOT USE)
-  
+
   These examples show the OLD pattern that should NOT be used:
-  
+
   import { render, screen, fireEvent } from "@testing-library/react";
-  
+
   it("should render button with text", () => {
     render(<ExampleButton>Click me</ExampleButton>);
-    
+
     expect(screen.getByRole("button")).toBeInTheDocument();
     expect(screen.getByText("Click me")).toBeInTheDocument();
   });
-  
+
   it("should handle click events", () => {
     const mockClick = vi.fn();
     render(<ExampleButton onClick={mockClick}>Click me</ExampleButton>);
-    
+
     fireEvent.click(screen.getByRole("button"));
     expect(mockClick).toHaveBeenCalledTimes(1);
   });
@@ -131,7 +131,7 @@ describe("Modern Component Testing Examples", () => {
     it("should test form interactions", () => {
       // Example form component testing with proper form submission handling
       const handleSubmit = vi.fn((e) => e.preventDefault());
-      
+
       const FormExample = () => (
         <form onSubmit={handleSubmit}>
           <input type="text" placeholder="Enter name" />
@@ -148,7 +148,7 @@ describe("Modern Component Testing Examples", () => {
       expect(input).toHaveValue("John Doe");
 
       fireEvent.click(submitButton);
-      
+
       // Verify form submission was triggered
       expect(handleSubmit).toHaveBeenCalledTimes(1);
     });
@@ -201,7 +201,6 @@ describe("Modern Component Testing Examples", () => {
   describe("Best Practices Summary", () => {
     it("demonstrates comprehensive testing approach", () => {
       const mockClick = vi.fn();
-
       // ✅ Use result object from render return value
       const result = render(
         <ExampleButton onClick={mockClick} variant="primary">
@@ -226,7 +225,6 @@ describe("Modern Component Testing Examples", () => {
           Test Button
         </ExampleButton>
       );
-
       expect(result.getByText("Loading...")).toBeInTheDocument();
       expect(result.queryByText("Test Button")).not.toBeInTheDocument();
       expect(result.getByRole("button")).toBeDisabled();

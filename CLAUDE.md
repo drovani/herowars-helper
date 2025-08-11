@@ -191,7 +191,8 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
 - **Mission Table**: Uses `slug` as primary key, `chapter_id` as foreign key
 - **Chapter Table**: Uses `id` as primary key, contains `title`
 - **Equipment Table**: Uses `slug` as primary key, `campaign_sources` string array references mission slugs
-- **Relationships**: Mission belongs to Chapter, Equipment references Missions via campaign_sources
+- **Player Hero Table**: User-specific hero collection with `level` (1-120), `talisman_level` (0-50), `stars` (1-6), `equipment_level` (0-6)
+- **Relationships**: Mission belongs to Chapter, Equipment references Missions via campaign_sources, Player Hero references Hero and User
 
 ### Database Schema Quick Reference
 
@@ -200,6 +201,7 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
 mission: slug (PK), name, chapter_id (FK), hero_slug, energy_cost, level
 chapter: id (PK), title
 equipment: slug (PK), name, campaign_sources (string[])
+player_hero: user_id (FK), hero_slug (FK), level, talisman_level, stars, equipment_level
 ```
 
 ### Current Architecture State
@@ -208,7 +210,9 @@ equipment: slug (PK), name, campaign_sources (string[])
 - **MissionRepository**: ✅ Implemented in (Issue [#37](https://github.com/drovani/herowars-helper/issues/37))
 - **EquipmentRepository**: ✅ Implemented in (Issue [#36](https://github.com/drovani/herowars-helper/issues/36))
 - **HeroRepository**: ✅ Implemented in (Issue [#38](https://github.com/drovani/herowars-helper/issues/38))
+- **PlayerHeroRepository**: ✅ Implemented with level and talisman_level fields (Issue [#67](https://github.com/drovani/herowars-helper/issues/67))
 - **Repository Migration**: ✅ Complete - All hero routes migrated from legacy services (Issue [#39](https://github.com/drovani/herowars-helper/issues/39))
+- **Roster UI Refactor**: ✅ Complete - Mobile-inspired interface with sidebar and detail views (Issue [#67](https://github.com/drovani/herowars-helper/issues/67))
 
 ### Navigation System
 
@@ -449,6 +453,17 @@ test("should render component", () => {
 - Users can also create and edit hero data
 - Track hero development progress and equipment
 - Hero stone source tracking for farming optimization
+
+### Player Roster Management
+
+- **Mobile-Inspired Interface**: Sidebar hero selection with detailed hero editing views
+- **Six Detail Views**: Hero (functional), Skills, Skins, Artifacts, Glyphs, Sparks (placeholders for future development)
+- **Enhanced Hero Data**: Level (1-120) and talisman level (0-50) tracking
+- **Advanced Sorting**: By name, order_rank, stars descending, equipment descending with secondary name sorting
+- **Deep Linking**: URL-based navigation to specific hero views (`/player/roster/:heroSlug/:view`)
+- **Responsive Layout**: Desktop sidebar layout, mobile horizontal scroll with bottom navigation
+- **Comprehensive Filtering**: Search, class filter, faction filter with persistent state
+- **Equipment Integration**: Equipment level display with tier requirements and item linking
 
 ### Equipment Management
 

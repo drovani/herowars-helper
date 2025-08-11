@@ -42,6 +42,8 @@ This command reads a markdown instruction file ($ARGUMENTS) and follows the step
 ### Integration with Development Workflow
 
 - **ALWAYS** make a new branch before making any file changes
+- If you are in the main branch, then **ALWAYS** make a new branch before making any file changes. The branch name should start with the type of work (feature, bug, refactor, docs), then have an "i" (for issue), the issue number, then a short slug of the title.
+  - For example: `feature/i44-msw-implementation`
 - **NEVER** try to reset the linked database; only reset the local database with `npx supabase db reset`
 - Run `npm run tsc` after each task's code changes to check for Typescript errors
 - Execute relevant tests for modified areas and ensure tests properly pass.

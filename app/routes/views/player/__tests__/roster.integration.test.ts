@@ -1,10 +1,10 @@
 // ABOUTME: Integration tests for player roster page covering data loading and actions
 // ABOUTME: Tests authentication flows and repository integration
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { loader, action } from "../roster";
+import { loader, action } from "../roster/index";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
-import { createMockSupabaseClient } from "~//__tests__/mocks/supabase";
+import { createMockSupabaseClient } from "~/__tests__/mocks/supabase";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
@@ -106,6 +106,8 @@ describe("Player Roster Integration", () => {
           hero_slug: "astaroth",
           stars: 5,
           equipment_level: 12,
+          level: 80,
+          talisman_level: 15,
           created_at: "2024-01-15T10:00:00Z",
           updated_at: "2024-01-15T10:00:00Z",
           hero: mockHeroes[0],
@@ -209,10 +211,11 @@ describe("Player Roster Integration", () => {
     it("should add hero to collection", async () => {
       const formData = new FormData();
       formData.append("action", "addHero");
-      formData.append("userId", "user1");
       formData.append("heroSlug", "astaroth");
       formData.append("stars", "1");
       formData.append("equipmentLevel", "1");
+      formData.append("level", "1");
+      formData.append("talismanLevel", "0");
 
       const mockRequest = new Request("http://localhost:3000/player", {
         method: "POST",
@@ -253,7 +256,6 @@ describe("Player Roster Integration", () => {
     it("should handle add hero errors", async () => {
       const formData = new FormData();
       formData.append("action", "addHero");
-      formData.append("userId", "user1");
       formData.append("heroSlug", "astaroth");
 
       const mockRequest = new Request("http://localhost:3000/player", {
@@ -280,7 +282,6 @@ describe("Player Roster Integration", () => {
     it("should update hero stars", async () => {
       const formData = new FormData();
       formData.append("action", "updateStars");
-      formData.append("userId", "user1");
       formData.append("heroSlug", "astaroth");
       formData.append("stars", "5");
 
@@ -314,7 +315,6 @@ describe("Player Roster Integration", () => {
     it("should update hero equipment level", async () => {
       const formData = new FormData();
       formData.append("action", "updateEquipment");
-      formData.append("userId", "user1");
       formData.append("heroSlug", "astaroth");
       formData.append("equipmentLevel", "15");
 
@@ -348,7 +348,6 @@ describe("Player Roster Integration", () => {
     it("should remove hero from collection", async () => {
       const formData = new FormData();
       formData.append("action", "removeHero");
-      formData.append("userId", "user1");
       formData.append("heroSlug", "astaroth");
 
       const mockRequest = new Request("http://localhost:3000/player", {
@@ -404,7 +403,6 @@ describe("Player Roster Integration", () => {
     it("should return error for invalid action", async () => {
       const formData = new FormData();
       formData.append("action", "invalidAction");
-      formData.append("userId", "user1");
 
       const mockRequest = new Request("http://localhost:3000/player", {
         method: "POST",

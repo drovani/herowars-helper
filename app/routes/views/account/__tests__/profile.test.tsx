@@ -100,7 +100,6 @@ describe("AccountProfile Auth Hydration", () => {
 
       // Start in loading state (simulating the state right after redirect from login)
       const result = render(<TestAccountProfile />);
-
       mockUseAuth.mockReturnValue({
         user: null,
         isAuthenticated: false,

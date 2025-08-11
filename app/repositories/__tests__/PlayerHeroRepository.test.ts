@@ -41,6 +41,8 @@ describe("PlayerHeroRepository", () => {
           hero_slug: "astaroth",
           stars: 5,
           equipment_level: 12,
+          level: 60,
+          talisman_level: 25,
           created_at: "2024-01-15T10:00:00Z",
           updated_at: "2024-01-15T10:00:00Z",
         },
@@ -88,6 +90,8 @@ describe("PlayerHeroRepository", () => {
           hero_slug: "astaroth",
           stars: 5,
           equipment_level: 12,
+          level: 60,
+          talisman_level: 25,
           created_at: "2024-01-15T10:00:00Z",
           updated_at: "2024-01-15T10:00:00Z",
           hero: {
@@ -125,6 +129,8 @@ describe("PlayerHeroRepository", () => {
         hero_slug: "astaroth",
         stars: 1,
         equipment_level: 1,
+        level: 1,
+        talisman_level: 0,
         created_at: "2024-01-15T10:00:00Z",
         updated_at: "2024-01-15T10:00:00Z",
       };
@@ -155,6 +161,8 @@ describe("PlayerHeroRepository", () => {
         event_data: {
           initial_stars: 1,
           initial_equipment_level: 1,
+          initial_level: 1,
+          initial_talisman_level: 0,
         },
       });
     });
@@ -187,6 +195,8 @@ describe("PlayerHeroRepository", () => {
         hero_slug: "astaroth",
         stars: 3,
         equipment_level: 10,
+        level: 50,
+        talisman_level: 20,
         created_at: "2024-01-15T10:00:00Z",
         updated_at: "2024-01-15T10:00:00Z",
       };
@@ -238,6 +248,8 @@ describe("PlayerHeroRepository", () => {
         hero_slug: "astaroth",
         stars: 5,
         equipment_level: 10,
+        level: 80,
+        talisman_level: 30,
         created_at: "2024-01-15T10:00:00Z",
         updated_at: "2024-01-15T10:00:00Z",
       };
@@ -304,6 +316,8 @@ describe("PlayerHeroRepository", () => {
         hero_slug: "astaroth",
         stars: 5,
         equipment_level: 12,
+        level: 90,
+        talisman_level: 35,
         created_at: "2024-01-15T10:00:00Z",
         updated_at: "2024-01-15T10:00:00Z",
       };
@@ -333,6 +347,8 @@ describe("PlayerHeroRepository", () => {
         event_data: {
           final_stars: 5,
           final_equipment_level: 12,
+          final_level: 90,
+          final_talisman_level: 35,
         },
       });
     });
@@ -348,6 +364,8 @@ describe("PlayerHeroRepository", () => {
             hero_slug: "astaroth",
             stars: 1,
             equipment_level: 1,
+            level: 40,
+            talisman_level: 15,
             created_at: "2024-01-15T10:00:00Z",
             updated_at: "2024-01-15T10:00:00Z",
           },

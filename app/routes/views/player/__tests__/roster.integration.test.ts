@@ -1,7 +1,7 @@
 // ABOUTME: Integration tests for player roster page covering data loading and actions
 // ABOUTME: Tests authentication flows and repository integration
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { loader, action } from "../roster/layout";
+import { loader, action } from "../roster/index";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { createMockSupabaseClient } from "~/__tests__/mocks/supabase";
@@ -249,8 +249,6 @@ describe("Player Roster Integration", () => {
           hero_slug: "astaroth",
           stars: 1,
           equipment_level: 1,
-          level: 1,
-          talisman_level: 0,
         }
       );
     });
@@ -280,10 +278,10 @@ describe("Player Roster Integration", () => {
     });
   });
 
-  describe("action - updateHero", () => {
+  describe("action - updateStars", () => {
     it("should update hero stars", async () => {
       const formData = new FormData();
-      formData.append("action", "updateHero");
+      formData.append("action", "updateStars");
       formData.append("heroSlug", "astaroth");
       formData.append("stars", "5");
 
@@ -304,17 +302,19 @@ describe("Player Roster Integration", () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.message).toBe("Hero updated");
+      expect(result.message).toBe("Hero stars updated");
       expect(mockPlayerHeroRepo.updateHeroProgress).toHaveBeenCalledWith(
         "user1",
         "astaroth",
         { stars: 5 }
       );
     });
+  });
 
+  describe("action - updateEquipment", () => {
     it("should update hero equipment level", async () => {
       const formData = new FormData();
-      formData.append("action", "updateHero");
+      formData.append("action", "updateEquipment");
       formData.append("heroSlug", "astaroth");
       formData.append("equipmentLevel", "15");
 
@@ -335,43 +335,11 @@ describe("Player Roster Integration", () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.message).toBe("Hero updated");
+      expect(result.message).toBe("Hero equipment updated");
       expect(mockPlayerHeroRepo.updateHeroProgress).toHaveBeenCalledWith(
         "user1",
         "astaroth",
         { equipment_level: 15 }
-      );
-    });
-
-    it("should update hero level and talisman level", async () => {
-      const formData = new FormData();
-      formData.append("action", "updateHero");
-      formData.append("heroSlug", "astaroth");
-      formData.append("level", "120");
-      formData.append("talismanLevel", "25");
-
-      const mockRequest = new Request("http://localhost:3000/player", {
-        method: "POST",
-        body: formData,
-      });
-
-      mockPlayerHeroRepo.updateHeroProgress.mockResolvedValue({
-        data: { id: "1", level: 120, talisman_level: 25 },
-        error: null,
-      });
-
-      const result = await action({
-        request: mockRequest,
-        params: {},
-        context: { VALUE_FROM_NETLIFY: "test" },
-      });
-
-      expect(result.success).toBe(true);
-      expect(result.message).toBe("Hero updated");
-      expect(mockPlayerHeroRepo.updateHeroProgress).toHaveBeenCalledWith(
-        "user1",
-        "astaroth",
-        { level: 120, talisman_level: 25 }
       );
     });
   });

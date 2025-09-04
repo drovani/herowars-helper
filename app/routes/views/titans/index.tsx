@@ -14,7 +14,7 @@ export default function Titans() {
         "Sigurd Weapon (Siungur's Aegis) to Level 105": true,
         "Angus Seal (Defense Seal) to Level 105": true,
         "Hyperion Weapon (Siungur's Staff) to Level 105": true,
-        "Angus Crown (Earth Crown) to Level 105": false,
+        "Angus Crown (Earth Crown) to Level 105": true,
         "Angus Weapons (Andvari's Fists) to Level 105": false,
       },
     },
@@ -52,7 +52,7 @@ export default function Titans() {
     "Hyperion, Angus, Araji, Iyari Default Skins to Level 55": true,
     "Sigurd Default Skin to level 45": true,
     "Angus & Sigurd Primordial Skin to Level 60 (Max)": true,
-    "Angus, Iyari, Araji, Hyperion Default Skins to Level 60": false,
+    "Angus, Iyari, Araji, Hyperion, Nova Default Skins to Level 60": true,
     "Sigurd Default Skin to level 60": false,
   };
 
@@ -82,7 +82,7 @@ export default function Titans() {
             <p>
               This guide is a work in progress and will be updated as new
               information becomes available. It particular, it has not been
-              updated since the release of Verdoc, Verdant Protector.
+              significantly updated since the release of Verdoc and Asherona.
             </p>
           </CardDescription>
         </CardHeader>
@@ -98,7 +98,7 @@ export default function Titans() {
                 <h3 className="font-medium mb-2">First Priority</h3>
                 <ul className="list-disc pl-6">
                   <li className="line-through">Sigurd (level 120)</li>
-                  <li>Angus</li>
+                  <li className="line-through">Angus</li>
                 </ul>
               </li>
               <li>
@@ -106,7 +106,7 @@ export default function Titans() {
                 <ul className="list-disc pl-6">
                   <li>Hyperion</li>
                   <li>Araji</li>
-                  <li>Iyari</li>
+                  <li className="line-through">Iyari</li>
                   <li>Nova</li>
                 </ul>
               </li>
@@ -115,6 +115,7 @@ export default function Titans() {
                 <ul className="list-disc pl-6">
                   <li>Ignis</li>
                   <li>Moloch</li>
+                  <li>Vulcan</li>
                 </ul>
               </li>
             </ol>

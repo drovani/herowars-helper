@@ -82,7 +82,7 @@
     "express": "^5.1.0",
     "jsdom": "^26.1.0",
     "msw": "^2.10.4",
-    "netlify-cli": "^23.1.1",
+    "netlify-cli": "^23.5.1",
     "postcss": "^8.5.6",
     "react-router-devtools": "^5.0.6",
     "supabase": "^2.33.9",
@@ -90,7 +90,7 @@
     "tailwindcss": "^4.1.11",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.2",
-    "vite": "^7.0.6",
+    "vite": "^7.1.5",
     "vite-plugin-devtools-json": "^0.4.1",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"

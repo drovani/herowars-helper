@@ -32,7 +32,11 @@ export default [
     ]),
     route("player", "./routes/views/player/layout.tsx", [
       index("./routes/views/player/index.tsx"),
-      route("roster", "./routes/views/player/roster.tsx"),
+      route("roster", "./routes/views/player/roster/layout.tsx", [
+        index("./routes/views/player/roster/index.tsx"),
+        route(":heroSlug", "./routes/views/player/roster/$heroSlug.tsx"),
+        route(":heroSlug/:view", "./routes/views/player/roster/$heroSlug.$view.tsx"),
+      ]),
       route("activity", "./routes/views/player/activity.tsx"),
       route("teams", "./routes/views/player/teams/index.tsx"),
       route("teams/new", "./routes/views/player/teams/new.tsx"),

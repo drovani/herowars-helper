@@ -33,16 +33,16 @@ export const meta = ({ data }: Route.MetaArgs) => {
 
 export const handle = {
   breadcrumb: (
-    match: UIMatch<Route.ComponentProps["loaderData"], unknown>
+    match: UIMatch<Route.ComponentProps["loaderData"], unknown>,
   ) => ({
     href: match.pathname,
-    title: match.data?.basicEquipment?.name || "Equipment Details",
+    title: match.loaderData?.basicEquipment?.name || "Equipment Details",
   }),
 };
 
 async function loadBasicEquipmentData(
   params: { slug: string },
-  request: Request
+  request: Request,
 ) {
   invariant(params.slug, "Missing equipment slug param");
 
@@ -70,7 +70,7 @@ async function loadBasicEquipmentData(
 
 async function loadDetailedEquipmentData(
   params: { slug: string },
-  request: Request
+  request: Request,
 ) {
   invariant(params.slug, "Missing equipment slug param");
 
@@ -111,7 +111,7 @@ async function loadDetailedEquipmentData(
 
   const sortedEquipment = sortedEquipmentResult.data || [];
   const currentIndex = sortedEquipment.findIndex(
-    (e) => e.slug === equipment.slug
+    (e) => e.slug === equipment.slug,
   );
   const prevEquipment =
     currentIndex > 0 ? sortedEquipment[currentIndex - 1] : null;
@@ -146,7 +146,7 @@ async function loadDetailedEquipmentData(
   // Get mission sources using the new repository
   const missionRepo = new MissionRepository(request);
   const missionSourcesResult = await missionRepo.findByCampaignSource(
-    equipment.slug
+    equipment.slug,
   );
 
   if (missionSourcesResult.error) {
@@ -157,7 +157,7 @@ async function loadDetailedEquipmentData(
 
   const heroRepo = new HeroRepository(request);
   const heroesUsingItemResult = await heroRepo.findHeroesUsingEquipment(
-    equipment.slug
+    equipment.slug,
   );
 
   if (heroesUsingItemResult.error) {
@@ -173,7 +173,7 @@ async function loadDetailedEquipmentData(
             return transformCompleteHeroToRecord(completeHeroResult.data);
           }
           return transformBasicHeroToRecord(hero);
-        })
+        }),
       )
     : [];
 

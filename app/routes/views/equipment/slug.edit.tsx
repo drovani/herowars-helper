@@ -26,11 +26,11 @@ export const meta = ({ data }: Route.MetaArgs) => {
 
 export const handle = {
   breadcrumb: (
-    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>
+    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>,
   ) => [
     {
-      href: `/equipment/${matches.data.equipment.slug}`,
-      title: matches.data.equipment.name,
+      href: `/equipment/${matches.loaderData?.equipment.slug}`,
+      title: matches.loaderData?.equipment.name || "Equipment",
     },
     {
       title: "Edit",
@@ -90,7 +90,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         "Cache-Control": "no-store, must-revalidate",
         Pragma: "no-cache",
       },
-    }
+    },
   );
 };
 
@@ -109,7 +109,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     if (updateResult.error) {
       return data(
         { errors: { _errors: [updateResult.error.message] } },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

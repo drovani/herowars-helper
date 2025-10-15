@@ -27,11 +27,11 @@ export const meta = ({ data }: Route.MetaArgs) => {
 
 export const handle = {
   breadcrumb: (
-    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>
+    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>,
   ) => [
     {
       href: `/heroes/${matches.params.slug}`,
-      title: matches.data?.hero?.name || "Hero",
+      title: matches.loaderData?.hero?.name || "Hero",
     },
     {
       title: "Edit",
@@ -71,7 +71,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         "Cache-Control": "no-store, must-revalidate",
         Pragma: "no-cache",
       },
-    }
+    },
   );
 };
 
@@ -83,7 +83,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   const dustedData = {
     ...formDataObj,
     glyphs: formDataObj.glyphs.map(
-      (glyph: string | null | undefined) => glyph || undefined
+      (glyph: string | null | undefined) => glyph || undefined,
     ),
     artifact: {
       ...formDataObj.artifact,
@@ -96,7 +96,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   if (!parseResults.success) {
     log.error(
       "Captured validation ZodError:",
-      JSON.stringify(parseResults.error.format(), null, 2)
+      JSON.stringify(parseResults.error.format(), null, 2),
     );
     return data({ errors: parseResults.error.format() }, { status: 400 });
   }
@@ -116,14 +116,14 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
           _form: [`Failed to update hero: ${updateResult.error.message}`],
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   if (!updateResult.data) {
     return data(
       { errors: { _form: [`Failed to update hero: No data returned`] } },
-      { status: 500 }
+      { status: 500 },
     );
   }
 

@@ -24,10 +24,10 @@ export const meta = ({ data }: Route.MetaArgs) => {
 
 export const handle = {
   breadcrumb: (
-    match: UIMatch<Route.ComponentProps["loaderData"], unknown>
+    match: UIMatch<Route.ComponentProps["loaderData"], unknown>,
   ) => ({
     href: match.pathname.replace(/\.json$/, ""),
-    title: match.data?.hero.name,
+    title: match.loaderData?.hero.name,
   }),
 };
 
@@ -70,7 +70,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   // Filter to only the equipment used by this hero
   const equipmentUsed =
     equipmentUsedResult.data?.filter((eq) =>
-      equipmentSlugs.includes(eq.slug)
+      equipmentSlugs.includes(eq.slug),
     ) || [];
 
   // Get all heroes for navigation
@@ -87,7 +87,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
             return transformCompleteHeroToRecord(completeHeroResult.data);
           }
           return transformBasicHeroToRecord(h);
-        })
+        }),
       )
     : [];
 
@@ -111,7 +111,7 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
       {JSON.stringify(
         { hero, prevHero, nextHero, campaignSources, equipmentUsed },
         null,
-        2
+        2,
       )}
     </pre>
   );

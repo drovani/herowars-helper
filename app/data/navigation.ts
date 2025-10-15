@@ -1,5 +1,6 @@
 import {
   BarChart3Icon,
+  CalculatorIcon,
   ClockIcon,
   DatabaseZapIcon,
   DropletIcon,
@@ -89,6 +90,11 @@ export const navigation: NavigationGroup[] = [
         name: "Activity Log",
         icon: ClockIcon,
         href: "/player/activity",
+      },
+      {
+        name: "Artifact Chest Calculator",
+        icon: CalculatorIcon,
+        href: "/tools/artifact-calculator",
       },
     ],
   },

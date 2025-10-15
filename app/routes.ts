@@ -65,4 +65,8 @@ export default [
   route("missions.json", "./routes/views/missions/json.tsx"),
   route("equipment.json", "./routes/views/equipment/json.tsx"),
   route("heroes.json", "./routes/views/heroes/json.tsx"),
+  route(
+    "tools/artifact-calculator",
+    "./routes/views/tools/artifact-calculator.tsx",
+  ),
 ] satisfies RouteConfig;

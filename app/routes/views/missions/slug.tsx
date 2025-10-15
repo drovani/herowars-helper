@@ -20,12 +20,12 @@ export const meta = ({ data }: Route.MetaArgs) => {
 export const handle = {
   breadcrumb: (match: UIMatch<Route.ComponentProps["loaderData"], unknown>) => [
     {
-      href: `/missions#chapter-${match.data.mission.chapter_id}`,
-      title: `Chapter ${match.data.mission.chapter_id}: ${match.data.chapterTitle}`,
+      href: `/missions#chapter-${match.loaderData?.mission.chapter_id}`,
+      title: `Chapter ${match.loaderData?.mission.chapter_id}: ${match.loaderData?.chapterTitle || ""}`,
     },
     {
       href: match.pathname,
-      title: `Mission ${match.data.mission.slug}: ${match.data.mission.name}`,
+      title: `Mission ${match.loaderData?.mission.slug}: ${match.loaderData?.mission.name || ""}`,
     },
   ],
 };
@@ -75,7 +75,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   const equipmentInMission =
     allEquipmentResult.data?.filter((eq) =>
-      eq.campaign_sources?.includes(slug)
+      eq.campaign_sources?.includes(slug),
     ) || [];
 
   // Get previous and next missions for navigation

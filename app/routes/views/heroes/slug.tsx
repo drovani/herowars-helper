@@ -41,10 +41,10 @@ export const meta = ({ data }: Route.MetaArgs) => {
 
 export const handle = {
   breadcrumb: (
-    match: UIMatch<Route.ComponentProps["loaderData"], unknown>
+    match: UIMatch<Route.ComponentProps["loaderData"], unknown>,
   ) => ({
     href: match.pathname,
-    title: match.data?.basicHero?.name || "Hero Details",
+    title: match.loaderData?.basicHero?.name || "Hero Details",
   }),
 };
 
@@ -71,7 +71,7 @@ async function loadBasicHeroData(params: { slug: string }, request: Request) {
 
 async function loadDetailedHeroData(
   params: { slug: string },
-  request: Request
+  request: Request,
 ) {
   invariant(params.slug, "Missing hero slug param");
 
@@ -102,7 +102,7 @@ async function loadDetailedHeroData(
     const playerHeroRepo = new PlayerHeroRepository(request);
     const collectionResult = await playerHeroRepo.isHeroInCollection(
       user.id,
-      params.slug
+      params.slug,
     );
     if (!collectionResult.error && collectionResult.data) {
       isInCollection = collectionResult.data;
@@ -139,7 +139,7 @@ async function loadDetailedHeroData(
   // Filter to only the equipment used by this hero
   const equipmentUsed =
     equipmentUsedResult.data?.filter((eq) =>
-      equipmentSlugs.includes(eq.slug)
+      equipmentSlugs.includes(eq.slug),
     ) || [];
 
   // Get all heroes for navigation
@@ -156,7 +156,7 @@ async function loadDetailedHeroData(
             return transformCompleteHeroToRecord(completeHeroResult.data);
           }
           return transformBasicHeroToRecord(h);
-        })
+        }),
       )
     : [];
 
@@ -337,7 +337,7 @@ function HeroContent({
                     stars: "1",
                     equipmentLevel: "1",
                   },
-                  { method: "POST" }
+                  { method: "POST" },
                 );
               }}
             />

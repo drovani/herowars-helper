@@ -32,11 +32,11 @@ export const meta = ({ data }: Route.MetaArgs) => {
 
 export const handle = {
   breadcrumb: (
-    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>
+    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>,
   ) => [
     {
       href: `/missions/${matches.params.slug}`,
-      title: matches.data?.mission?.name || "Mission",
+      title: matches.loaderData?.mission?.name || "Mission",
     },
     {
       title: "Edit",
@@ -72,7 +72,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         "Cache-Control": "no-store, must-revalidate",
         Pragma: "no-cache",
       },
-    }
+    },
   );
 };
 
@@ -97,7 +97,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     log.error("Mission update failed:", updateResult.error);
     return data(
       { errors: { _form: [updateResult.error.message] } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

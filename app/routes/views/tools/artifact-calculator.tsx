@@ -48,8 +48,8 @@ const COLOR_STYLES: Record<ColorTier, string> = {
 interface ArtifactInputProps {
   label: string;
   description: string;
-  value: number;
-  onChange: (value: number) => void;
+  value: number | "";
+  onChange: (value: number | "") => void;
 }
 
 function ArtifactInput({
@@ -63,7 +63,7 @@ function ArtifactInput({
     if (!isNaN(val) && val >= 1 && val <= 100) {
       onChange(val);
     } else if (e.target.value === "") {
-      onChange(1);
+      onChange("");
     }
   };
 
@@ -86,11 +86,14 @@ function ArtifactInput({
 
 interface ArtifactResultsProps {
   title: string;
-  currentLevel: number;
+  currentLevel: number | "";
 }
 
 function ArtifactResults({ title, currentLevel }: ArtifactResultsProps) {
-  if (currentLevel === 100) {
+  // Treat empty string as level 1
+  const level = currentLevel === "" ? 1 : currentLevel;
+
+  if (level === 100) {
     return (
       <Card>
         <CardHeader className="pb-3">
@@ -105,7 +108,7 @@ function ArtifactResults({ title, currentLevel }: ArtifactResultsProps) {
     );
   }
 
-  const result = calculateArtifactUpgrade(currentLevel);
+  const result = calculateArtifactUpgrade(level);
 
   // Filter out colors with 0 chests needed
   const relevantColors = (
@@ -116,9 +119,6 @@ function ArtifactResults({ title, currentLevel }: ArtifactResultsProps) {
     <Card>
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">{title}</CardTitle>
-        <CardDescription>
-          From level {currentLevel} to level 100
-        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Total Chests */}
@@ -129,6 +129,11 @@ function ArtifactResults({ title, currentLevel }: ArtifactResultsProps) {
           <div className="text-3xl font-bold text-primary">
             {result.totalChests}
           </div>
+        </div>
+
+        {/* Current level indicator */}
+        <div className="text-sm text-muted-foreground">
+          From level {level} to level 100
         </div>
 
         {/* Breakdown by color */}
@@ -159,9 +164,9 @@ function ArtifactResults({ title, currentLevel }: ArtifactResultsProps) {
 }
 
 export default function ArtifactCalculator() {
-  const [weaponLevel, setWeaponLevel] = useState(1);
-  const [bookLevel, setBookLevel] = useState(1);
-  const [ringLevel, setRingLevel] = useState(1);
+  const [weaponLevel, setWeaponLevel] = useState<number | "">(1);
+  const [bookLevel, setBookLevel] = useState<number | "">(1);
+  const [ringLevel, setRingLevel] = useState<number | "">(1);
 
   return (
     <div className="container max-w-6xl mx-auto p-4 md:p-6 space-y-6">

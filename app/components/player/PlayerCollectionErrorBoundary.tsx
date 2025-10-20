@@ -2,6 +2,7 @@
 // ABOUTME: Provides user-friendly error messages and fallback UI for collection operations
 
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import log from "loglevel";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -27,7 +28,8 @@ export class PlayerCollectionErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("Player Collection Error:", error, errorInfo);
+    log.error("[PlayerCollectionErrorBoundary] Error caught:", error);
+    log.error("[PlayerCollectionErrorBoundary] Component stack:", errorInfo.componentStack);
   }
 
   private handleRetry = () => {

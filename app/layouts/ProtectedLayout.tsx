@@ -1,5 +1,6 @@
 import { Outlet } from "react-router";
 import { UnauthorizedAccess } from "~/components/auth/UnauthorizedAccess";
+import { AuthenticationErrorBoundary } from "~/components/auth/AuthenticationErrorBoundary";
 import { useAuth } from "~/contexts/AuthContext";
 import { NavigationSkeleton } from "~/components/skeletons";
 
@@ -54,7 +55,11 @@ export default function ProtectedLayout({ roles = [] }: { roles?: string[] }) {
     roles.length === 0 || user?.roles.some((role) => roles?.includes(role));
 
   if (isAuthenticated && hasRole) {
-    return <Outlet />;
+    return (
+      <AuthenticationErrorBoundary requiredRoles={roles}>
+        <Outlet />
+      </AuthenticationErrorBoundary>
+    );
   } else {
     const requiredRole =
       roles.length > 0 ? roles.join(" or ") : "authenticated user";

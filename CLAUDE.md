@@ -305,6 +305,187 @@ Optional for full user management:
 - Always try to associate commits and PRs with an open issue
 - After making code changes to a file, run Prettier to maintain consistent formatting
 
+## Error Handling
+
+The application uses comprehensive React error boundaries to provide graceful error handling and user-friendly error messages.
+
+### Error Boundary Architecture
+
+**Base Error Boundary** (`app/components/ErrorBoundary.tsx`):
+- Configurable fallback UI with retry mechanisms
+- Development vs production error display modes
+- Integration with loglevel for consistent error logging
+- Support for custom error handlers and context tracking
+
+### Available Error Boundaries
+
+#### 1. Base ErrorBoundary
+
+General-purpose error boundary with configurable options:
+
+```tsx
+<ErrorBoundary
+  context="ComponentName"
+  errorTitle="Custom Error Title"
+  errorMessage="User-friendly error message"
+  onError={(error, errorInfo) => reportError(error)}
+  showRetry={true}
+  showRefresh={true}
+  showHome={true}
+>
+  <YourComponent />
+</ErrorBoundary>
+```
+
+#### 2. AuthenticationErrorBoundary
+
+Handles authentication-specific errors (`app/components/auth/AuthenticationErrorBoundary.tsx`):
+- Session expiration with login redirect
+- Permission/role verification failures
+- Token validation errors
+- Already integrated into `ProtectedLayout`
+
+```tsx
+<AuthenticationErrorBoundary requiredRoles={["admin", "editor"]}>
+  <AdminPanel />
+</AuthenticationErrorBoundary>
+```
+
+#### 3. Feature-Specific Error Boundaries
+
+**HeroErrorBoundary** (`app/components/heroes/HeroErrorBoundary.tsx`):
+```tsx
+<HeroErrorBoundary operation="loading" heroSlug="astaroth">
+  <HeroDetail />
+</HeroErrorBoundary>
+```
+
+**EquipmentErrorBoundary** (`app/components/equipment/EquipmentErrorBoundary.tsx`):
+```tsx
+<EquipmentErrorBoundary operation="listing">
+  <EquipmentCatalog />
+</EquipmentErrorBoundary>
+```
+
+**MissionErrorBoundary** (`app/components/missions/MissionErrorBoundary.tsx`):
+```tsx
+<MissionErrorBoundary operation="loading" identifier="chapter-1">
+  <MissionList />
+</MissionErrorBoundary>
+```
+
+#### 4. Form and Data Error Boundaries
+
+**FormErrorBoundary** (`app/components/forms/FormErrorBoundary.tsx`):
+- Preserves user input during errors
+- Handles validation, network, and server errors
+- Does not show refresh/home buttons to preserve form state
+
+```tsx
+<FormErrorBoundary
+  formName="Hero Creation"
+  onError={(error) => saveFormDraft()}
+>
+  <HeroForm />
+</FormErrorBoundary>
+```
+
+**DataLoadingErrorBoundary** (`app/components/data/DataLoadingErrorBoundary.tsx`):
+- Handles repository and network errors
+- Detects offline state
+- Provides retry mechanisms
+
+```tsx
+<DataLoadingErrorBoundary
+  dataDescription="hero list"
+  detectOffline={true}
+>
+  <HeroDataGrid />
+</DataLoadingErrorBoundary>
+```
+
+### Error Boundary Hooks
+
+**useErrorBoundary**: Manually trigger error boundaries from async operations
+
+```tsx
+function MyComponent() {
+  const showBoundary = useErrorBoundary();
+
+  const handleClick = async () => {
+    try {
+      await riskyOperation();
+    } catch (error) {
+      showBoundary(error);
+    }
+  };
+
+  return <button onClick={handleClick}>Do Something</button>;
+}
+```
+
+**useAsyncErrorBoundary**: Wrap async functions with automatic error boundary handling
+
+```tsx
+function MyComponent() {
+  const fetchData = useAsyncErrorBoundary(async () => {
+    return await api.getData();
+  });
+
+  return <button onClick={fetchData}>Load Data</button>;
+}
+```
+
+### Error Boundary Best Practices
+
+1. **Placement Strategy**:
+   - Wrap layouts for broad protection
+   - Wrap data-heavy components
+   - Wrap form components to preserve user input
+   - Wrap feature sections for isolated error handling
+
+2. **Context Naming**:
+   - Always provide meaningful context for debugging
+   - Include operation type and identifiers
+   - Example: `context="HeroList (loading: astaroth)"`
+
+3. **Error Messages**:
+   - Use user-friendly language
+   - Provide actionable recovery steps
+   - Show technical details only in development
+
+4. **Logging Integration**:
+   - All error boundaries use loglevel
+   - Never use console.error
+   - Include context in all log messages
+
+5. **Testing**:
+   - Test error boundaries with components that throw
+   - Verify fallback UI renders correctly
+   - Test retry mechanisms and recovery flows
+   - Use log capturing pattern in tests
+
+### Error Boundary Testing Pattern
+
+```tsx
+import { render } from "@testing-library/react";
+import { ErrorBoundary } from "~/components/ErrorBoundary";
+
+function ThrowError() {
+  throw new Error("Test error");
+}
+
+test("should catch and display error", () => {
+  const result = render(
+    <ErrorBoundary>
+      <ThrowError />
+    </ErrorBoundary>
+  );
+
+  expect(result.getByText("Something went wrong")).toBeInTheDocument();
+});
+```
+
 ## Testing Framework
 
 The project uses **Vitest** for unit and integration testing:

@@ -1,6 +1,7 @@
 import type { ClassValue } from "clsx";
 import type { HeroRecord } from "~/data/hero.zod";
 import { cn, generateSlug } from "~/lib/utils";
+import SkinImage from "./SkinImage";
 import {
   HoverCard,
   HoverCardContent,
@@ -64,20 +65,17 @@ export default function HeroSkinsCompact({
               </div>
             </div>
             <div className="flex flex-col md:flex-row gap-2">
-              <img
-                src={`/images/heroes/skins/${heroSlug}-${generateSlug(
-                  skin.name,
-                  "-skin"
-                )}.png`}
+              <SkinImage
+                heroSlug={heroSlug}
+                skinName={generateSlug(skin.name, "-skin")}
                 alt={skin.name}
                 className="h-48 md:h-72 lg:h-96 w-auto"
               />
               {skin.has_plus && (
-                <img
-                  src={`/images/heroes/skins/${heroSlug}-${generateSlug(
-                    skin.name,
-                    "-skin"
-                  )}-plus.png`}
+                <SkinImage
+                  heroSlug={heroSlug}
+                  skinName={generateSlug(skin.name, "-skin")}
+                  isPlus={true}
                   alt={`${skin.name} (+) variant`}
                   className="h-48 md:h-72 lg:h-96 w-auto"
                 />

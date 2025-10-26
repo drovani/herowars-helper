@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import type { HeroRecord } from "~/data/hero.zod";
 import { generateSlug } from "~/lib/utils";
+import SkinImage from "./SkinImage";
 import {
   HoverCard,
   HoverCardContent,
@@ -43,22 +44,18 @@ export default function HeroSkins({ skins, heroSlug }: HeroSkinsProps) {
                 </div>
                 <HoverCard>
                   <HoverCardTrigger asChild>
-                    <img
-                      src={`/images/heroes/skins/${heroSlug}-${generateSlug(
-                        skin.name,
-                        "-skin"
-                      )}.png`}
+                    <SkinImage
+                      heroSlug={heroSlug}
+                      skinName={generateSlug(skin.name, "-skin")}
                       alt={skin.name}
                       className="h-16"
                     />
                   </HoverCardTrigger>
                   <HoverCardContent>
                     <div>{skin.name}</div>
-                    <img
-                      src={`/images/heroes/skins/${heroSlug}-${generateSlug(
-                        skin.name,
-                        "-skin"
-                      )}.png`}
+                    <SkinImage
+                      heroSlug={heroSlug}
+                      skinName={generateSlug(skin.name, "-skin")}
                       alt={skin.name}
                       className="h-96 w-auto"
                     />
@@ -67,22 +64,20 @@ export default function HeroSkins({ skins, heroSlug }: HeroSkinsProps) {
                 {skin.has_plus && (
                   <HoverCard>
                     <HoverCardTrigger asChild>
-                      <img
-                        src={`/images/heroes/skins/${heroSlug}-${generateSlug(
-                          skin.name,
-                          "-skin"
-                        )}-plus.png`}
+                      <SkinImage
+                        heroSlug={heroSlug}
+                        skinName={generateSlug(skin.name, "-skin")}
+                        isPlus={true}
                         alt={skin.name}
                         className="h-16"
                       />
                     </HoverCardTrigger>
                     <HoverCardContent>
                       <div>{skin.name} (+) variant</div>
-                      <img
-                        src={`/images/heroes/skins/${heroSlug}-${generateSlug(
-                          skin.name,
-                          "-skin"
-                        )}-plus.png`}
+                      <SkinImage
+                        heroSlug={heroSlug}
+                        skinName={generateSlug(skin.name, "-skin")}
+                        isPlus={true}
                         alt={skin.name}
                         className="h-96 w-auto"
                       />

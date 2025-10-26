@@ -57,6 +57,7 @@ export type Database = {
           crafting_gold_cost: number | null
           guild_activity_points: number
           hero_level_required: number | null
+          image_hash: string | null
           name: string
           quality: Database["public"]["Enums"]["equipment_quality"]
           sell_value: number
@@ -70,6 +71,7 @@ export type Database = {
           crafting_gold_cost?: number | null
           guild_activity_points: number
           hero_level_required?: number | null
+          image_hash?: string | null
           name: string
           quality: Database["public"]["Enums"]["equipment_quality"]
           sell_value: number
@@ -83,6 +85,7 @@ export type Database = {
           crafting_gold_cost?: number | null
           guild_activity_points?: number
           hero_level_required?: number | null
+          image_hash?: string | null
           name?: string
           quality?: Database["public"]["Enums"]["equipment_quality"]
           sell_value?: number

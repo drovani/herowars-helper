@@ -10,14 +10,14 @@ import {
 } from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug.json";
 
-export const meta = ({ data }: Route.MetaArgs) => {
+export const meta = ({ loaderData }: Route.MetaArgs) => {
   return [
-    { title: data?.hero.name },
+    { title: loaderData?.hero.name },
     { name: "robots", content: "noindex" },
-    { rel: "canonical", href: `/heroes/${data?.hero.slug}` },
+    { rel: "canonical", href: `/heroes/${loaderData?.hero.slug}` },
     {
       name: "description",
-      content: `JSON details for ${data?.hero.name} hero. Internal administrative page.`,
+      content: `JSON details for ${loaderData?.hero.name} hero. Internal administrative page.`,
     },
   ];
 };
@@ -47,7 +47,9 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const hero = transformCompleteHeroToRecord(heroResult.data);
 
   const missionRepo = new MissionRepository(request);
-  const campaignSourcesResult = await missionRepo.findByHeroSlug(hero.name);
+  const campaignSourcesResult = await missionRepo.findByHeroSlug(
+    params.slug
+  );
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });

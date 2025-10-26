@@ -34,8 +34,8 @@ import { MissionRepository } from "~/repositories/MissionRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { Route } from "./+types/slug";
 
-export const meta = ({ data }: Route.MetaArgs) => {
-  const heroName = data?.basicHero?.name || "Hero Details";
+export const meta = ({ loaderData }: Route.MetaArgs) => {
+  const heroName = loaderData?.basicHero?.name || "Hero Details";
   return [{ title: heroName }];
 };
 
@@ -88,7 +88,9 @@ async function loadDetailedHeroData(
   const hero = transformCompleteHeroToRecord(heroResult.data);
 
   const missionRepo = new MissionRepository(request);
-  const campaignSourcesResult = await missionRepo.findByHeroSlug(hero.name);
+  const campaignSourcesResult = await missionRepo.findByHeroSlug(
+    params.slug
+  );
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });

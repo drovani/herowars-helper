@@ -11,6 +11,7 @@ import { HeroMutationSchema, type HeroMutation } from "~/data/hero.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
+import { createClient } from "~/lib/supabase/client";
 import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
@@ -80,19 +81,9 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
 
   const formData = await request.formData();
   const formDataObj = JSON.parse(formData.get("hero") as string);
-  const dustedData = {
-    ...formDataObj,
-    glyphs: formDataObj.glyphs.map(
-      (glyph: string | null | undefined) => glyph || undefined,
-    ),
-    artifact: {
-      ...formDataObj.artifact,
-      ring: null,
-    },
-  };
 
   // Validate the data
-  const parseResults = HeroMutationSchema.safeParse(dustedData);
+  const parseResults = HeroMutationSchema.safeParse(formDataObj);
   if (!parseResults.success) {
     log.error(
       "Captured validation ZodError:",
@@ -102,8 +93,15 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
   }
 
   const heroRepo = new HeroRepository(request);
+  const { supabase } = createClient(request);
+
+  // Separate hero base data from related data
+  const { artifacts, skins, glyphs, items, ...heroBaseData } =
+    parseResults.data;
+
+  // Update only the base hero fields (not related table data)
   const updateData = {
-    ...parseResults.data,
+    ...heroBaseData,
     updated_on: new Date().toISOString(),
   };
 
@@ -125,6 +123,162 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
       { errors: { _form: [`Failed to update hero: No data returned`] } },
       { status: 500 },
     );
+  }
+
+  // Update related data (artifacts, skins, glyphs, items)
+  // These are handled by deleting old records and creating new ones
+  // This approach ensures consistency and avoids complex merge logic
+
+  if (artifacts) {
+    // Clear existing artifacts by deleting them
+    await supabase
+      .from("hero_artifact")
+      .delete()
+      .eq("hero_slug", params.slug);
+
+    // Insert new artifacts
+    const artifactData: Array<{
+      hero_slug: string;
+      artifact_type: string;
+      name: string | null;
+      team_buff: string | null;
+      team_buff_secondary: string | null;
+    }> = [];
+
+    if (artifacts.weapon) {
+      artifactData.push({
+        hero_slug: params.slug,
+        artifact_type: "weapon",
+        name: artifacts.weapon.name,
+        team_buff: artifacts.weapon.team_buff,
+        team_buff_secondary: artifacts.weapon.team_buff_secondary || null,
+      });
+    }
+
+    if (artifacts.book) {
+      artifactData.push({
+        hero_slug: params.slug,
+        artifact_type: "book",
+        name: artifacts.book,
+        team_buff: null,
+        team_buff_secondary: null,
+      });
+    }
+
+    if (artifacts.ring) {
+      artifactData.push({
+        hero_slug: params.slug,
+        artifact_type: "ring",
+        name: null,
+        team_buff: null,
+        team_buff_secondary: null,
+      });
+    }
+
+    if (artifactData.length > 0) {
+      const { error: artifactError } = await supabase
+        .from("hero_artifact")
+        .insert(artifactData);
+      if (artifactError) {
+        log.error(`Failed to update artifacts for ${params.slug}:`, artifactError);
+      }
+    }
+  }
+
+  if (skins && skins.length > 0) {
+    // Delete existing skins and create new ones
+    await supabase
+      .from("hero_skin")
+      .delete()
+      .eq("hero_slug", params.slug);
+
+    const skinData = skins.map((skin) => ({
+      hero_slug: params.slug,
+      name: skin.name,
+      stat_type: skin.stat,
+      stat_value: 0,
+      has_plus: skin.has_plus,
+      source: skin.source || null,
+    }));
+
+    const { error: skinError } = await supabase
+      .from("hero_skin")
+      .insert(skinData);
+    if (skinError) {
+      log.error(`Failed to update skins for ${params.slug}:`, skinError);
+    }
+  }
+
+  if (glyphs && glyphs.length > 0) {
+    // Delete existing glyphs and create new ones
+    await supabase
+      .from("hero_glyph")
+      .delete()
+      .eq("hero_slug", params.slug);
+
+    const glyphData: Array<{
+      hero_slug: string;
+      position: number;
+      stat_type: string;
+      stat_value: number;
+    }> = [];
+
+    glyphs.forEach((stat, index) => {
+      if (stat !== null && stat !== undefined) {
+        glyphData.push({
+          hero_slug: params.slug,
+          position: index + 1,
+          stat_type: stat,
+          stat_value: 0,
+        });
+      }
+    });
+
+    if (glyphData.length > 0) {
+      const { error: glyphError } = await supabase
+        .from("hero_glyph")
+        .insert(glyphData);
+      if (glyphError) {
+        log.error(`Failed to update glyphs for ${params.slug}:`, glyphError);
+      }
+    }
+  }
+
+  if (items) {
+    // Delete existing equipment slots and create new ones
+    await supabase
+      .from("hero_equipment_slot")
+      .delete()
+      .eq("hero_slug", params.slug);
+
+    const equipmentData: Array<{
+      hero_slug: string;
+      quality: string;
+      slot_position: number;
+      equipment_slug: string | null;
+    }> = [];
+
+    for (const [quality, equipmentArray] of Object.entries(items)) {
+      if (Array.isArray(equipmentArray)) {
+        equipmentArray.forEach((equipmentSlug, slotIndex) => {
+          equipmentData.push({
+            hero_slug: params.slug,
+            quality,
+            slot_position: slotIndex + 1,
+            equipment_slug: equipmentSlug || null,
+          });
+        });
+      }
+    }
+
+    if (equipmentData.length > 0) {
+      const { error: equipmentError } = await supabase
+        .from("hero_equipment_slot")
+        .insert(equipmentData);
+      if (equipmentError) {
+        log.error(`Failed to update equipment for ${params.slug}:`, equipmentError);
+      }
+    }
   }
 
   return redirect(`/heroes/${updateResult.data.slug}`);

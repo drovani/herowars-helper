@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { data, redirect, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import log from "loglevel";
-import { ZodError } from "zod";
 import HeroForm from "~/components/HeroForm";
 import { Badge } from "~/components/ui/badge";
 import { HeroMutationSchema, type HeroMutation } from "~/data/hero.zod";
@@ -92,196 +91,123 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     return data({ errors: parseResults.error.format() }, { status: 400 });
   }
 
-  const heroRepo = new HeroRepository(request);
   const { supabase } = createClient(request);
 
   // Separate hero base data from related data
   const { artifacts, skins, glyphs, items, ...heroBaseData } =
     parseResults.data;
 
-  // Update only the base hero fields (not related table data)
-  const updateData = {
-    ...heroBaseData,
-    updated_on: new Date().toISOString(),
-  };
+  // Prepare artifact data for RPC call
+  const artifactData = artifacts
+    ? [
+        ...(artifacts.weapon
+          ? [
+              {
+                artifact_type: "weapon",
+                name: artifacts.weapon.name,
+                team_buff: artifacts.weapon.team_buff,
+                team_buff_secondary: artifacts.weapon.team_buff_secondary || null,
+              },
+            ]
+          : []),
+        ...(artifacts.book
+          ? [
+              {
+                artifact_type: "book",
+                name: artifacts.book,
+                team_buff: null,
+                team_buff_secondary: null,
+              },
+            ]
+          : []),
+        ...(artifacts.ring
+          ? [
+              {
+                artifact_type: "ring",
+                name: null,
+                team_buff: null,
+                team_buff_secondary: null,
+              },
+            ]
+          : []),
+      ]
+    : null;
 
-  const updateResult = await heroRepo.update(params.slug, updateData);
-  if (updateResult.error) {
-    log.error(`Failed to update hero ${params.slug}:`, updateResult.error);
+  // Prepare skin data for RPC call
+  const skinData =
+    skins && skins.length > 0
+      ? skins.map((skin) => ({
+          name: skin.name,
+          stat_type: skin.stat,
+          stat_value: 0,
+          has_plus: skin.has_plus,
+          source: skin.source || null,
+        }))
+      : null;
+
+  // Prepare glyph data for RPC call
+  const glyphData =
+    glyphs && glyphs.length > 0
+      ? glyphs
+          .map((stat, index) =>
+            stat !== null && stat !== undefined
+              ? {
+                  position: index + 1,
+                  stat_type: stat,
+                  stat_value: 0,
+                }
+              : null,
+          )
+          .filter((g) => g !== null)
+      : null;
+
+  // Prepare equipment data for RPC call
+  const equipmentData = items
+    ? Object.entries(items).flatMap(([quality, equipmentArray]) =>
+        Array.isArray(equipmentArray)
+          ? equipmentArray.map((equipmentSlug, slotIndex) => ({
+              quality,
+              slot_position: slotIndex + 1,
+              equipment_slug: equipmentSlug || null,
+            }))
+          : [],
+      )
+    : null;
+
+  // Call the atomic update function via RPC
+  // This ensures all updates happen in a single transaction
+  const { data: rpcResult, error: rpcError } = await supabase.rpc(
+    "update_hero_with_relations",
+    {
+      p_hero_slug: params.slug,
+      p_hero_data: heroBaseData,
+      p_artifacts: artifactData,
+      p_skins: skinData,
+      p_glyphs: glyphData,
+      p_equipment: equipmentData,
+    },
+  );
+
+  if (rpcError) {
+    log.error(`Failed to update hero ${params.slug}:`, rpcError);
     return data(
       {
         errors: {
-          _form: [`Failed to update hero: ${updateResult.error.message}`],
+          _form: [`Failed to update hero: ${rpcError.message}`],
         },
       },
       { status: 500 },
     );
   }
 
-  if (!updateResult.data) {
+  if (!rpcResult) {
     return data(
       { errors: { _form: [`Failed to update hero: No data returned`] } },
       { status: 500 },
     );
   }
 
-  // Update related data (artifacts, skins, glyphs, items)
-  // These are handled by deleting old records and creating new ones
-  // This approach ensures consistency and avoids complex merge logic
-
-  if (artifacts) {
-    // Clear existing artifacts by deleting them
-    await supabase
-      .from("hero_artifact")
-      .delete()
-      .eq("hero_slug", params.slug);
-
-    // Insert new artifacts
-    const artifactData: Array<{
-      hero_slug: string;
-      artifact_type: string;
-      name: string | null;
-      team_buff: string | null;
-      team_buff_secondary: string | null;
-    }> = [];
-
-    if (artifacts.weapon) {
-      artifactData.push({
-        hero_slug: params.slug,
-        artifact_type: "weapon",
-        name: artifacts.weapon.name,
-        team_buff: artifacts.weapon.team_buff,
-        team_buff_secondary: artifacts.weapon.team_buff_secondary || null,
-      });
-    }
-
-    if (artifacts.book) {
-      artifactData.push({
-        hero_slug: params.slug,
-        artifact_type: "book",
-        name: artifacts.book,
-        team_buff: null,
-        team_buff_secondary: null,
-      });
-    }
-
-    if (artifacts.ring) {
-      artifactData.push({
-        hero_slug: params.slug,
-        artifact_type: "ring",
-        name: null,
-        team_buff: null,
-        team_buff_secondary: null,
-      });
-    }
-
-    if (artifactData.length > 0) {
-      const { error: artifactError } = await supabase
-        .from("hero_artifact")
-        .insert(artifactData);
-      if (artifactError) {
-        log.error(`Failed to update artifacts for ${params.slug}:`, artifactError);
-      }
-    }
-  }
-
-  if (skins && skins.length > 0) {
-    // Delete existing skins and create new ones
-    await supabase
-      .from("hero_skin")
-      .delete()
-      .eq("hero_slug", params.slug);
-
-    const skinData = skins.map((skin) => ({
-      hero_slug: params.slug,
-      name: skin.name,
-      stat_type: skin.stat,
-      stat_value: 0,
-      has_plus: skin.has_plus,
-      source: skin.source || null,
-    }));
-
-    const { error: skinError } = await supabase
-      .from("hero_skin")
-      .insert(skinData);
-    if (skinError) {
-      log.error(`Failed to update skins for ${params.slug}:`, skinError);
-    }
-  }
-
-  if (glyphs && glyphs.length > 0) {
-    // Delete existing glyphs and create new ones
-    await supabase
-      .from("hero_glyph")
-      .delete()
-      .eq("hero_slug", params.slug);
-
-    const glyphData: Array<{
-      hero_slug: string;
-      position: number;
-      stat_type: string;
-      stat_value: number;
-    }> = [];
-
-    glyphs.forEach((stat, index) => {
-      if (stat !== null && stat !== undefined) {
-        glyphData.push({
-          hero_slug: params.slug,
-          position: index + 1,
-          stat_type: stat,
-          stat_value: 0,
-        });
-      }
-    });
-
-    if (glyphData.length > 0) {
-      const { error: glyphError } = await supabase
-        .from("hero_glyph")
-        .insert(glyphData);
-      if (glyphError) {
-        log.error(`Failed to update glyphs for ${params.slug}:`, glyphError);
-      }
-    }
-  }
-
-  if (items) {
-    // Delete existing equipment slots and create new ones
-    await supabase
-      .from("hero_equipment_slot")
-      .delete()
-      .eq("hero_slug", params.slug);
-
-    const equipmentData: Array<{
-      hero_slug: string;
-      quality: string;
-      slot_position: number;
-      equipment_slug: string | null;
-    }> = [];
-
-    for (const [quality, equipmentArray] of Object.entries(items)) {
-      if (Array.isArray(equipmentArray)) {
-        equipmentArray.forEach((equipmentSlug, slotIndex) => {
-          equipmentData.push({
-            hero_slug: params.slug,
-            quality,
-            slot_position: slotIndex + 1,
-            equipment_slug: equipmentSlug || null,
-          });
-        });
-      }
-    }
-
-    if (equipmentData.length > 0) {
-      const { error: equipmentError } = await supabase
-        .from("hero_equipment_slot")
-        .insert(equipmentData);
-      if (equipmentError) {
-        log.error(`Failed to update equipment for ${params.slug}:`, equipmentError);
-      }
-    }
-  }
-
-  return redirect(`/heroes/${updateResult.data.slug}`);
+  return redirect(`/heroes/${rpcResult.slug}`);
 };
 
 export default function EditHero({

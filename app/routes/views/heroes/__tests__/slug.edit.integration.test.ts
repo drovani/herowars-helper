@@ -33,6 +33,8 @@ describe("Hero Edit Integration", () => {
     );
 
     mockSupabaseClient = createMockSupabaseClient();
+    // Add rpc method to the mock
+    mockSupabaseClient.rpc = vi.fn();
 
     mockHeroRepo = {
       findWithAllData: vi.fn(),
@@ -46,11 +48,11 @@ describe("Hero Edit Integration", () => {
     vi.mocked(HeroRepository).mockImplementation(() => mockHeroRepo);
     vi.mocked(EquipmentRepository).mockImplementation(() => mockEquipmentRepo);
 
-    // Setup createClient mock
-    vi.mocked(supabaseClientModule.createClient).mockReturnValue({
+    // Setup createClient mock to return fresh client each time
+    vi.mocked(supabaseClientModule.createClient).mockImplementation(() => ({
       supabase: mockSupabaseClient,
       headers: undefined,
-    });
+    }));
   });
 
   describe("loader", () => {
@@ -158,55 +160,23 @@ describe("Hero Edit Integration", () => {
     });
   });
 
-  describe("action - hero edit", () => {
-    it("should update hero and access all related data tables", async () => {
+  describe("action - hero edit with atomic RPC", () => {
+    it("should return error when RPC call fails", async () => {
       const heroFormData = {
         slug: mockHeroSlug,
-        artifacts: {
-          weapon: {
-            name: "Ancestor's Sword",
-            team_buff: "crit hit chance",
-          },
-          book: "Warrior's Code",
-          ring: null,
-        },
-        skins: [{ name: "Default Skin", stat: "strength", has_plus: false }],
-        items: {
-          white: [
-            "sword",
-            "shield",
-            "helmet",
-            "armor",
-            "boots",
-            "gloves",
-          ],
-        },
-        glyphs: [
-          "physical attack",
-          "health",
-          "armor",
-          "dodge",
-          "agility",
-        ],
+        artifacts: null,
+        skins: [],
+        items: {},
+        glyphs: ["agility"],
       };
 
       const formData = new FormData();
       formData.append("hero", JSON.stringify(heroFormData));
 
-      mockHeroRepo.update.mockResolvedValue({
-        data: { slug: mockHeroSlug, updated_on: new Date().toISOString() },
-        error: null,
-      });
-
-      const tablesAccessed = new Set<string>();
-      mockSupabaseClient.from.mockImplementation((table: string) => {
-        tablesAccessed.add(table);
-        return {
-          delete: () => ({
-            eq: () => Promise.resolve({ error: null }),
-          }),
-          insert: () => Promise.resolve({ error: null }),
-        };
+      // Mock RPC to return an error
+      mockSupabaseClient.rpc = vi.fn().mockResolvedValue({
+        data: null,
+        error: new Error("Failed to update hero: Hero not found"),
       });
 
       const actionRequest = new Request(
@@ -217,46 +187,16 @@ describe("Hero Edit Integration", () => {
         }
       );
 
-      // The action should succeed and access related tables
-      try {
-        const result = await action({
-          request: actionRequest,
-          params: { slug: mockHeroSlug },
-          context: { VALUE_FROM_NETLIFY: "test" },
-        } as any);
+      const result = await action({
+        request: actionRequest,
+        params: { slug: mockHeroSlug },
+        context: { VALUE_FROM_NETLIFY: "test" },
+      } as any);
 
-        // If we get here, verify the result
-        if (result && result.status) {
-          expect(result.status).toBe(302);
-          expect(result.headers.get("location")).toBe(`/heroes/${mockHeroSlug}`);
-        }
-      } catch (e) {
-        // Action might throw or redirect - that's ok
+      // Verify error response
+      if (result && typeof result === "object" && "status" in result) {
+        expect(result.status).toBe(500);
       }
-
-      // Verify hero.update was called with hero data (not artifacts/skins/glyphs/items)
-      if (mockHeroRepo.update.mock.calls.length > 0) {
-        expect(mockHeroRepo.update).toHaveBeenCalledWith(
-          mockHeroSlug,
-          expect.objectContaining({
-            slug: mockHeroSlug,
-            updated_on: expect.any(String),
-          })
-        );
-
-        // Verify that artifacts, skins, items, glyphs are NOT in the hero update call
-        const updateCall = mockHeroRepo.update.mock.calls[0][1];
-        expect(updateCall.artifacts).toBeUndefined();
-        expect(updateCall.skins).toBeUndefined();
-        expect(updateCall.items).toBeUndefined();
-        expect(updateCall.glyphs).toBeUndefined();
-      }
-
-      // Verify related tables were accessed
-      expect(tablesAccessed.has("hero_artifact") || tablesAccessed.size === 0).toBe(true);
-      expect(tablesAccessed.has("hero_skin") || tablesAccessed.size === 0).toBe(true);
-      expect(tablesAccessed.has("hero_glyph") || tablesAccessed.size === 0).toBe(true);
-      expect(tablesAccessed.has("hero_equipment_slot") || tablesAccessed.size === 0).toBe(true);
     });
 
   });

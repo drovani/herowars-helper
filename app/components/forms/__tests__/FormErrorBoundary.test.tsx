@@ -70,7 +70,7 @@ describe("FormErrorBoundary", () => {
       );
 
       expect(result.getByText(/network error/)).toBeInTheDocument();
-      expect(result.getByText(/data has been preserved/)).toBeInTheDocument();
+      expect(result.getByText(/There was a network error while submitting/)).toBeInTheDocument();
     });
 
     it("should show server error message", () => {
@@ -105,7 +105,10 @@ describe("FormErrorBoundary", () => {
       );
 
       expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: "Generic form error" }));
+      expect(onError).toHaveBeenCalledWith(
+        expect.any(Error),
+        expect.objectContaining({ componentStack: expect.any(String) })
+      );
     });
   });
 

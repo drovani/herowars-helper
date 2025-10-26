@@ -209,7 +209,7 @@ describe("AuthenticationErrorBoundary", () => {
         </AuthenticationErrorBoundary>
       );
 
-      // Should use base ErrorBoundary's default fallback
+      // Should use base ErrorBoundary with Authentication Error title
       expect(result.getByText("Authentication Error")).toBeInTheDocument();
     });
   });

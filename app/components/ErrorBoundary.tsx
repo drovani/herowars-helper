@@ -215,9 +215,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // Use custom fallback if provided
       if (fallback) {
         if (typeof fallback === "function") {
-          return fallback(this.state.error || new Error("Unknown error"), this.handleRetry);
+          const fallbackResult = fallback(this.state.error || new Error("Unknown error"), this.handleRetry);
+          // If fallback function returns a value, use it; otherwise fall through to default
+          if (fallbackResult !== null && fallbackResult !== undefined) {
+            return fallbackResult;
+          }
+        } else {
+          return fallback;
         }
-        return fallback;
       }
 
       // Render default fallback

@@ -13,14 +13,14 @@ import { HeroRepository } from "~/repositories/HeroRepository";
 import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
 import type { Route } from "./+types/slug.edit";
 
-export const meta = ({ data }: Route.MetaArgs) => {
+export const meta = ({ loaderData }: Route.MetaArgs) => {
   return [
-    { title: `Edit ${data?.hero.name}` },
+    { title: `Edit ${loaderData?.hero.name}` },
     { name: "robots", content: "noindex" },
-    { rel: "canonical", href: `/heroes/${data?.hero.slug}` },
+    { rel: "canonical", href: `/heroes/${loaderData?.hero.slug}` },
     {
       name: "description",
-      content: `Edit details for ${data?.hero.name} hero. Internal administrative page.`,
+      content: `Edit details for ${loaderData?.hero.name} hero. Internal administrative page.`,
     },
   ];
 };

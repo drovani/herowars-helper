@@ -424,7 +424,9 @@ export type Database = {
           equipment_level: number
           hero_slug: string
           id: string
+          level: number
           stars: number
+          talisman_level: number
           updated_at: string | null
           user_id: string
         }
@@ -433,7 +435,9 @@ export type Database = {
           equipment_level?: number
           hero_slug: string
           id?: string
+          level?: number
           stars?: number
+          talisman_level?: number
           updated_at?: string | null
           user_id: string
         }
@@ -442,7 +446,9 @@ export type Database = {
           equipment_level?: number
           hero_slug?: string
           id?: string
+          level?: number
           stars?: number
+          talisman_level?: number
           updated_at?: string | null
           user_id?: string
         }
@@ -533,26 +539,6 @@ export type Database = {
         }[]
       }
       has_editorial_role: { Args: never; Returns: boolean }
-      update_hero_with_relations: {
-        Args: {
-          p_hero_slug: string
-          p_hero_data: Json
-          p_artifacts: Json | null
-          p_skins: Json | null
-          p_glyphs: Json | null
-          p_equipment: Json | null
-        }
-        Returns: {
-          slug: string
-          name: string
-          class: string
-          faction: string
-          main_stat: string
-          attack_type: string[]
-          artifact_team_buff: string | null
-          updated_on: string | null
-        }
-      }
       update_policies_with_summary: {
         Args: { operations?: string[]; table_names: string[] }
         Returns: {

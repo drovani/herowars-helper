@@ -17,6 +17,8 @@ function ThrowFormError({ errorType }: { errorType?: string }) {
     throw new Error("Server error 500 - internal server error");
   }
   throw new Error("Generic form error");
+  // eslint-disable-next-line no-unreachable
+  return null;
 }
 
 describe("FormErrorBoundary", () => {

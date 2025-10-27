@@ -8,6 +8,8 @@ import { HeroErrorBoundary } from "../HeroErrorBoundary";
 
 function ThrowError() {
   throw new Error("Test hero error");
+  // eslint-disable-next-line no-unreachable
+  return null;
 }
 
 describe("HeroErrorBoundary", () => {

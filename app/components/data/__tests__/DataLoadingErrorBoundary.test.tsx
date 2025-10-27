@@ -23,6 +23,8 @@ function ThrowDataError({ errorType }: { errorType?: string }) {
     throw new Error("Resource not found - 404");
   }
   throw new Error("Generic data loading error");
+  // eslint-disable-next-line no-unreachable
+  return null;
 }
 
 describe("DataLoadingErrorBoundary", () => {

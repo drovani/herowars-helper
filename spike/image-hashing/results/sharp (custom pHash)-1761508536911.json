@@ -1,0 +1,30 @@
+{
+  "library": "sharp (custom pHash)",
+  "timestamp": "2025-10-26T19:55:36.909Z",
+  "performance": {
+    "avgHashTime": 11.147626157894747,
+    "minHashTime": 6.71498900000006,
+    "maxHashTime": 49.8962939999999,
+    "p95HashTime": 41.47922299999982,
+    "throughput": 89.70519694830277,
+    "peakMemoryMB": 12.032196044921875,
+    "avgMemoryMB": 10.263291587606508
+  },
+  "accuracy": {
+    "identicalMatch": 100,
+    "croppedMatch": 1.6666666666666667,
+    "resizedMatch": 100,
+    "compressedMatch": 100,
+    "colorVariationMatch": 100,
+    "distinctSeparation": 79
+  },
+  "optimalThreshold": 7,
+  "notes": [
+    "High-performance native bindings (pre-compiled)",
+    "Custom average-based perceptual hash (16x16 = 256 bits)",
+    "No additional system dependencies (Sharp includes libvips)",
+    "Already used in project for image processing",
+    "Hash format: hexadecimal string",
+    "Could implement full DCT-based pHash for better accuracy"
+  ]
+}

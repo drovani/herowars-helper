@@ -539,6 +539,26 @@ export type Database = {
         }[]
       }
       has_editorial_role: { Args: never; Returns: boolean }
+      update_hero_with_relations: {
+        Args: {
+          p_hero_slug: string
+          p_hero_data: Json
+          p_artifacts: Json
+          p_skins: Json
+          p_glyphs: Json
+          p_equipment: Json
+        }
+        Returns: {
+          slug: string
+          name: string
+          class: string
+          faction: string
+          main_stat: string
+          attack_type: string
+          artifact_team_buff: string | null
+          updated_on: string
+        }
+      }
       update_policies_with_summary: {
         Args: { operations?: string[]; table_names: string[] }
         Returns: {

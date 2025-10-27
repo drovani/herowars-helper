@@ -1,0 +1,14 @@
+{
+  "library": "phash",
+  "timestamp": "2025-10-26T19:56:13.986Z",
+  "status": "not-evaluated",
+  "reason": "Native dependency installation failed",
+  "notes": [
+    "Requires native C++ compilation",
+    "Requires pHash C++ library system dependency",
+    "Installation fails on many platforms",
+    "Not suitable for cross-platform MCP server",
+    "Excluded from benchmark comparison"
+  ],
+  "recommendation": "Use cross-platform alternatives (sharp, blockhash-core, or imghash)"
+}

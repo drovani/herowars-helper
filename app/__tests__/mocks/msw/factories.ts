@@ -24,6 +24,7 @@ export const createMockEquipment = (
   campaign_sources: null,
   crafting_gold_cost: null,
   hero_level_required: null,
+  image_hash: null,
   ...overrides,
 });
 

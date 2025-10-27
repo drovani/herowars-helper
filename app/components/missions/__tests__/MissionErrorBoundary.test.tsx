@@ -8,6 +8,8 @@ import { MissionErrorBoundary } from "../MissionErrorBoundary";
 
 function ThrowError() {
   throw new Error("Test mission error");
+  // eslint-disable-next-line no-unreachable
+  return null;
 }
 
 describe("MissionErrorBoundary", () => {

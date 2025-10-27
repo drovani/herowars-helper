@@ -210,7 +210,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   public render() {
     if (this.state.hasError) {
-      const { fallback, error } = this.props;
+      const { fallback } = this.props;
 
       // Use custom fallback if provided
       if (fallback) {

@@ -59,7 +59,7 @@ describe("useErrorBoundary", () => {
 
       // Trigger error boundary
       if (showBoundary) {
-        expect(() => showBoundary(new Error("Triggered error"))).not.toThrow();
+        expect(() => showBoundary!(new Error("Triggered error"))).not.toThrow();
       }
 
       // After state update, error boundary should catch the error

@@ -8,6 +8,8 @@ import { EquipmentErrorBoundary } from "../EquipmentErrorBoundary";
 
 function ThrowError() {
   throw new Error("Test equipment error");
+  // eslint-disable-next-line no-unreachable
+  return null;
 }
 
 describe("EquipmentErrorBoundary", () => {

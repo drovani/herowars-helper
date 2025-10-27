@@ -62,6 +62,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 10,
         campaign_sources: ["1-1", "1-2"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       mockSupabase.from.mockReturnValue({
@@ -121,6 +122,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: null,
         campaign_sources: ["2-1"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       mockSupabase.from.mockReturnValue({
@@ -155,6 +157,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 10,
         campaign_sources: ["1-1", "1-2"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       mockSupabase.from.mockReturnValue({
@@ -189,6 +192,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 10,
         campaign_sources: ["1-1"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       const mockStats = [
@@ -272,6 +276,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 10,
         campaign_sources: null,
         crafting_gold_cost: 500,
+        image_hash: null,
       };
 
       const mockRequiredItems = [
@@ -335,6 +340,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 10,
         campaign_sources: ["1-1"],
         crafting_gold_cost: 500,
+        image_hash: null,
       };
 
       const mockStats = [
@@ -491,6 +497,7 @@ describe("EquipmentRepository", () => {
           hero_level_required: 35,
           campaign_sources: null,
           crafting_gold_cost: 22500,
+          image_hash: null,
         };
 
       const mockAnotherEquipment: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -506,6 +513,7 @@ describe("EquipmentRepository", () => {
           hero_level_required: 20,
           campaign_sources: null,
           crafting_gold_cost: 10000,
+          image_hash: null,
         };
 
       // Mock the join query response - equipment_required_item with inner join on equipment
@@ -861,6 +869,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: null,
         campaign_sources: ["3-1"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
     const mockEnchantedLute: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -876,6 +885,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 40,
         campaign_sources: null,
         crafting_gold_cost: 25000,
+        image_hash: null,
       };
 
     const mockSirensSong: Database["public"]["Tables"]["equipment"]["Row"] = {
@@ -890,6 +900,7 @@ describe("EquipmentRepository", () => {
       hero_level_required: 50,
       campaign_sources: null,
       crafting_gold_cost: 50000,
+      image_hash: null,
     };
 
     const mockAsclepiusStaff: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -905,6 +916,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 60,
         campaign_sources: null,
         crafting_gold_cost: 100000,
+        image_hash: null,
       };
 
     it("should find final equipment that uses a component recursively", async () => {
@@ -998,6 +1010,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: null,
         campaign_sources: ["2-1"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       const mockIntermediate1: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -1013,6 +1026,7 @@ describe("EquipmentRepository", () => {
           hero_level_required: 30,
           campaign_sources: null,
           crafting_gold_cost: 10000,
+          image_hash: null,
         };
 
       const mockIntermediate2: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -1028,6 +1042,7 @@ describe("EquipmentRepository", () => {
           hero_level_required: 35,
           campaign_sources: null,
           crafting_gold_cost: 12500,
+          image_hash: null,
         };
 
       const mockFinalProduct: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -1043,6 +1058,7 @@ describe("EquipmentRepository", () => {
           hero_level_required: 55,
           campaign_sources: null,
           crafting_gold_cost: 40000,
+          image_hash: null,
         };
 
       // Set up mocks using a different strategy - by call parameters
@@ -1129,6 +1145,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: null,
         campaign_sources: ["1-1"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       const mockCircularB: Database["public"]["Tables"]["equipment"]["Row"] = {
@@ -1143,6 +1160,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: null,
         campaign_sources: ["1-2"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       // Mock circular-a requires circular-b
@@ -1238,6 +1256,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: null,
         campaign_sources: ["1-1"],
         crafting_gold_cost: null,
+        image_hash: null,
       };
 
       const mockIntermediateItem: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -1253,6 +1272,7 @@ describe("EquipmentRepository", () => {
           hero_level_required: 25,
           campaign_sources: null,
           crafting_gold_cost: 5000,
+          image_hash: null,
         };
 
       const mockFinalItem: Database["public"]["Tables"]["equipment"]["Row"] = {
@@ -1267,6 +1287,7 @@ describe("EquipmentRepository", () => {
         hero_level_required: 30,
         campaign_sources: null,
         crafting_gold_cost: 10000,
+        image_hash: null,
       };
 
       const mockUltimateItem: Database["public"]["Tables"]["equipment"]["Row"] =
@@ -1282,6 +1303,7 @@ describe("EquipmentRepository", () => {
           hero_level_required: 45,
           campaign_sources: null,
           crafting_gold_cost: 25000,
+          image_hash: null,
         };
 
       // Set up mocks using parameter-based strategy

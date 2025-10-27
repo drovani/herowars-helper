@@ -140,6 +140,7 @@ describe("Admin Setup - Equipment Import", () => {
               hero_level_required: 10,
               campaign_sources: ["1-1"],
               crafting_gold_cost: 500,
+              image_hash: null,
             },
           ],
           stats: [
@@ -293,6 +294,7 @@ describe("Admin Setup - Equipment Import", () => {
               hero_level_required: 10,
               campaign_sources: ["1-1"],
               crafting_gold_cost: null,
+              image_hash: null,
             },
           ],
           stats: [],

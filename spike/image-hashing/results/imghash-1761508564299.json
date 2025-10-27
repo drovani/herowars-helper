@@ -1,0 +1,29 @@
+{
+  "library": "imghash",
+  "timestamp": "2025-10-26T19:56:04.297Z",
+  "performance": {
+    "avgHashTime": 15.419239266081872,
+    "minHashTime": 9.863051999999925,
+    "maxHashTime": 41.91164299999991,
+    "p95HashTime": 32.13525600000003,
+    "throughput": 64.8540425855981,
+    "peakMemoryMB": 48.0999755859375,
+    "avgMemoryMB": 28.446642178541037
+  },
+  "accuracy": {
+    "identicalMatch": 100,
+    "croppedMatch": 0,
+    "resizedMatch": 0,
+    "compressedMatch": 0,
+    "colorVariationMatch": 91.66666666666666,
+    "distinctSeparation": 92
+  },
+  "optimalThreshold": 0,
+  "notes": [
+    "Requires ImageMagick system dependency",
+    "Uses 256-bit block hashing",
+    "Simple API - accepts file paths directly",
+    "Hash format: hexadecimal string",
+    "⚠️  ImageMagick not found - library may not work correctly"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "library": "blockhash-core",
+  "timestamp": "2025-10-26T19:55:24.580Z",
+  "performance": {
+    "avgHashTime": 6.07630549707602,
+    "minHashTime": 3.808761000000004,
+    "maxHashTime": 20.127520000000004,
+    "p95HashTime": 14.335495999999921,
+    "throughput": 164.57368716586257,
+    "peakMemoryMB": 11.213813781738281,
+    "avgMemoryMB": 9.342091164393732
+  },
+  "accuracy": {
+    "identicalMatch": 100,
+    "croppedMatch": 25,
+    "resizedMatch": 100,
+    "compressedMatch": 86.66666666666667,
+    "colorVariationMatch": 100,
+    "distinctSeparation": 79
+  },
+  "optimalThreshold": 18,
+  "notes": [
+    "Pure JavaScript implementation - no native dependencies",
+    "Uses 16x16 block hashing (256 bits)",
+    "Requires manual pixel data extraction via Sharp",
+    "Hash format: hexadecimal string"
+  ]
+}

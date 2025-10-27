@@ -1,0 +1,25 @@
+{
+  "name": "image-hashing-spike",
+  "version": "1.0.0",
+  "description": "Research spike for evaluating image hashing libraries for equipment image matching",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "benchmark:blockhash": "tsx benchmarks/blockhash-test.ts",
+    "benchmark:imghash": "tsx benchmarks/imghash-test.ts",
+    "benchmark:sharp": "tsx benchmarks/sharp-test.ts",
+    "benchmark:phash": "tsx benchmarks/phash-test.ts",
+    "benchmark:all": "npm run benchmark:blockhash && npm run benchmark:imghash && npm run benchmark:sharp && npm run benchmark:phash",
+    "generate-variations": "tsx benchmarks/generate-variations.ts"
+  },
+  "dependencies": {
+    "blockhash-core": "^0.1.0",
+    "imghash": "^1.1.0",
+    "sharp": "^0.34.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -28,7 +28,7 @@ describe("hero-filtering", () => {
         weapon: { name: "Doom Bringer", team_buff: "magic attack" },
         book: "Defender's Covenant",
       },
-      glyphs: ["health", "armor", null, null, "strength"],
+      glyphs: ["health", "armor", undefined, undefined, "strength"],
       skins: [
         { name: "Default", stat: "health", has_plus: false },
       ],
@@ -46,7 +46,7 @@ describe("hero-filtering", () => {
         weapon: { name: "Lion's Mane", team_buff: "armor" },
         book: "Warrior's Code",
       },
-      glyphs: ["physical attack", "crit hit chance", null, null, "strength"],
+      glyphs: ["physical attack", "crit hit chance", undefined, undefined, "strength"],
       skins: [
         { name: "Default", stat: "physical attack", has_plus: false },
       ],
@@ -64,7 +64,7 @@ describe("hero-filtering", () => {
         weapon: { name: "Star's Tears", team_buff: "magic defense" },
         book: "Tome of Arcane Knowledge",
       },
-      glyphs: ["magic attack", "magic penetration", null, null, "intelligence"],
+      glyphs: ["magic attack", "magic penetration", undefined, undefined, "intelligence"],
       skins: [
         { name: "Default", stat: "magic attack", has_plus: false },
       ],

@@ -51,7 +51,7 @@ export function HeroSortControls({
         variant="outline"
         size="icon"
         onClick={handleDirectionToggle}
-        aria-label={`Sort ${sortOptions.direction === "asc" ? "descending" : "ascending"}`}
+        aria-label={`Sort ${sortOptions.field === "name" ? "name" : "order rank"} ${sortOptions.direction === "asc" ? "descending" : "ascending"}`}
       >
         {sortOptions.direction === "asc" ? (
           sortOptions.field === "name" ? (

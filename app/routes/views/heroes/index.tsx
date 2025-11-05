@@ -5,12 +5,15 @@ import {
   LayoutGridIcon,
   LayoutListIcon,
 } from "lucide-react";
-import { Suspense, useState } from "react";
-import { Await, Link, useFetcher } from "react-router";
+import { Suspense, useState, useMemo } from "react";
+import { Await, Link, useFetcher, useNavigate } from "react-router";
+import { ActiveFilterChips } from "~/components/hero/ActiveFilterChips";
 import HeroArtifactsCompact from "~/components/hero/HeroArtifactsCompact";
 import HeroCard from "~/components/hero/HeroCard";
+import { HeroFilters } from "~/components/hero/HeroFilters";
 import HeroGlyphsCompact from "~/components/hero/HeroGlyphsCompact";
 import HeroItemsCompact from "~/components/hero/HeroItemsCompact";
+import { HeroSortControls } from "~/components/hero/HeroSortControls";
 import HeroSkinsCompact from "~/components/hero/HeroSkinsCompact";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
 import { HeroIndexSkeleton } from "~/components/skeletons/HeroIndexSkeleton";
@@ -26,6 +29,18 @@ import {
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
 import {
+  filterHeroes,
+  parseFilterParams,
+  createFilterParams,
+} from "~/lib/hero-filtering";
+import type { HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
+import {
+  sortHeroes,
+  parseSortParams,
+  createSortParams,
+} from "~/lib/hero-sorting";
+import type { SortOptions } from "~/lib/hero-sorting";
+import {
   sortHeroRecords,
   transformCompleteHeroToRecord,
 } from "~/lib/hero-transformations";
@@ -38,15 +53,10 @@ import type { Route } from "./+types/index";
 async function loadHeroesData(request: Request) {
   const url = new URL(request.url);
   const mode = url.searchParams.get("mode") || "cards";
-  const page = Math.max(1, parseInt(url.searchParams.get("page") || "1"));
-  const limit = 10; // For tiles pagination
-  const offset = (page - 1) * limit;
 
   const heroRepo = new HeroRepository(request);
 
-  let heroes: any[],
-    sortedHeroes: any[],
-    hasMoreResults = false;
+  let heroes: any[];
 
   if (mode === "cards") {
     // Cards mode: Use lightweight query for minimal data
@@ -57,13 +67,9 @@ async function loadHeroesData(request: Request) {
     }
 
     heroes = basicHeroesResult.data || [];
-    sortedHeroes = heroes.sort((a, b) => a.order_rank - b.order_rank);
   } else {
-    // Tiles mode: Use full relationships query with pagination
-    const completeHeroesResult = await heroRepo.findAllWithRelationships({
-      limit,
-      offset,
-    });
+    // Tiles mode: Load all heroes with full relationships (no pagination, we'll handle client-side)
+    const completeHeroesResult = await heroRepo.findAllWithRelationships();
 
     if (completeHeroesResult.error) {
       throw new Response("Failed to load heroes", { status: 500 });
@@ -73,11 +79,8 @@ async function loadHeroesData(request: Request) {
       heroes = completeHeroesResult.data.map((hero) =>
         transformCompleteHeroToRecord(hero)
       );
-      sortedHeroes = sortHeroRecords(heroes);
-      hasMoreResults = completeHeroesResult.data.length === limit;
     } else {
       heroes = [];
-      sortedHeroes = [];
     }
   }
 
@@ -108,18 +111,10 @@ async function loadHeroesData(request: Request) {
   }
 
   return {
-    heroes: sortedHeroes,
+    heroes,
     equipment,
     userCollection,
     mode,
-    pagination:
-      mode === "tiles"
-        ? {
-          currentPage: page,
-          limit,
-          hasMore: hasMoreResults,
-        }
-        : undefined,
   };
 }
 
@@ -163,33 +158,112 @@ function HeroesContent({
   equipment,
   userCollection,
   mode: initialMode,
-  pagination,
 }: {
   heroes: any[];
   equipment: any[];
   userCollection: string[];
   mode: string;
-  pagination?: any;
 }) {
   const { user } = useAuth();
   const fetcher = useFetcher();
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
-  const [search, setSearch] = useState("");
+  // Parse initial filters and sort from URL
+  const initialFilters = useMemo(() => {
+    if (typeof window !== "undefined") {
+      return parseFilterParams(new URLSearchParams(window.location.search));
+    }
+    return {};
+  }, []);
+
+  const initialSort = useMemo(() => {
+    if (typeof window !== "undefined") {
+      return parseSortParams(new URLSearchParams(window.location.search));
+    }
+    return { field: "order_rank" as const, direction: "asc" as const };
+  }, []);
+
+  const [search, setSearch] = useState(initialFilters.search || "");
   const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">(
     "mode",
     (initialMode as "cards" | "tiles") || "cards"
   );
-  const [currentPage, setCurrentPage] = useQueryState(
-    "page",
-    String(pagination?.currentPage || 1)
-  );
-  const isMobile = useIsMobile();
+  const [filters, setFilters] = useState<HeroFiltersType>(initialFilters);
+  const [sortOptions, setSortOptions] = useState<SortOptions>(initialSort);
 
-  const filteredHeroes = search
-    ? heroes.filter((hero) =>
-      hero.name.toLowerCase().includes(search.toLowerCase())
-    )
-    : heroes;
+  // Update URL when filters or sort changes
+  const updateURL = (
+    newFilters: HeroFiltersType,
+    newSort: SortOptions,
+    newSearch: string
+  ) => {
+    const params = new URLSearchParams(window.location.search);
+
+    // Clear existing filter and sort params
+    const keysToRemove: string[] = [];
+    params.forEach((_, key) => {
+      if (
+        key !== "mode" &&
+        key !== "page" &&
+        !key.startsWith("_")
+      ) {
+        keysToRemove.push(key);
+      }
+    });
+    keysToRemove.forEach((key) => params.delete(key));
+
+    // Add filter params
+    const filterParams = createFilterParams(newFilters);
+    filterParams.forEach((value, key) => params.set(key, value));
+
+    // Add sort params
+    const sortParams = createSortParams(newSort);
+    sortParams.forEach((value, key) => params.set(key, value));
+
+    // Add search param
+    if (newSearch) {
+      params.set("search", newSearch);
+    }
+
+    // Navigate to new URL
+    navigate(`?${params.toString()}`, { replace: true });
+  };
+
+  // Apply filters and sorting
+  const processedHeroes = useMemo(() => {
+    // Start with all heroes
+    let result = [...heroes];
+
+    // Apply search
+    const searchFilters = { ...filters, search };
+
+    // Apply filters
+    result = filterHeroes(result, searchFilters, userCollection);
+
+    // Apply sorting
+    result = sortHeroes(result, sortOptions);
+
+    return result;
+  }, [heroes, filters, search, sortOptions, userCollection]);
+
+  // Handle filter changes
+  const handleFiltersChange = (newFilters: HeroFiltersType) => {
+    setFilters(newFilters);
+    updateURL(newFilters, sortOptions, search);
+  };
+
+  // Handle sort changes
+  const handleSortChange = (newSort: SortOptions) => {
+    setSortOptions(newSort);
+    updateURL(filters, newSort, search);
+  };
+
+  // Handle search changes
+  const handleSearchChange = (newSearch: string) => {
+    setSearch(newSearch);
+    updateURL(filters, sortOptions, newSearch);
+  };
 
   const HeroCardWithButton = ({
     hero,
@@ -309,34 +383,61 @@ function HeroesContent({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-4">
-        <Input
-          placeholder="Search heroes"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-sm"
-        />
-        {!isMobile && (
-          <ToggleGroup
-            type="single"
-            value={displayMode}
-            onValueChange={(value) =>
-              setDisplayMode(value as "cards" | "tiles")
-            }
-          >
-            <ToggleGroupItem value="cards">
-              <LayoutGridIcon />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="tiles">
-              <LayoutListIcon />
-            </ToggleGroupItem>
-          </ToggleGroup>
-        )}
+      {/* Search, Filters, and Sort Controls */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-2 flex-1">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Search heroes"
+              value={search}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full max-w-sm"
+            />
+            <HeroFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              showCollectionFilter={!!user}
+            />
+            {!isMobile && (
+              <ToggleGroup
+                type="single"
+                value={displayMode}
+                onValueChange={(value) =>
+                  setDisplayMode(value as "cards" | "tiles")
+                }
+              >
+                <ToggleGroupItem value="cards">
+                  <LayoutGridIcon />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="tiles">
+                  <LayoutListIcon />
+                </ToggleGroupItem>
+              </ToggleGroup>
+            )}
+          </div>
+          <ActiveFilterChips
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+          />
+        </div>
+        <div className="flex items-start">
+          <HeroSortControls
+            sortOptions={sortOptions}
+            onSortChange={handleSortChange}
+          />
+        </div>
       </div>
-      {filteredHeroes.length ? (
+
+      {/* Results count */}
+      <div className="text-sm text-muted-foreground">
+        Showing {processedHeroes.length} of {heroes.length} heroes
+      </div>
+
+      {/* Hero grid/list */}
+      {processedHeroes.length ? (
         displayMode === "cards" ? (
           <div className="gap-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {filteredHeroes.map((hero) => (
+            {processedHeroes.map((hero) => (
               <HeroCardWithButton hero={hero} key={hero.slug} />
             ))}
           </div>
@@ -350,7 +451,7 @@ function HeroesContent({
               <div>Glyphs</div>
             </div>
             <div className="flex flex-col gap-4">
-              {filteredHeroes.map((hero) => (
+              {processedHeroes.map((hero) => (
                 <HeroTileWithButton
                   hero={hero}
                   key={hero.slug}
@@ -363,34 +464,7 @@ function HeroesContent({
           <p>Unknown display mode {displayMode}</p>
         )
       ) : (
-        <p>No heroes found.</p>
-      )}
-
-      {/* Pagination controls for tiles mode */}
-      {displayMode === "tiles" && pagination && (
-        <div className="flex justify-center gap-2 mt-6">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={parseInt(currentPage) <= 1}
-            onClick={() => setCurrentPage(String(parseInt(currentPage) - 1))}
-          >
-            <ChevronLeftIcon className="size-4" />
-            Previous
-          </Button>
-          <span className="flex items-center px-4 text-sm text-muted-foreground">
-            Page {currentPage}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!pagination.hasMore}
-            onClick={() => setCurrentPage(String(parseInt(currentPage) + 1))}
-          >
-            Next
-            <ChevronRightIcon className="size-4" />
-          </Button>
-        </div>
+        <p>No heroes found matching your filters.</p>
       )}
     </div>
   );
@@ -405,14 +479,12 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
           equipment: any[];
           userCollection: string[];
           mode: string;
-          pagination?: any;
         }) => (
           <HeroesContent
             heroes={data.heroes}
             equipment={data.equipment}
             userCollection={data.userCollection}
             mode={data.mode}
-            pagination={data.pagination}
           />
         )}
       </Await>

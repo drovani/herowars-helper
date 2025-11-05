@@ -1,7 +1,7 @@
 // ABOUTME: Hero filtering component with mobile and desktop responsive UI
 // ABOUTME: Provides multi-select filters for class, faction, stats, artifacts, and collection status
 
-import { FilterIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon, FilterIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import {
   HeroClass,
@@ -16,6 +16,7 @@ import {
 import type { HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
 import { Label } from "~/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { ScrollArea } from "~/components/ui/scroll-area";
@@ -253,7 +254,7 @@ function FilterContent({
       <Separator />
 
       {/* Stone Source Filter */}
-      <FilterSection title="Stone Source">
+      <FilterSection title="Stone Source" defaultOpen={false}>
         {StoneSource.map((source) => (
           <FilterCheckbox
             key={source}
@@ -269,7 +270,7 @@ function FilterContent({
       <Separator />
 
       {/* Weapon Buff Filter */}
-      <FilterSection title="Weapon Team Buff">
+      <FilterSection title="Weapon Team Buff" defaultOpen={false}>
         {WeaponTeamBuff.map((buff) => (
           <FilterCheckbox
             key={buff}
@@ -285,7 +286,7 @@ function FilterContent({
       <Separator />
 
       {/* Book Artifact Filter */}
-      <FilterSection title="Book Artifact">
+      <FilterSection title="Book Artifact" defaultOpen={false}>
         {ArtifactBookOptions.map((book) => (
           <FilterCheckbox
             key={book}
@@ -301,7 +302,7 @@ function FilterContent({
       <Separator />
 
       {/* Glyph Stat Filter */}
-      <FilterSection title="Glyph Stat">
+      <FilterSection title="Glyph Stat" defaultOpen={false}>
         {Stats.map((stat) => (
           <FilterCheckbox
             key={stat}
@@ -317,7 +318,7 @@ function FilterContent({
       <Separator />
 
       {/* Skin Stat Filter */}
-      <FilterSection title="Skin Stat">
+      <FilterSection title="Skin Stat" defaultOpen={false}>
         {Stats.map((stat) => (
           <FilterCheckbox
             key={stat}
@@ -336,15 +337,31 @@ function FilterContent({
 function FilterSection({
   title,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   children: React.ReactNode;
+  defaultOpen?: boolean;
 }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
   return (
-    <div className="space-y-2">
-      <h4 className="font-medium text-sm text-muted-foreground">{title}</h4>
-      <div className="space-y-2">{children}</div>
-    </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger asChild>
+        <Button
+          variant="ghost"
+          className="w-full justify-between p-0 hover:bg-transparent"
+        >
+          <h4 className="font-medium text-sm text-muted-foreground">{title}</h4>
+          <ChevronDownIcon
+            className={`size-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          />
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="space-y-2 mt-2">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 

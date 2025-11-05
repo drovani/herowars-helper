@@ -14,6 +14,13 @@ import type {
   HeroStat,
 } from "~/data/ReadonlyArrays";
 
+/**
+ * Type guard to check if a hero has HeroRecord properties (artifacts, glyphs, skins)
+ */
+function isHeroRecord(hero: Hero | HeroRecord): hero is HeroRecord {
+  return "artifacts" in hero || "glyphs" in hero || "skins" in hero;
+}
+
 export interface HeroFilters {
   // Basic filters
   class?: HeroClass[];
@@ -95,15 +102,18 @@ export function filterHeroes<T extends Hero | HeroRecord>(
     }
 
     // Advanced filters - artifacts (only for HeroRecord type with artifacts)
-    const heroRecord = hero as HeroRecord;
-
+    // Use type guard to safely check if hero has HeroRecord properties
     if (filters.weapon_buff && filters.weapon_buff.length > 0) {
-      const weaponBuffs: string[] = [];
-      if (heroRecord.artifacts?.weapon?.team_buff) {
-        weaponBuffs.push(heroRecord.artifacts.weapon.team_buff);
+      if (!isHeroRecord(hero)) {
+        return false;
       }
-      if (heroRecord.artifacts?.weapon?.team_buff_secondary) {
-        weaponBuffs.push(heroRecord.artifacts.weapon.team_buff_secondary);
+
+      const weaponBuffs: string[] = [];
+      if (hero.artifacts?.weapon?.team_buff) {
+        weaponBuffs.push(hero.artifacts.weapon.team_buff);
+      }
+      if (hero.artifacts?.weapon?.team_buff_secondary) {
+        weaponBuffs.push(hero.artifacts.weapon.team_buff_secondary);
       }
 
       const hasMatchingWeaponBuff = filters.weapon_buff.some((buff) =>
@@ -115,15 +125,23 @@ export function filterHeroes<T extends Hero | HeroRecord>(
     }
 
     if (filters.book && filters.book.length > 0) {
-      const heroBook = heroRecord.artifacts?.book;
-      if (!heroBook || !filters.book.includes(heroBook as ArtifactBookOption)) {
+      if (!isHeroRecord(hero)) {
+        return false;
+      }
+
+      const heroBook = hero.artifacts?.book;
+      if (!heroBook || !filters.book.includes(heroBook)) {
         return false;
       }
     }
 
     // Advanced filters - glyphs
     if (filters.glyph_stat && filters.glyph_stat.length > 0) {
-      const heroGlyphs = (heroRecord.glyphs || []).filter(
+      if (!isHeroRecord(hero)) {
+        return false;
+      }
+
+      const heroGlyphs = (hero.glyphs || []).filter(
         (g): g is string => g !== null
       );
       const hasMatchingGlyph = filters.glyph_stat.some((stat) =>
@@ -136,8 +154,11 @@ export function filterHeroes<T extends Hero | HeroRecord>(
 
     // Advanced filters - skins
     if (filters.skin_stat && filters.skin_stat.length > 0) {
-      const heroSkinStats =
-        heroRecord.skins?.map((skin) => skin.stat) || [];
+      if (!isHeroRecord(hero)) {
+        return false;
+      }
+
+      const heroSkinStats = hero.skins?.map((skin) => skin.stat) || [];
       const hasMatchingSkin = filters.skin_stat.some((stat) =>
         heroSkinStats.includes(stat)
       );
@@ -295,10 +316,12 @@ export function createFilterParams(filters: HeroFilters): URLSearchParams {
 
 /**
  * Count the number of active filters
+ * Note: Search is not counted as it's displayed separately in the search input
  */
 export function countActiveFilters(filters: HeroFilters): number {
   let count = 0;
 
+  // Count array filters by their length
   if (filters.class && filters.class.length > 0) count += filters.class.length;
   if (filters.faction && filters.faction.length > 0)
     count += filters.faction.length;
@@ -315,8 +338,13 @@ export function countActiveFilters(filters: HeroFilters): number {
     count += filters.glyph_stat.length;
   if (filters.skin_stat && filters.skin_stat.length > 0)
     count += filters.skin_stat.length;
+
+  // Count boolean filters
   if (filters.in_collection) count += 1;
   if (filters.not_in_collection) count += 1;
+
+  // Note: Search is intentionally excluded from this count as it's
+  // displayed in a separate search input field, not as a filter chip
 
   return count;
 }
@@ -419,13 +447,22 @@ export function removeFilter(
   } else if (key === "not_in_collection") {
     delete newFilters.not_in_collection;
   } else if (value) {
-    const filterArray = newFilters[key as keyof HeroFilters] as string[];
+    // Type-safe approach: check each known array filter key
+    type ArrayFilterKey = Exclude<
+      keyof HeroFilters,
+      "in_collection" | "not_in_collection" | "search"
+    >;
+
+    const filterKey = key as ArrayFilterKey;
+    const filterArray = newFilters[filterKey];
+
     if (filterArray && Array.isArray(filterArray)) {
       const filtered = filterArray.filter((v) => v !== value);
       if (filtered.length > 0) {
-        (newFilters as any)[key] = filtered;
+        // Safe assignment using type assertion with proper constraint
+        (newFilters[filterKey] as typeof filterArray) = filtered as typeof filterArray;
       } else {
-        delete (newFilters as any)[key];
+        delete newFilters[filterKey];
       }
     }
   }

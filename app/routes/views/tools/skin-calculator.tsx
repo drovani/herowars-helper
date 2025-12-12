@@ -140,10 +140,9 @@ export default function SkinCalculator() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {/* Desktop table view */}
-                    <div className="hidden md:block overflow-x-auto">
+                    <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
-                            <thead className="sticky top-0 bg-background z-10">
+                            <thead>
                                 <tr className="border-b">
                                     <th className="text-left p-2 font-medium">Skin</th>
                                     <th className="text-center p-2 font-medium w-32">
@@ -206,78 +205,6 @@ export default function SkinCalculator() {
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-
-                    {/* Mobile card view */}
-                    <div className="md:hidden space-y-3">
-                        {SKIN_ROWS.map((row) => {
-                            const level = skinLevels[row.name];
-                            const effectiveLevel = level === "" ? 0 : level;
-                            const result = calculateSkinUpgrade(row.type, effectiveLevel, { includeUnlockCost });
-
-                            return (
-                                <div key={row.name} className="border rounded-lg p-4 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="font-semibold">{row.name}</h3>
-                                        <Input
-                                            type="number"
-                                            min={0}
-                                            max={60}
-                                            value={level}
-                                            onChange={(e) =>
-                                                handleLevelChange(row.name, e.target.value)
-                                            }
-                                            className="w-20 text-center"
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2 text-sm">
-                                        <div>
-                                            <div className="text-muted-foreground">Stones</div>
-                                            <div className="font-mono font-semibold">
-                                                {result.stones.toLocaleString()}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="text-muted-foreground">Small (10)</div>
-                                            <div className="font-mono font-semibold">
-                                                {result.smallChests.toLocaleString()}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div className="text-muted-foreground">Large (150)</div>
-                                            <div className="font-mono font-semibold">
-                                                {result.largeChests.toLocaleString()}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-
-                        {/* Mobile totals */}
-                        <div className="border-2 rounded-lg p-4 bg-primary/5">
-                            <h3 className="font-bold text-lg mb-3">Total</h3>
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                                <div>
-                                    <div className="text-muted-foreground">Stones Needed</div>
-                                    <div className="font-mono font-bold text-lg">
-                                        {totals.stones.toLocaleString()}
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="text-muted-foreground">Small Chests</div>
-                                    <div className="font-mono font-bold text-lg">
-                                        {totals.smallChests.toLocaleString()}
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="text-muted-foreground">Large Chests</div>
-                                    <div className="font-mono font-bold text-lg">
-                                        {totals.largeChests.toLocaleString()}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </CardContent>
             </Card>

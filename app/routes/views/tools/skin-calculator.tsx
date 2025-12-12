@@ -109,38 +109,27 @@ export default function SkinCalculator() {
                 </p>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                        <div className="space-y-1.5">
-                            <CardTitle>Skin Levels</CardTitle>
-                            <CardDescription>
-                                Enter the current level for each skin (0-60). Leave at 0 if you
-                                don't have the skin.
-                            </CardDescription>
-                        </div>
-                        <div className="flex flex-col gap-3 md:items-end">
-                            <Button variant="outline" onClick={handleClear} className="w-full md:w-auto">
-                                Clear
-                            </Button>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="unlock-cost"
-                                    checked={includeUnlockCost}
-                                    onCheckedChange={(checked) => setIncludeUnlockCost(checked === true)}
-                                />
-                                <Label
-                                    htmlFor="unlock-cost"
-                                    className="text-sm font-normal cursor-pointer leading-tight"
-                                >
-                                    Include unlock cost for "Other" skins (5,000 stones)
-                                </Label>
-                            </div>
-                        </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="overflow-x-auto">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                    <Checkbox
+                        id="unlock-cost"
+                        checked={includeUnlockCost}
+                        onCheckedChange={(checked) => setIncludeUnlockCost(checked === true)}
+                    />
+                    <Label
+                        htmlFor="unlock-cost"
+                        className="text-sm font-normal cursor-pointer"
+                    >
+                        Include unlock cost for "Other" skins (5,000 stones)
+                    </Label>
+                </div>
+                <Button variant="outline" onClick={handleClear} className="w-full md:w-auto">
+                    Clear
+                </Button>
+            </div>
+
+            <div className="border rounded-lg">
+                <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="border-b">
@@ -206,8 +195,7 @@ export default function SkinCalculator() {
                             </tbody>
                         </table>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
 
             <Card>
                 <CardHeader>

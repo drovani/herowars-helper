@@ -145,15 +145,15 @@ export default function SkinCalculator() {
                             <thead>
                                 <tr className="border-b">
                                     <th className="text-left p-2 font-medium">Skin</th>
-                                    <th className="text-center p-2 font-medium w-32">
-                                        Current Level
+                                    <th className="text-center p-2 font-medium w-16">
+                                        Level
                                     </th>
-                                    <th className="text-right p-2 font-medium">Stones Needed</th>
+                                    <th className="text-right p-2 font-medium">Stones</th>
                                     <th className="text-right p-2 font-medium">
-                                        Small Chests (10)
+                                        Small
                                     </th>
                                     <th className="text-right p-2 font-medium">
-                                        Large Chests (150)
+                                        Large
                                     </th>
                                 </tr>
                             </thead>
@@ -175,7 +175,7 @@ export default function SkinCalculator() {
                                                     onChange={(e) =>
                                                         handleLevelChange(row.name, e.target.value)
                                                     }
-                                                    className="w-24 mx-auto text-center"
+                                                    className="w-14 mx-auto text-center"
                                                 />
                                             </td>
                                             <td className="p-2 text-right font-mono">

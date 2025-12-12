@@ -10,7 +10,9 @@ import {
     CardHeader,
     CardTitle,
 } from "~/components/ui/card";
+import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import { formatTitle } from "~/config/site";
 import {
     calculateSkinUpgrade,
@@ -60,6 +62,9 @@ export default function SkinCalculator() {
         }
     );
 
+    // State for unlock cost toggle
+    const [includeUnlockCost, setIncludeUnlockCost] = useState(false);
+
     const handleLevelChange = (skinName: string, value: string) => {
         const numValue = parseInt(value);
         if (!isNaN(numValue) && numValue >= 0 && numValue <= 60) {
@@ -83,7 +88,7 @@ export default function SkinCalculator() {
             const level = skinLevels[row.name];
             if (level === "" || level === 0) return acc;
 
-            const result = calculateSkinUpgrade(row.type, level);
+            const result = calculateSkinUpgrade(row.type, level, { includeUnlockCost });
             acc.stones += result.stones;
             acc.smallChests += result.smallChests;
             acc.largeChests += result.largeChests;
@@ -106,7 +111,7 @@ export default function SkinCalculator() {
 
             <Card>
                 <CardHeader>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div className="space-y-1.5">
                             <CardTitle>Skin Levels</CardTitle>
                             <CardDescription>
@@ -114,15 +119,31 @@ export default function SkinCalculator() {
                                 don't have the skin.
                             </CardDescription>
                         </div>
-                        <Button variant="outline" onClick={handleClear}>
-                            Clear
-                        </Button>
+                        <div className="flex flex-col gap-3 md:items-end">
+                            <Button variant="outline" onClick={handleClear} className="w-full md:w-auto">
+                                Clear
+                            </Button>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="unlock-cost"
+                                    checked={includeUnlockCost}
+                                    onCheckedChange={(checked) => setIncludeUnlockCost(checked === true)}
+                                />
+                                <Label
+                                    htmlFor="unlock-cost"
+                                    className="text-sm font-normal cursor-pointer leading-tight"
+                                >
+                                    Include unlock cost for "Other" skins (5,000 stones)
+                                </Label>
+                            </div>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="overflow-x-auto">
+                    {/* Desktop table view */}
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full border-collapse">
-                            <thead>
+                            <thead className="sticky top-0 bg-background z-10">
                                 <tr className="border-b">
                                     <th className="text-left p-2 font-medium">Skin</th>
                                     <th className="text-center p-2 font-medium w-32">
@@ -141,7 +162,7 @@ export default function SkinCalculator() {
                                 {SKIN_ROWS.map((row) => {
                                     const level = skinLevels[row.name];
                                     const effectiveLevel = level === "" ? 0 : level;
-                                    const result = calculateSkinUpgrade(row.type, effectiveLevel);
+                                    const result = calculateSkinUpgrade(row.type, effectiveLevel, { includeUnlockCost });
 
                                     return (
                                         <tr key={row.name} className="border-b hover:bg-muted/50">
@@ -185,6 +206,78 @@ export default function SkinCalculator() {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile card view */}
+                    <div className="md:hidden space-y-3">
+                        {SKIN_ROWS.map((row) => {
+                            const level = skinLevels[row.name];
+                            const effectiveLevel = level === "" ? 0 : level;
+                            const result = calculateSkinUpgrade(row.type, effectiveLevel, { includeUnlockCost });
+
+                            return (
+                                <div key={row.name} className="border rounded-lg p-4 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-semibold">{row.name}</h3>
+                                        <Input
+                                            type="number"
+                                            min={0}
+                                            max={60}
+                                            value={level}
+                                            onChange={(e) =>
+                                                handleLevelChange(row.name, e.target.value)
+                                            }
+                                            className="w-20 text-center"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-sm">
+                                        <div>
+                                            <div className="text-muted-foreground">Stones</div>
+                                            <div className="font-mono font-semibold">
+                                                {result.stones.toLocaleString()}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-muted-foreground">Small (10)</div>
+                                            <div className="font-mono font-semibold">
+                                                {result.smallChests.toLocaleString()}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-muted-foreground">Large (150)</div>
+                                            <div className="font-mono font-semibold">
+                                                {result.largeChests.toLocaleString()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {/* Mobile totals */}
+                        <div className="border-2 rounded-lg p-4 bg-primary/5">
+                            <h3 className="font-bold text-lg mb-3">Total</h3>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                    <div className="text-muted-foreground">Stones Needed</div>
+                                    <div className="font-mono font-bold text-lg">
+                                        {totals.stones.toLocaleString()}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-muted-foreground">Small Chests</div>
+                                    <div className="font-mono font-bold text-lg">
+                                        {totals.smallChests.toLocaleString()}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-muted-foreground">Large Chests</div>
+                                    <div className="font-mono font-bold text-lg">
+                                        {totals.largeChests.toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </CardContent>
             </Card>

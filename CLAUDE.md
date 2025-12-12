@@ -660,6 +660,13 @@ test("should render component", () => {
 - Equipment drop locations for farming
 - Event mission tracking
 
+### Resource Calculators
+
+- **Artifact Chest Calculator**: Calculate the exact number of artifact chests needed to upgrade weapon, book, and ring artifacts from current level to level 100
+- **Skin Upgrade Calculator**: Determine how many skin stone chests are required to upgrade hero skins from current level to level 60
+- Interactive calculations with color-tier breakdowns (white, green, blue, violet, orange)
+- Real-time component and chest requirements based on game mechanics
+
 ### Guild Features (Planned)
 
 - Guild roster management

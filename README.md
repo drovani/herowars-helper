@@ -321,6 +321,13 @@ npm run test:coverage    # Run tests with coverage report
 - Equipment drop location reference
 - Boss hero stone farming guides
 
+### Resource Calculators
+
+- **Artifact Chest Calculator** - Calculate exact number of chests needed to reach artifact level 100
+- **Skin Upgrade Calculator** - Determine skin stone chest requirements to reach level 60
+- Color-tier breakdown for resource planning
+- Real-time calculations for upgrade planning
+
 ### Admin Tools
 
 - Database initialization and data setup

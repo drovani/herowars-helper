@@ -157,6 +157,7 @@ describe("Player Teams Edit Integration", () => {
         request: mockRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.team).toEqual(mockTeam);
@@ -181,6 +182,7 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: { teamId: mockTeamId },
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
@@ -191,6 +193,7 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         } as any)
       ).rejects.toThrow(Response);
     });
@@ -206,6 +209,7 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: { teamId: mockTeamId },
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
@@ -232,6 +236,7 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: { teamId: mockTeamId },
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
@@ -270,6 +275,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -318,6 +324,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -353,6 +360,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Update failed");
@@ -379,6 +387,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -406,6 +415,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Hero slug is required");
@@ -433,6 +443,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Hero already in team");
@@ -462,6 +473,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -489,6 +501,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Hero slug is required");
@@ -516,6 +529,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Hero not found in team");
@@ -539,6 +553,7 @@ describe("Player Teams Edit Integration", () => {
         request: actionRequest,
         params: { teamId: mockTeamId },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Invalid action");

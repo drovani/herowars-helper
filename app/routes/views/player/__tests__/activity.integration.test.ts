@@ -89,6 +89,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events).toHaveLength(2);
@@ -117,6 +118,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events).toHaveLength(0);
@@ -137,6 +139,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events).toHaveLength(0); // Should default to empty array
@@ -156,6 +159,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events).toHaveLength(0);
@@ -177,6 +181,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith(
@@ -218,6 +223,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith(
@@ -285,6 +291,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events).toHaveLength(4);
@@ -328,6 +335,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events[0].event_data).toEqual({
@@ -352,6 +360,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events).toHaveLength(0);
@@ -371,6 +380,7 @@ describe("Player Activity Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.events).toHaveLength(0);

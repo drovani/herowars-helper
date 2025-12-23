@@ -93,6 +93,7 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockHeroSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         } as any);
 
         // Loader returns a Response or throws
@@ -111,6 +112,7 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         } as any)
       ).rejects.toThrow();
     });
@@ -126,6 +128,7 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockHeroSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         } as any)
       ).rejects.toThrow();
     });
@@ -155,6 +158,7 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockHeroSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         } as any)
       ).rejects.toThrow();
     });
@@ -191,6 +195,7 @@ describe("Hero Edit Integration", () => {
         request: actionRequest,
         params: { slug: mockHeroSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       } as any);
 
       // Verify error response

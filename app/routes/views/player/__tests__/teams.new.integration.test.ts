@@ -124,6 +124,7 @@ describe("Player Teams New Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.userHeroes).toHaveLength(2);
@@ -145,6 +146,7 @@ describe("Player Teams New Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
@@ -160,6 +162,7 @@ describe("Player Teams New Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
@@ -174,6 +177,7 @@ describe("Player Teams New Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.userHeroes).toHaveLength(0);
@@ -217,6 +221,7 @@ describe("Player Teams New Integration", () => {
         request: actionRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -282,6 +287,7 @@ describe("Player Teams New Integration", () => {
         request: actionRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -324,6 +330,7 @@ describe("Player Teams New Integration", () => {
         request: actionRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -355,6 +362,7 @@ describe("Player Teams New Integration", () => {
         request: actionRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Team creation failed");
@@ -400,6 +408,7 @@ describe("Player Teams New Integration", () => {
         request: actionRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe(
@@ -429,6 +438,7 @@ describe("Player Teams New Integration", () => {
         request: actionRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Invalid action");

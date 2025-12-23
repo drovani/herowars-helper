@@ -1,7 +1,6 @@
-/// <reference types="vitest" />
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
@@ -17,6 +16,9 @@ export default defineConfig({
       clean: false,
       reporter: [["json", { file: "test-coverage.json" }]],
       reportsDirectory: "./build",
+      include: [
+        "app/**/*.{ts,tsx}",
+      ],
       exclude: [
         "node_modules/",
         "app/__tests__/",

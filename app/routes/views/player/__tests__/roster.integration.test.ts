@@ -48,9 +48,9 @@ describe("Player Roster Integration", () => {
       addAllHeroesToCollection: vi.fn(),
     };
 
-    vi.mocked(HeroRepository).mockImplementation(() => mockHeroRepo);
+    vi.mocked(HeroRepository).mockImplementation(function() { return mockHeroRepo; });
     vi.mocked(PlayerHeroRepository).mockImplementation(
-      () => mockPlayerHeroRepo
+      function() { return mockPlayerHeroRepo; }
     );
 
     // Mock auth utilities
@@ -124,6 +124,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.heroes).toHaveLength(2);
@@ -156,6 +157,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.heroes).toHaveLength(1);
@@ -174,6 +176,7 @@ describe("Player Roster Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
@@ -200,6 +203,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.heroes).toHaveLength(1);
@@ -239,6 +243,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -272,6 +277,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Hero already exists");
@@ -299,6 +305,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -332,6 +339,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -364,6 +372,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -396,6 +405,7 @@ describe("Player Roster Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
@@ -413,6 +423,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Invalid action");
@@ -448,6 +459,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -487,6 +499,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -531,6 +544,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.success).toBe(true);
@@ -561,6 +575,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Failed to fetch available heroes: Database connection failed");
@@ -587,6 +602,7 @@ describe("Player Roster Integration", () => {
         request: mockRequest,
         params: {},
         context: { VALUE_FROM_NETLIFY: "test" },
+        unstable_pattern: "",
       });
 
       expect(result.error).toBe("Unexpected error during bulk hero addition");

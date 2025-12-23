@@ -1,7 +1,16 @@
 // ABOUTME: Utility functions for calculating skin upgrade requirements
 // ABOUTME: Includes calculations for skin stones and chests needed to upgrade skins from current level to level 60
 
-import skinData from "~/data/skin-upgrades.json";
+import skinDataRaw from "~/data/skin-upgrades.json";
+import { validateSkinUpgradesData } from "./schemas/skin-upgrades-schema";
+
+// Validate skin data at module load time
+const skinData = validateSkinUpgradesData(skinDataRaw);
+
+// Constants for chest yields and unlock costs
+const SMALL_CHEST_YIELD = 10;
+const LARGE_CHEST_YIELD = 150;
+const OTHER_SKIN_UNLOCK_COST = 5000;
 
 export type SkinType = "default" | "champion" | "winter" | "other";
 
@@ -40,9 +49,9 @@ export function calculateSkinUpgrade(
     if (skinType === "other" && includeUnlockCost) {
       // Return just the unlock cost
       return {
-        stones: 5000,
-        smallChests: Math.ceil(5000 / 10),
-        largeChests: Math.ceil(5000 / 150),
+        stones: OTHER_SKIN_UNLOCK_COST,
+        smallChests: Math.ceil(OTHER_SKIN_UNLOCK_COST / SMALL_CHEST_YIELD),
+        largeChests: Math.ceil(OTHER_SKIN_UNLOCK_COST / LARGE_CHEST_YIELD),
       };
     }
     // For all other cases at level 0, return zeros
@@ -74,11 +83,9 @@ export function calculateSkinUpgrade(
     totalStones += costs[level];
   }
 
-  // Calculate chest counts (hardcoded yields)
-  // Small chests: 10 stones each
-  const smallChests = Math.ceil(totalStones / 10);
-  // Large chests: 150 stones each
-  const largeChests = Math.ceil(totalStones / 150);
+  // Calculate chest counts based on yields
+  const smallChests = Math.ceil(totalStones / SMALL_CHEST_YIELD);
+  const largeChests = Math.ceil(totalStones / LARGE_CHEST_YIELD);
 
   return {
     stones: totalStones,

@@ -142,7 +142,7 @@ export function filterHeroes<T extends Hero | HeroRecord>(
       }
 
       const heroGlyphs = (hero.glyphs || []).filter(
-        (g): g is string => g !== null && g !== undefined
+        (g): g is HeroStat => g !== null && g !== undefined
       );
       const hasMatchingGlyph = filters.glyph_stat.some((stat) =>
         heroGlyphs.includes(stat)

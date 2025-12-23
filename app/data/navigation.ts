@@ -96,6 +96,11 @@ export const navigation: NavigationGroup[] = [
         icon: CalculatorIcon,
         href: "/tools/artifact-calculator",
       },
+      {
+        name: "Skin Chest Calculator",
+        icon: CalculatorIcon,
+        href: "/tools/skin-calculator",
+      },
     ],
   },
   {

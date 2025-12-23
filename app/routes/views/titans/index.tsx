@@ -15,7 +15,7 @@ export default function Titans() {
         "Angus Seal (Defense Seal) to Level 105": true,
         "Hyperion Weapon (Siungur's Staff) to Level 105": true,
         "Angus Crown (Earth Crown) to Level 105": true,
-        "Angus Weapons (Andvari's Fists) to Level 105": false,
+        "Angus Weapons (Andvari's Fists) to Level 105": true,
       },
     },
     {
@@ -50,10 +50,13 @@ export default function Titans() {
     "Angus & Sigurd Primordial Skin to Level 45": true,
     "Angus & Sigurd Primordial Skin to Level 55": true,
     "Hyperion, Angus, Araji, Iyari Default Skins to Level 55": true,
-    "Sigurd Default Skin to level 45": true,
+    "Sigurd Default Skin to Level 45": true,
     "Angus & Sigurd Primordial Skin to Level 60 (Max)": true,
     "Angus, Iyari, Araji, Hyperion, Nova Default Skins to Level 60": true,
-    "Sigurd Default Skin to level 60": false,
+    "Sigurd Default Skin to Level 60": true,
+    "Hyperion, Araji, Iyari Primordial Skins to Level 60": false,
+    "Moloch Default Skin to Level 60": false,
+    "Moloch Primordial Skin to Level 60": false
   };
 
   return (
@@ -82,7 +85,7 @@ export default function Titans() {
             <p>
               This guide is a work in progress and will be updated as new
               information becomes available. It particular, it has not been
-              significantly updated since the release of Verdoc and Asherona.
+              significantly updated since the release of Verdoc, Asherona, and Tydus.
             </p>
           </CardDescription>
         </CardHeader>
@@ -116,6 +119,13 @@ export default function Titans() {
                   <li>Ignis</li>
                   <li>Moloch</li>
                   <li>Vulcan</li>
+                </ul>
+              </li>              <li>
+                <h3 className="font-medium mb-2">Summoner Titans</h3>
+                <ul className="list-disc pl-6">
+                  <li>Verdoc</li>
+                  <li>Tydus</li>
+                  <li>Asherona</li>
                 </ul>
               </li>
             </ol>

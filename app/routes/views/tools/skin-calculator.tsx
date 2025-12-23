@@ -11,6 +11,7 @@ import {
     CardTitle,
 } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
+import { FormErrorBoundary } from "~/components/forms/FormErrorBoundary";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { formatTitle } from "~/config/site";
@@ -98,16 +99,17 @@ export default function SkinCalculator() {
     );
 
     return (
-        <div className="container max-w-7xl mx-auto p-4 md:p-6 space-y-6">
-            <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight">
-                    Skin Upgrade Calculator
-                </h1>
-                <p className="text-muted-foreground">
-                    Calculate how many skin stone chests you need to open to upgrade your
-                    hero's skins to level 60.
-                </p>
-            </div>
+        <FormErrorBoundary formName="Skin Upgrade Calculator">
+            <div className="container max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+                <div className="space-y-2">
+                    <h1 className="text-3xl font-bold tracking-tight">
+                        Skin Upgrade Calculator
+                    </h1>
+                    <p className="text-muted-foreground">
+                        Calculate how many skin stone chests you need to open to upgrade your
+                        hero's skins to level 60.
+                    </p>
+                </div>
 
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
                 <div className="flex items-center space-x-2">
@@ -237,11 +239,13 @@ export default function SkinCalculator() {
                     </div>
                     <p className="text-xs italic">
                         Note: This calculator shows stones needed to level from current
-                        level to 60. "Other" skin types do not include the 5,000 stone
-                        unlock cost, as the calculator assumes you already have the skin.
+                        level to 60. Use the checkbox above to optionally include the 5,000
+                        stone unlock cost for "Other" skin types if you haven't unlocked
+                        them yet.
                     </p>
                 </CardContent>
             </Card>
         </div>
+        </FormErrorBoundary>
     );
 }

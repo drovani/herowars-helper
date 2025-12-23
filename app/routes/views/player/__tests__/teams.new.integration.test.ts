@@ -46,9 +46,9 @@ describe("Player Teams New Integration", () => {
       findWithHeroDetails: vi.fn(),
     };
 
-    vi.mocked(PlayerTeamRepository).mockImplementation(() => mockTeamRepo);
+    vi.mocked(PlayerTeamRepository).mockImplementation(function() { return mockTeamRepo; });
     vi.mocked(PlayerHeroRepository).mockImplementation(
-      () => mockPlayerHeroRepo
+      function() { return mockPlayerHeroRepo; }
     );
 
     // Mock auth utilities

@@ -39,7 +39,7 @@ describe("Player Teams Integration", () => {
       deleteTeam: vi.fn(),
     };
 
-    vi.mocked(PlayerTeamRepository).mockImplementation(() => mockTeamRepo);
+    vi.mocked(PlayerTeamRepository).mockImplementation(function() { return mockTeamRepo; });
 
     // Mock auth utilities
     vi.mocked(getAuthenticatedUser).mockResolvedValue({

@@ -45,14 +45,14 @@ describe("Hero Edit Integration", () => {
       getAllAsJson: vi.fn(),
     };
 
-    vi.mocked(HeroRepository).mockImplementation(() => mockHeroRepo);
-    vi.mocked(EquipmentRepository).mockImplementation(() => mockEquipmentRepo);
+    vi.mocked(HeroRepository).mockImplementation(function() { return mockHeroRepo; });
+    vi.mocked(EquipmentRepository).mockImplementation(function() { return mockEquipmentRepo; });
 
     // Setup createClient mock to return fresh client each time
-    vi.mocked(supabaseClientModule.createClient).mockImplementation(() => ({
+    vi.mocked(supabaseClientModule.createClient).mockImplementation(function() { return {
       supabase: mockSupabaseClient,
       headers: undefined,
-    }));
+    }; });
   });
 
   describe("loader", () => {

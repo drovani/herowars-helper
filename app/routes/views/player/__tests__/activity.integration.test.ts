@@ -35,7 +35,7 @@ describe("Player Activity Integration", () => {
     };
 
     vi.mocked(PlayerEventRepository).mockImplementation(
-      () => mockPlayerEventRepo
+      function() { return mockPlayerEventRepo; }
     );
 
     // Mock auth utilities

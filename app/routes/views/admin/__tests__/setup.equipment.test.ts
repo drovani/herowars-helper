@@ -61,7 +61,7 @@ vi.mock("~/lib/supabase/client", () => ({
 
 // Mock the MissionRepository to avoid import issues
 vi.mock("~/repositories/MissionRepository", () => ({
-  MissionRepository: vi.fn().mockImplementation(() => ({
+  MissionRepository: vi.fn().mockImplementation(function() { return {
     initializeMissionData: vi.fn().mockResolvedValue({
       data: { chapters: [], missions: [] },
       error: null,
@@ -70,12 +70,12 @@ vi.mock("~/repositories/MissionRepository", () => ({
       data: { missions: 0, chapters: 0 },
       error: null,
     }),
-  })),
+  }; }),
 }));
 
 // Mock the HeroRepository to avoid import issues
 vi.mock("~/repositories/HeroRepository", () => ({
-  HeroRepository: vi.fn().mockImplementation(() => ({
+  HeroRepository: vi.fn().mockImplementation(function() { return {
     initializeFromJSON: vi.fn().mockResolvedValue({
       data: { heroes: [] },
       error: null,
@@ -84,7 +84,7 @@ vi.mock("~/repositories/HeroRepository", () => ({
       data: { heroes: 0 },
       error: null,
     }),
-  })),
+  }; }),
 }));
 
 describe("Admin Setup - Equipment Import", () => {

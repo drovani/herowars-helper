@@ -48,9 +48,9 @@ describe("Player Roster Integration", () => {
       addAllHeroesToCollection: vi.fn(),
     };
 
-    vi.mocked(HeroRepository).mockImplementation(() => mockHeroRepo);
+    vi.mocked(HeroRepository).mockImplementation(function() { return mockHeroRepo; });
     vi.mocked(PlayerHeroRepository).mockImplementation(
-      () => mockPlayerHeroRepo
+      function() { return mockPlayerHeroRepo; }
     );
 
     // Mock auth utilities

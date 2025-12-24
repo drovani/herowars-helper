@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      pull-requests: write
+      issues: write
       id-token: write
 
     steps:
@@ -63,6 +63,36 @@ jobs:
           # Use sticky comments to make Claude reuse the same comment on subsequent pushes to the same PR
           # This prevents long conversation threads and keeps feedback consolidated
           use_sticky_comment: true
+
+      - name: Create job summary
+        if: always()
+        run: |
+          echo "## Claude Code Review Status" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.claude-review.outcome }}" == "success" ]; then
+            echo "✅ Review completed successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Review failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Possible causes:**" >> $GITHUB_STEP_SUMMARY
+            echo "- API spending cap reached (resets at 2am)" >> $GITHUB_STEP_SUMMARY
+            echo "- Authentication token expired or invalid" >> $GITHUB_STEP_SUMMARY
+            echo "- API rate limit exceeded" >> $GITHUB_STEP_SUMMARY
+            echo "- Network connectivity issues" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "[View detailed logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment on PR if review failed
+        if: failure() && steps.claude-review.outcome != 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **Claude Code Review Failed**\n\nThe automated review encountered an error. Common causes:\n- API spending cap reached (resets at 2am)\n- Authentication token expired\n- Rate limit exceeded\n- Network connectivity issues\n\n[View workflow run](' + context.payload.repository.html_url + '/actions/runs/' + context.runId + ')'
+            })
 
       - name: Check Claude Review Status
         if: always()

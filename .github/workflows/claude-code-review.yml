@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      pull-requests: write
+      issues: write
       id-token: write
 
     steps:
@@ -33,12 +33,13 @@ jobs:
 
       - name: Run Claude Code Review
         id: claude-review
+        continue-on-error: true
         uses: anthropics/claude-code-action@beta
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: |
             dependabot[bot]
-            
+
           # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
           # model: "claude-opus-4-20250514"
 
@@ -63,24 +64,61 @@ jobs:
           # This prevents long conversation threads and keeps feedback consolidated
           use_sticky_comment: true
 
-          # Optional: Customize review based on file types
-          # direct_prompt: |
-          #   Review this PR focusing on:
-          #   - For TypeScript files: Type safety and proper interface usage
-          #   - For API endpoints: Security, input validation, and error handling
-          #   - For React components: Performance, accessibility, and best practices
-          #   - For tests: Coverage, edge cases, and test quality
+      - name: Create job summary
+        if: always()
+        run: |
+          echo "## Claude Code Review Status" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.claude-review.outcome }}" == "success" ]; then
+            echo "✅ Review completed successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Review failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Possible causes:**" >> $GITHUB_STEP_SUMMARY
+            echo "- API spending cap reached (resets at 2am)" >> $GITHUB_STEP_SUMMARY
+            echo "- Authentication token expired or invalid" >> $GITHUB_STEP_SUMMARY
+            echo "- API rate limit exceeded" >> $GITHUB_STEP_SUMMARY
+            echo "- Network connectivity issues" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "[View detailed logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          fi
 
-          # Optional: Different prompts for different authors
-          # direct_prompt: |
-          #   ${{ github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR' &&
-          #   'Welcome! Please review this PR from a first-time contributor. Be encouraging and provide detailed explanations for any suggestions.' ||
-          #   'Please provide a thorough code review focusing on our coding standards and best practices.' }}
+      - name: Comment on PR if review failed
+        if: failure() && steps.claude-review.outcome != 'success'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ **Claude Code Review Failed**\n\nThe automated review encountered an error. Common causes:\n- API spending cap reached (resets at 2am)\n- Authentication token expired\n- Rate limit exceeded\n- Network connectivity issues\n\n[View workflow run](' + context.payload.repository.html_url + '/actions/runs/' + context.runId + ')'
+            })
 
-          # Optional: Add specific tools for running tests or linting
-          # allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck)"
+      - name: Check Claude Review Status
+        if: always()
+        run: |
+          if [ "${{ steps.claude-review.outcome }}" != "success" ]; then
+            echo "::error::Claude Code Review failed. Common causes:"
+            echo "::error::- API spending cap reached (resets at 2am)"
+            echo "::error::- Authentication token expired or invalid"
+            echo "::error::- API rate limit exceeded"
+            echo "::error::- Network connectivity issues"
+            echo "::error::Check the action logs above for detailed error message"
+            exit 1
+          fi
 
-          # Optional: Skip review for certain conditions
-          # if: |
-          #   !contains(github.event.pull_request.title, '[skip-review]') &&
-          #   !contains(github.event.pull_request.title, '[WIP]')
+# Optional examples for customization:
+#
+# Customize review based on file types:
+# - Uncomment and modify the direct_prompt in the "Run Claude Code Review" step above
+#
+# Different prompts for different authors:
+# - Add conditional logic to direct_prompt using GitHub context
+#
+# Add specific tools for running tests or linting:
+# - Use: allowed_tools: "Bash(npm run test),Bash(npm run lint),Bash(npm run typecheck)"
+#
+# Skip review for certain conditions:
+# - Add to the job level: if: |
+#     !contains(github.event.pull_request.title, '[skip-review]') &&
+#     !contains(github.event.pull_request.title, '[WIP]')

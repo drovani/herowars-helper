@@ -16,7 +16,7 @@ export function createAdminClient(request: Request | null = null) {
     );
   }
 
-  if (request != null && typeof process !== "undefined") {
+  if (request !== null && typeof process !== "undefined") {
     const headers = new Headers();
 
     const supabase = createServerClient<Database>(

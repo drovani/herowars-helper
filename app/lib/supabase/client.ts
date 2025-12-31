@@ -8,7 +8,7 @@ import {
 import type { Database } from "~/types/supabase";
 
 export function createClient(request: Request | null = null) {
-  if (request != null && typeof process !== "undefined") {
+  if (request !== null && typeof process !== "undefined") {
     const headers = new Headers();
 
     const supabase = createServerClient<Database>(

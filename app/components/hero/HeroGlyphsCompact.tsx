@@ -18,7 +18,7 @@ export default function HeroGlyphsCompact({
   glyphs,
   className,
 }: HeroGlyphsCompactProps) {
-  if (glyphs == null) return <div className={cn(className)} />;
+  if (glyphs === null) return <div className={cn(className)} />;
 
   return (
     <div className={cn("flex flex-col justify-evenly items-center", className)}>

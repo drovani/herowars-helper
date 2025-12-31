@@ -30,7 +30,7 @@ function EquipmentImage({ equipment, size = "default" }: Props) {
         src={getEquipmentImageUrl(equipment.slug)}
         className={cn(
           status === "loaded" || status === "loading" ? "" : "hidden",
-          size == "xs" ? "p-0.5 rounded-sm" : "p-1 rounded-lg"
+          size === "xs" ? "p-0.5 rounded-sm" : "p-1 rounded-lg"
         )}
         onError={() => setStatus("error")}
         onLoad={() => setStatus("loaded")}

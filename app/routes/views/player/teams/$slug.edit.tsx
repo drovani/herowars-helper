@@ -1,6 +1,7 @@
 // ABOUTME: Team edit page with team builder interface for existing teams
 // ABOUTME: Allows users to modify team details and hero composition
 
+import log from "loglevel";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFetcher, useNavigate } from "react-router";
@@ -20,7 +21,7 @@ import {
 } from "~/lib/auth/utils";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-import type { Route } from "./+types/$teamId.edit";
+import type { Route } from "./+types/$slug.edit";
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -29,17 +30,36 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
     throw new Response("Authentication required", { status: 401 });
   }
 
-  const teamId = params.teamId;
-  if (!teamId) {
-    throw new Response("Team ID is required", { status: 400 });
+  const slug = params.slug;
+  if (!slug) {
+    throw new Response("Team slug is required", { status: 400 });
   }
 
   const teamRepo = new PlayerTeamRepository(request);
   const playerHeroRepo = new PlayerHeroRepository(request);
 
-  // Load the team with its heroes
-  const teamResult = await teamRepo.findTeamWithHeroes(teamId, user.id);
+  // Load the team with its heroes by slug
+  const teamResult = await teamRepo.findTeamBySlug(slug, user.id);
+
+  // If not found, check if it's an old slug and redirect
   if (teamResult.error || !teamResult.data) {
+    if (teamResult.error) {
+      log.warn("Team lookup failed, checking for old slug redirect:", {
+        slug,
+        error: teamResult.error.message,
+      });
+    }
+
+    const oldSlugResult = await teamRepo.findTeamByOldSlug(slug, user.id);
+    if (oldSlugResult.data && oldSlugResult.data.slug) {
+      // 301 Permanent Redirect to the new slug
+      throw new Response(null, {
+        status: 301,
+        headers: {
+          Location: `/player/teams/${oldSlugResult.data.slug}/edit`,
+        },
+      });
+    }
     throw new Response("Team not found", { status: 404 });
   }
 
@@ -57,11 +77,30 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request);
-  const teamId = params.teamId!;
+
+  const slug = params.slug;
+  if (!slug) {
+    return { error: "Team slug is required" };
+  }
+
   const formData = await request.formData();
   const action = formData.get("action");
 
   const teamRepo = new PlayerTeamRepository(request);
+
+  // Get team by slug to retrieve team ID
+  const teamResult = await teamRepo.findTeamBySlug(slug, user.id);
+  if (teamResult.error || !teamResult.data) {
+    if (teamResult.error) {
+      log.error("Failed to find team for action:", {
+        slug,
+        userId: user.id,
+        error: teamResult.error.message,
+      });
+    }
+    return { error: "Team not found" };
+  }
+  const teamId = teamResult.data.id;
 
   switch (action) {
     case "updateTeam": {
@@ -78,9 +117,23 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
         return { error: updateResult.error.message };
       }
 
+      if (!updateResult.data) {
+        log.error("Team update returned success but no data", { teamId });
+        return { error: "Team update failed unexpectedly" };
+      }
+
+      // If team name changed, slug will have changed - redirect to new slug
+      if (updateResult.data.slug !== slug) {
+        return {
+          success: true,
+          redirectTo: `/player/teams/${updateResult.data.slug}/edit`,
+          message: `Team "${updateResult.data.name}" updated successfully`,
+        };
+      }
+
       return {
         success: true,
-        message: `Team "${updateResult.data!.name}" updated successfully`,
+        message: `Team "${updateResult.data.name}" updated successfully`,
       };
     }
 
@@ -214,8 +267,13 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
     if (fetcher.state === "idle") {
       setAddingHeroSlug(undefined);
       setRemovingHeroSlug(undefined);
+
+      // Handle redirect if slug changed
+      if (fetcher.data?.redirectTo) {
+        navigate(fetcher.data.redirectTo);
+      }
     }
-  }, [fetcher.state]);
+  }, [fetcher.state, fetcher.data, navigate]);
 
   const isSubmitting = fetcher.state === "submitting";
   const hasChanges =

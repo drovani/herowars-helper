@@ -1,10 +1,12 @@
 // ABOUTME: Repository for managing player team data and hero assignments
-// ABOUTME: Handles CRUD operations, team validation, and automatic naming for user team management
+// ABOUTME: Handles CRUD operations, team validation, slug generation, and automatic naming for user team management
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import { z } from "zod";
+import { generateSlug } from "~/lib/utils";
 import { BaseRepository } from "./BaseRepository";
+import { PlayerEventRepository } from "./PlayerEventRepository";
 import type {
   AddHeroToTeamInput,
   CreatePlayerTeamInput,
@@ -13,12 +15,14 @@ import type {
   RepositoryResult,
   TeamWithHeroes,
   UpdatePlayerTeamInput,
+  UpdatePlayerTeamInternal,
 } from "./types";
 
 // Schema for input validation (create/update operations)
 const PlayerTeamInputSchema = z.object({
   user_id: z.uuid(),
   name: z.string().min(1).max(100),
+  slug: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
 });
 
@@ -27,6 +31,7 @@ const PlayerTeamSchema = z.object({
   id: z.uuid(),
   user_id: z.uuid(),
   name: z.string(),
+  slug: z.string(),
   description: z.string().nullable(),
   created_at: z.string().nullable(),
   updated_at: z.string().nullable(),
@@ -112,7 +117,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   }
 
   /**
-   * Create a new team with auto-generated name if not provided
+   * Create a new team with auto-generated name if not provided, and auto-generated slug from the team name
    */
   async createTeam(
     userId: string,
@@ -127,11 +132,24 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         teamName = `Team ${nextNumber}`;
       }
 
+      // Generate slug from team name
+      let slug = generateSlug(teamName);
+
+      // Validate slug uniqueness
+      const slugValidation = await this.validateSlugUniqueness(userId, slug);
+      if (!slugValidation.isValid) {
+        return {
+          data: null,
+          error: { message: slugValidation.error || "Slug already exists" },
+        };
+      }
+
       const { data, error } = await this.supabase
         .from("player_team")
         .insert({
           user_id: userId,
           name: teamName,
+          slug,
           description: teamData.description || null,
         })
         .select()
@@ -159,7 +177,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   }
 
   /**
-   * Update team details
+   * Update team details with slug regeneration and event logging
    */
   async updateTeam(
     teamId: string,
@@ -167,11 +185,85 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
     updates: UpdatePlayerTeamInput
   ): Promise<RepositoryResult<PlayerTeam>> {
     try {
+      // Get current team to check for name changes
+      const { data: currentTeam, error: fetchError } = await this.supabase
+        .from("player_team")
+        .select("*")
+        .eq("id", teamId)
+        .eq("user_id", userId)
+        .single();
+
+      if (fetchError) {
+        log.error("Failed to fetch team for update:", fetchError);
+        return {
+          data: null,
+          error: { message: fetchError.message, code: fetchError.code },
+        };
+      }
+
+      if (!currentTeam) {
+        return {
+          data: null,
+          error: { message: "Team not found or access denied" },
+        };
+      }
+
+      let finalUpdates: UpdatePlayerTeamInternal = { ...updates };
+
+      // If name is being updated, regenerate slug and validate
+      if (updates.name && updates.name !== currentTeam.name) {
+        const newSlug = generateSlug(updates.name);
+
+        // Validate slug uniqueness (excluding current team)
+        const slugValidation = await this.validateSlugUniqueness(
+          userId,
+          newSlug,
+          teamId
+        );
+        if (!slugValidation.isValid) {
+          return {
+            data: null,
+            error: {
+              message:
+                slugValidation.error ||
+                "A team with that name already exists. Please choose a different name.",
+            },
+          };
+        }
+
+        finalUpdates = { ...finalUpdates, slug: newSlug };
+
+        // Log the team name change event for 301 redirect support
+        const eventRepo = new PlayerEventRepository(this.supabase);
+        const eventResult = await eventRepo.createEvent(userId, {
+          event_type: "UPDATE_TEAM_NAME",
+          event_data: {
+            team_id: teamId,
+            old_name: currentTeam.name,
+            new_name: updates.name,
+            old_slug: currentTeam.slug,
+            new_slug: newSlug,
+          },
+        });
+
+        if (eventResult.error) {
+          log.error(
+            "Failed to log team name change event, old slug redirects may not work:",
+            {
+              teamId,
+              oldSlug: currentTeam.slug,
+              newSlug,
+              error: eventResult.error.message,
+            }
+          );
+        }
+      }
+
       const { data, error } = await this.supabase
         .from("player_team")
-        .update(updates)
+        .update(finalUpdates)
         .eq("id", teamId)
-        .eq("user_id", userId) // Ensure user owns the team
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -478,6 +570,175 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       return { data: team, error: null };
     } catch (err) {
       log.error("Error fetching team with heroes:", err);
+      return {
+        data: null,
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
+      };
+    }
+  }
+
+  /**
+   * Find team by slug with user verification
+   */
+  async findTeamBySlug(
+    slug: string,
+    userId: string
+  ): Promise<RepositoryResult<TeamWithHeroes>> {
+    try {
+      const { data, error } = await this.supabase
+        .from("player_team")
+        .select(
+          `
+          *,
+          player_team_hero (
+            *,
+            hero (*)
+          )
+        `
+        )
+        .eq("slug", slug)
+        .eq("user_id", userId)
+        .single();
+
+      if (error) {
+        log.error("Failed to fetch team by slug:", error);
+        return {
+          data: null,
+          error: { message: error.message, code: error.code },
+        };
+      }
+
+      if (!data) {
+        return {
+          data: null,
+          error: { message: "Team not found or access denied" },
+        };
+      }
+
+      // Transform data to match TeamWithHeroes interface
+      const team: TeamWithHeroes = {
+        ...data,
+        heroes: (data.player_team_hero || [])
+          .map((teamHero: any) => ({
+            ...teamHero,
+            hero: teamHero.hero,
+          }))
+          .sort((a: any, b: any) => b.hero.order_rank - a.hero.order_rank),
+      };
+
+      return { data: team, error: null };
+    } catch (err) {
+      log.error("Error fetching team by slug:", err);
+      return {
+        data: null,
+        error: {
+          message:
+            err instanceof Error ? err.message : "Unknown error occurred",
+        },
+      };
+    }
+  }
+
+  /**
+   * Validate slug uniqueness for a user
+   */
+  private async validateSlugUniqueness(
+    userId: string,
+    slug: string,
+    excludeTeamId?: string
+  ): Promise<{ isValid: boolean; error?: string }> {
+    try {
+      let query = this.supabase
+        .from("player_team")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("slug", slug);
+
+      if (excludeTeamId) {
+        query = query.neq("id", excludeTeamId);
+      }
+
+      const { data, error } = await query.single();
+
+      if (error && error.code !== "PGRST116") {
+        // PGRST116 is "not found" which is what we want
+        log.error("Error validating slug uniqueness:", error);
+        return { isValid: false, error: "Failed to validate slug uniqueness" };
+      }
+
+      // If data exists, slug is not unique
+      if (data) {
+        return {
+          isValid: false,
+          error:
+            "A team with that name already exists. Please choose a different name.",
+        };
+      }
+
+      return { isValid: true };
+    } catch (err) {
+      log.error("Exception validating slug uniqueness:", err);
+      return { isValid: false, error: "Failed to validate slug uniqueness" };
+    }
+  }
+
+  /**
+   * Find team by old slug from event log (for 301 redirects)
+   */
+  async findTeamByOldSlug(
+    oldSlug: string,
+    userId: string
+  ): Promise<RepositoryResult<PlayerTeam | null>> {
+    try {
+      // Query event log for UPDATE_TEAM_NAME events with the old slug
+      const eventRepo = new PlayerEventRepository(this.supabase);
+      const eventsResult = await eventRepo.findEventsByType(
+        userId,
+        "UPDATE_TEAM_NAME"
+      );
+
+      if (eventsResult.error || !eventsResult.data) {
+        return { data: null, error: null }; // No event history found
+      }
+
+      // Find an event with this old slug (events are sorted by created_at descending)
+      for (const event of eventsResult.data) {
+        const eventData = event.event_data as Record<string, unknown>;
+        if (eventData.old_slug === oldSlug) {
+          // Found a match, get the current team by team_id
+          const { data: team, error } = await this.supabase
+            .from("player_team")
+            .select("*")
+            .eq("id", eventData.team_id as string)
+            .eq("user_id", userId)
+            .single();
+
+          if (error) {
+            log.warn(
+              "Error fetching team by ID from event log, trying next event:",
+              {
+                teamId: eventData.team_id,
+                error: error.message,
+              }
+            );
+            continue;
+          }
+
+          if (!team) {
+            // Team was deleted, try next event
+            continue;
+          }
+
+          return { data: team, error: null };
+        }
+      }
+
+      return { data: null, error: null }; // No matching old slug found
+    } catch (err) {
+      log.error("Error finding team by old slug:", err);
       return {
         data: null,
         error: {

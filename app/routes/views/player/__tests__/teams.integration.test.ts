@@ -162,6 +162,7 @@ describe("Player Teams Integration", () => {
         id: "new-team-id",
         user_id: "user1",
         name: "New Team",
+        slug: "new-team",
         description: "Test team description",
         created_at: "2024-01-17T10:00:00Z",
         updated_at: "2024-01-17T10:00:00Z",
@@ -186,7 +187,7 @@ describe("Player Teams Integration", () => {
 
       expect(result.success).toBe(true);
       expect(result.message).toBe('Team "New Team" created successfully');
-      expect(result.teamId).toBe("new-team-id");
+      expect(result.teamSlug).toBe("new-team");
       expect(mockTeamRepo.createTeam).toHaveBeenCalledWith("user1", {
         name: "New Team",
         description: "Test team description",

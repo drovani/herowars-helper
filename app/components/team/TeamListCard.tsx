@@ -28,7 +28,7 @@ import type { TeamWithHeroes } from "~/repositories/types";
 
 interface TeamListCardProps {
   team: TeamWithHeroes;
-  onEdit: (teamId: string) => void;
+  onEdit: (slug: string) => void;
   onDelete: (teamId: string) => void;
   isDeleting?: boolean;
 }
@@ -63,7 +63,7 @@ export function TeamListCard({
 
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
-    onEdit(team.id);
+    onEdit(team.slug);
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -77,7 +77,7 @@ export function TeamListCard({
         <div className="space-y-1">
           <CardTitle className="text-base font-medium">
             <Link
-              to={`/player/teams/${team.id}`}
+              to={`/player/teams/${team.slug}/edit`}
               className="hover:text-primary transition-colors"
             >
               {team.name}

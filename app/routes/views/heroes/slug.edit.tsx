@@ -207,7 +207,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     );
   }
 
-  return redirect(`/heroes/${rpcResult.slug}`);
+  return redirect(`/heroes/${(rpcResult as { slug: string }).slug}`);
 };
 
 export default function EditHero({

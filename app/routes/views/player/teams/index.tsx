@@ -2,7 +2,7 @@
 // ABOUTME: Main team list view with grid layout and team creation capabilities
 
 import { useState } from "react";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useNavigate } from "react-router";
 import { PlusIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
@@ -73,7 +73,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
       return {
         success: true,
         message: `Team "${result.data!.name}" created successfully`,
-        teamId: result.data!.id,
+        teamSlug: result.data!.slug,
       };
     }
 
@@ -109,6 +109,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
   const { teams } = loaderData;
   const { user, isLoading: authLoading } = useAuth();
   const fetcher = useFetcher();
+  const navigate = useNavigate();
   const [deleteTeamId, setDeleteTeamId] = useState<string | null>(null);
 
   // Show loading state while auth is initializing
@@ -156,9 +157,8 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
     );
   };
 
-  const handleEditTeam = (teamId: string) => {
-    // Navigate to edit page
-    window.location.href = `/player/teams/${teamId}`;
+  const handleEditTeam = (slug: string) => {
+    navigate(`/player/teams/${slug}/edit`);
   };
 
   const handleDeleteTeam = (teamId: string) => {

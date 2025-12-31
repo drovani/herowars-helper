@@ -211,7 +211,7 @@ export default function EquipmentForm({
                     min={1}
                     max={120}
                     {...field}
-                    onChange={(e) => field.onChange(+e.target.value)}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                     disabled={isFragment || isRecipe}
                   />
                 </FormControl>
@@ -236,7 +236,7 @@ export default function EquipmentForm({
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value === "" ? null : +e.target.value
+                          e.target.value === "" ? null : Number(e.target.value)
                         )
                       }
                       className="pl-10"
@@ -266,7 +266,7 @@ export default function EquipmentForm({
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value === "" ? null : +e.target.value
+                          e.target.value === "" ? null : Number(e.target.value)
                         )
                       }
                       className="pl-10"
@@ -297,7 +297,7 @@ export default function EquipmentForm({
                         {...field}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value === "" ? null : +e.target.value
+                            e.target.value === "" ? null : Number(e.target.value)
                           )
                         }
                         className="pl-10"
@@ -327,7 +327,7 @@ export default function EquipmentForm({
                         {...field}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value === "" ? null : +e.target.value
+                            e.target.value === "" ? null : Number(e.target.value)
                           )
                         }
                         className="pl-10"

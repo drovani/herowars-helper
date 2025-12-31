@@ -1,6 +1,7 @@
 // ABOUTME: Team edit page with team builder interface for existing teams
 // ABOUTME: Allows users to modify team details and hero composition
 
+import log from "loglevel";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFetcher, useNavigate } from "react-router";
@@ -42,6 +43,13 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 
   // If not found, check if it's an old slug and redirect
   if (teamResult.error || !teamResult.data) {
+    if (teamResult.error) {
+      log.warn("Team lookup failed, checking for old slug redirect:", {
+        slug,
+        error: teamResult.error.message,
+      });
+    }
+
     const oldSlugResult = await teamRepo.findTeamByOldSlug(slug, user.id);
     if (oldSlugResult.data && oldSlugResult.data.slug) {
       // 301 Permanent Redirect to the new slug
@@ -69,7 +77,12 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request);
-  const slug = params.slug!;
+
+  const slug = params.slug;
+  if (!slug) {
+    return { error: "Team slug is required" };
+  }
+
   const formData = await request.formData();
   const action = formData.get("action");
 
@@ -78,6 +91,13 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
   // Get team by slug to retrieve team ID
   const teamResult = await teamRepo.findTeamBySlug(slug, user.id);
   if (teamResult.error || !teamResult.data) {
+    if (teamResult.error) {
+      log.error("Failed to find team for action:", {
+        slug,
+        userId: user.id,
+        error: teamResult.error.message,
+      });
+    }
     return { error: "Team not found" };
   }
   const teamId = teamResult.data.id;
@@ -97,8 +117,13 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
         return { error: updateResult.error.message };
       }
 
+      if (!updateResult.data) {
+        log.error("Team update returned success but no data", { teamId });
+        return { error: "Team update failed unexpectedly" };
+      }
+
       // If team name changed, slug will have changed - redirect to new slug
-      if (updateResult.data && updateResult.data.slug !== slug) {
+      if (updateResult.data.slug !== slug) {
         return {
           success: true,
           redirectTo: `/player/teams/${updateResult.data.slug}/edit`,
@@ -108,7 +133,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
 
       return {
         success: true,
-        message: `Team "${updateResult.data!.name}" updated successfully`,
+        message: `Team "${updateResult.data.name}" updated successfully`,
       };
     }
 

@@ -79,7 +79,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
     userId: string,
     eventInput: CreatePlayerEventInput
   ): Promise<RepositoryResult<PlayerEvent>> {
-    const eventData: any = {
+    const eventData = {
       user_id: userId,
       created_by: userId,
       event_type: eventInput.event_type,
@@ -87,7 +87,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
       event_data: eventInput.event_data || {},
     };
 
-    return this.create(eventData);
+    return this.create(eventData as Parameters<typeof this.create>[0]);
   }
 
   /**

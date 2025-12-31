@@ -200,8 +200,12 @@ export interface CreatePlayerTeamInput {
 
 export interface UpdatePlayerTeamInput {
   name?: string;
-  slug?: string;
   description?: string;
+}
+
+// Internal type for repository use - includes auto-generated slug
+export interface UpdatePlayerTeamInternal extends UpdatePlayerTeamInput {
+  slug?: string;
 }
 
 export interface AddHeroToTeamInput {

@@ -15,6 +15,7 @@ import type {
   RepositoryResult,
   TeamWithHeroes,
   UpdatePlayerTeamInput,
+  UpdatePlayerTeamInternal,
 } from "./types";
 
 // Schema for input validation (create/update operations)
@@ -116,7 +117,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   }
 
   /**
-   * Create a new team with auto-generated name and slug if not provided
+   * Create a new team with auto-generated name if not provided, and auto-generated slug from the team name
    */
   async createTeam(
     userId: string,
@@ -192,14 +193,22 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         .eq("user_id", userId)
         .single();
 
-      if (fetchError || !currentTeam) {
+      if (fetchError) {
+        log.error("Failed to fetch team for update:", fetchError);
+        return {
+          data: null,
+          error: { message: fetchError.message, code: fetchError.code },
+        };
+      }
+
+      if (!currentTeam) {
         return {
           data: null,
           error: { message: "Team not found or access denied" },
         };
       }
 
-      let finalUpdates = { ...updates };
+      let finalUpdates: UpdatePlayerTeamInternal = { ...updates };
 
       // If name is being updated, regenerate slug and validate
       if (updates.name && updates.name !== currentTeam.name) {
@@ -224,9 +233,9 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
 
         finalUpdates = { ...finalUpdates, slug: newSlug };
 
-        // Log the team name change event
+        // Log the team name change event for 301 redirect support
         const eventRepo = new PlayerEventRepository(this.supabase);
-        await eventRepo.createEvent(userId, {
+        const eventResult = await eventRepo.createEvent(userId, {
           event_type: "UPDATE_TEAM_NAME",
           event_data: {
             team_id: teamId,
@@ -236,6 +245,18 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
             new_slug: newSlug,
           },
         });
+
+        if (eventResult.error) {
+          log.error(
+            "Failed to log team name change event, old slug redirects may not work:",
+            {
+              teamId,
+              oldSlug: currentTeam.slug,
+              newSlug,
+              error: eventResult.error.message,
+            }
+          );
+        }
       }
 
       const { data, error } = await this.supabase
@@ -683,20 +704,32 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         return { data: null, error: null }; // No event history found
       }
 
-      // Find the most recent event with this old slug
+      // Find an event with this old slug (events are sorted by created_at descending)
       for (const event of eventsResult.data) {
-        const eventData = event.event_data as any;
+        const eventData = event.event_data as Record<string, unknown>;
         if (eventData.old_slug === oldSlug) {
           // Found a match, get the current team by team_id
           const { data: team, error } = await this.supabase
             .from("player_team")
             .select("*")
-            .eq("id", eventData.team_id)
+            .eq("id", eventData.team_id as string)
             .eq("user_id", userId)
             .single();
 
-          if (error || !team) {
-            continue; // Try next event
+          if (error) {
+            log.warn(
+              "Error fetching team by ID from event log, trying next event:",
+              {
+                teamId: eventData.team_id,
+                error: error.message,
+              }
+            );
+            continue;
+          }
+
+          if (!team) {
+            // Team was deleted, try next event
+            continue;
           }
 
           return { data: team, error: null };

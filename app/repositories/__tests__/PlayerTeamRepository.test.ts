@@ -147,21 +147,37 @@ describe("PlayerTeamRepository", () => {
         id: "team-1",
         user_id: "user-1",
         name: "My Custom Team",
+        slug: "my-custom-team",
         description: "Custom description",
         created_at: "2023-01-01T00:00:00Z",
         updated_at: "2023-01-01T00:00:00Z",
       };
 
-      mockSupabaseClient.from.mockReturnValue({
-        insert: vi.fn().mockReturnValue({
+      mockSupabaseClient.from
+        // Validate slug uniqueness - slug is unique
+        .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
-            single: vi.fn().mockReturnValue({
-              data: mockTeam,
-              error: null,
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockReturnValue({
+                  data: null,
+                  error: { code: "PGRST116" }, // Not found = unique
+                }),
+              }),
             }),
           }),
-        }),
-      });
+        })
+        // Insert team
+        .mockReturnValueOnce({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockReturnValue({
+                data: mockTeam,
+                error: null,
+              }),
+            }),
+          }),
+        });
 
       const result = await repository.createTeam("user-1", {
         name: "My Custom Team",
@@ -170,6 +186,7 @@ describe("PlayerTeamRepository", () => {
 
       expect(result.error).toBeNull();
       expect(result.data!.name).toBe("My Custom Team");
+      expect(result.data!.slug).toBe("my-custom-team");
     });
 
     it("should auto-generate team name when empty", async () => {
@@ -181,6 +198,7 @@ describe("PlayerTeamRepository", () => {
       ];
 
       mockSupabaseClient.from
+        // Get next team number
         .mockReturnValueOnce({
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
@@ -191,6 +209,20 @@ describe("PlayerTeamRepository", () => {
             }),
           }),
         })
+        // Validate slug uniqueness - slug is unique
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockReturnValue({
+                  data: null,
+                  error: { code: "PGRST116" }, // Not found = unique
+                }),
+              }),
+            }),
+          }),
+        })
+        // Insert team
         .mockReturnValueOnce({
           insert: vi.fn().mockReturnValue({
             select: vi.fn().mockReturnValue({
@@ -199,6 +231,7 @@ describe("PlayerTeamRepository", () => {
                   id: "team-1",
                   user_id: "user-1",
                   name: "Team 4",
+                  slug: "team-4",
                   description: null,
                   created_at: "2023-01-01T00:00:00Z",
                   updated_at: "2023-01-01T00:00:00Z",
@@ -213,6 +246,7 @@ describe("PlayerTeamRepository", () => {
 
       expect(result.error).toBeNull();
       expect(result.data!.name).toBe("Team 4");
+      expect(result.data!.slug).toBe("team-4");
     });
   });
 
@@ -385,6 +419,340 @@ describe("PlayerTeamRepository", () => {
 
       expect(result.error).toBeNull();
       expect(result.data).toBe(true);
+    });
+  });
+
+  describe("findTeamBySlug", () => {
+    it("should find team by slug with heroes", async () => {
+      const mockTeamData = {
+        id: "team-1",
+        user_id: "user-1",
+        name: "My Team",
+        slug: "my-team",
+        description: "Test team",
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-01T00:00:00Z",
+        player_team_hero: [
+          {
+            id: "th-1",
+            team_id: "team-1",
+            hero_slug: "astaroth",
+            created_at: "2023-01-01T00:00:00Z",
+            hero: {
+              slug: "astaroth",
+              name: "Astaroth",
+              order_rank: 100,
+              class: "tank",
+              faction: "chaos",
+              main_stat: "strength",
+              attack_type: ["physical"],
+              stone_source: ["campaign"],
+              updated_on: null,
+            },
+          },
+        ],
+      };
+
+      mockSupabaseClient.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockReturnValue({
+                data: mockTeamData,
+                error: null,
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await repository.findTeamBySlug("my-team", "user-1");
+
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.name).toBe("My Team");
+      expect(result.data!.slug).toBe("my-team");
+      expect(result.data!.heroes).toHaveLength(1);
+    });
+
+    it("should return error when team not found", async () => {
+      mockSupabaseClient.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockReturnValue({
+                data: null,
+                error: { message: "No rows found", code: "PGRST116" },
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await repository.findTeamBySlug(
+        "non-existent",
+        "user-1"
+      );
+
+      expect(result.error).not.toBeNull();
+      expect(result.data).toBeNull();
+    });
+
+    it("should not return team belonging to different user", async () => {
+      mockSupabaseClient.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockReturnValue({
+                data: null,
+                error: { message: "No rows found", code: "PGRST116" },
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await repository.findTeamBySlug("my-team", "different-user");
+
+      expect(result.error).not.toBeNull();
+      expect(result.data).toBeNull();
+    });
+  });
+
+  describe("findTeamByOldSlug", () => {
+    it("should find team by old slug from event log", async () => {
+      const mockEvents = [
+        {
+          id: "event-1",
+          user_id: "user-1",
+          event_type: "UPDATE_TEAM_NAME",
+          hero_slug: null,
+          event_data: {
+            team_id: "team-1",
+            old_name: "Old Name",
+            new_name: "New Name",
+            old_slug: "old-name",
+            new_slug: "new-name",
+          },
+          created_at: "2023-01-02T00:00:00Z",
+          created_by: "user-1",
+        },
+      ];
+
+      const mockTeam = {
+        id: "team-1",
+        user_id: "user-1",
+        name: "New Name",
+        slug: "new-name",
+        description: null,
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-02T00:00:00Z",
+      };
+
+      // Mock PlayerEventRepository.findEventsByType
+      mockSupabaseClient.from
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockReturnValue({
+                  data: mockEvents,
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        })
+        // Mock team fetch
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockReturnValue({
+                  data: mockTeam,
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        });
+
+      const result = await repository.findTeamByOldSlug("old-name", "user-1");
+
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.slug).toBe("new-name");
+    });
+
+    it("should return null when no matching old slug found", async () => {
+      const mockEvents = [
+        {
+          id: "event-1",
+          user_id: "user-1",
+          event_type: "UPDATE_TEAM_NAME",
+          hero_slug: null,
+          event_data: {
+            team_id: "team-1",
+            old_slug: "different-old-slug",
+            new_slug: "new-name",
+          },
+          created_at: "2023-01-02T00:00:00Z",
+          created_by: "user-1",
+        },
+      ];
+
+      mockSupabaseClient.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                data: mockEvents,
+                error: null,
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await repository.findTeamByOldSlug(
+        "non-existent-slug",
+        "user-1"
+      );
+
+      expect(result.error).toBeNull();
+      expect(result.data).toBeNull();
+    });
+
+    it("should return null when no event history exists", async () => {
+      mockSupabaseClient.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                data: [],
+                error: null,
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await repository.findTeamByOldSlug("old-slug", "user-1");
+
+      expect(result.error).toBeNull();
+      expect(result.data).toBeNull();
+    });
+
+    it("should try next event if team was deleted", async () => {
+      const mockEvents = [
+        {
+          id: "event-1",
+          user_id: "user-1",
+          event_type: "UPDATE_TEAM_NAME",
+          hero_slug: null,
+          event_data: {
+            team_id: "deleted-team",
+            old_slug: "old-name",
+            new_slug: "deleted-name",
+          },
+          created_at: "2023-01-03T00:00:00Z",
+          created_by: "user-1",
+        },
+        {
+          id: "event-2",
+          user_id: "user-1",
+          event_type: "UPDATE_TEAM_NAME",
+          hero_slug: null,
+          event_data: {
+            team_id: "existing-team",
+            old_slug: "old-name",
+            new_slug: "current-name",
+          },
+          created_at: "2023-01-02T00:00:00Z",
+          created_by: "user-1",
+        },
+      ];
+
+      const mockExistingTeam = {
+        id: "existing-team",
+        user_id: "user-1",
+        name: "Current Name",
+        slug: "current-name",
+        description: null,
+        created_at: "2023-01-01T00:00:00Z",
+        updated_at: "2023-01-02T00:00:00Z",
+      };
+
+      mockSupabaseClient.from
+        // Mock findEventsByType
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                order: vi.fn().mockReturnValue({
+                  data: mockEvents,
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        })
+        // First team fetch fails (deleted)
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockReturnValue({
+                  data: null,
+                  error: { message: "No rows found", code: "PGRST116" },
+                }),
+              }),
+            }),
+          }),
+        })
+        // Second team fetch succeeds
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                single: vi.fn().mockReturnValue({
+                  data: mockExistingTeam,
+                  error: null,
+                }),
+              }),
+            }),
+          }),
+        });
+
+      const result = await repository.findTeamByOldSlug("old-name", "user-1");
+
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.slug).toBe("current-name");
+    });
+  });
+
+  describe("updateTeam", () => {
+    it("should return error when team not found", async () => {
+      mockSupabaseClient.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockReturnValue({
+                data: null,
+                error: { message: "No rows found", code: "PGRST116" },
+              }),
+            }),
+          }),
+        }),
+      });
+
+      const result = await repository.updateTeam("non-existent", "user-1", {
+        name: "New Name",
+      });
+
+      expect(result.error).not.toBeNull();
+      expect(result.data).toBeNull();
     });
   });
 

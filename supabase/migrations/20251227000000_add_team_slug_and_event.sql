@@ -1,5 +1,5 @@
--- Add slug field to player_team table and UPDATE_TEAM_NAME event type
--- This migration enables slug-based routing for team management
+-- ABOUTME: Migration to add slug field to player_team table for URL-friendly team identifiers
+-- ABOUTME: Enables slug-based routing for team management with 301 redirect support via event logging
 
 -- Add slug column to player_team table
 ALTER TABLE public.player_team
@@ -29,8 +29,13 @@ CHECK (event_type IN (
 
 -- Populate slug for existing teams (slugify the name)
 -- This handles migration of existing data
+-- Note: This regex approach approximates the app's slugify behavior. Edge cases may differ.
+-- Fallback to 'team-{id}' if name contains only special characters resulting in empty slug
 UPDATE public.player_team
-SET slug = LOWER(REGEXP_REPLACE(REGEXP_REPLACE(name, '[^a-zA-Z0-9\s-]', '', 'g'), '\s+', '-', 'g'))
+SET slug = COALESCE(
+  NULLIF(LOWER(REGEXP_REPLACE(REGEXP_REPLACE(name, '[^a-zA-Z0-9\s-]', '', 'g'), '\s+', '-', 'g')), ''),
+  'team-' || SUBSTRING(id::text, 1, 8)
+)
 WHERE slug IS NULL;
 
 -- Make slug NOT NULL after backfilling

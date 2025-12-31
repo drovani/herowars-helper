@@ -3,6 +3,7 @@
 
 import { render, fireEvent } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+
 import SkinCalculator from "../skin-calculator";
 
 describe("SkinCalculator", () => {

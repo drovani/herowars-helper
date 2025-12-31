@@ -1,10 +1,9 @@
+import { useState } from "react";
+
 import type { ClassValue } from "clsx";
 import { AlertCircle } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { HeroRecord } from "~/data/hero.zod";
-import { cn } from "~/lib/utils";
+
 import EquipmentImage from "../EquipmentImage";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import {
@@ -14,6 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
+import { cn } from "~/lib/utils";
 
 interface HeroItemsProps {
   equipment: EquipmentRecord[];
@@ -28,7 +31,7 @@ export default function HeroItems({
   equipment,
   className,
 }: HeroItemsProps) {
-  if (items === undefined) return <div className={cn(className)}></div>;
+  if (items === undefined) return <div className={cn(className)} />;
 
   const ranks = Object.keys(items);
   const [selectedRank, setSelectedRank] = useState<ItemRank>(

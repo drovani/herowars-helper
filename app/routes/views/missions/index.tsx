@@ -1,7 +1,11 @@
+import { Suspense, useMemo, useState } from "react";
+
 import { cva } from "class-variance-authority";
 import { MapIcon, SearchIcon } from "lucide-react";
-import { Suspense, useMemo, useState } from "react";
 import { Await, Link } from "react-router";
+
+import type { Route } from "./+types/index";
+
 import { MissionIndexSkeleton } from "~/components/skeletons/MissionIndexSkeleton";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -18,7 +22,6 @@ import {
   MissionRepository,
   type Mission,
 } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/index";
 
 async function loadMissionsData(request: Request) {
   const missionRepo = new MissionRepository(request);
@@ -50,7 +53,7 @@ async function loadMissionsData(request: Request) {
       missions
         .filter(
           (m): m is Mission & Required<Pick<Mission, "hero_slug">> =>
-            !!m.hero_slug
+            Boolean(m.hero_slug)
         )
         .map((m) => m.hero_slug!)
     )

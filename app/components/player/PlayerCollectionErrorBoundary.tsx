@@ -2,11 +2,13 @@
 // ABOUTME: Provides user-friendly error messages and fallback UI for collection operations
 
 import { Component, type ErrorInfo, type ReactNode } from "react";
+
 import log from "loglevel";
+import { AlertTriangleIcon, RefreshCwIcon } from "lucide-react";
+
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { AlertTriangleIcon, RefreshCwIcon } from "lucide-react";
 
 interface Props {
   children: ReactNode;

@@ -2,6 +2,7 @@
 // ABOUTME: Displays heroes left-to-right in descending order_rank with remove functionality
 
 import { XIcon } from "lucide-react";
+
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";

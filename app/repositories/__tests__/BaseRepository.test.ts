@@ -1,18 +1,20 @@
+import log from "loglevel";
+import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
 import { z } from "zod";
-import log from "loglevel";
+
 import { BaseRepository } from "../BaseRepository";
 import type { CreateInput, UpdateInput } from "../types";
+
+import {
+  createMockEquipment,
+  createMockEquipmentList,
+} from "~/__tests__/mocks/msw/factories";
 import {
   server,
   resetStores,
   setEquipmentStore,
 } from "~/__tests__/mocks/msw/server";
-import {
-  createMockEquipment,
-  createMockEquipmentList,
-} from "~/__tests__/mocks/msw/factories";
-import { http, HttpResponse } from "msw";
 
 const mockEquipmentSchema = z.object({
   name: z.string(),

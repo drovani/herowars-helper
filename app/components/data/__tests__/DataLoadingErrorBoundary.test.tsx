@@ -2,8 +2,9 @@
 // ABOUTME: Covers data loading errors, network detection, and retry mechanisms
 
 import { render } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import log from "loglevel";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { DataLoadingErrorBoundary } from "../DataLoadingErrorBoundary";
 
 function ThrowDataError({ errorType }: { errorType?: string }) {
@@ -23,7 +24,7 @@ function ThrowDataError({ errorType }: { errorType?: string }) {
     throw new Error("Resource not found - 404");
   }
   throw new Error("Generic data loading error");
-  // eslint-disable-next-line no-unreachable
+   
   return null;
 }
 

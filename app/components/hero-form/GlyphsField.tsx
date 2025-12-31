@@ -1,5 +1,8 @@
 //components/hero-form/GlyphsField.tsx
 import { type UseFormReturn } from "react-hook-form";
+
+import { Card } from "../ui/card";
+
 import { FormField, FormLabel, FormMessage } from "~/components/ui/form";
 import {
   Select,
@@ -11,7 +14,6 @@ import {
 import type { HeroMutation, HeroRecord } from "~/data/hero.zod";
 import { Stats, type HeroStat } from "~/data/ReadonlyArrays";
 import { generateSlug } from "~/lib/utils";
-import { Card } from "../ui/card";
 
 interface GlyphsFieldProps {
   form: UseFormReturn<HeroMutation>;

@@ -1,5 +1,7 @@
-import { SearchIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+
+import { SearchIcon, XIcon } from "lucide-react";
+
 import EquipmentImage from "~/components/EquipmentImage";
 import { Button } from "~/components/ui/button";
 import {

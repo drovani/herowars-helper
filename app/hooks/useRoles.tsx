@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+
 import { useAuth } from "~/contexts/AuthContext";
 
 /**
@@ -36,7 +37,7 @@ export function useRoles() {
      * Check if user is authenticated with any role
      */
     const isUser = (): boolean => {
-      return isAuthenticated && !!user;
+      return isAuthenticated && Boolean(user);
     };
 
     return {

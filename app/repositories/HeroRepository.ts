@@ -4,6 +4,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import { z } from "zod";
+
 import { BaseRepository } from "./BaseRepository";
 import type {
   BasicHero,
@@ -100,7 +101,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
       }
 
       return {
-        data: data,
+        data,
         error: null,
       };
     } catch (error) {
@@ -1492,7 +1493,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
             if (equipmentSlug) {
               equipmentSlotData.push({
                 hero_slug: heroSlug,
-                quality: quality,
+                quality,
                 slot_position: slotIndex + 1,
                 equipment_slug: equipmentSlug,
               });

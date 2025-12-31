@@ -2,6 +2,7 @@
 // ABOUTME: Provides centralized mock server setup for Supabase REST API calls during testing
 
 import { setupServer } from "msw/node";
+
 import { handlers } from "./handlers";
 
 // Configure MSW server for Node.js environment (tests)

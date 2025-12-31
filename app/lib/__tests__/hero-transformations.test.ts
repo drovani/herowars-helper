@@ -2,6 +2,7 @@
 // ABOUTME: Tests pure transformation functions that convert database hero data to JSON format
 
 import { describe, it, expect } from "vitest";
+
 import {
   transformCompleteHeroToRecord,
   transformBasicHeroToRecord,
@@ -20,8 +21,9 @@ import {
   validateSkinStat,
   validateGlyphStat,
 } from "../hero-transformations";
-import type { CompleteHero } from "~/repositories/types";
+
 import type { HeroRecord } from "~/data/hero.zod";
+import type { CompleteHero } from "~/repositories/types";
 
 describe("Hero Transformations", () => {
   describe("transformCompleteHeroToRecord", () => {

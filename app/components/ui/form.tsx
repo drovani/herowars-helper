@@ -1,7 +1,8 @@
-import { Root } from "@radix-ui/react-label";
+import { createContext, forwardRef, useContext, useId } from "react";
+
+import { type Root } from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import { type ClassValue } from "clsx";
-import { createContext, forwardRef, useContext, useId } from "react";
 import {
   Controller,
   type ControllerProps,
@@ -10,6 +11,7 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form";
+
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 
@@ -119,7 +121,7 @@ const FormControl = forwardRef<
           ? `${formDescriptionId}`
           : `${formDescriptionId} ${formMessageId}`
       }
-      aria-invalid={!!error}
+      aria-invalid={Boolean(error)}
       {...props}
     />
   );

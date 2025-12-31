@@ -2,8 +2,10 @@
 // ABOUTME: Tests the equipment index page skeleton used for equipment catalog loading states
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { EquipmentIndexSkeleton } from "../EquipmentIndexSkeleton";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("EquipmentIndexSkeleton", () => {
   describe("basic rendering", () => {

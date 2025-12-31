@@ -1,10 +1,12 @@
 // ABOUTME: Integration tests for player activity page covering event loading
 // ABOUTME: Tests authentication flows and event repository integration
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { loader } from "../activity";
-import { PlayerEventRepository } from "~/repositories/PlayerEventRepository";
+
 import { createMockSupabaseClient } from "~//__tests__/mocks/supabase";
 import { getAuthenticatedUser } from "~/lib/auth/utils";
+import { PlayerEventRepository } from "~/repositories/PlayerEventRepository";
 
 // Mock the repository
 vi.mock("~/repositories/PlayerEventRepository");
@@ -35,7 +37,7 @@ describe("Player Activity Integration", () => {
     };
 
     vi.mocked(PlayerEventRepository).mockImplementation(
-      function() { return mockPlayerEventRepo; }
+      () => { return mockPlayerEventRepo; }
     );
 
     // Mock auth utilities

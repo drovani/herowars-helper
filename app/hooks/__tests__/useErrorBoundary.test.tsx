@@ -2,10 +2,12 @@
 // ABOUTME: Covers manual error triggering and async error handling
 
 import { renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import { useErrorBoundary, useAsyncErrorBoundary } from "../useErrorBoundary";
-import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { render } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+
+import { useErrorBoundary, useAsyncErrorBoundary } from "../useErrorBoundary";
+
+import { ErrorBoundary } from "~/components/ErrorBoundary";
 
 describe("useErrorBoundary", () => {
   describe("Basic functionality", () => {

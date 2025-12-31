@@ -1,7 +1,11 @@
 // ABOUTME: Roster layout component handles hero collection UI structure and state management
 // ABOUTME: Provides sidebar navigation and detail view container with responsive layout
 import { useState } from "react";
+
 import { Outlet, useFetcher, useParams, useNavigate } from "react-router";
+
+import type { Route } from "./+types/layout";
+
 import { HeroDetailNavigation } from "~/components/player/HeroDetailNavigation";
 import { HeroListSidebar } from "~/components/player/HeroListSidebar";
 import { PlayerCollectionErrorBoundary } from "~/components/player/PlayerCollectionErrorBoundary";
@@ -22,7 +26,6 @@ import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
-import type { Route } from "./+types/layout";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
@@ -171,7 +174,7 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
             <div className="animate-pulse space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-48 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-48 bg-gray-200 rounded" />
                 ))}
               </div>
             </div>

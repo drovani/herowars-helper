@@ -1,8 +1,18 @@
 // ABOUTME: Hero filtering component with mobile and desktop responsive UI
 // ABOUTME: Provides multi-select filters for class, faction, stats, artifacts, and collection status
 
-import { ChevronDownIcon, FilterIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+
+import { ChevronDownIcon, FilterIcon, XIcon } from "lucide-react";
+
+import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
+import { Label } from "~/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { Separator } from "~/components/ui/separator";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "~/components/ui/sheet";
 import {
   HeroClass,
   HeroFaction,
@@ -13,16 +23,8 @@ import {
   ArtifactBookOptions,
   Stats,
 } from "~/data/ReadonlyArrays";
-import type { HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
-import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
-import { Label } from "~/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "~/components/ui/sheet";
 import { useIsMobile } from "~/hooks/useIsMobile";
+import type { HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
 import { countActiveFilters } from "~/lib/hero-filtering";
 
 interface HeroFiltersProps {

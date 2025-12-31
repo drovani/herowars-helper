@@ -1,8 +1,8 @@
 // ABOUTME: Utility functions for sorting heroes in various ways with type safety
 // ABOUTME: Provides sorting by name, order_rank, and other hero attributes with ascending/descending options
 
-import type { Hero } from "~/repositories/types";
 import type { HeroRecord } from "~/data/hero.zod";
+import type { Hero } from "~/repositories/types";
 
 export type SortField = "name" | "order_rank";
 export type SortDirection = "asc" | "desc";

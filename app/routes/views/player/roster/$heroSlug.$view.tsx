@@ -1,6 +1,7 @@
 // ABOUTME: Hero view-specific route handles deep linking to specific hero detail views
 // ABOUTME: Supports URLs like /player/roster/aurora/skills for direct navigation
 import { useParams, useOutletContext } from "react-router";
+
 import { HeroDetailView } from "~/components/player/HeroDetailView";
 import {
   Card,

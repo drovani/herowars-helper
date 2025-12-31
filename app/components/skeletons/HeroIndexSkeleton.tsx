@@ -1,10 +1,12 @@
 // ABOUTME: Skeleton placeholder for hero index page with cards and tiles view modes
 // ABOUTME: Matches hero grid responsive layout and supports both display modes with proper dimensions
 
-import { Skeleton } from "~/components/ui/skeleton";
-import { Card } from "~/components/ui/card";
-import { cn } from "~/lib/utils";
 import { useMemo, memo } from "react";
+
+import { Card } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
+import { cn } from "~/lib/utils";
+
 
 interface HeroIndexSkeletonProps {
   /** Additional CSS classes to apply to the skeleton container */

@@ -4,6 +4,7 @@
 import { fireEvent, render } from "@testing-library/react";
 import log from "loglevel";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { ErrorBoundary } from "../ErrorBoundary";
 
 // Component that throws an error

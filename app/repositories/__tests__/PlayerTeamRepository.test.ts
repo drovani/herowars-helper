@@ -1,8 +1,9 @@
 // ABOUTME: Unit tests for PlayerTeamRepository with mocked Supabase client
 // ABOUTME: Tests CRUD operations, team validation, hero management, and auto-naming functionality
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import log from "loglevel";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
 import { PlayerTeamRepository } from "../PlayerTeamRepository";
 
 // Mock the createClient function

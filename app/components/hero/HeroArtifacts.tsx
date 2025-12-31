@@ -1,7 +1,7 @@
 import { Badge } from "~/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import type { HeroRecord } from "~/data/hero.zod";
-import { ArtifactBookStats, HeroMainStat } from "~/data/ReadonlyArrays";
+import { ArtifactBookStats, type HeroMainStat } from "~/data/ReadonlyArrays";
 import { generateSlug } from "~/lib/utils";
 
 interface HeroArtifactsProps {

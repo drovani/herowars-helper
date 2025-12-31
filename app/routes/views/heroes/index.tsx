@@ -1,3 +1,5 @@
+import { Suspense, useState, useMemo } from "react";
+
 import { ToggleGroup } from "@radix-ui/react-toggle-group";
 import {
   ChevronLeftIcon,
@@ -5,16 +7,18 @@ import {
   LayoutGridIcon,
   LayoutListIcon,
 } from "lucide-react";
-import { Suspense, useState, useMemo } from "react";
 import { Await, Link, useFetcher, useNavigate } from "react-router";
+
+import type { Route } from "./+types/index";
+
 import { ActiveFilterChips } from "~/components/hero/ActiveFilterChips";
 import HeroArtifactsCompact from "~/components/hero/HeroArtifactsCompact";
 import HeroCard from "~/components/hero/HeroCard";
 import { HeroFilters } from "~/components/hero/HeroFilters";
 import HeroGlyphsCompact from "~/components/hero/HeroGlyphsCompact";
 import HeroItemsCompact from "~/components/hero/HeroItemsCompact";
-import { HeroSortControls } from "~/components/hero/HeroSortControls";
 import HeroSkinsCompact from "~/components/hero/HeroSkinsCompact";
+import { HeroSortControls } from "~/components/hero/HeroSortControls";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
 import { HeroIndexSkeleton } from "~/components/skeletons/HeroIndexSkeleton";
 import { Button } from "~/components/ui/button";
@@ -48,7 +52,6 @@ import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { BasicHero } from "~/repositories/types";
-import type { Route } from "./+types/index";
 
 async function loadHeroesData(request: Request) {
   const url = new URL(request.url);
@@ -290,7 +293,7 @@ function HeroesContent({
                 fetcher.submit(
                   {
                     action: "addHero",
-                    heroSlug: heroSlug,
+                    heroSlug,
                     stars: "1",
                     equipmentLevel: "1",
                   },
@@ -348,7 +351,7 @@ function HeroesContent({
                     fetcher.submit(
                       {
                         action: "addHero",
-                        heroSlug: heroSlug,
+                        heroSlug,
                         stars: "1",
                         equipmentLevel: "1",
                       },
@@ -396,7 +399,7 @@ function HeroesContent({
             <HeroFilters
               filters={filters}
               onFiltersChange={handleFiltersChange}
-              showCollectionFilter={!!user}
+              showCollectionFilter={Boolean(user)}
             />
             {!isMobile && (
               <ToggleGroup

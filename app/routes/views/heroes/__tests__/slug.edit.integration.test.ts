@@ -2,11 +2,13 @@
 // ABOUTME: Tests hero data separation and updates to multiple related tables
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { loader, action } from "../slug.edit";
-import { HeroRepository } from "~/repositories/HeroRepository";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+
 import { createMockSupabaseClient } from "~//__tests__/mocks/supabase";
 import * as supabaseClientModule from "~/lib/supabase/client";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import { HeroRepository } from "~/repositories/HeroRepository";
 
 // Mock the repositories
 vi.mock("~/repositories/HeroRepository");
@@ -45,11 +47,11 @@ describe("Hero Edit Integration", () => {
       getAllAsJson: vi.fn(),
     };
 
-    vi.mocked(HeroRepository).mockImplementation(function() { return mockHeroRepo; });
-    vi.mocked(EquipmentRepository).mockImplementation(function() { return mockEquipmentRepo; });
+    vi.mocked(HeroRepository).mockImplementation(() => { return mockHeroRepo; });
+    vi.mocked(EquipmentRepository).mockImplementation(() => { return mockEquipmentRepo; });
 
     // Setup createClient mock to return fresh client each time
-    vi.mocked(supabaseClientModule.createClient).mockImplementation(function() { return {
+    vi.mocked(supabaseClientModule.createClient).mockImplementation(() => { return {
       supabase: mockSupabaseClient,
       headers: undefined,
     }; });

@@ -2,10 +2,12 @@
 // ABOUTME: Provides retry mechanisms with exponential backoff for transient failures
 
 import { type ReactNode } from "react";
+
+import { DatabaseIcon } from "lucide-react";
+
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { DatabaseIcon } from "lucide-react";
 
 interface DataLoadingErrorBoundaryProps {
   children: ReactNode;

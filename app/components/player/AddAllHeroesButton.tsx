@@ -1,8 +1,9 @@
 // ABOUTME: AddAllHeroesButton component provides bulk hero addition with confirmation and progress feedback
 // ABOUTME: Shows confirmation dialog, loading states, and operation results for bulk hero collection management
 import { useState, useEffect } from "react";
+
 import { UserRoundPlusIcon, LoaderCircle, CheckCircle, AlertTriangle, UsersIcon } from "lucide-react";
-import { Button } from "~/components/ui/button";
+
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import {
   AlertDialog,
@@ -15,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import { cn } from "~/lib/utils";
 

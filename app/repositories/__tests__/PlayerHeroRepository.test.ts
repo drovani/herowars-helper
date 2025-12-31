@@ -1,9 +1,10 @@
 // ABOUTME: Tests for PlayerHeroRepository covering CRUD operations and event integration
 // ABOUTME: Uses mocked Supabase client with log capturing for clean test output
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import log from "loglevel";
-import { PlayerHeroRepository } from "../PlayerHeroRepository";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
 import { createMockSupabaseClient } from "../../__tests__/mocks/supabase";
+import { PlayerHeroRepository } from "../PlayerHeroRepository";
 
 describe("PlayerHeroRepository", () => {
   let capturedLogs: Array<{ level: string; message: string; args: any[] }> = [];

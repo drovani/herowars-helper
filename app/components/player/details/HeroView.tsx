@@ -1,15 +1,18 @@
 // ABOUTME: HeroView component provides functional hero management interface
 // ABOUTME: Allows editing of hero level, talisman level, stars, and equipment progression
 import { useState } from "react";
+
 import { Link } from "react-router";
+
+import { EquipmentLevels } from "../EquipmentLevels";
+import { StarRating } from "../StarRating";
+
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
-import { EquipmentLevels } from "../EquipmentLevels";
-import { StarRating } from "../StarRating";
 
 interface HeroViewProps {
   playerHero: PlayerHeroWithDetails;

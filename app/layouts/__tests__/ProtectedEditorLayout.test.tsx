@@ -1,8 +1,10 @@
 import { render } from "@testing-library/react";
 import { BrowserRouter, Outlet } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useAuth } from "~/contexts/AuthContext";
+
 import ProtectedEditorLayout from "../ProtectedEditorLayout";
+
+import { useAuth } from "~/contexts/AuthContext";
 
 // Mock the AuthContext
 vi.mock("~/contexts/AuthContext", () => ({

@@ -2,8 +2,10 @@
 // ABOUTME: Tests grid column mappings, item counts, and responsive layout functionality
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { SkeletonGrid } from "../SkeletonGrid";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("SkeletonGrid", () => {
   describe("rendering", () => {

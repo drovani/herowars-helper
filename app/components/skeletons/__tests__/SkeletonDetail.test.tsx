@@ -2,8 +2,10 @@
 // ABOUTME: Tests the detail skeleton building block used for hero/equipment detail page loading states
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { SkeletonDetail } from "../SkeletonDetail";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("SkeletonDetail", () => {
   describe("basic rendering", () => {

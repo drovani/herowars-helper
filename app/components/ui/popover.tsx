@@ -1,6 +1,8 @@
+import { forwardRef } from "react";
+
 import { Content, Portal, Root, Trigger } from "@radix-ui/react-popover";
 import { type ClassValue } from "clsx";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const Popover = Root;

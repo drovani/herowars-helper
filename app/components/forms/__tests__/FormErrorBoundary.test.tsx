@@ -2,8 +2,9 @@
 // ABOUTME: Covers form submission errors, state preservation, and validation errors
 
 import { render, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import log from "loglevel";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { FormErrorBoundary } from "../FormErrorBoundary";
 
 function ThrowFormError({ errorType }: { errorType?: string }) {
@@ -17,7 +18,7 @@ function ThrowFormError({ errorType }: { errorType?: string }) {
     throw new Error("Server error 500 - internal server error");
   }
   throw new Error("Generic form error");
-  // eslint-disable-next-line no-unreachable
+   
   return null;
 }
 

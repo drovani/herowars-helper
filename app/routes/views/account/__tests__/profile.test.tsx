@@ -1,5 +1,6 @@
 import { render, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { useAuth } from "~/contexts/AuthContext";
 
 // Create a simple test component that demonstrates the auth loading behavior
@@ -12,7 +13,7 @@ function TestAccountProfile() {
         <h1>Loading...</h1>
         <p>Initializing your account information.</p>
         <div className="animate-pulse" data-testid="loading-skeleton">
-          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/4" />
         </div>
       </div>
     );

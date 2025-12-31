@@ -1,14 +1,16 @@
 // ABOUTME: Integration tests for player roster page covering data loading and actions
 // ABOUTME: Tests authentication flows and repository integration
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { loader, action } from "../roster/index";
-import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
+
 import { createMockSupabaseClient } from "~/__tests__/mocks/supabase";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
+import { HeroRepository } from "~/repositories/HeroRepository";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 
 // Mock the repositories
 vi.mock("~/repositories/PlayerHeroRepository");
@@ -48,9 +50,9 @@ describe("Player Roster Integration", () => {
       addAllHeroesToCollection: vi.fn(),
     };
 
-    vi.mocked(HeroRepository).mockImplementation(function() { return mockHeroRepo; });
+    vi.mocked(HeroRepository).mockImplementation(() => { return mockHeroRepo; });
     vi.mocked(PlayerHeroRepository).mockImplementation(
-      function() { return mockPlayerHeroRepo; }
+      () => { return mockPlayerHeroRepo; }
     );
 
     // Mock auth utilities

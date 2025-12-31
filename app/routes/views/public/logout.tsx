@@ -1,5 +1,6 @@
-import { type ActionFunctionArgs, redirect } from "react-router";
 import log from "loglevel";
+import { type ActionFunctionArgs, redirect } from "react-router";
+
 import { createClient } from "~/lib/supabase/client";
 
 export async function loader({ request }: ActionFunctionArgs) {

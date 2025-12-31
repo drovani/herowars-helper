@@ -1,7 +1,7 @@
 // ABOUTME: Type definitions for data services and interfaces
 // ABOUTME: Extracted from BaseDataService for use by database-backed services
 
-import { z, ZodError } from "zod";
+import { z, type ZodError } from "zod";
 
 export interface DataService<TRecord, TMutation> {
   getAll(ids?: string[]): Promise<TRecord[]>;

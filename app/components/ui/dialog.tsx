@@ -1,5 +1,7 @@
 "use client";
 
+import { forwardRef } from "react";
+
 import {
   Close,
   Content,
@@ -12,7 +14,7 @@ import {
 } from "@radix-ui/react-dialog";
 import { type ClassValue } from "clsx";
 import { XIcon } from "lucide-react";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const Dialog = Root;

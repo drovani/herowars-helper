@@ -2,6 +2,9 @@
 // ABOUTME: Allows users to input current artifact levels and see chest requirements to reach level 100
 
 import { useState } from "react";
+
+import type { Route } from "./+types/artifact-calculator";
+
 import {
   Card,
   CardContent,
@@ -16,7 +19,6 @@ import {
   calculateArtifactUpgrade,
   type ColorTier,
 } from "~/lib/artifact-calculations";
-import type { Route } from "./+types/artifact-calculator";
 
 export const meta = (_: Route.MetaArgs) => {
   return [

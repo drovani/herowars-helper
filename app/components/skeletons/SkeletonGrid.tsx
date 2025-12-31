@@ -1,10 +1,12 @@
 // ABOUTME: Skeleton placeholder for responsive grid layouts with configurable item count and spacing
 // ABOUTME: Matches existing grid layouts used in heroes/equipment pages with proper responsive behavior
 
+import { useMemo, memo } from "react";
+
+import { SkeletonCard } from "./SkeletonCard";
+
 import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
-import { SkeletonCard } from "./SkeletonCard";
-import { useMemo, memo } from "react";
 
 interface SkeletonGridProps {
   /** Additional CSS classes to apply to the grid container */

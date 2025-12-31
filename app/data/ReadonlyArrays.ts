@@ -1,4 +1,5 @@
 import type { z } from "zod";
+
 import type { ArtifactSchema, SkinSchema } from "./hero.zod";
 
 export const Stats = [

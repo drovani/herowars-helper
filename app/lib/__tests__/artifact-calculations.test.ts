@@ -2,6 +2,7 @@
 // ABOUTME: Tests calculation logic, edge cases, and input validation
 
 import { describe, it, expect } from "vitest";
+
 import {
   calculateArtifactUpgrade,
   type ArtifactUpgradeResult,

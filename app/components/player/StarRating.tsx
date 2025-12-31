@@ -1,6 +1,7 @@
 // ABOUTME: StarRating component displays and allows editing of hero star progression (1-6 stars)
 // ABOUTME: Shows filled/empty stars with click interaction for updating star levels
 import { StarIcon } from "lucide-react";
+
 import { cn } from "~/lib/utils";
 
 interface StarRatingProps {

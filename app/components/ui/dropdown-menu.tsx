@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 import { type CheckedState } from "@radix-ui/react-checkbox";
 import {
   CheckboxItem,
@@ -18,7 +20,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { type ClassValue } from "clsx";
 import { Check, ChevronRight, Circle } from "lucide-react";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const DropdownMenu = Root;

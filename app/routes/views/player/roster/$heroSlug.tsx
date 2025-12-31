@@ -1,6 +1,7 @@
 // ABOUTME: Hero detail route handles individual hero management with view switching
 // ABOUTME: Defaults to hero view and supports URL-based view navigation
 import { useParams, useOutletContext } from "react-router";
+
 import { HeroDetailView } from "~/components/player/HeroDetailView";
 import {
   Card,

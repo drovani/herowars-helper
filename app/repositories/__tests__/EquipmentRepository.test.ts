@@ -1,12 +1,15 @@
 // ABOUTME: Tests for EquipmentRepository class with mocked Supabase client
 // ABOUTME: Tests CRUD operations, relationships, bulk operations, and data transformation
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import log from "loglevel";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { Database } from "~/types/supabase";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { createMockSupabaseClient } from "../../__tests__/mocks/supabase";
 import { EquipmentRepository } from "../EquipmentRepository";
+
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { Database } from "~/types/supabase";
+
 
 describe("EquipmentRepository", () => {
   let repository: EquipmentRepository;

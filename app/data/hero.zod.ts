@@ -1,13 +1,14 @@
 // hero.zod.ts
 import { z } from "zod";
+
 import {
   ArtifactBookOptions,
-  AttackType,
-  HeroClass,
-  HeroFaction,
-  HeroMainStat,
+  type AttackType,
+  type HeroClass,
+  type HeroFaction,
+  type HeroMainStat,
   Stats,
-  StoneSource,
+  type StoneSource,
   WeaponTeamBuff,
 } from "./ReadonlyArrays";
 

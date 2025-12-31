@@ -3,6 +3,10 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
+
+import { BaseRepository } from "./BaseRepository";
+import type { FindAllOptions, RepositoryResult } from "./types";
+
 import {
   EQUIPMENT_QUALITIES,
   EquipmentTableSchema,
@@ -10,8 +14,6 @@ import {
   type EquipmentRecord,
 } from "~/data/equipment.zod";
 import type { Database } from "~/types/supabase";
-import { BaseRepository } from "./BaseRepository";
-import type { FindAllOptions, RepositoryResult } from "./types";
 
 export interface EquipmentStat {
   equipment_slug: string;

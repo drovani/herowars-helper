@@ -1,11 +1,10 @@
+import { useState } from "react";
+
 import { HoverCard } from "@radix-ui/react-hover-card";
 import type { ClassValue } from "clsx";
 import { AlertCircle } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { HeroRecord } from "~/data/hero.zod";
-import { cn, generateSlug } from "~/lib/utils";
+
 import EquipmentImage from "../EquipmentImage";
 import { Badge } from "../ui/badge";
 import { HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
@@ -16,6 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
+import { cn, generateSlug } from "~/lib/utils";
 
 interface HeroItemsProps {
   equipment: EquipmentRecord[];
@@ -30,7 +33,7 @@ export default function HeroItemsCompact({
   equipment,
   className,
 }: HeroItemsProps) {
-  if (items === undefined) return <div></div>;
+  if (items === undefined) return <div />;
 
   const ranks = Object.keys(items);
   const [selectedRank, setSelectedRank] = useState<ItemRank>(

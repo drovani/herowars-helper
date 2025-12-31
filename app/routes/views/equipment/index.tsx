@@ -1,14 +1,17 @@
+import { Suspense } from "react";
+
 import { cva } from "class-variance-authority";
 import { Plus } from "lucide-react";
 import { Link, Await } from "react-router";
-import { Suspense } from "react";
+
+import type { Route } from "./+types/index";
+
 import { RequireEditor } from "~/components/auth/RequireRole";
+import { EquipmentIndexSkeleton } from "~/components/skeletons/EquipmentIndexSkeleton";
 import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn, getEquipmentImageUrl } from "~/lib/utils";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { EquipmentIndexSkeleton } from "~/components/skeletons/EquipmentIndexSkeleton";
-import type { Route } from "./+types/index";
 
 async function loadEquipmentData(request: Request) {
   const equipmentRepository = new EquipmentRepository(request);

@@ -1,8 +1,8 @@
 // ABOUTME: Skeleton placeholder for detail page layouts with header and multiple content sections
 // ABOUTME: Supports breadcrumbs, title sections, and configurable content areas for hero/equipment detail pages
 
-import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 interface SkeletonDetailProps {

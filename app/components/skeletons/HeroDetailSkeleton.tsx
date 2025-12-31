@@ -1,10 +1,12 @@
 // ABOUTME: Skeleton placeholder for hero detail page with comprehensive layout including profile and sections
 // ABOUTME: Matches hero detail page structure with image, stats, artifacts, equipment, skills, and navigation sections
 
-import { Skeleton } from "~/components/ui/skeleton";
-import { Card, CardContent, CardHeader } from "~/components/ui/card";
-import { cn } from "~/lib/utils";
 import { useMemo } from "react";
+
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
+import { cn } from "~/lib/utils";
+
 
 interface HeroDetailSkeletonProps {
   className?: string;

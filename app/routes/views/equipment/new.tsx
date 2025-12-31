@@ -2,6 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { redirect, type UIMatch, data } from "react-router";
 import { ZodError } from "zod";
+
+import type { Route } from "./+types/new";
+
 import EquipmentForm from "~/components/EquipmentForm";
 import {
   type EquipmentMutation,
@@ -9,7 +12,6 @@ import {
 } from "~/data/equipment.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/new";
 
 export const meta = (_: Route.MetaArgs) => {
   return [{ title: "Create new equipment" }];

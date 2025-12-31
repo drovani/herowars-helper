@@ -1,8 +1,9 @@
 // ABOUTME: Skeleton placeholder for admin user management table with user rows and action buttons
 // ABOUTME: Supports user data placeholders including email, roles, and action button sections
 
-import { Skeleton } from "~/components/ui/skeleton";
 import { SkeletonTable } from "./SkeletonTable";
+
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 interface AdminUserTableSkeletonProps {

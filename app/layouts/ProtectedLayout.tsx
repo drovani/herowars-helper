@@ -1,8 +1,9 @@
 import { Outlet } from "react-router";
-import { UnauthorizedAccess } from "~/components/auth/UnauthorizedAccess";
+
 import { AuthenticationErrorBoundary } from "~/components/auth/AuthenticationErrorBoundary";
-import { useAuth } from "~/contexts/AuthContext";
+import { UnauthorizedAccess } from "~/components/auth/UnauthorizedAccess";
 import { NavigationSkeleton } from "~/components/skeletons";
+import { useAuth } from "~/contexts/AuthContext";
 
 export default function ProtectedLayout({ roles = [] }: { roles?: string[] }) {
   const { isAuthenticated, user, isLoading } = useAuth();

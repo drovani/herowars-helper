@@ -1,5 +1,9 @@
 import { useState } from "react";
+
 import { Link } from "react-router";
+
+import { LoginForm } from "./LoginForm";
+
 import {
   Dialog,
   DialogContent,
@@ -8,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { LoginForm } from "./LoginForm";
 
 interface LoginModalProps {
   children: React.ReactNode;

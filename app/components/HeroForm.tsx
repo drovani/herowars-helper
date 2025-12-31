@@ -1,7 +1,13 @@
+import log from "loglevel";
 import { type UseFormReturn } from "react-hook-form";
 import { data, useNavigate, useSubmit } from "react-router";
 import { ZodError } from "zod";
-import log from "loglevel";
+
+import ArtifactsField from "./hero-form/ArtifactsField";
+import GlyphsField from "./hero-form/GlyphsField";
+import ItemsField from "./hero-form/ItemsField";
+import SkinsField from "./hero-form/SkinsField";
+
 import { Button } from "~/components/ui/button";
 import { Form } from "~/components/ui/form";
 import type { EquipmentRecord } from "~/data/equipment.zod";
@@ -10,10 +16,7 @@ import {
   type HeroMutation,
   type HeroRecord,
 } from "~/data/hero.zod";
-import ArtifactsField from "./hero-form/ArtifactsField";
-import GlyphsField from "./hero-form/GlyphsField";
-import ItemsField from "./hero-form/ItemsField";
-import SkinsField from "./hero-form/SkinsField";
+
 
 interface HeroFormProps {
   form: UseFormReturn<HeroMutation>;

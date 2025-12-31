@@ -1,7 +1,6 @@
 // ABOUTME: Utility functions for filtering heroes by multiple criteria with AND logic
 // ABOUTME: Provides filtering by class, faction, stats, artifacts, and user collection status
 
-import type { Hero } from "~/repositories/types";
 import type { HeroRecord } from "~/data/hero.zod";
 import type {
   HeroClass,
@@ -13,6 +12,7 @@ import type {
   ArtifactBookOption,
   HeroStat,
 } from "~/data/ReadonlyArrays";
+import type { Hero } from "~/repositories/types";
 
 /**
  * Type guard to check if a hero has HeroRecord properties (artifacts, glyphs, skins)

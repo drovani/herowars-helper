@@ -1,6 +1,3 @@
-import { Slot } from "@radix-ui/react-slot";
-import { type VariantProps, cva } from "class-variance-authority";
-import { PanelLeft } from "lucide-react";
 import {
   createContext,
   forwardRef,
@@ -10,6 +7,11 @@ import {
   useMemo,
   useState,
 } from "react";
+
+import { Slot } from "@radix-ui/react-slot";
+import { type VariantProps, cva } from "class-variance-authority";
+import { PanelLeft } from "lucide-react";
+
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";

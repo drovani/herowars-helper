@@ -1,8 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { useSearchParams } from "react-router";
 
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+
 export default function Page() {
-  let [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">

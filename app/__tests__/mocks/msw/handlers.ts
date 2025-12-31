@@ -2,6 +2,7 @@
 // ABOUTME: Provides realistic HTTP responses for database operations without hitting real Supabase
 
 import { http, HttpResponse } from "msw";
+
 import {
   createMockEquipment,
   createMockMission,
@@ -9,6 +10,7 @@ import {
   SUPABASE_ERRORS,
   createMockEquipmentList,
 } from "./factories";
+
 import type { Database } from "~/types/supabase";
 
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];

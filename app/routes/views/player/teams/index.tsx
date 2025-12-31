@@ -2,16 +2,13 @@
 // ABOUTME: Main team list view with grid layout and team creation capabilities
 
 import { useState } from "react";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+
 import { PlusIcon } from "lucide-react";
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { useFetcher, useLoaderData, useNavigate } from "react-router";
+
+import type { Route } from "./+types/index";
+
+import { TeamListCard } from "~/components/team/TeamListCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +19,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
-import { TeamListCard } from "~/components/team/TeamListCard";
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
 import {
@@ -30,7 +34,7 @@ import {
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-import type { Route } from "./+types/index";
+
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -125,7 +129,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
             <div className="animate-pulse space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-32 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-32 bg-gray-200 rounded" />
                 ))}
               </div>
             </div>

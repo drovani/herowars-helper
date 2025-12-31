@@ -1,8 +1,12 @@
 //components/hero-form/SkinsField.tsx
+import { useRef } from "react";
+
 import type { CheckedState } from "@radix-ui/react-checkbox";
 import { PlusCircleIcon, XIcon } from "lucide-react";
-import { useRef } from "react";
 import { type UseFormReturn } from "react-hook-form";
+
+import { Checkbox } from "../ui/checkbox";
+
 import { Button } from "~/components/ui/button";
 import {
   FormField,
@@ -20,7 +24,6 @@ import {
 import { type HeroMutation, type HeroRecord } from "~/data/hero.zod";
 import { Stats } from "~/data/ReadonlyArrays";
 import { generateSlug } from "~/lib/utils";
-import { Checkbox } from "../ui/checkbox";
 
 function StatDisplay({ stat }: { stat: string }) {
   return (

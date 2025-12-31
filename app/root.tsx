@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import {
   isRouteErrorResponse,
   Links,
@@ -8,14 +10,16 @@ import {
   useMatches,
   type UIMatch,
 } from "react-router";
-import { useEffect, useState } from "react";
-import SiteHeader from "~/components/SiteHeader";
+
+
 import type { Route } from "./+types/root";
 import { SiteSidebar } from "./components/SiteSidebar";
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
 import { formatTitle, siteConfig } from "./config/site";
 import { AuthProvider } from "./contexts/AuthContext";
 import styles from "./tailwind.css?url";
+
+import SiteHeader from "~/components/SiteHeader";
 
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: styles, as: "style" },

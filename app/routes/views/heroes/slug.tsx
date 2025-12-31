@@ -1,5 +1,6 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { Suspense, useEffect } from "react";
+
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import {
   Await,
   Link,
@@ -8,6 +9,9 @@ import {
   type UIMatch,
 } from "react-router";
 import invariant from "tiny-invariant";
+
+import type { Route } from "./+types/slug";
+
 import { RequireEditor } from "~/components/auth/RequireRole";
 import HeroArtifacts from "~/components/hero/HeroArtifacts";
 import HeroGlyphs from "~/components/hero/HeroGlyphs";
@@ -32,7 +36,6 @@ import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { Route } from "./+types/slug";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   const heroName = loaderData?.basicHero?.name || "Hero Details";
@@ -335,7 +338,7 @@ function HeroContent({
                 fetcher.submit(
                   {
                     action: "addHero",
-                    heroSlug: heroSlug,
+                    heroSlug,
                     stars: "1",
                     equipmentLevel: "1",
                   },
@@ -417,7 +420,7 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
   return (
     <Suspense
       fallback={
-        <HeroDetailSkeleton showAddButton={!!user} showEditButton={true} />
+        <HeroDetailSkeleton showAddButton={Boolean(user)} showEditButton={true} />
       }
     >
       <Await resolve={loaderData?.detailedData}>

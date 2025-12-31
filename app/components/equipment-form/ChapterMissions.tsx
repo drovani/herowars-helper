@@ -47,7 +47,7 @@ export default function ChapterMissions({
                   id={`mission-${missionKey}`}
                   checked={selectedMissions.includes(mission.id)}
                   onCheckedChange={(checked) =>
-                    onMissionToggle(mission.id, !!checked)
+                    onMissionToggle(mission.id, Boolean(checked))
                   }
                   aria-describedby={`mission-desc-${missionKey}`}
                 />

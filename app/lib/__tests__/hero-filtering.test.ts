@@ -2,6 +2,7 @@
 // ABOUTME: Validates filtering by class, faction, stats, artifacts, and collection status
 
 import { describe, test, expect } from "vitest";
+
 import {
   filterHeroes,
   parseFilterParams,
@@ -11,6 +12,7 @@ import {
   removeFilter,
   clearAllFilters,
 } from "../hero-filtering";
+
 import type { HeroRecord } from "~/data/hero.zod";
 
 describe("hero-filtering", () => {

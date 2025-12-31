@@ -2,6 +2,7 @@
 // ABOUTME: Shows current filter state and allows individual filter removal
 
 import { XIcon } from "lucide-react";
+
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import type { HeroFilters } from "~/lib/hero-filtering";

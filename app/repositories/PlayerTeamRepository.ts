@@ -4,7 +4,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import { z } from "zod";
-import { generateSlug } from "~/lib/utils";
+
 import { BaseRepository } from "./BaseRepository";
 import { PlayerEventRepository } from "./PlayerEventRepository";
 import type {
@@ -17,6 +17,8 @@ import type {
   UpdatePlayerTeamInput,
   UpdatePlayerTeamInternal,
 } from "./types";
+
+import { generateSlug } from "~/lib/utils";
 
 // Schema for input validation (create/update operations)
 const PlayerTeamInputSchema = z.object({
@@ -133,7 +135,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       }
 
       // Generate slug from team name
-      let slug = generateSlug(teamName);
+      const slug = generateSlug(teamName);
 
       // Validate slug uniqueness
       const slugValidation = await this.validateSlugUniqueness(userId, slug);

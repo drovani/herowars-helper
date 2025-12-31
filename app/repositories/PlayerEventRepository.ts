@@ -18,8 +18,11 @@ const PlayerEventInputSchema = z.object({
     "UNCLAIM_HERO",
     "UPDATE_HERO_STARS",
     "UPDATE_HERO_EQUIPMENT",
+    "UPDATE_HERO_LEVEL",
+    "UPDATE_HERO_TALISMAN",
+    "UPDATE_TEAM_NAME",
   ]),
-  hero_slug: z.string(),
+  hero_slug: z.string().optional(),
   event_data: z.record(z.string(), z.unknown()).optional().default({}),
   created_by: z.uuid(),
 });
@@ -33,8 +36,11 @@ const PlayerEventSchema = z.object({
     "UNCLAIM_HERO",
     "UPDATE_HERO_STARS",
     "UPDATE_HERO_EQUIPMENT",
+    "UPDATE_HERO_LEVEL",
+    "UPDATE_HERO_TALISMAN",
+    "UPDATE_TEAM_NAME",
   ]),
-  hero_slug: z.string(),
+  hero_slug: z.string().nullable(),
   event_data: z.record(z.string(), z.unknown()),
   created_at: z.string(),
   created_by: z.uuid(),
@@ -73,11 +79,11 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
     userId: string,
     eventInput: CreatePlayerEventInput
   ): Promise<RepositoryResult<PlayerEvent>> {
-    const eventData = {
+    const eventData: any = {
       user_id: userId,
       created_by: userId,
       event_type: eventInput.event_type,
-      hero_slug: eventInput.hero_slug,
+      hero_slug: eventInput.hero_slug || null,
       event_data: eventInput.event_data || {},
     };
 
@@ -122,6 +128,9 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
       | "UNCLAIM_HERO"
       | "UPDATE_HERO_STARS"
       | "UPDATE_HERO_EQUIPMENT"
+      | "UPDATE_HERO_LEVEL"
+      | "UPDATE_HERO_TALISMAN"
+      | "UPDATE_TEAM_NAME"
   ): Promise<RepositoryResult<PlayerEvent[]>> {
     return this.findAll({
       where: {

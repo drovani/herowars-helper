@@ -20,7 +20,7 @@ import {
 } from "~/lib/auth/utils";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-import type { Route } from "./+types/$teamId.edit";
+import type { Route } from "./+types/$slug.edit";
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -29,17 +29,29 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
     throw new Response("Authentication required", { status: 401 });
   }
 
-  const teamId = params.teamId;
-  if (!teamId) {
-    throw new Response("Team ID is required", { status: 400 });
+  const slug = params.slug;
+  if (!slug) {
+    throw new Response("Team slug is required", { status: 400 });
   }
 
   const teamRepo = new PlayerTeamRepository(request);
   const playerHeroRepo = new PlayerHeroRepository(request);
 
-  // Load the team with its heroes
-  const teamResult = await teamRepo.findTeamWithHeroes(teamId, user.id);
+  // Load the team with its heroes by slug
+  const teamResult = await teamRepo.findTeamBySlug(slug, user.id);
+
+  // If not found, check if it's an old slug and redirect
   if (teamResult.error || !teamResult.data) {
+    const oldSlugResult = await teamRepo.findTeamByOldSlug(slug, user.id);
+    if (oldSlugResult.data && oldSlugResult.data.slug) {
+      // 301 Permanent Redirect to the new slug
+      throw new Response(null, {
+        status: 301,
+        headers: {
+          Location: `/player/teams/${oldSlugResult.data.slug}/edit`,
+        },
+      });
+    }
     throw new Response("Team not found", { status: 404 });
   }
 
@@ -57,11 +69,18 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
   const user = await requireAuthenticatedUser(request);
-  const teamId = params.teamId!;
+  const slug = params.slug!;
   const formData = await request.formData();
   const action = formData.get("action");
 
   const teamRepo = new PlayerTeamRepository(request);
+
+  // Get team by slug to retrieve team ID
+  const teamResult = await teamRepo.findTeamBySlug(slug, user.id);
+  if (teamResult.error || !teamResult.data) {
+    return { error: "Team not found" };
+  }
+  const teamId = teamResult.data.id;
 
   switch (action) {
     case "updateTeam": {
@@ -76,6 +95,15 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
 
       if (updateResult.error) {
         return { error: updateResult.error.message };
+      }
+
+      // If team name changed, slug will have changed - redirect to new slug
+      if (updateResult.data && updateResult.data.slug !== slug) {
+        return {
+          success: true,
+          redirectTo: `/player/teams/${updateResult.data.slug}/edit`,
+          message: `Team "${updateResult.data.name}" updated successfully`,
+        };
       }
 
       return {
@@ -214,8 +242,13 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
     if (fetcher.state === "idle") {
       setAddingHeroSlug(undefined);
       setRemovingHeroSlug(undefined);
+
+      // Handle redirect if slug changed
+      if (fetcher.data?.redirectTo) {
+        navigate(fetcher.data.redirectTo);
+      }
     }
-  }, [fetcher.state]);
+  }, [fetcher.state, fetcher.data, navigate]);
 
   const isSubmitting = fetcher.state === "submitting";
   const hasChanges =

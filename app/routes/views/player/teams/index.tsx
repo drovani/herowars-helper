@@ -73,7 +73,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
       return {
         success: true,
         message: `Team "${result.data!.name}" created successfully`,
-        teamId: result.data!.id,
+        teamSlug: result.data!.slug,
       };
     }
 
@@ -156,9 +156,9 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
     );
   };
 
-  const handleEditTeam = (teamId: string) => {
+  const handleEditTeam = (slug: string) => {
     // Navigate to edit page
-    window.location.href = `/player/teams/${teamId}`;
+    window.location.href = `/player/teams/${slug}/edit`;
   };
 
   const handleDeleteTeam = (teamId: string) => {

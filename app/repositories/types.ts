@@ -179,8 +179,9 @@ export interface CreatePlayerEventInput {
     | "UPDATE_HERO_STARS"
     | "UPDATE_HERO_EQUIPMENT"
     | "UPDATE_HERO_LEVEL"
-    | "UPDATE_HERO_TALISMAN";
-  hero_slug: string;
+    | "UPDATE_HERO_TALISMAN"
+    | "UPDATE_TEAM_NAME";
+  hero_slug?: string;
   event_data?: Json;
 }
 
@@ -199,6 +200,7 @@ export interface CreatePlayerTeamInput {
 
 export interface UpdatePlayerTeamInput {
   name?: string;
+  slug?: string;
   description?: string;
 }
 

@@ -1,7 +1,7 @@
 // ABOUTME: Integration tests for team editing page covering team updates and hero management
 // ABOUTME: Tests authentication flows and team modification operations
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { loader, action } from "../teams/$teamId.edit";
+import { loader, action } from "../teams/$slug.edit";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { createMockSupabaseClient } from "~//__tests__/mocks/supabase";
@@ -33,14 +33,17 @@ describe("Player Teams Edit Integration", () => {
   let mockTeamRepo: any;
   let mockPlayerHeroRepo: any;
   const mockTeamId = "team123";
+  const mockSlug = "arena-team";
 
   beforeEach(() => {
     mockRequest = new Request(
-      `http://localhost:3000/player/teams/${mockTeamId}`
+      `http://localhost:3000/player/teams/${mockSlug}/edit`
     );
 
     mockTeamRepo = {
+      findTeamBySlug: vi.fn(),
       findTeamWithHeroes: vi.fn(),
+      findTeamByOldSlug: vi.fn(),
       updateTeam: vi.fn(),
       addHeroToTeam: vi.fn(),
       removeHeroFromTeam: vi.fn(),
@@ -86,6 +89,7 @@ describe("Player Teams Edit Integration", () => {
         id: mockTeamId,
         user_id: "user1",
         name: "Arena Team",
+        slug: mockSlug,
         description: "Main arena team",
         created_at: "2024-01-15T10:00:00Z",
         updated_at: "2024-01-15T10:00:00Z",
@@ -144,7 +148,7 @@ describe("Player Teams Edit Integration", () => {
         },
       ];
 
-      mockTeamRepo.findTeamWithHeroes.mockResolvedValue({
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
         data: mockTeam,
         error: null,
       });
@@ -155,15 +159,15 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await loader({
         request: mockRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
 
       expect(result.team).toEqual(mockTeam);
       expect(result.userHeroes).toHaveLength(2);
-      expect(mockTeamRepo.findTeamWithHeroes).toHaveBeenCalledWith(
-        mockTeamId,
+      expect(mockTeamRepo.findTeamBySlug).toHaveBeenCalledWith(
+        mockSlug,
         "user1"
       );
       expect(mockPlayerHeroRepo.findWithHeroDetails).toHaveBeenCalledWith(
@@ -180,14 +184,14 @@ describe("Player Teams Edit Integration", () => {
       await expect(
         loader({
           request: mockRequest,
-          params: { teamId: mockTeamId },
+          params: { slug: mockSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
         })
       ).rejects.toThrow(Response);
     });
 
-    it("should throw error when team ID is missing", async () => {
+    it("should throw error when team slug is missing", async () => {
       await expect(
         loader({
           request: mockRequest,
@@ -199,7 +203,11 @@ describe("Player Teams Edit Integration", () => {
     });
 
     it("should throw error when team is not found", async () => {
-      mockTeamRepo.findTeamWithHeroes.mockResolvedValue({
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: null,
+        error: null,
+      });
+      mockTeamRepo.findTeamByOldSlug.mockResolvedValue({
         data: null,
         error: null,
       });
@@ -207,7 +215,7 @@ describe("Player Teams Edit Integration", () => {
       await expect(
         loader({
           request: mockRequest,
-          params: { teamId: mockTeamId },
+          params: { slug: mockSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
         })
@@ -219,10 +227,11 @@ describe("Player Teams Edit Integration", () => {
         id: mockTeamId,
         user_id: "user1",
         name: "Arena Team",
+        slug: mockSlug,
         heroes: [],
       };
 
-      mockTeamRepo.findTeamWithHeroes.mockResolvedValue({
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
         data: mockTeam,
         error: null,
       });
@@ -234,7 +243,7 @@ describe("Player Teams Edit Integration", () => {
       await expect(
         loader({
           request: mockRequest,
-          params: { teamId: mockTeamId },
+          params: { slug: mockSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
         })
@@ -253,18 +262,23 @@ describe("Player Teams Edit Integration", () => {
         id: mockTeamId,
         user_id: "user1",
         name: "Updated Arena Team",
+        slug: mockSlug,
         description: "Updated description",
         created_at: "2024-01-15T10:00:00Z",
         updated_at: "2024-01-17T10:00:00Z",
       };
 
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: { ...mockUpdatedTeam, heroes: [] },
+        error: null,
+      });
       mockTeamRepo.updateTeam.mockResolvedValue({
         data: mockUpdatedTeam,
         error: null,
       });
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -273,7 +287,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -302,18 +316,23 @@ describe("Player Teams Edit Integration", () => {
         id: mockTeamId,
         user_id: "user1",
         name: "Team 1",
+        slug: mockSlug,
         description: null,
         created_at: "2024-01-15T10:00:00Z",
         updated_at: "2024-01-17T10:00:00Z",
       };
 
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: { ...mockUpdatedTeam, heroes: [] },
+        error: null,
+      });
       mockTeamRepo.updateTeam.mockResolvedValue({
         data: mockUpdatedTeam,
         error: null,
       });
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -322,7 +341,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -339,6 +358,18 @@ describe("Player Teams Edit Integration", () => {
     });
 
     it("should return error when team update fails", async () => {
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       const formData = new FormData();
       formData.append("action", "updateTeam");
       formData.append("name", "Updated Team");
@@ -349,7 +380,7 @@ describe("Player Teams Edit Integration", () => {
       });
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -358,7 +389,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -373,10 +404,22 @@ describe("Player Teams Edit Integration", () => {
       formData.append("action", "addHero");
       formData.append("heroSlug", "aurora");
 
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       mockTeamRepo.addHeroToTeam.mockResolvedValue({ data: {}, error: null });
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -385,7 +428,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -400,11 +443,23 @@ describe("Player Teams Edit Integration", () => {
     });
 
     it("should return error when hero slug is missing", async () => {
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       const formData = new FormData();
       formData.append("action", "addHero");
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -413,7 +468,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -422,6 +477,18 @@ describe("Player Teams Edit Integration", () => {
     });
 
     it("should return error when adding hero fails", async () => {
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       const formData = new FormData();
       formData.append("action", "addHero");
       formData.append("heroSlug", "aurora");
@@ -432,7 +499,7 @@ describe("Player Teams Edit Integration", () => {
       });
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -441,7 +508,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -452,6 +519,18 @@ describe("Player Teams Edit Integration", () => {
 
   describe("action - removeHero", () => {
     it("should remove hero from team successfully", async () => {
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       const formData = new FormData();
       formData.append("action", "removeHero");
       formData.append("heroSlug", "astaroth");
@@ -462,7 +541,7 @@ describe("Player Teams Edit Integration", () => {
       });
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -471,7 +550,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -486,11 +565,23 @@ describe("Player Teams Edit Integration", () => {
     });
 
     it("should return error when hero slug is missing", async () => {
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       const formData = new FormData();
       formData.append("action", "removeHero");
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -499,7 +590,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -508,6 +599,18 @@ describe("Player Teams Edit Integration", () => {
     });
 
     it("should return error when removing hero fails", async () => {
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       const formData = new FormData();
       formData.append("action", "removeHero");
       formData.append("heroSlug", "astaroth");
@@ -518,7 +621,7 @@ describe("Player Teams Edit Integration", () => {
       });
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -527,7 +630,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });
@@ -538,11 +641,23 @@ describe("Player Teams Edit Integration", () => {
 
   describe("action - invalid action", () => {
     it("should return error for invalid action", async () => {
+      const mockTeam = {
+        id: mockTeamId,
+        user_id: "user1",
+        name: "Arena Team",
+        slug: mockSlug,
+        heroes: [],
+      };
+
+      mockTeamRepo.findTeamBySlug.mockResolvedValue({
+        data: mockTeam,
+        error: null,
+      });
       const formData = new FormData();
       formData.append("action", "invalidAction");
 
       const actionRequest = new Request(
-        `http://localhost:3000/player/teams/${mockTeamId}`,
+        `http://localhost:3000/player/teams/${mockSlug}/edit`,
         {
           method: "POST",
           body: formData,
@@ -551,7 +666,7 @@ describe("Player Teams Edit Integration", () => {
 
       const result = await action({
         request: actionRequest,
-        params: { teamId: mockTeamId },
+        params: { slug: mockSlug },
         context: { VALUE_FROM_NETLIFY: "test" },
         unstable_pattern: "",
       });

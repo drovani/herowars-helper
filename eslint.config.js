@@ -136,7 +136,7 @@ export default [
     },
   },
   {
-    files: ["**/*.test.ts", "**/*.test.tsx"],
+    files: ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**/*.ts", "**/__tests__/**/*.tsx"],
     languageOptions: {
       globals: {
         describe: "readonly",

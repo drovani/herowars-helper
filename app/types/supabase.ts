@@ -57,6 +57,7 @@ export type Database = {
           crafting_gold_cost: number | null
           guild_activity_points: number
           hero_level_required: number | null
+          image_hash: string | null
           name: string
           quality: Database["public"]["Enums"]["equipment_quality"]
           sell_value: number
@@ -70,6 +71,7 @@ export type Database = {
           crafting_gold_cost?: number | null
           guild_activity_points: number
           hero_level_required?: number | null
+          image_hash?: string | null
           name: string
           quality: Database["public"]["Enums"]["equipment_quality"]
           sell_value: number
@@ -83,6 +85,7 @@ export type Database = {
           crafting_gold_cost?: number | null
           guild_activity_points?: number
           hero_level_required?: number | null
+          image_hash?: string | null
           name?: string
           quality?: Database["public"]["Enums"]["equipment_quality"]
           sell_value?: number
@@ -421,7 +424,9 @@ export type Database = {
           equipment_level: number
           hero_slug: string
           id: string
+          level: number | null
           stars: number
+          talisman_level: number | null
           updated_at: string | null
           user_id: string
         }
@@ -430,7 +435,9 @@ export type Database = {
           equipment_level?: number
           hero_slug: string
           id?: string
+          level?: number | null
           stars?: number
+          talisman_level?: number | null
           updated_at?: string | null
           user_id: string
         }
@@ -439,7 +446,9 @@ export type Database = {
           equipment_level?: number
           hero_slug?: string
           id?: string
+          level?: number | null
           stars?: number
+          talisman_level?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -533,6 +542,17 @@ export type Database = {
         }[]
       }
       has_editorial_role: { Args: never; Returns: boolean }
+      update_hero_with_relations: {
+        Args: {
+          p_artifacts: Json
+          p_equipment: Json
+          p_glyphs: Json
+          p_hero_data: Json
+          p_hero_slug: string
+          p_skins: Json
+        }
+        Returns: Json
+      }
       update_policies_with_summary: {
         Args: { operations?: string[]; table_names: string[] }
         Returns: {

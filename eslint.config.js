@@ -41,6 +41,11 @@ export default [
       import: importPlugin,
       "@typescript-eslint": tseslint.plugin,
     },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     rules: {
       // Code quality & correctness rules only
       // (formatting rules are handled by Prettier)

@@ -4,7 +4,7 @@
 import { useState } from "react";
 
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+import { useFetcher, useNavigate } from "react-router";
 
 import type { Route } from "./+types/new";
 
@@ -12,10 +12,9 @@ import { TeamBuilder } from "~/components/team/TeamBuilder";
 import { Button } from "~/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "~/components/ui/card";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
@@ -175,7 +174,7 @@ export default function TeamNew({ loaderData }: Route.ComponentProps) {
   const teamHeroes = selectedHeroes
     .map((heroSlug) => {
       const playerHero = userHeroes.find(
-        (ph: any) => ph.hero_slug === heroSlug
+        (ph) => ph.hero_slug === heroSlug
       );
       if (!playerHero) return null;
 

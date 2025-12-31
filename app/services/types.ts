@@ -13,7 +13,7 @@ export interface DataService<TRecord, TMutation> {
 }
 
 export const ChangeTrackedSchema = z.object({
-  updated_on: z.string().date(),
+  updated_on: z.iso.date(),
 });
 
 export interface IChangeTracked extends z.infer<typeof ChangeTrackedSchema> {}

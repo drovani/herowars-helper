@@ -36,14 +36,14 @@ import {
   filterHeroes,
   parseFilterParams,
   createFilterParams,
+  type HeroFilters as HeroFiltersType,
 } from "~/lib/hero-filtering";
-import type { HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
 import {
   sortHeroes,
   parseSortParams,
   createSortParams,
+  type SortOptions,
 } from "~/lib/hero-sorting";
-import type { SortOptions } from "~/lib/hero-sorting";
 import {
   sortHeroRecords,
   transformCompleteHeroToRecord,

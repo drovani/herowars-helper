@@ -1,8 +1,7 @@
 import type { ReactElement } from "react";
 
 import type { User } from "@supabase/supabase-js";
-import type { RenderOptions } from "@testing-library/react";
-import { render as rtlRender } from "@testing-library/react";
+import { render as rtlRender, type RenderOptions } from "@testing-library/react";
 import { BrowserRouter } from "react-router";
 
 // Mock user for testing
@@ -45,5 +44,12 @@ export function renderWithRouter(ui: ReactElement, options?: RenderOptions) {
   });
 }
 
-// Re-export everything from testing library
-export * from "@testing-library/react";
+// Re-export commonly used functions from testing library for convenience
+export {
+  fireEvent,
+  waitFor,
+  screen,
+  within,
+  cleanup,
+  act,
+} from "@testing-library/react";

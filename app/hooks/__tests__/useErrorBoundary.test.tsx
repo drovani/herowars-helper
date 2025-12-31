@@ -1,8 +1,7 @@
 // ABOUTME: Tests for useErrorBoundary hook
 // ABOUTME: Covers manual error triggering and async error handling
 
-import { renderHook, waitFor } from "@testing-library/react";
-import { render } from "@testing-library/react";
+import { renderHook, render } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 
 import { useErrorBoundary, useAsyncErrorBoundary } from "../useErrorBoundary";

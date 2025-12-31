@@ -1,12 +1,13 @@
 import { createRequestListener } from "@mjackson/node-fetch-server";
 import express from "express";
+import log from "loglevel";
 
 const PORT = Number.parseInt(process.env.PORT || "3000");
 
 const app = express();
 app.disable("x-powered-by");
 
-console.log("Starting development server");
+log.info("Starting development server");
 const viteDevServer = await import("vite").then((vite) =>
   vite.createServer({
     server: { middlewareMode: true },
@@ -30,5 +31,5 @@ app.use(async (req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  log.info(`Server is running on http://localhost:${PORT}`);
 });

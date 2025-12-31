@@ -10,7 +10,6 @@ import { Button } from "~/components/ui/button";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "~/components/ui/card";
@@ -114,27 +113,27 @@ export default function SkinCalculator() {
                     </p>
                 </div>
 
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
-                <div className="flex items-center space-x-2">
-                    <Checkbox
-                        id="unlock-cost"
-                        checked={includeUnlockCost}
-                        onCheckedChange={(checked) => setIncludeUnlockCost(checked === true)}
-                    />
-                    <Label
-                        htmlFor="unlock-cost"
-                        className="text-sm font-normal cursor-pointer"
-                    >
-                        Include unlock cost for "Other" skins (5,000 stones)
-                    </Label>
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox
+                            id="unlock-cost"
+                            checked={includeUnlockCost}
+                            onCheckedChange={(checked) => setIncludeUnlockCost(checked === true)}
+                        />
+                        <Label
+                            htmlFor="unlock-cost"
+                            className="text-sm font-normal cursor-pointer"
+                        >
+                            Include unlock cost for "Other" skins (5,000 stones)
+                        </Label>
+                    </div>
+                    <Button variant="outline" onClick={handleClear} className="w-full md:w-auto">
+                        Clear
+                    </Button>
                 </div>
-                <Button variant="outline" onClick={handleClear} className="w-full md:w-auto">
-                    Clear
-                </Button>
-            </div>
 
-            <div className="border rounded-lg">
-                <div className="overflow-x-auto">
+                <div className="border rounded-lg">
+                    <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="border-b">
@@ -202,53 +201,53 @@ export default function SkinCalculator() {
                     </div>
                 </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">How It Works</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm text-muted-foreground">
-                    <p>
-                        Each hero skin can be upgraded from level 1 to 60 using skin stones
-                        obtained from skin stone chests.
-                    </p>
-                    <div className="space-y-1">
-                        <p className="font-medium text-foreground">Chest Yields:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-2">
-                            <li>Small Skin Stone Chests: 10 stones</li>
-                            <li>Large Skin Stone Chests: 150 stones</li>
-                        </ul>
-                    </div>
-                    <div className="space-y-1">
-                        <p className="font-medium text-foreground">Skin Types:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-2">
-                            <li>
-                                <strong>Default:</strong> Increases hero's main stat (30,825
-                                stones total)
-                            </li>
-                            <li>
-                                <strong>Champion:</strong> Available in Guild War Shop (54,330
-                                stones total)
-                            </li>
-                            <li>
-                                <strong>Winter:</strong> Available during Winterfest event
-                                (53,412 stones total)
-                            </li>
-                            <li>
-                                <strong>Other skins:</strong> Include Beach, Stellar,
-                                Masquerade, Celestial, Cybernetic, and more (50,410 stones each
-                                to level, plus 5,000 to unlock)
-                            </li>
-                        </ul>
-                    </div>
-                    <p className="text-xs italic">
-                        Note: This calculator shows stones needed to level from current
-                        level to 60. Use the checkbox above to optionally include the 5,000
-                        stone unlock cost for "Other" skin types if you haven't unlocked
-                        them yet.
-                    </p>
-                </CardContent>
-            </Card>
-        </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg">How It Works</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-sm text-muted-foreground">
+                        <p>
+                            Each hero skin can be upgraded from level 1 to 60 using skin stones
+                            obtained from skin stone chests.
+                        </p>
+                        <div className="space-y-1">
+                            <p className="font-medium text-foreground">Chest Yields:</p>
+                            <ul className="list-disc list-inside space-y-1 ml-2">
+                                <li>Small Skin Stone Chests: 10 stones</li>
+                                <li>Large Skin Stone Chests: 150 stones</li>
+                            </ul>
+                        </div>
+                        <div className="space-y-1">
+                            <p className="font-medium text-foreground">Skin Types:</p>
+                            <ul className="list-disc list-inside space-y-1 ml-2">
+                                <li>
+                                    <strong>Default:</strong> Increases hero's main stat (30,825
+                                    stones total)
+                                </li>
+                                <li>
+                                    <strong>Champion:</strong> Available in Guild War Shop (54,330
+                                    stones total)
+                                </li>
+                                <li>
+                                    <strong>Winter:</strong> Available during Winterfest event
+                                    (53,412 stones total)
+                                </li>
+                                <li>
+                                    <strong>Other skins:</strong> Include Beach, Stellar,
+                                    Masquerade, Celestial, Cybernetic, and more (50,410 stones each
+                                    to level, plus 5,000 to unlock)
+                                </li>
+                            </ul>
+                        </div>
+                        <p className="text-xs italic">
+                            Note: This calculator shows stones needed to level from current
+                            level to 60. Use the checkbox above to optionally include the 5,000
+                            stone unlock cost for "Other" skin types if you haven't unlocked
+                            them yet.
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         </FormErrorBoundary>
     );
 }

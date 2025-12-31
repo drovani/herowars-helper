@@ -33,14 +33,14 @@ export default function HeroItemsCompact({
   equipment,
   className,
 }: HeroItemsProps) {
-  if (items === undefined) return <div />;
-
-  const ranks = Object.keys(items);
+  // Call all hooks before any conditional returns
+  const ranks = items ? Object.keys(items) : [];
   const [selectedRank, setSelectedRank] = useState<ItemRank>(
-    ranks[0] as ItemRank
+    (ranks[0] as ItemRank) || ("white" as ItemRank)
   );
 
-  const getEquipment = (slug: string) => equipment.find((e) => e.slug === slug);
+  // Early return checks must come after all hook calls
+  if (items === undefined) return <div />;
 
   if (!items || Object.keys(items).length === 0) {
     return (
@@ -50,6 +50,8 @@ export default function HeroItemsCompact({
       </div>
     );
   }
+
+  const getEquipment = (slug: string) => equipment.find((e) => e.slug === slug);
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>

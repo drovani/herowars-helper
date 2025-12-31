@@ -48,8 +48,9 @@ export function Layout(props: Route.ComponentProps) {
     setIsHydrated(true);
   }, []);
 
-  // Always call useMatches hook - React requires hooks to be called in consistent order
-  let matches: UIMatch<
+  // Always call useMatches hook unconditionally - React requires hooks to be called in consistent order
+  // Router context errors are handled in the ErrorBoundary instead of try-catch
+  const matches = useMatches() as UIMatch<
     unknown,
     {
       breadcrumb?: (
@@ -58,24 +59,7 @@ export function Layout(props: Route.ComponentProps) {
         | { href?: string; title: string }
         | { href?: string; title: string }[];
     }
-  >[] = [];
-
-  try {
-    matches = useMatches() as UIMatch<
-      unknown,
-      {
-        breadcrumb?: (
-          matches: UIMatch<unknown, unknown>
-        ) =>
-          | { href?: string; title: string }
-          | { href?: string; title: string }[];
-      }
-    >[];
-  } catch (error) {
-    // Fallback to empty matches if router context is not available
-    console.warn("Router context not available during hydration:", error);
-    matches = [];
-  }
+  >[];
 
   // Only process breadcrumbs after hydration to prevent rendering issues
   let breadcrumbs: UIMatch<

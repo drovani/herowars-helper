@@ -200,6 +200,7 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
+  // Call all hooks before any conditional returns
   const [teamName, setTeamName] = useState(team.name);
   const [teamDescription, setTeamDescription] = useState(
     team.description || ""
@@ -210,6 +211,19 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
   const [removingHeroSlug, setRemovingHeroSlug] = useState<string | undefined>(
     undefined
   );
+
+  // Reset loading states when fetcher completes
+  useEffect(() => {
+    if (fetcher.state === "idle") {
+      setAddingHeroSlug(undefined);
+      setRemovingHeroSlug(undefined);
+
+      // Handle redirect if slug changed
+      if (fetcher.data?.redirectTo) {
+        navigate(fetcher.data.redirectTo);
+      }
+    }
+  }, [fetcher.state, fetcher.data, navigate]);
 
   // Show loading state while auth is initializing
   if (authLoading) {
@@ -264,19 +278,6 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
   const handleGoBack = () => {
     navigate("/player/teams");
   };
-
-  // Reset loading states when fetcher completes
-  useEffect(() => {
-    if (fetcher.state === "idle") {
-      setAddingHeroSlug(undefined);
-      setRemovingHeroSlug(undefined);
-
-      // Handle redirect if slug changed
-      if (fetcher.data?.redirectTo) {
-        navigate(fetcher.data.redirectTo);
-      }
-    }
-  }, [fetcher.state, fetcher.data, navigate]);
 
   const isSubmitting = fetcher.state === "submitting";
   const hasChanges =

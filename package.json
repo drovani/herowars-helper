@@ -17,8 +17,11 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "lint": "prettier . --write --ignore-path .gitignore",
-    "checks": "react-router typegen && tsc && vitest run"
+    "format": "prettier . --check --ignore-path .gitignore",
+    "format:write": "prettier . --write --ignore-path .gitignore",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "checks": "react-router typegen && tsc && eslint . && prettier . --check --ignore-path .gitignore && vitest run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -66,6 +69,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@mjackson/node-fetch-server": "0.7.0",
     "@react-router/dev": "^7.11.0",
     "@testing-library/jest-dom": "^6.9.1",
@@ -79,6 +83,11 @@
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
     "cross-env": "^10.1.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "express": "^5.2.1",
     "jsdom": "^27.3.0",
     "msw": "^2.12.4",
@@ -90,6 +99,7 @@
     "tailwindcss": "^4.1.18",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.51.0",
     "vite": "^7.3.0",
     "vite-plugin-devtools-json": "^1.0.0",
     "vite-tsconfig-paths": "^6.0.3",

@@ -5,8 +5,7 @@ import { XIcon } from "lucide-react";
 
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import type { HeroFilters } from "~/lib/hero-filtering";
-import { getActiveFilterLabels, removeFilter } from "~/lib/hero-filtering";
+import { getActiveFilterLabels, removeFilter, type HeroFilters } from "~/lib/hero-filtering";
 
 interface ActiveFilterChipsProps {
   filters: HeroFilters;

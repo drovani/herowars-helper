@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 
-import { ChevronDownIcon, FilterIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon, FilterIcon } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -24,8 +24,7 @@ import {
   Stats,
 } from "~/data/ReadonlyArrays";
 import { useIsMobile } from "~/hooks/useIsMobile";
-import type { HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
-import { countActiveFilters } from "~/lib/hero-filtering";
+import { countActiveFilters, type HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
 
 interface HeroFiltersProps {
   filters: HeroFiltersType;

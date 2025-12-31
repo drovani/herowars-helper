@@ -23,7 +23,6 @@ vi.mock("loglevel", () => ({
 }));
 
 // Import after mocks are set up
-import "~/__tests__/mocks/admin";
 import { loader, action } from "./users";
 
 import { createClient } from "~/lib/supabase/client";

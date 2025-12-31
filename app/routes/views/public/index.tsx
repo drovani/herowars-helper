@@ -1,5 +1,8 @@
 import { CheckCircle2, Clock, Sparkles } from "lucide-react";
 import { Link } from "react-router";
+
+import type { Route } from "./+types/index";
+
 import { Badge } from "~/components/ui/badge";
 import {
   Card,
@@ -10,7 +13,6 @@ import {
 } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { recentUpdates } from "~/data/recent-updates";
-import type { Route } from "./+types/index";
 
 export const loader = async (_: Route.LoaderArgs) => {
   const currentDate = new Date();

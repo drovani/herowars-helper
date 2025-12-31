@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+
+import log from "loglevel";
 import { type UseFormReturn } from "react-hook-form";
 import { data, useNavigate, useSubmit } from "react-router";
 import { ZodError } from "zod";
-import log from "loglevel";
+
 import CampaignSourcesField from "~/components/equipment-form/CampaignSourcesField";
 import CraftingField from "~/components/equipment-form/CraftingField";
 import StatsField from "~/components/equipment-form/StatsField";

@@ -1,15 +1,18 @@
 // ABOUTME: HeroCollectionCard component displays individual hero in user's collection
 // ABOUTME: Shows hero details with editable star rating and equipment levels
-import { UserRoundMinusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { UserRoundMinusIcon } from "lucide-react";
 import { Link } from "react-router";
+
+import { EquipmentLevels } from "./EquipmentLevels";
+import { StarRating } from "./StarRating";
+
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
-import { EquipmentLevels } from "./EquipmentLevels";
-import { StarRating } from "./StarRating";
 
 interface HeroCollectionCardProps {
   playerHero: PlayerHeroWithDetails;

@@ -2,8 +2,13 @@
 // ABOUTME: Allows users to create new teams with name, description, and hero selection
 
 import { useState } from "react";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
+import { useFetcher, useLoaderData, useNavigate } from "react-router";
+
+import type { Route } from "./+types/new";
+
+import { TeamBuilder } from "~/components/team/TeamBuilder";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -12,16 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { TeamBuilder } from "~/components/team/TeamBuilder";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
-import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { Route } from "./+types/new";
+import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
+
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);

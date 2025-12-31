@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { data, redirect, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import { ZodError } from "zod";
+
+import type { Route } from "./+types/slug.edit";
+
 import EquipmentForm from "~/components/EquipmentForm";
 import {
   EquipmentMutationSchema,
@@ -10,7 +13,6 @@ import {
 } from "~/data/equipment.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [

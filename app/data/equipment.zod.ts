@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { generateSlug } from "~/lib/utils";
 export const EQUIPMENT_QUALITIES = [
   "gray",

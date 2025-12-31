@@ -1,12 +1,14 @@
 // ABOUTME: Tests for equipment import functionality in admin setup page
 // ABOUTME: Tests equipment data transformation, import process, and error handling
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import log from "loglevel";
-import { action } from "../setup";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { createMockSupabaseClient } from "../../../../__tests__/mocks/supabase";
+import { action } from "../setup";
+
 import type { EquipmentRecord } from "~/data/equipment.zod";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 
 // Mock the data import
 vi.mock("~/data/equipments.json", () => ({
@@ -61,7 +63,7 @@ vi.mock("~/lib/supabase/client", () => ({
 
 // Mock the MissionRepository to avoid import issues
 vi.mock("~/repositories/MissionRepository", () => ({
-  MissionRepository: vi.fn().mockImplementation(function() { return {
+  MissionRepository: vi.fn().mockImplementation(() => { return {
     initializeMissionData: vi.fn().mockResolvedValue({
       data: { chapters: [], missions: [] },
       error: null,
@@ -75,7 +77,7 @@ vi.mock("~/repositories/MissionRepository", () => ({
 
 // Mock the HeroRepository to avoid import issues
 vi.mock("~/repositories/HeroRepository", () => ({
-  HeroRepository: vi.fn().mockImplementation(function() { return {
+  HeroRepository: vi.fn().mockImplementation(() => { return {
     initializeFromJSON: vi.fn().mockResolvedValue({
       data: { heroes: [] },
       error: null,

@@ -1,7 +1,8 @@
 // ABOUTME: Tests for AddAllHeroesButton component covering rendering, interactions, and state management
 // ABOUTME: Uses modern component testing patterns with render result and comprehensive user interaction testing
-import { describe, it, expect, vi } from "vitest";
 import { render, fireEvent, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+
 import { AddAllHeroesButton } from "../AddAllHeroesButton";
 
 describe("AddAllHeroesButton", () => {

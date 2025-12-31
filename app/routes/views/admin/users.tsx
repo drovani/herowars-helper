@@ -1,9 +1,10 @@
+import { Suspense, useEffect, useState } from "react";
+
 import {
   UserRoundCheckIcon,
   UserRoundMinusIcon,
   UserRoundXIcon,
 } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
 import {
   Await,
   redirect,
@@ -11,6 +12,7 @@ import {
   useLoaderData,
   useRevalidator,
 } from "react-router";
+
 import { AdminUserTableSkeleton } from "~/components/skeletons/AdminUserTableSkeleton";
 import {
   AlertDialog,
@@ -695,7 +697,7 @@ function AdminUsersContent({
                         <TableCell>
                           {updatingUserId === user.id ? (
                             <div className="flex items-center">
-                              <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2"></div>
+                              <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2" />
                               <span className="text-sm">Updating...</span>
                             </div>
                           ) : !hasServiceRole ? (
@@ -777,7 +779,7 @@ function AdminUsersContent({
                       {/* Status Loading */}
                       {updatingUserId === user.id && (
                         <div className="flex items-center mb-3 p-2 bg-gray-50 rounded">
-                          <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2"></div>
+                          <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2" />
                           <span className="text-sm">Updating...</span>
                         </div>
                       )}

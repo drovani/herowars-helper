@@ -1,5 +1,3 @@
-import { AuthError, type User } from "@supabase/supabase-js";
-import log from "loglevel";
 import {
   createContext,
   useCallback,
@@ -8,6 +6,10 @@ import {
   useMemo,
   useState,
 } from "react";
+
+import { type AuthError, type User } from "@supabase/supabase-js";
+import log from "loglevel";
+
 import { createClient } from "~/lib/supabase/client";
 interface AuthContextType {
   user: {
@@ -81,7 +83,7 @@ export function AuthProvider({
       email: supabaseUser.email || "anonymousshroom@example.com",
       name: fullName,
       roles: appMetadata.roles || ["user"],
-      fallback: fallback,
+      fallback,
       avatar: userMetadata.avatar_url || "/images/heroes/mushy-and-shroom.png",
     };
   }, [supabaseUser]);
@@ -115,7 +117,7 @@ export function AuthProvider({
   const value = useMemo(
     () => ({
       user: transformedUser,
-      isAuthenticated: !!supabaseUser,
+      isAuthenticated: Boolean(supabaseUser),
       isLoading: loading,
       signOut,
       updateProfile,

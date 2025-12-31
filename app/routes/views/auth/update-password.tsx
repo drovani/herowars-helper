@@ -1,4 +1,5 @@
 import { type ActionFunctionArgs, redirect, useFetcher } from "react-router";
+
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -20,7 +21,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return { error: "Password is required" };
   }
 
-  const { error } = await supabase.auth.updateUser({ password: password });
+  const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
     return {

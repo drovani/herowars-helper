@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import type { ZodSchema } from "zod";
-import { createClient } from "~/lib/supabase/client";
+
 import type {
   BulkOptions,
   CreateInput,
@@ -15,6 +15,8 @@ import type {
   TableName,
   UpdateInput,
 } from "./types";
+
+import { createClient } from "~/lib/supabase/client";
 
 export abstract class BaseRepository<T extends TableName> {
   protected supabase: SupabaseClient<any>;

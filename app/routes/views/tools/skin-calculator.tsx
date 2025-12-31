@@ -2,6 +2,10 @@
 // ABOUTME: Allows users to input current skin levels and see chest requirements to reach level 60
 
 import { useState } from "react";
+
+import type { Route } from "./+types/skin-calculator";
+
+import { FormErrorBoundary } from "~/components/forms/FormErrorBoundary";
 import { Button } from "~/components/ui/button";
 import {
     Card,
@@ -11,7 +15,6 @@ import {
     CardTitle,
 } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
-import { FormErrorBoundary } from "~/components/forms/FormErrorBoundary";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { formatTitle } from "~/config/site";
@@ -20,7 +23,7 @@ import {
     getOtherSkinNames,
     type SkinType,
 } from "~/lib/skin-calculations";
-import type { Route } from "./+types/skin-calculator";
+
 
 export const meta = (_: Route.MetaArgs) => {
     return [
@@ -183,7 +186,7 @@ export default function SkinCalculator() {
                                 })}
                                 <tr className="border-t-2 font-bold bg-primary/5">
                                     <td className="p-2">Total</td>
-                                    <td className="p-2"></td>
+                                    <td className="p-2" />
                                     <td className="p-2 text-right font-mono">
                                         {totals.stones.toLocaleString()}
                                     </td>

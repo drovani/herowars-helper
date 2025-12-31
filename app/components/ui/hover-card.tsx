@@ -1,6 +1,8 @@
+import { forwardRef } from "react";
+
 import { Content, Root, Trigger } from "@radix-ui/react-hover-card";
 import { type ClassValue } from "clsx";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const HoverCard = Root;

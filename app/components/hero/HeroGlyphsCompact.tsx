@@ -1,11 +1,13 @@
 import type { ClassValue } from "clsx";
-import type { HeroRecord } from "~/data/hero.zod";
-import { cn, generateSlug } from "~/lib/utils";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "../ui/hover-card";
+
+import type { HeroRecord } from "~/data/hero.zod";
+import { cn, generateSlug } from "~/lib/utils";
 
 interface HeroGlyphsCompactProps {
   glyphs: HeroRecord["glyphs"];

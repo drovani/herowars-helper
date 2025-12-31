@@ -1,4 +1,11 @@
 import {
+  forwardRef,
+  type ComponentPropsWithoutRef,
+  type ComponentRef,
+  type HTMLAttributes,
+} from "react";
+
+import {
   Close,
   Content,
   Description,
@@ -10,12 +17,7 @@ import {
 } from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { XIcon } from "lucide-react";
-import {
-  forwardRef,
-  type ComponentPropsWithoutRef,
-  type ComponentRef,
-  type HTMLAttributes,
-} from "react";
+
 import { cn } from "~/lib/utils";
 
 const Sheet = Root;

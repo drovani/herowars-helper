@@ -1,5 +1,7 @@
-import { cva, type VariantProps } from "class-variance-authority";
 import { useState } from "react";
+
+import { cva, type VariantProps } from "class-variance-authority";
+
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { cn, getEquipmentImageUrl } from "~/lib/utils";
 

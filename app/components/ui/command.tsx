@@ -1,9 +1,11 @@
-import { type DialogProps } from "@radix-ui/react-dialog";
-import { Command as CommandPrimitive } from "cmdk";
-import { Search } from "lucide-react";
 import { forwardRef } from "react";
 
+import { type DialogProps } from "@radix-ui/react-dialog";
 import { type ClassValue } from "clsx";
+import { Command as CommandPrimitive } from "cmdk";
+import { Search } from "lucide-react";
+
+
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import { cn } from "~/lib/utils";
 
@@ -44,7 +46,7 @@ const CommandInput = forwardRef<
     className?: ClassValue;
   }
 >(({ className, ...props }, ref) => (
-  // eslint-disable-next-line react/no-unknown-property -- temp fix while using wrong cmdk package
+   
   <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
     <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     <CommandPrimitive.Input

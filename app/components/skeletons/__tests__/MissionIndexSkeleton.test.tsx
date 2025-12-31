@@ -2,8 +2,10 @@
 // ABOUTME: Tests the mission index page skeleton used for mission catalog loading states
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { MissionIndexSkeleton } from "../MissionIndexSkeleton";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("MissionIndexSkeleton", () => {
   describe("basic rendering", () => {

@@ -1,8 +1,8 @@
 // ABOUTME: Skeleton placeholder for equipment detail page with stats and relationship sections
 // ABOUTME: Matches equipment detail page layout with header, stats, crafting recipe, and hero relationship sections
 
-import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 interface EquipmentDetailSkeletonProps {

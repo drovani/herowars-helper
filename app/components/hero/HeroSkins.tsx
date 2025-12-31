@@ -1,12 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import type { HeroRecord } from "~/data/hero.zod";
-import { generateSlug } from "~/lib/utils";
-import SkinImage from "./SkinImage";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "../ui/hover-card";
+
+import SkinImage from "./SkinImage";
+
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import type { HeroRecord } from "~/data/hero.zod";
+import { generateSlug } from "~/lib/utils";
 
 interface HeroSkinsProps {
   skins: HeroRecord["skins"];

@@ -1,7 +1,8 @@
+import type { ReactElement } from "react";
+
 import type { User } from "@supabase/supabase-js";
 import type { RenderOptions } from "@testing-library/react";
 import { render as rtlRender } from "@testing-library/react";
-import type { ReactElement } from "react";
 import { BrowserRouter } from "react-router";
 
 // Mock user for testing

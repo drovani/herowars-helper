@@ -1,11 +1,12 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { mockAdminUser, mockUser } from "~/__tests__/utils/test-utils";
+
+import { mockAdminUserOperations } from "~/__tests__/mocks/admin";
+import { mockSupabaseClient } from "~/__tests__/mocks/supabase";
 import {
   createMockRequest,
   createFormData,
 } from "~/__tests__/utils/http-utils";
-import { mockAdminUserOperations } from "~/__tests__/mocks/admin";
-import { mockSupabaseClient } from "~/__tests__/mocks/supabase";
+import { mockAdminUser, mockUser } from "~/__tests__/utils/test-utils";
 
 // Mock the auth module
 vi.mock("~/lib/supabase/client", () => ({
@@ -24,6 +25,7 @@ vi.mock("loglevel", () => ({
 // Import after mocks are set up
 import "~/__tests__/mocks/admin";
 import { loader, action } from "./users";
+
 import { createClient } from "~/lib/supabase/client";
 
 describe("API Admin Users Route", () => {

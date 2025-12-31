@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+
 import log from "loglevel";
 import {
   AlertCircle,
@@ -7,8 +9,10 @@ import {
   RefreshCwIcon,
   XCircle,
 } from "lucide-react";
-import { useMemo, useState } from "react";
 import { data, useFetcher, useNavigate } from "react-router";
+
+import type { Route } from "./+types/setup";
+
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -36,7 +40,6 @@ import { createAdminClient } from "~/lib/supabase/admin-client";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/setup";
 
 // Helper function to extract chapters from missions data
 function extractChapters(data: typeof chaptersAndMissionsData) {
@@ -1267,7 +1270,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
 export function ErrorBoundary(props: Route.ErrorBoundaryProps) {
   return (
     <div className="space-y-4">
-      <Alert variant={"destructive"}>
+      <Alert variant="destructive">
         <AlertCircle className="size-4" />
         <AlertTitle>Error in this route</AlertTitle>
         <AlertDescription>

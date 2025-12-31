@@ -1,15 +1,14 @@
+import type React from "react";
+import type { ReactElement } from "react";
+
 import {
   DropdownMenu,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { LoaderCircle, MoreHorizontalIcon } from "lucide-react";
-import type React from "react";
-import type { ReactElement } from "react";
 import { Link, NavLink } from "react-router";
-import { useAuth } from "~/contexts/AuthContext";
-import { navigation } from "~/data/navigation";
-import { cn } from "~/lib/utils";
+
 import { SiteUserMenu } from "./SiteUserMenu";
 import { DropdownMenuContent } from "./ui/dropdown-menu";
 import {
@@ -26,6 +25,10 @@ import {
   SidebarRail,
   useSidebar,
 } from "./ui/sidebar";
+
+import { useAuth } from "~/contexts/AuthContext";
+import { navigation } from "~/data/navigation";
+import { cn } from "~/lib/utils";
 
 export function SiteSidebar({
   settings,

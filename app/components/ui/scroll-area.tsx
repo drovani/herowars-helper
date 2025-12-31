@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 import {
   Corner,
   Root,
@@ -5,7 +7,6 @@ import {
   ScrollAreaThumb,
   Viewport,
 } from "@radix-ui/react-scroll-area";
-import { forwardRef } from "react";
 
 import { cn } from "~/lib/utils";
 

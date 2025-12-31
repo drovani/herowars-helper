@@ -1,14 +1,17 @@
-import { MapIcon } from "lucide-react";
 import { useEffect } from "react";
+
+import { MapIcon } from "lucide-react";
 import { Link, useNavigate, type UIMatch } from "react-router";
+
+import type { Route } from "./+types/slug";
+
 import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
 import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug, getHeroImageUrl } from "~/lib/utils";
-import { MissionRepository } from "~/repositories/MissionRepository";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import type { Route } from "./+types/slug";
+import { MissionRepository } from "~/repositories/MissionRepository";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   if (!data) {

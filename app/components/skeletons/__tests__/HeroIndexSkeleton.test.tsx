@@ -2,8 +2,10 @@
 // ABOUTME: Tests responsive layout, search filters, and mode toggle functionality
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { HeroIndexSkeleton } from "../HeroIndexSkeleton";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("HeroIndexSkeleton", () => {
   describe("cards mode rendering", () => {

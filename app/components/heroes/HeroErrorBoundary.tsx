@@ -2,10 +2,12 @@
 // ABOUTME: Provides user-friendly fallback UI for hero data loading and form errors
 
 import { type ReactNode } from "react";
+
+import { UsersRoundIcon } from "lucide-react";
+
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { UsersRoundIcon } from "lucide-react";
 
 interface HeroErrorBoundaryProps {
   children: ReactNode;

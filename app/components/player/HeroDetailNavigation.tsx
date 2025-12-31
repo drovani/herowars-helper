@@ -8,6 +8,7 @@ import {
   ZapIcon,
   SparklesIcon,
 } from "lucide-react";
+
 import { cn } from "~/lib/utils";
 
 interface HeroDetailNavigationProps {

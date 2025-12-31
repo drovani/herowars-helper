@@ -2,12 +2,14 @@
 // ABOUTME: Tests transformation of JSON hero data to database format
 
 import { describe, it, expect } from "vitest";
+
 import {
   transformHeroData,
   createHeroWithDataFromJson,
   validateMigrationResult,
   createProgressCallback,
 } from "../hero-data-migration";
+
 import type { HeroRecord } from "~/data/hero.zod";
 
 describe("hero-data-migration", () => {

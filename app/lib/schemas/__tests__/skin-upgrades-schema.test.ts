@@ -2,7 +2,9 @@
 // ABOUTME: Ensures Zod schema correctly validates skin-upgrades.json structure
 
 import { describe, expect, it } from "vitest";
+
 import { validateSkinUpgradesData, SkinUpgradesDataSchema } from "../skin-upgrades-schema";
+
 import skinData from "~/data/skin-upgrades.json";
 
 describe("SkinUpgradesDataSchema", () => {

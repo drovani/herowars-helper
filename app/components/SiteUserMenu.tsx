@@ -1,5 +1,8 @@
 import { BadgeCheck, ChevronsUpDown, LogInIcon, LogOut } from "lucide-react";
 import { Link } from "react-router";
+
+import { Button } from "./ui/button";
+
 import { LoginModal } from "~/components/auth/LoginModal";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import {
@@ -18,7 +21,6 @@ import {
   useSidebar,
 } from "~/components/ui/sidebar";
 import { useAuth } from "~/contexts/AuthContext";
-import { Button } from "./ui/button";
 
 export function SiteUserMenu() {
   const { isMobile, state } = useSidebar();
@@ -98,7 +100,7 @@ export function SiteUserMenu() {
       ) : state === "expanded" ? (
         <LoginModal>
           <Button
-            variant={"outline"}
+            variant="outline"
             className="w-full flex items-center gap-2"
           >
             <LogInIcon />

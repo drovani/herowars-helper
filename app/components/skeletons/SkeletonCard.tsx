@@ -1,8 +1,8 @@
 // ABOUTME: Skeleton placeholder for card-based content with configurable dimensions and layout options
 // ABOUTME: Provides consistent skeleton loading experience that matches shadcn/ui Card component structure
 
-import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 interface SkeletonCardProps {

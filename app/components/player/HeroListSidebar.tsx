@@ -1,6 +1,9 @@
 // ABOUTME: HeroListSidebar component displays scrollable list of heroes for navigation
 // ABOUTME: Includes search, filtering, and sorting controls for managing hero collection view
 import { SearchIcon } from "lucide-react";
+
+import { HeroListItem } from "./HeroListItem";
+
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import {
@@ -12,7 +15,6 @@ import {
 } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
-import { HeroListItem } from "./HeroListItem";
 
 interface HeroListSidebarProps {
   heroes: PlayerHeroWithDetails[];

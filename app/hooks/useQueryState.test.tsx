@@ -1,6 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { describe, expect, it, vi } from "vitest";
+
 import { useQueryState } from "./useQueryState";
 
 // Mock component for testing

@@ -1,6 +1,8 @@
-import { PlusCircleIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
+import { PlusCircleIcon, XIcon } from "lucide-react";
 import { type UseFormReturn } from "react-hook-form";
+
 import {
   Accordion,
   AccordionContent,

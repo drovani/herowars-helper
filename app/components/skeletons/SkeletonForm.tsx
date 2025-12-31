@@ -1,8 +1,8 @@
 // ABOUTME: Skeleton placeholder for form sections with configurable fields and layout
 // ABOUTME: Supports input fields, labels, buttons, and section headers for complex form loading states
 
-import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 interface SkeletonFormProps {

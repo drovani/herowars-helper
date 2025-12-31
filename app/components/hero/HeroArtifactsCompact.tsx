@@ -1,11 +1,12 @@
 import type { ClassValue } from "clsx";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "~/components/ui/hover-card";
 import type { HeroRecord } from "~/data/hero.zod";
-import { ArtifactBookStats, HeroMainStat } from "~/data/ReadonlyArrays";
+import { ArtifactBookStats, type HeroMainStat } from "~/data/ReadonlyArrays";
 import { cn, generateSlug } from "~/lib/utils";
 
 interface HeroArtifactsProps {

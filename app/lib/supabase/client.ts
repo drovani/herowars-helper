@@ -4,6 +4,7 @@ import {
   parseCookieHeader,
   serializeCookieHeader,
 } from "@supabase/ssr";
+
 import type { Database } from "~/types/supabase";
 
 export function createClient(request: Request | null = null) {

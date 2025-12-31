@@ -2,8 +2,10 @@
 // ABOUTME: Tests the core skeleton card building block used throughout the application
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { SkeletonCard } from "../SkeletonCard";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("SkeletonCard", () => {
   describe("basic rendering", () => {

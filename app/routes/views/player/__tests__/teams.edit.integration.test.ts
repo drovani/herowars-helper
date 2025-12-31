@@ -1,14 +1,16 @@
 // ABOUTME: Integration tests for team editing page covering team updates and hero management
 // ABOUTME: Tests authentication flows and team modification operations
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { loader, action } from "../teams/$slug.edit";
-import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
+
 import { createMockSupabaseClient } from "~//__tests__/mocks/supabase";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
+import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
+import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
 
 // Mock the repositories
 vi.mock("~/repositories/PlayerTeamRepository");
@@ -53,9 +55,9 @@ describe("Player Teams Edit Integration", () => {
       findWithHeroDetails: vi.fn(),
     };
 
-    vi.mocked(PlayerTeamRepository).mockImplementation(function() { return mockTeamRepo; });
+    vi.mocked(PlayerTeamRepository).mockImplementation(() => { return mockTeamRepo; });
     vi.mocked(PlayerHeroRepository).mockImplementation(
-      function() { return mockPlayerHeroRepo; }
+      () => { return mockPlayerHeroRepo; }
     );
 
     // Mock auth utilities

@@ -2,12 +2,14 @@
 // ABOUTME: Validates sorting by name, order_rank, and direction toggles
 
 import { describe, test, expect } from "vitest";
+
 import {
   sortHeroes,
   parseSortParams,
   createSortParams,
   toggleSortDirection,
 } from "../hero-sorting";
+
 import type { Hero } from "~/repositories/types";
 
 describe("hero-sorting", () => {

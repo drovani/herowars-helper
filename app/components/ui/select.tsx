@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 import {
   Content,
   Group,
@@ -17,7 +19,7 @@ import {
 } from "@radix-ui/react-select";
 import { type ClassValue } from "clsx";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const Select = Root;

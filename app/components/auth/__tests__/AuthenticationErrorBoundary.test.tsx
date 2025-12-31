@@ -2,8 +2,9 @@
 // ABOUTME: Covers auth-specific error handling, session expiration, and permission errors
 
 import { render, fireEvent } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import log from "loglevel";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { AuthenticationErrorBoundary } from "../AuthenticationErrorBoundary";
 
 // Component that throws different types of auth errors

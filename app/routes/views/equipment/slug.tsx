@@ -1,7 +1,11 @@
-import { AlertCircle, ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { Suspense, useEffect } from "react";
+
+import { AlertCircle, ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { Await, Link, useNavigate, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
+
+import type { Route } from "./+types/slug";
+
 import { RequireEditor } from "~/components/auth/RequireRole";
 import EquipmentImage from "~/components/EquipmentImage";
 import { EquipmentDetailSkeleton } from "~/components/skeletons/EquipmentDetailSkeleton";
@@ -24,7 +28,6 @@ import { generateSlug } from "~/lib/utils";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/slug";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   const equipmentName = data?.basicEquipment?.name || "Equipment Details";
@@ -456,7 +459,7 @@ function EquipmentContent({
                         >
                           <EquipmentImage
                             equipment={item.equipment}
-                            size={"xs"}
+                            size="xs"
                           />
                           <span className="group-hover:underline">
                             {item.equipment.name}
@@ -522,7 +525,7 @@ function EquipmentContent({
                         >
                           <EquipmentImage
                             equipment={item.equipment}
-                            size={"xs"}
+                            size="xs"
                           />
                           <span className="group-hover:underline">
                             {item.equipment.name}

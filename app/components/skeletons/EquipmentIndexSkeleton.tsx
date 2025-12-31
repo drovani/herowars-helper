@@ -1,10 +1,12 @@
 // ABOUTME: Skeleton placeholder for equipment index page with equipment card grid layout
 // ABOUTME: Matches equipment card dimensions and responsive grid behavior with quality color placeholders
 
-import { Skeleton } from "~/components/ui/skeleton";
-import { Card, CardHeader } from "~/components/ui/card";
-import { cn } from "~/lib/utils";
 import { memo } from "react";
+
+import { Card, CardHeader } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
+import { cn } from "~/lib/utils";
+
 
 interface EquipmentIndexSkeletonProps {
   /** Additional CSS classes to apply to the skeleton container */

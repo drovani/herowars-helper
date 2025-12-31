@@ -1,5 +1,6 @@
-import { Content, Provider, Root, Trigger } from "@radix-ui/react-tooltip";
 import { forwardRef } from "react";
+
+import { Content, Provider, Root, Trigger } from "@radix-ui/react-tooltip";
 
 import { cn } from "~/lib/utils";
 

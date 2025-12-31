@@ -2,10 +2,12 @@
 // ABOUTME: Provides user-friendly fallback UI that preserves user input and offers retry
 
 import { type ReactNode } from "react";
+
+import { FileWarningIcon } from "lucide-react";
+
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { FileWarningIcon } from "lucide-react";
 
 interface FormErrorBoundaryProps {
   children: ReactNode;

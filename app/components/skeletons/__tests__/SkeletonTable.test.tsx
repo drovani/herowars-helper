@@ -2,8 +2,10 @@
 // ABOUTME: Tests the table skeleton building block used for data table loading states
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { SkeletonTable } from "../SkeletonTable";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("SkeletonTable", () => {
   describe("basic rendering", () => {

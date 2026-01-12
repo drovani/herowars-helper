@@ -19,10 +19,10 @@ export function RequireRole({
   const { hasRole } = useRoles();
 
   if (hasRole(roles)) {
-    return <>{children}</>;
+    return children;
   }
 
-  return <>{fallback}</>;
+  return fallback;
 }
 
 /**

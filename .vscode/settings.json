@@ -2,17 +2,24 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "json.schemas": [
     {
-      "fileMatch": ["equipments.json"],
+      "fileMatch": [
+        "equipments.json"
+      ],
       "url": "./app/data/equipment-schema.json"
     },
     {
-      "fileMatch": ["missions.json"],
+      "fileMatch": [
+        "missions.json"
+      ],
       "url": "./app/data/missions-schema.json"
     },
     {
-      "fileMatch": ["heroes.json"],
+      "fileMatch": [
+        "heroes.json"
+      ],
       "url": "./app/data/hero-schema.json"
     }
   ],
-  "explorer.excludeGitIgnore": true
+  "explorer.excludeGitIgnore": true,
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

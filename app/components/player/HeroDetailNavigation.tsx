@@ -1,12 +1,12 @@
 // ABOUTME: HeroDetailNavigation component provides navigation between different hero detail views
 // ABOUTME: Adapts between desktop vertical navigation and mobile bottom sticky navigation
 import {
-  UserIcon,
-  SwordIcon,
-  ShirtIcon,
   GemIcon,
-  ZapIcon,
+  ShirtIcon,
   SparklesIcon,
+  SwordIcon,
+  UserIcon,
+  ZapIcon,
 } from "lucide-react";
 
 import { cn } from "~/lib/utils";
@@ -76,7 +76,7 @@ export function HeroDetailNavigation({
                   : "text-gray-600 hover:text-gray-900"
               )}
             >
-              <Icon className="size-5 flex-shrink-0" />
+              <Icon className="size-5 shrink-0" />
               <span className="text-xs font-medium truncate">{label}</span>
             </button>
           ))}

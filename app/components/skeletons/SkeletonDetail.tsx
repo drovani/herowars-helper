@@ -82,7 +82,7 @@ export function SkeletonDetail({
               )}
             >
               {showImage && (
-                <Skeleton className="size-32 rounded-lg flex-shrink-0" />
+                <Skeleton className="size-32 rounded-lg shrink-0" />
               )}
               <div className="flex-1 space-y-3">
                 <Skeleton className="h-8 w-48" />

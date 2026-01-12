@@ -28,14 +28,14 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import {
+  ArtifactBookOptions,
+  AttackType,
   HeroClass,
   HeroFaction,
   HeroMainStat,
-  AttackType,
+  Stats,
   StoneSource,
   WeaponTeamBuff,
-  ArtifactBookOptions,
-  Stats,
 } from "~/data/ReadonlyArrays";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import {
@@ -136,7 +136,7 @@ function DesktopFilters({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-96" align="start">
-        <ScrollArea className="h-[500px]">
+        <ScrollArea className="h-125">
           <FilterContent
             filters={filters}
             onFiltersChange={onFiltersChange}

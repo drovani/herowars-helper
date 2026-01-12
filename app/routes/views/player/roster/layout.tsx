@@ -2,7 +2,7 @@
 // ABOUTME: Provides sidebar navigation and detail view container with responsive layout
 import { useState } from "react";
 
-import { Outlet, useFetcher, useParams, useNavigate } from "react-router";
+import { Outlet, useFetcher, useNavigate, useParams } from "react-router";
 
 import type { Route } from "./+types/layout";
 
@@ -246,7 +246,7 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
       {/* Desktop Layout */}
       <div className="hidden lg:flex w-full">
         {/* Hero List Sidebar */}
-        <div className="w-80 flex-shrink-0">
+        <div className="w-80 shrink-0">
           <HeroListSidebar
             heroes={collection}
             selectedHeroSlug={selectedHeroSlug}
@@ -279,7 +279,7 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
 
           {/* Navigation */}
           {selectedHero && (
-            <div className="w-20 flex-shrink-0">
+            <div className="w-20 shrink-0">
               <HeroDetailNavigation
                 activeView={activeView}
                 onViewChange={handleViewChange}
@@ -299,11 +299,10 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
                 <button
                   key={playerHero.id}
                   onClick={() => handleSelectHero(playerHero.hero_slug)}
-                  className={`flex-shrink-0 p-2 rounded-lg border-2 transition-colors ${
-                    playerHero.hero_slug === selectedHeroSlug
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
+                  className={`shrink-0 p-2 rounded-lg border-2 transition-colors ${playerHero.hero_slug === selectedHeroSlug
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                    }`}
                 >
                   <img
                     src={`/images/heroes/${playerHero.hero.slug}.png`}

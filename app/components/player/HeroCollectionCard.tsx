@@ -91,7 +91,7 @@ export function HeroCollectionCard({
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-4">
           {/* Hero Image and Name */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Link to={`/heroes/${hero.slug}`} viewTransition>
               <img
                 src={`/images/heroes/${hero.slug}.png`}
@@ -112,7 +112,7 @@ export function HeroCollectionCard({
             size="sm"
             onClick={onRemoveHero}
             disabled={isRemoving || isUpdating}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+            className="text-red-500 hover:text-red-700 hover:bg-red-50 shrink-0"
             title="Remove Hero from Collection"
           >
             <UserRoundMinusIcon className="size-4" />

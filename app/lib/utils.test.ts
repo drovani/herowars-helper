@@ -163,8 +163,10 @@ describe("Utility Functions", () => {
     });
 
     it("handles conditional classes", () => {
-      expect(cn("base", true && "active")).toBe("base active");
-      expect(cn("base", false && "hidden")).toBe("base");
+      const isActive = true;
+      const isHidden = false;
+      expect(cn("base", isActive && "active")).toBe("base active");
+      expect(cn("base", isHidden && "hidden")).toBe("base");
     });
 
     it("handles overlapping Tailwind classes", () => {

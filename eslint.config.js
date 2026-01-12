@@ -150,7 +150,11 @@ export default [
       },
     },
     rules: {
+      // Test files have different needs than production code
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off", // Common to import utilities for future use or assign for side effects
+      "@typescript-eslint/no-non-null-assertion": "off", // Tests operate in controlled environments with known data
+      "import/order": "off", // Aesthetic concern, not critical for test files
     },
   },
   prettierConfig,

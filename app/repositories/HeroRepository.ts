@@ -1,7 +1,7 @@
 // ABOUTME: Repository for managing hero data in the Hero Wars Helper application
 // ABOUTME: Extends BaseRepository to provide hero-specific query methods and complex relationship loading
 
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import { z } from "zod";
 
@@ -23,6 +23,66 @@ import type {
   HeroWithSkins,
   RepositoryResult,
 } from "./types";
+import type { Database } from "~/types/supabase";
+
+// Type for raw hero data from Supabase with joined relationships
+interface RawHeroWithRelationships extends Hero {
+  hero_artifact?: HeroArtifact[];
+  hero_skin?: HeroSkin[];
+  hero_glyph?: HeroGlyph[];
+  hero_equipment_slot?: HeroEquipmentSlot[];
+}
+
+// Type for JSON artifact data from heroes.json
+interface ArtifactsJsonData {
+  weapon?: {
+    name: string;
+    team_buff: string;
+    team_buff_secondary?: string;
+  };
+  book?: string;
+  ring?: boolean;
+}
+
+// Type for JSON skin data from heroes.json
+interface SkinJsonData {
+  name: string;
+  stat: string;
+  has_plus?: boolean;
+  source?: string;
+}
+
+// Type for JSON hero data from heroes.json
+interface HeroJsonData {
+  slug: string;
+  name: string;
+  class: string;
+  faction: string;
+  main_stat: string;
+  attack_type?: string[];
+  stone_source?: string[];
+  order_rank?: number;
+  artifacts?: ArtifactsJsonData;
+  skins?: SkinJsonData[];
+  glyphs?: (string | null)[];
+  items?: Record<string, (string | null)[]>;
+}
+
+// Type for initialization errors
+interface InitializationError {
+  inputData: unknown;
+  message: string;
+  code?: string;
+  batchIndex: number;
+  details?: unknown;
+}
+
+// Type for skipped items during initialization
+interface SkippedItem {
+  slug: string;
+  name: string;
+  reason: string;
+}
 
 // Hero validation schema for the main hero table
 const HeroSchema = z.object({
@@ -38,7 +98,9 @@ const HeroSchema = z.object({
 });
 
 export class HeroRepository extends BaseRepository<"hero"> {
-  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
+  constructor(
+    requestOrSupabase: Request | SupabaseClient<Database> | null = null
+  ) {
     if (
       requestOrSupabase &&
       typeof requestOrSupabase === "object" &&
@@ -396,23 +458,27 @@ export class HeroRepository extends BaseRepository<"hero"> {
         };
       }
 
-      const completeHeroes: CompleteHero[] = data.map((hero: any) => ({
-        ...hero,
-        artifacts: hero.hero_artifact || [],
-        skins: hero.hero_skin || [],
-        glyphs: (hero.hero_glyph || []).sort(
-          (a: HeroGlyph, b: HeroGlyph) => a.position - b.position
-        ),
-        equipmentSlots: hero.hero_equipment_slot || [],
-      }));
+      const completeHeroes: CompleteHero[] = data.map(
+        (hero: RawHeroWithRelationships) => ({
+          ...hero,
+          artifacts: hero.hero_artifact || [],
+          skins: hero.hero_skin || [],
+          glyphs: (hero.hero_glyph || []).sort(
+            (a: HeroGlyph, b: HeroGlyph) => a.position - b.position
+          ),
+          equipmentSlots: hero.hero_equipment_slot || [],
+        })
+      );
 
       // Clean up raw relationship data
-      completeHeroes.forEach((hero: any) => {
-        delete hero.hero_artifact;
-        delete hero.hero_skin;
-        delete hero.hero_glyph;
-        delete hero.hero_equipment_slot;
-      });
+      completeHeroes.forEach(
+        (hero: CompleteHero & Partial<RawHeroWithRelationships>) => {
+          delete hero.hero_artifact;
+          delete hero.hero_skin;
+          delete hero.hero_glyph;
+          delete hero.hero_equipment_slot;
+        }
+      );
 
       return {
         data: completeHeroes,
@@ -477,14 +543,16 @@ export class HeroRepository extends BaseRepository<"hero"> {
         equipmentSlots: data.hero_equipment_slot || [],
       };
 
-      // Remove the raw relationship data
-      delete (completeHero as any).hero_artifact;
-      delete (completeHero as any).hero_skin;
-      delete (completeHero as any).hero_glyph;
-      delete (completeHero as any).hero_equipment_slot;
+      // Remove the raw relationship data - cast to a type that includes those properties
+      const heroWithRaw = completeHero as CompleteHero &
+        Partial<RawHeroWithRelationships>;
+      delete heroWithRaw.hero_artifact;
+      delete heroWithRaw.hero_skin;
+      delete heroWithRaw.hero_glyph;
+      delete heroWithRaw.hero_equipment_slot;
 
       return {
-        data: completeHero,
+        data: heroWithRaw as CompleteHero,
         error: null,
       };
     } catch (error) {
@@ -526,15 +594,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         };
       }
 
-      const heroWithArtifacts: HeroWithArtifacts = {
+      const heroWithArtifacts = {
         ...data,
         artifacts: data.hero_artifact || [],
-      };
+      } as HeroWithArtifacts & { hero_artifact?: HeroArtifact[] };
 
-      delete (heroWithArtifacts as any).hero_artifact;
+      delete heroWithArtifacts.hero_artifact;
 
       return {
-        data: heroWithArtifacts,
+        data: heroWithArtifacts as HeroWithArtifacts,
         error: null,
       };
     } catch (error) {
@@ -574,15 +642,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         };
       }
 
-      const heroWithSkins: HeroWithSkins = {
+      const heroWithSkins = {
         ...data,
         skins: data.hero_skin || [],
-      };
+      } as HeroWithSkins & { hero_skin?: HeroSkin[] };
 
-      delete (heroWithSkins as any).hero_skin;
+      delete heroWithSkins.hero_skin;
 
       return {
-        data: heroWithSkins,
+        data: heroWithSkins as HeroWithSkins,
         error: null,
       };
     } catch (error) {
@@ -621,17 +689,17 @@ export class HeroRepository extends BaseRepository<"hero"> {
         };
       }
 
-      const heroWithGlyphs: HeroWithGlyphs = {
+      const heroWithGlyphs = {
         ...data,
         glyphs: (data.hero_glyph || []).sort(
           (a: HeroGlyph, b: HeroGlyph) => a.position - b.position
         ),
-      };
+      } as HeroWithGlyphs & { hero_glyph?: HeroGlyph[] };
 
-      delete (heroWithGlyphs as any).hero_glyph;
+      delete heroWithGlyphs.hero_glyph;
 
       return {
-        data: heroWithGlyphs,
+        data: heroWithGlyphs as HeroWithGlyphs,
         error: null,
       };
     } catch (error) {
@@ -673,15 +741,15 @@ export class HeroRepository extends BaseRepository<"hero"> {
         };
       }
 
-      const heroWithEquipment: HeroWithEquipment = {
+      const heroWithEquipment = {
         ...data,
         equipmentSlots: data.hero_equipment_slot || [],
-      };
+      } as HeroWithEquipment & { hero_equipment_slot?: HeroEquipmentSlot[] };
 
-      delete (heroWithEquipment as any).hero_equipment_slot;
+      delete heroWithEquipment.hero_equipment_slot;
 
       return {
-        data: heroWithEquipment,
+        data: heroWithEquipment as HeroWithEquipment,
         error: null,
       };
     } catch (error) {
@@ -727,13 +795,26 @@ export class HeroRepository extends BaseRepository<"hero"> {
       }
 
       // Extract unique heroes (remove duplicates if hero uses same equipment in multiple slots)
-      const uniqueHeroes = data.reduce((acc: Hero[], current: any) => {
-        if (!acc.find((h) => h.slug === current.slug)) {
-          const { hero_equipment_slot, ...hero } = current;
-          acc.push(hero as Hero);
+      const uniqueHeroes: Hero[] = [];
+      const seenSlugs = new Set<string>();
+      for (const row of data) {
+        if (!seenSlugs.has(row.slug)) {
+          seenSlugs.add(row.slug);
+          // Extract only the hero fields, excluding the joined relationship data
+          const hero: Hero = {
+            slug: row.slug,
+            name: row.name,
+            class: row.class,
+            faction: row.faction,
+            main_stat: row.main_stat,
+            attack_type: row.attack_type,
+            stone_source: row.stone_source,
+            order_rank: row.order_rank,
+            updated_on: row.updated_on,
+          };
+          uniqueHeroes.push(hero);
         }
-        return acc;
-      }, []);
+      }
 
       return {
         data: uniqueHeroes,
@@ -944,7 +1025,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
   ): Promise<RepositoryResult<HeroArtifact[]>> {
     const { batchSize = 100, onProgress } = options;
     const results: HeroArtifact[] = [];
-    const errors: any[] = [];
+    const errors: PostgrestError[] = [];
 
     try {
       for (let i = 0; i < artifacts.length; i += batchSize) {
@@ -1003,7 +1084,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
   ): Promise<RepositoryResult<HeroSkin[]>> {
     const { batchSize = 100, onProgress } = options;
     const results: HeroSkin[] = [];
-    const errors: any[] = [];
+    const errors: PostgrestError[] = [];
 
     try {
       for (let i = 0; i < skins.length; i += batchSize) {
@@ -1059,7 +1140,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
   ): Promise<RepositoryResult<HeroGlyph[]>> {
     const { batchSize = 100, onProgress } = options;
     const results: HeroGlyph[] = [];
-    const errors: any[] = [];
+    const errors: PostgrestError[] = [];
 
     try {
       for (let i = 0; i < glyphs.length; i += batchSize) {
@@ -1115,7 +1196,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
   ): Promise<RepositoryResult<HeroEquipmentSlot[]>> {
     const { batchSize = 100, onProgress } = options;
     const results: HeroEquipmentSlot[] = [];
-    const errors: any[] = [];
+    const errors: PostgrestError[] = [];
 
     try {
       for (let i = 0; i < equipmentSlots.length; i += batchSize) {
@@ -1264,7 +1345,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * console.log(`Created ${result.data?.heroes.length} heroes`);
    */
   async initializeFromJSON(
-    heroesJsonData: any[]
+    heroesJsonData: HeroJsonData[]
   ): Promise<RepositoryResult<{ heroes: CompleteHero[] }>> {
     try {
       log.info(
@@ -1272,8 +1353,8 @@ export class HeroRepository extends BaseRepository<"hero"> {
       );
 
       const createdHeroes: CompleteHero[] = [];
-      const errors: any[] = [];
-      const skipped: any[] = [];
+      const errors: InitializationError[] = [];
+      const skipped: SkippedItem[] = [];
 
       // Process each hero individually for better error handling
       for (let i = 0; i < heroesJsonData.length; i++) {
@@ -1375,7 +1456,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
    */
   private transformJsonArtifacts(
     heroSlug: string,
-    artifacts: any
+    artifacts: ArtifactsJsonData | undefined
   ): CreateInput<"hero_artifact">[] {
     const artifactData: CreateInput<"hero_artifact">[] = [];
 
@@ -1424,13 +1505,13 @@ export class HeroRepository extends BaseRepository<"hero"> {
    */
   private transformJsonSkins(
     heroSlug: string,
-    skins: any
+    skins: SkinJsonData[] | undefined
   ): CreateInput<"hero_skin">[] {
     if (!skins || !Array.isArray(skins)) {
       return [];
     }
 
-    return skins.map((skin: any) => ({
+    return skins.map((skin: SkinJsonData) => ({
       hero_slug: heroSlug,
       name: skin.name,
       stat_type: skin.stat,
@@ -1448,7 +1529,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
    */
   private transformJsonGlyphs(
     heroSlug: string,
-    glyphs: any
+    glyphs: (string | null)[] | undefined
   ): CreateInput<"hero_glyph">[] {
     if (!glyphs || !Array.isArray(glyphs)) {
       return [];
@@ -1478,7 +1559,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
    */
   private transformJsonEquipmentSlots(
     heroSlug: string,
-    items: any
+    items: Record<string, (string | null)[]> | undefined
   ): CreateInput<"hero_equipment_slot">[] {
     if (!items) {
       return [];
@@ -1525,7 +1606,7 @@ export class HeroRepository extends BaseRepository<"hero"> {
    * };
    * const dbFormat = repository.transformJsonHeroToDatabase(jsonHero);
    */
-  private transformJsonHeroToDatabase(heroJson: any): CreateHeroWithData {
+  private transformJsonHeroToDatabase(heroJson: HeroJsonData): CreateHeroWithData {
     const createData: CreateHeroWithData = {
       hero: {
         slug: heroJson.slug,

@@ -212,6 +212,9 @@ describe("Hero Transformations", () => {
         faction: "invalid-faction",
         main_stat: "invalid-stat",
         attack_type: ["invalid-type"],
+        order_rank: 0,
+        stone_source: [],
+        updated_on: null,
       };
 
       const result = transformBasicHeroToRecord(hero);

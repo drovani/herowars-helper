@@ -36,6 +36,9 @@ import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
+import type { HeroRecord } from "~/data/hero.zod";
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { MissionRecord } from "~/data/mission.zod";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   const heroName = loaderData?.basicHero?.name || "Hero Details";
@@ -91,9 +94,7 @@ async function loadDetailedHeroData(
   const hero = transformCompleteHeroToRecord(heroResult.data);
 
   const missionRepo = new MissionRepository(request);
-  const campaignSourcesResult = await missionRepo.findByHeroSlug(
-    params.slug
-  );
+  const campaignSourcesResult = await missionRepo.findByHeroSlug(params.slug);
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });
@@ -229,11 +230,11 @@ function HeroContent({
   equipmentUsed,
   isInCollection,
 }: {
-  hero: any;
-  prevHero: any;
-  nextHero: any;
-  campaignSources: any[];
-  equipmentUsed: any[];
+  hero: HeroRecord;
+  prevHero: HeroRecord | null;
+  nextHero: HeroRecord | null;
+  campaignSources: MissionRecord[];
+  equipmentUsed: EquipmentRecord[];
   isInCollection: boolean;
 }) {
   const navigate = useNavigate();
@@ -420,16 +421,19 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
   return (
     <Suspense
       fallback={
-        <HeroDetailSkeleton showAddButton={Boolean(user)} showEditButton={true} />
+        <HeroDetailSkeleton
+          showAddButton={Boolean(user)}
+          showEditButton={true}
+        />
       }
     >
       <Await resolve={loaderData?.detailedData}>
         {(data: {
-          hero: any;
-          prevHero: any;
-          nextHero: any;
-          campaignSources: any[];
-          equipmentUsed: any[];
+          hero: HeroRecord;
+          prevHero: HeroRecord | null;
+          nextHero: HeroRecord | null;
+          campaignSources: MissionRecord[];
+          equipmentUsed: EquipmentRecord[];
           isInCollection: boolean;
         }) => (
           <HeroContent

@@ -25,7 +25,10 @@ import {
 import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { PlayerHeroWithDetails } from "~/repositories/types";
+import type {
+  PlayerHeroWithDetails,
+  UpdatePlayerHeroInput,
+} from "~/repositories/types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
@@ -90,7 +93,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
 
     case "updateHero": {
-      const updates: any = {};
+      const updates: UpdatePlayerHeroInput = {};
       const stars = formData.get("stars");
       const equipmentLevel = formData.get("equipmentLevel");
       const level = formData.get("level");
@@ -106,7 +109,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
       const result = await playerHeroRepo.updateHeroProgress(
         user.id,
         heroSlug,
-        updates
+        updates,
       );
 
       if (result.error) {
@@ -119,7 +122,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     case "removeHero": {
       const result = await playerHeroRepo.removeFromCollection(
         user.id,
-        heroSlug
+        heroSlug,
       );
 
       if (result.error) {

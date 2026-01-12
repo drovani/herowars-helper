@@ -15,7 +15,7 @@ export function createAdminClient() {
 
   if (!supabaseUrl || !supabaseServiceKey) {
     throw new Error(
-      "Missing required environment variables: VITE_SUPABASE_DATABASE_URL and SUPABASE_SERVICE_ROLE_KEY"
+      "Missing required environment variables: VITE_SUPABASE_DATABASE_URL and SUPABASE_SERVICE_ROLE_KEY",
     );
   }
 
@@ -54,7 +54,7 @@ export const adminUserOperations = {
     // Validate roles - only admin and editor are assignable, user is default
     const invalidRoles = roles.filter(
       (role) =>
-        !ASSIGNABLE_ROLES.includes(role as AssignableRole) && role !== "user"
+        !ASSIGNABLE_ROLES.includes(role as AssignableRole) && role !== "user",
     );
     if (invalidRoles.length > 0) {
       throw new Error(`Invalid roles: ${invalidRoles.join(", ")}`);
@@ -129,7 +129,7 @@ export const adminUserOperations = {
   async createUser(
     email: string,
     password: string,
-    userData?: { full_name?: string; roles?: string[] }
+    userData?: { full_name?: string; roles?: string[] },
   ) {
     const supabase = createAdminClient();
 
@@ -176,7 +176,7 @@ export const adminUserOperations = {
       }
 
       throw new Error(
-        `Failed to create user: ${error.message || "Database error"}`
+        `Failed to create user: ${error.message || "Database error"}`,
       );
     }
 
@@ -197,13 +197,15 @@ export const adminUserOperations = {
     }
 
     const user = userData.user;
+    // The Supabase User type doesn't expose banned_until but it exists on the actual object
+    const userWithBan = user as typeof user & { banned_until?: string };
     const isDisabled =
-      (user as any).banned_until &&
-      new Date((user as any).banned_until) > new Date();
+      userWithBan.banned_until &&
+      new Date(userWithBan.banned_until) > new Date();
 
     if (!isDisabled) {
       throw new Error(
-        "Can only delete disabled users. Please disable the user first."
+        "Can only delete disabled users. Please disable the user first.",
       );
     }
 

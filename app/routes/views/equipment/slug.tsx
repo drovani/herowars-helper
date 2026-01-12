@@ -20,6 +20,7 @@ import {
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
 import {
   transformBasicHeroToRecord,
   transformCompleteHeroToRecord,
@@ -28,6 +29,40 @@ import { generateSlug } from "~/lib/utils";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
+import type { Database } from "~/types/supabase";
+
+// Type for mission data from the database
+type Mission = Database["public"]["Tables"]["mission"]["Row"];
+
+// Type for equipment database row
+type EquipmentRow = Database["public"]["Tables"]["equipment"]["Row"];
+
+// Type for equipment navigation (previous/next)
+interface EquipmentNavigation {
+  slug: string;
+  name: string;
+}
+
+// Type for equipment with quantity (used in required items)
+interface EquipmentWithQuantity {
+  equipment: EquipmentRow | null;
+  quantity: number;
+}
+
+// Type for raw materials result
+interface RawMaterialsResult {
+  gold_cost: number;
+  required_items: Array<{
+    equipment: EquipmentRow;
+    quantity: number;
+  }>;
+}
+
+// Type for equipment that is a raw component
+interface RawComponentResult {
+  equipment: EquipmentRow;
+  totalQuantity: number;
+}
 
 export const meta = ({ data }: Route.MetaArgs) => {
   const equipmentName = data?.basicEquipment?.name || "Equipment Details";
@@ -207,7 +242,7 @@ const EquipmentItem = ({
   item,
   quantity,
 }: {
-  item: EquipmentRecord | null;
+  item: EquipmentRow | EquipmentRecord | null;
   quantity: number;
 }) => {
   if (!item) {
@@ -254,15 +289,15 @@ function EquipmentContent({
   nextEquipment,
   heroesUsingItem,
 }: {
-  equipment: any;
-  requiredEquipment: any[];
-  requiredEquipmentRaw: any;
-  requiredFor: any[];
-  rawComponentOf: any[];
-  missionSources: any[];
-  prevEquipment: any;
-  nextEquipment: any;
-  heroesUsingItem: any[];
+  equipment: EquipmentRecord;
+  requiredEquipment: EquipmentWithQuantity[];
+  requiredEquipmentRaw: RawMaterialsResult | null;
+  requiredFor: EquipmentWithQuantity[];
+  rawComponentOf: RawComponentResult[];
+  missionSources: Mission[];
+  prevEquipment: EquipmentNavigation | null;
+  nextEquipment: EquipmentNavigation | null;
+  heroesUsingItem: HeroRecord[];
 }) {
   const navigate = useNavigate();
 
@@ -429,7 +464,7 @@ function EquipmentContent({
               {requiredEquipment.map((requiredItem, index) => (
                 <EquipmentItem
                   key={requiredItem?.equipment?.slug || `missing-${index}`}
-                  item={requiredItem?.equipment as EquipmentRecord}
+                  item={requiredItem?.equipment || null}
                   quantity={requiredItem?.quantity || 0}
                 />
               ))}
@@ -450,10 +485,13 @@ function EquipmentContent({
                     </span>
                   </div>
                   <div className="inline-grid gap-x-2 gap-y-1 grid-cols-[min-content_auto]">
-                    {requiredEquipmentRaw.required_items.map((item: any) => {
+                    {requiredEquipmentRaw.required_items.map((item) => {
                       return [
-                        <span>{item.quantity}x</span>,
+                        <span key={`qty-${item.equipment.slug}`}>
+                          {item.quantity}x
+                        </span>,
                         <Link
+                          key={`link-${item.equipment.slug}`}
                           to={`/equipment/${item.equipment.slug}`}
                           className="flex items-center gap-1 group"
                         >
@@ -483,24 +521,27 @@ function EquipmentContent({
           <CardContent>
             {requiredFor.length > 0 && (
               <div className="flex gap-4 flex-wrap">
-                {requiredFor.map((item) => (
-                  <Link
-                    key={item.equipment.slug}
-                    to={`/equipment/${item.equipment.slug}`}
-                    className="flex items-center gap-2 group"
-                    viewTransition
-                  >
-                    <EquipmentImage equipment={item.equipment} size="sm" />
-                    <div>
-                      <div className="group-hover:underline whitespace-nowrap">
-                        {item.equipment.name}
-                      </div>
-                      <div className="text-sm text-muted-foreground whitespace-nowrap">
-                        Requires {item.quantity}x
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+                {requiredFor.map(
+                  (item) =>
+                    item.equipment && (
+                      <Link
+                        key={item.equipment.slug}
+                        to={`/equipment/${item.equipment.slug}`}
+                        className="flex items-center gap-2 group"
+                        viewTransition
+                      >
+                        <EquipmentImage equipment={item.equipment} size="sm" />
+                        <div>
+                          <div className="group-hover:underline whitespace-nowrap">
+                            {item.equipment.name}
+                          </div>
+                          <div className="text-sm text-muted-foreground whitespace-nowrap">
+                            Requires {item.quantity}x
+                          </div>
+                        </div>
+                      </Link>
+                    ),
+                )}
               </div>
             )}
             {rawComponentOf.length > 0 && (
@@ -625,15 +666,15 @@ export default function Equipment({ loaderData }: Route.ComponentProps) {
     <Suspense fallback={<EquipmentDetailSkeleton showEditButton={true} />}>
       <Await resolve={loaderData?.detailedData}>
         {(data: {
-          equipment: any;
-          requiredEquipment: any[];
-          requiredEquipmentRaw: any;
-          requiredFor: any[];
-          rawComponentOf: any[];
-          missionSources: any[];
-          prevEquipment: any;
-          nextEquipment: any;
-          heroesUsingItem: any[];
+          equipment: EquipmentRecord;
+          requiredEquipment: EquipmentWithQuantity[];
+          requiredEquipmentRaw: RawMaterialsResult | null;
+          requiredFor: EquipmentWithQuantity[];
+          rawComponentOf: RawComponentResult[];
+          missionSources: Mission[];
+          prevEquipment: EquipmentNavigation | null;
+          nextEquipment: EquipmentNavigation | null;
+          heroesUsingItem: HeroRecord[];
         }) => (
           <EquipmentContent
             equipment={data.equipment}

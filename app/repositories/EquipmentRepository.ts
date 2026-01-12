@@ -15,6 +15,33 @@ import {
 } from "~/data/equipment.zod";
 import type { Database } from "~/types/supabase";
 
+// Interface for the joined query result from findEquipmentThatRequires
+interface EquipmentRequiredItemWithEquipment {
+  base_slug: string;
+  quantity: number;
+  equipment: Database["public"]["Tables"]["equipment"]["Row"];
+}
+
+// Interface for building JSON records during transformation
+interface EquipmentRecordBuilder {
+  slug: string;
+  name: string;
+  quality: string;
+  type: string;
+  buy_value_gold: number;
+  buy_value_coin: number;
+  sell_value: number;
+  guild_activity_points: number;
+  updated_on: string;
+  campaign_sources?: string[];
+  stats?: Record<string, number>;
+  hero_level_required?: number;
+  crafting?: {
+    gold_cost: number;
+    required_items: Record<string, number>;
+  };
+}
+
 export interface EquipmentStat {
   equipment_slug: string;
   stat: string;
@@ -52,7 +79,9 @@ export interface EquipmentRequirements {
 }
 
 export class EquipmentRepository extends BaseRepository<"equipment"> {
-  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
+  constructor(
+    requestOrSupabase: Request | SupabaseClient<Database> | null = null,
+  ) {
     if (
       requestOrSupabase &&
       typeof requestOrSupabase === "object" &&
@@ -64,7 +93,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         EquipmentTableSchema,
         "equipment",
         EquipmentTableSchema,
-        "slug"
+        "slug",
       );
     } else {
       // Request or null provided (standard operation)
@@ -72,7 +101,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         "equipment",
         EquipmentTableSchema,
         requestOrSupabase as Request | null,
-        "slug"
+        "slug",
       );
     }
   }
@@ -85,7 +114,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findAll(
-    options: FindAllOptions = {}
+    options: FindAllOptions = {},
   ): Promise<
     RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
   > {
@@ -101,7 +130,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   // Equipment-specific query methods
   async findByQuality(
-    quality: Database["public"]["Enums"]["equipment_quality"]
+    quality: Database["public"]["Enums"]["equipment_quality"],
   ): Promise<
     RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
   > {
@@ -127,7 +156,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding equipment by quality ${quality}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -141,7 +170,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findByType(
-    type: Database["public"]["Enums"]["equipment_type"]
+    type: Database["public"]["Enums"]["equipment_type"],
   ): Promise<
     RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
   > {
@@ -178,7 +207,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findByCampaignSource(
-    missionSlug: string
+    missionSlug: string,
   ): Promise<
     RepositoryResult<Database["public"]["Tables"]["equipment"]["Row"][]>
   > {
@@ -192,7 +221,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       if (error) {
         log.error(
           `Error finding equipment by campaign source ${missionSlug}:`,
-          error
+          error,
         );
         return {
           data: null,
@@ -207,7 +236,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding equipment by campaign source ${missionSlug}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -271,7 +300,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       const { data, error } = await this.supabase
         .from("equipment_required_item")
         .select(
-          "base_slug, quantity, equipment!equipment_required_item_base_slug_fkey(*)"
+          "base_slug, quantity, equipment!equipment_required_item_base_slug_fkey(*)",
         )
         .eq("required_slug", slug);
 
@@ -285,7 +314,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
       // Extract equipment records with quantities from the joined data
       const equipmentWithQuantities =
-        data?.map((item: any) => ({
+        (data as EquipmentRequiredItemWithEquipment[] | null)?.map((item) => ({
           equipment: item.equipment,
           quantity: item.quantity,
         })) || [];
@@ -297,7 +326,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding equipment that requires ${slug}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -311,7 +340,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findEquipmentRequiredFor(
-    slugOrEquipment: string | Database["public"]["Tables"]["equipment"]["Row"]
+    slugOrEquipment: string | Database["public"]["Tables"]["equipment"]["Row"],
   ): Promise<
     RepositoryResult<
       Array<{
@@ -338,7 +367,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
       // Find required items for this equipment
       const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(
-        equipment.slug
+        equipment.slug,
       );
       if (requiredItemsResult.error) {
         return {
@@ -358,18 +387,18 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       const requiredItemsWithEquipment = await Promise.all(
         requiredItemsResult.data.map(async (requiredItem) => {
           const equipmentResult = await this.findById(
-            requiredItem.required_slug
+            requiredItem.required_slug,
           );
           return {
             equipment: equipmentResult.data!,
             quantity: requiredItem.quantity,
           };
-        })
+        }),
       );
 
       // Filter out any failed results
       const validRequiredItems = requiredItemsWithEquipment.filter(
-        (item) => item.equipment !== null
+        (item) => item.equipment !== null,
       );
 
       return {
@@ -390,7 +419,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findEquipmentRequiredForRaw(
-    equipment: Database["public"]["Tables"]["equipment"]["Row"]
+    equipment: Database["public"]["Tables"]["equipment"]["Row"],
   ): Promise<RepositoryResult<EquipmentRequirements | null>> {
     try {
       const baseItems: EquipmentRequirements = {
@@ -400,7 +429,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
       // Get required items for this equipment
       const requiredItemsResult = await this.findRequiredItemsByEquipmentSlug(
-        equipment.slug
+        equipment.slug,
       );
       if (requiredItemsResult.error) {
         return {
@@ -440,12 +469,12 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
           this.combineEquipmentRequirements(
             baseItems.required_items,
             raws.required_items,
-            requiredItem.quantity
+            requiredItem.quantity,
           );
         } else {
           // This is a raw component
           const found = baseItems.required_items.find(
-            (ri) => ri.equipment.slug === component.slug
+            (ri) => ri.equipment.slug === component.slug,
           );
           if (found) {
             found.quantity += requiredItem.quantity;
@@ -496,7 +525,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       const traverse = async (
         componentSlug: string,
         multiplier: number = 1,
-        path: string[] = []
+        path: string[] = [],
       ): Promise<void> => {
         // Prevent circular dependencies by checking current path
         if (path.includes(componentSlug)) {
@@ -506,14 +535,16 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         const newPath = [...path, componentSlug];
 
         // Find what equipment requires this component
-        const requiredForResult = await this.findEquipmentThatRequires(
-          componentSlug
-        );
+        const requiredForResult =
+          await this.findEquipmentThatRequires(componentSlug);
         if (requiredForResult.error) {
           // Propagate database errors up with the full error structure
-          const error = new Error(requiredForResult.error.message);
-          (error as any).code = requiredForResult.error.code;
-          (error as any).details = requiredForResult.error.details;
+          const error = new Error(requiredForResult.error.message) as Error & {
+            code?: string;
+            details?: unknown;
+          };
+          error.code = requiredForResult.error.code;
+          error.details = requiredForResult.error.details;
           throw error;
         }
 
@@ -527,14 +558,17 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
           // Check if this equipment is used in other recipes
           const nextLevelResult = await this.findEquipmentThatRequires(
-            equipment.slug
+            equipment.slug,
           );
 
           if (nextLevelResult.error) {
             // Propagate database errors up with the full error structure
-            const error = new Error(nextLevelResult.error.message);
-            (error as any).code = nextLevelResult.error.code;
-            (error as any).details = nextLevelResult.error.details;
+            const error = new Error(nextLevelResult.error.message) as Error & {
+              code?: string;
+              details?: unknown;
+            };
+            error.code = nextLevelResult.error.code;
+            error.details = nextLevelResult.error.details;
             throw error;
           }
 
@@ -564,13 +598,14 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       };
     } catch (error) {
       log.error(`Unexpected error finding raw component of ${slug}:`, error);
+      const typedError = error as Error & { code?: string; details?: unknown };
       return {
         data: null,
         error: {
           message:
             error instanceof Error ? error.message : "Unknown error occurred",
-          code: (error as any).code,
-          details: (error as any).details || error,
+          code: typedError.code,
+          details: typedError.details || error,
         },
       };
     }
@@ -578,21 +613,21 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   // Helper methods
   private sortByQuality(
-    records: Database["public"]["Tables"]["equipment"]["Row"][]
+    records: Database["public"]["Tables"]["equipment"]["Row"][],
   ): Database["public"]["Tables"]["equipment"]["Row"][] {
     return records.sort((l, r) =>
       EQUIPMENT_QUALITIES.indexOf(l.quality) !==
       EQUIPMENT_QUALITIES.indexOf(r.quality)
         ? EQUIPMENT_QUALITIES.indexOf(l.quality) -
           EQUIPMENT_QUALITIES.indexOf(r.quality)
-        : l.name.localeCompare(r.name)
+        : l.name.localeCompare(r.name),
     );
   }
 
   private combineEquipmentRequirements(
     target: EquipmentRequirements["required_items"],
     source: EquipmentRequirements["required_items"],
-    qty: number
+    qty: number,
   ): void {
     for (const req of source) {
       const found = target.find((t) => t.equipment.slug === req.equipment.slug);
@@ -606,7 +641,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   // JSON export functionality
   async getAllAsJson(
-    ids?: string[]
+    ids?: string[],
   ): Promise<RepositoryResult<EquipmentRecord[]>> {
     try {
       let equipmentResult: RepositoryResult<
@@ -649,8 +684,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
           this.findRequiredItemsByEquipmentSlug(equipment.slug),
         ]);
 
-        // Build the JSON record - use any type to handle the flexible EquipmentRecord structure
-        const jsonRecord: any = {
+        // Build the JSON record using the builder interface
+        const jsonRecord: EquipmentRecordBuilder = {
           slug: equipment.slug,
           name: equipment.name,
           quality: equipment.quality,
@@ -700,7 +735,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
       // Sort using the same logic as the original service
       const sortedRecords = this.sortByQuality(
-        jsonRecords as unknown as Database["public"]["Tables"]["equipment"]["Row"][]
+        jsonRecords as unknown as Database["public"]["Tables"]["equipment"]["Row"][],
       ) as unknown as EquipmentRecord[];
 
       return {
@@ -722,7 +757,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   // Relationship methods
   async findWithStats(
-    slug: string
+    slug: string,
   ): Promise<RepositoryResult<EquipmentWithStats>> {
     try {
       const [equipmentResult, statsResult] = await Promise.all([
@@ -754,7 +789,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding equipment with stats for ${slug}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -768,7 +803,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findWithRequiredItems(
-    slug: string
+    slug: string,
   ): Promise<RepositoryResult<EquipmentWithRequiredItems>> {
     try {
       const [equipmentResult, requiredItemsResult] = await Promise.all([
@@ -800,7 +835,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding equipment with required items for ${slug}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -814,7 +849,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async findWithFullDetails(
-    slug: string
+    slug: string,
   ): Promise<RepositoryResult<EquipmentWithFullDetails>> {
     try {
       const [equipmentResult, statsResult, requiredItemsResult] =
@@ -856,7 +891,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding equipment with full details for ${slug}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -871,7 +906,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   // Data transformation methods for JSON to DB schema mapping
   static transformEquipmentFromJSON(
-    jsonEquipment: EquipmentRecord
+    jsonEquipment: EquipmentRecord,
   ): Database["public"]["Tables"]["equipment"]["Insert"] {
     return {
       slug: jsonEquipment.slug,
@@ -894,7 +929,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   static transformStatsFromJSON(
-    jsonEquipment: EquipmentRecord
+    jsonEquipment: EquipmentRecord,
   ): Database["public"]["Tables"]["equipment_stat"]["Insert"][] {
     if (!isEquipable(jsonEquipment) || !jsonEquipment.stats) return [];
 
@@ -906,7 +941,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   static transformRequiredItemsFromJSON(
-    jsonEquipment: EquipmentRecord
+    jsonEquipment: EquipmentRecord,
   ): Database["public"]["Tables"]["equipment_required_item"]["Insert"][] {
     if (
       !("crafting" in jsonEquipment) ||
@@ -919,13 +954,13 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         base_slug: jsonEquipment.slug,
         required_slug,
         quantity: quantity as number,
-      })
+      }),
     );
   }
 
   // Bulk operations for admin data loading
   async bulkCreateStats(
-    statsData: Database["public"]["Tables"]["equipment_stat"]["Insert"][]
+    statsData: Database["public"]["Tables"]["equipment_stat"]["Insert"][],
   ): Promise<RepositoryResult<EquipmentStat[]>> {
     try {
       const { data, error } = await this.supabase
@@ -959,7 +994,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   async bulkCreateRequiredItems(
-    requiredItemsData: Database["public"]["Tables"]["equipment_required_item"]["Insert"][]
+    requiredItemsData: Database["public"]["Tables"]["equipment_required_item"]["Insert"][],
   ): Promise<RepositoryResult<EquipmentRequiredItem[]>> {
     try {
       const { data, error } = await this.supabase
@@ -982,7 +1017,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         "Unexpected error bulk creating equipment required items:",
-        error
+        error,
       );
       return {
         data: null,
@@ -1005,13 +1040,13 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     try {
       // Transform all data
       const equipmentData = jsonData.map((item) =>
-        EquipmentRepository.transformEquipmentFromJSON(item)
+        EquipmentRepository.transformEquipmentFromJSON(item),
       );
       const statsData = jsonData.flatMap((item) =>
-        EquipmentRepository.transformStatsFromJSON(item)
+        EquipmentRepository.transformStatsFromJSON(item),
       );
       const requiredItemsData = jsonData.flatMap((item) =>
-        EquipmentRepository.transformRequiredItemsFromJSON(item)
+        EquipmentRepository.transformRequiredItemsFromJSON(item),
       );
 
       // Bulk create equipment first with skipExisting to handle duplicates
@@ -1069,7 +1104,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
   // Helper methods for stats and required items
   private async findStatsByEquipmentSlug(
-    equipmentSlug: string
+    equipmentSlug: string,
   ): Promise<RepositoryResult<EquipmentStat[]>> {
     try {
       const { data, error } = await this.supabase
@@ -1093,7 +1128,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding stats for equipment ${equipmentSlug}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -1107,7 +1142,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
   }
 
   private async findRequiredItemsByEquipmentSlug(
-    equipmentSlug: string
+    equipmentSlug: string,
   ): Promise<RepositoryResult<EquipmentRequiredItem[]>> {
     try {
       const { data, error } = await this.supabase
@@ -1119,7 +1154,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       if (error) {
         log.error(
           `Error finding required items for equipment ${equipmentSlug}:`,
-          error
+          error,
         );
         return {
           data: null,
@@ -1134,7 +1169,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
     } catch (error) {
       log.error(
         `Unexpected error finding required items for equipment ${equipmentSlug}:`,
-        error
+        error,
       );
       return {
         data: null,
@@ -1192,7 +1227,11 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       log.error("Error purging equipment domain:", error);
       return {
         data: null,
-        error: this.handleError(error),
+        error: {
+          message:
+            error instanceof Error ? error.message : "Unknown error occurred",
+          details: error,
+        },
       };
     }
   }

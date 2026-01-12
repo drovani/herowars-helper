@@ -34,7 +34,7 @@ import {
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-
+import type { TeamWithHeroes } from "~/repositories/types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -157,7 +157,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
   const handleCreateTeam = () => {
     fetcher.submit(
       { action: "createTeam", name: "", description: "" },
-      { method: "POST" }
+      { method: "POST" },
     );
   };
 
@@ -173,7 +173,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
     if (deleteTeamId) {
       fetcher.submit(
         { action: "deleteTeam", teamId: deleteTeamId },
-        { method: "POST" }
+        { method: "POST" },
       );
       setDeleteTeamId(null);
     }
@@ -213,7 +213,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
       {/* Teams Grid */}
       {teams.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {teams.map((team: any) => (
+          {teams.map((team: TeamWithHeroes) => (
             <TeamListCard
               key={team.id}
               team={team}

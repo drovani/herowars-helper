@@ -14,7 +14,7 @@ import {
   Card,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "~/components/ui/card";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
@@ -24,7 +24,7 @@ import {
 } from "~/lib/auth/utils";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-
+import type { PlayerTeamHero, Hero } from "~/repositories/types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -171,11 +171,9 @@ export default function TeamNew({ loaderData }: Route.ComponentProps) {
   };
 
   // Convert selected hero slugs to team hero format for display
-  const teamHeroes = selectedHeroes
+  const teamHeroes: Array<PlayerTeamHero & { hero: Hero }> = selectedHeroes
     .map((heroSlug) => {
-      const playerHero = userHeroes.find(
-        (ph) => ph.hero_slug === heroSlug
-      );
+      const playerHero = userHeroes.find((ph) => ph.hero_slug === heroSlug);
       if (!playerHero) return null;
 
       return {
@@ -186,7 +184,7 @@ export default function TeamNew({ loaderData }: Route.ComponentProps) {
         hero: playerHero.hero,
       };
     })
-    .filter(Boolean) as any[];
+    .filter((item): item is NonNullable<typeof item> => item !== null);
 
   const isSubmitting = fetcher.state === "submitting";
   const canSave = teamName.trim() !== "" || selectedHeroes.length > 0;

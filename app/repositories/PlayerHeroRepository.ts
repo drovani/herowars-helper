@@ -16,6 +16,8 @@ import type {
   UpdatePlayerHeroInput,
 } from "./types";
 
+import type { Database } from "~/types/supabase";
+
 // Schema for input validation (create/update operations)
 const PlayerHeroInputSchema = z.object({
   user_id: z.uuid(),
@@ -41,9 +43,11 @@ const PlayerHeroSchema = z.object({
 
 export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
   private eventRepo: PlayerEventRepository;
-  private requestOrSupabase: Request | SupabaseClient<any> | null;
+  private requestOrSupabase: Request | SupabaseClient<Database> | null;
 
-  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
+  constructor(
+    requestOrSupabase: Request | SupabaseClient<Database> | null = null,
+  ) {
     if (
       requestOrSupabase &&
       typeof requestOrSupabase === "object" &&
@@ -55,7 +59,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         PlayerHeroInputSchema,
         "player_hero",
         PlayerHeroSchema,
-        "id"
+        "id",
       );
       this.eventRepo = new PlayerEventRepository(requestOrSupabase);
     } else {
@@ -64,11 +68,11 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         "player_hero",
         PlayerHeroInputSchema,
         requestOrSupabase as Request | null,
-        "id"
+        "id",
       );
       this.eventRepo = new PlayerEventRepository(requestOrSupabase);
     }
-    
+
     this.requestOrSupabase = requestOrSupabase;
   }
 
@@ -86,7 +90,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
    * Finds heroes in user's collection with hero details
    */
   async findWithHeroDetails(
-    userId: string
+    userId: string,
   ): Promise<RepositoryResult<PlayerHeroWithDetails[]>> {
     try {
       const query = this.supabase
@@ -102,7 +106,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
             main_stat,
             attack_type
           )
-        `
+        `,
         )
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
@@ -140,7 +144,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
    */
   async addHeroToCollection(
     userId: string,
-    heroInput: CreatePlayerHeroInput
+    heroInput: CreatePlayerHeroInput,
   ): Promise<RepositoryResult<PlayerHero>> {
     try {
       // Create the hero record
@@ -190,7 +194,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
   async updateHeroProgress(
     userId: string,
     heroSlug: string,
-    updates: UpdatePlayerHeroInput
+    updates: UpdatePlayerHeroInput,
   ): Promise<RepositoryResult<PlayerHero>> {
     try {
       // Get current hero data for event logging
@@ -235,7 +239,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         if (eventResult.error) {
           log.warn(
             "Failed to create UPDATE_HERO_STARS event:",
-            eventResult.error
+            eventResult.error,
           );
         }
       }
@@ -256,7 +260,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         if (eventResult.error) {
           log.warn(
             "Failed to create UPDATE_HERO_EQUIPMENT event:",
-            eventResult.error
+            eventResult.error,
           );
         }
       }
@@ -274,7 +278,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         if (eventResult.error) {
           log.warn(
             "Failed to create UPDATE_HERO_LEVEL event:",
-            eventResult.error
+            eventResult.error,
           );
         }
       }
@@ -295,7 +299,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         if (eventResult.error) {
           log.warn(
             "Failed to create UPDATE_HERO_TALISMAN event:",
-            eventResult.error
+            eventResult.error,
           );
         }
       }
@@ -317,7 +321,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
    */
   async removeFromCollection(
     userId: string,
-    heroSlug: string
+    heroSlug: string,
   ): Promise<RepositoryResult<boolean>> {
     try {
       // Get current hero data for event logging
@@ -387,7 +391,7 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
    */
   async isHeroInCollection(
     userId: string,
-    heroSlug: string
+    heroSlug: string,
   ): Promise<RepositoryResult<boolean>> {
     const result = await this.findAll({
       where: { user_id: userId, hero_slug: heroSlug },
@@ -416,11 +420,11 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
    * @returns Summary of the bulk addition operation including counts and any errors
    */
   async addAllHeroesToCollection(
-    userId: string, 
-    options: { 
-      batchSize?: number; 
-      parallelism?: number 
-    } = {}
+    userId: string,
+    options: {
+      batchSize?: number;
+      parallelism?: number;
+    } = {},
   ): Promise<RepositoryResult<BulkAddResult>> {
     try {
       log.info(`Starting bulk hero addition for user ${userId}`);
@@ -458,15 +462,17 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
       }
 
       const existingHeroSlugs = new Set(
-        (existingResult.data || []).map((ph) => ph.hero_slug)
+        (existingResult.data || []).map((ph) => ph.hero_slug),
       );
-      log.info(`User already has ${existingHeroSlugs.size} heroes in collection`);
+      log.info(
+        `User already has ${existingHeroSlugs.size} heroes in collection`,
+      );
 
       // Filter heroes to add (only those not in collection)
       const heroesToAdd = allHeroes.filter(
-        (hero) => !existingHeroSlugs.has(hero.slug)
+        (hero) => !existingHeroSlugs.has(hero.slug),
       );
-      
+
       if (heroesToAdd.length === 0) {
         log.info("All heroes are already in user's collection");
         return {
@@ -498,7 +504,9 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
 
       // Configure batch processing options
       const { batchSize = 50, parallelism = 5 } = options;
-      log.info(`Processing with batch size ${batchSize} and parallelism ${parallelism}`);
+      log.info(
+        `Processing with batch size ${batchSize} and parallelism ${parallelism}`,
+      );
 
       // Helper function to process a single hero
       const processHero = async (hero: { slug: string }) => {
@@ -510,9 +518,12 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
           });
 
           if (addResult.error) {
-            log.warn(`Failed to add hero ${hero.slug}:`, addResult.error.message);
+            log.warn(
+              `Failed to add hero ${hero.slug}:`,
+              addResult.error.message,
+            );
             return {
-              type: 'error' as const,
+              type: "error" as const,
               heroSlug: hero.slug,
               message: addResult.error.message,
               code: addResult.error.code,
@@ -520,14 +531,14 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
           } else {
             log.debug(`Successfully added hero ${hero.slug}`);
             return {
-              type: 'success' as const,
+              type: "success" as const,
               heroSlug: hero.slug,
             };
           }
         } catch (error) {
           log.error(`Unexpected error adding hero ${hero.slug}:`, error);
           return {
-            type: 'error' as const,
+            type: "error" as const,
             heroSlug: hero.slug,
             message: error instanceof Error ? error.message : "Unknown error",
           };
@@ -537,24 +548,22 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
       // Process heroes in batches with parallel execution within batches
       for (let i = 0; i < heroesToAdd.length; i += batchSize) {
         const batch = heroesToAdd.slice(i, i + batchSize);
-        
+
         // Split batch into parallel chunks
         const chunks = [];
         for (let j = 0; j < batch.length; j += parallelism) {
           chunks.push(batch.slice(j, j + parallelism));
         }
-        
+
         // Process chunks within the batch
         for (const chunk of chunks) {
-          const chunkResults = await Promise.allSettled(
-            chunk.map(processHero)
-          );
-          
+          const chunkResults = await Promise.allSettled(chunk.map(processHero));
+
           // Aggregate results from parallel processing with better error handling
           for (const settledResult of chunkResults) {
-            if (settledResult.status === 'fulfilled') {
+            if (settledResult.status === "fulfilled") {
               const chunkResult = settledResult.value;
-              if (chunkResult.type === 'error') {
+              if (chunkResult.type === "error") {
                 result.errorCount++;
                 result.errors.push({
                   heroSlug: chunkResult.heroSlug,
@@ -580,12 +589,14 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         // Log progress for large operations
         if (heroesToAdd.length > 20) {
           const completed = Math.min(i + batchSize, heroesToAdd.length);
-          log.info(`Processed ${completed}/${heroesToAdd.length} heroes (${Math.round((completed / heroesToAdd.length) * 100)}%)`);
+          log.info(
+            `Processed ${completed}/${heroesToAdd.length} heroes (${Math.round((completed / heroesToAdd.length) * 100)}%)`,
+          );
         }
       }
 
       log.info(
-        `Bulk hero addition completed: ${result.addedCount} added, ${result.skippedCount} skipped, ${result.errorCount} errors`
+        `Bulk hero addition completed: ${result.addedCount} added, ${result.skippedCount} skipped, ${result.errorCount} errors`,
       );
 
       // Enhanced error categorization logic with better edge case handling
@@ -607,7 +618,9 @@ export class PlayerHeroRepository extends BaseRepository<"player_hero"> {
         };
       } else if (result.errorCount > 0 && result.addedCount > 0) {
         // Partial success: Some heroes added, some errors
-        const successRate = Math.round((result.addedCount / (result.addedCount + result.errorCount)) * 100);
+        const successRate = Math.round(
+          (result.addedCount / (result.addedCount + result.errorCount)) * 100,
+        );
         return {
           data: result,
           error: {

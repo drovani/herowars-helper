@@ -2,14 +2,14 @@
 // ABOUTME: Pure transformation functions for converting database hero data to JSON format
 
 import type { HeroRecord } from "~/data/hero.zod";
-import type { CompleteHero } from "~/repositories/types";
+import type { CompleteHero, Hero } from "~/repositories/types";
 
 /**
  * Transform a CompleteHero from database format to HeroRecord JSON format
  * This is the main transformation function used by routes
  */
 export function transformCompleteHeroToRecord(
-  completeHero: CompleteHero
+  completeHero: CompleteHero,
 ): HeroRecord {
   const record: Partial<HeroRecord> = {
     slug: completeHero.slug,
@@ -18,7 +18,8 @@ export function transformCompleteHeroToRecord(
     faction: validateHeroFaction(completeHero.faction),
     main_stat: validateMainStat(completeHero.main_stat),
     attack_type: validateAttackTypes(completeHero.attack_type),
-    stone_source: (completeHero.stone_source as any) || [],
+    stone_source:
+      (completeHero.stone_source as HeroRecord["stone_source"]) || [],
     order_rank: completeHero.order_rank || 0,
     updated_on: completeHero.updated_on || new Date().toISOString(),
   };
@@ -52,7 +53,7 @@ export function transformCompleteHeroToRecord(
 /**
  * Transform basic hero data to HeroRecord format (fallback for heroes without relationships)
  */
-export function transformBasicHeroToRecord(hero: any): HeroRecord {
+export function transformBasicHeroToRecord(hero: Hero): HeroRecord {
   return {
     slug: hero.slug,
     name: hero.name,
@@ -60,7 +61,7 @@ export function transformBasicHeroToRecord(hero: any): HeroRecord {
     faction: validateHeroFaction(hero.faction),
     main_stat: validateMainStat(hero.main_stat),
     attack_type: validateAttackTypes(hero.attack_type),
-    stone_source: hero.stone_source || [],
+    stone_source: (hero.stone_source as HeroRecord["stone_source"]) || [],
     order_rank: hero.order_rank || 0,
     updated_on: hero.updated_on || new Date().toISOString(),
   };
@@ -70,7 +71,7 @@ export function transformBasicHeroToRecord(hero: any): HeroRecord {
  * Transform artifacts from database format to JSON format
  */
 export function transformArtifacts(
-  artifacts: CompleteHero["artifacts"] | undefined
+  artifacts: CompleteHero["artifacts"] | undefined,
 ): HeroRecord["artifacts"] | undefined {
   if (!artifacts) return undefined;
 
@@ -105,7 +106,7 @@ export function transformArtifacts(
  * Transform skins from database format to JSON format
  */
 export function transformSkins(
-  skins: CompleteHero["skins"] | undefined
+  skins: CompleteHero["skins"] | undefined,
 ): HeroRecord["skins"] {
   if (!skins) return undefined;
 
@@ -121,7 +122,7 @@ export function transformSkins(
  * Transform glyphs from database format to JSON format
  */
 export function transformGlyphs(
-  glyphs: CompleteHero["glyphs"] | undefined
+  glyphs: CompleteHero["glyphs"] | undefined,
 ): HeroRecord["glyphs"] {
   if (!glyphs) return undefined;
 
@@ -141,20 +142,23 @@ export function transformGlyphs(
  * Transform equipment slots from database format to JSON format
  */
 export function transformEquipmentSlots(
-  equipmentSlots: CompleteHero["equipmentSlots"] | undefined
+  equipmentSlots: CompleteHero["equipmentSlots"] | undefined,
 ): HeroRecord["items"] {
   if (!equipmentSlots) return undefined;
 
   const result: Partial<NonNullable<HeroRecord["items"]>> = {};
 
   // Group by quality
-  const slotsByQuality = equipmentSlots.reduce((acc, slot) => {
-    if (!acc[slot.quality]) {
-      acc[slot.quality] = [];
-    }
-    acc[slot.quality].push(slot);
-    return acc;
-  }, {} as Record<string, typeof equipmentSlots>);
+  const slotsByQuality = equipmentSlots.reduce(
+    (acc, slot) => {
+      if (!acc[slot.quality]) {
+        acc[slot.quality] = [];
+      }
+      acc[slot.quality].push(slot);
+      return acc;
+    },
+    {} as Record<string, typeof equipmentSlots>,
+  );
 
   // Convert to arrays sorted by slot position
   for (const [quality, slots] of Object.entries(slotsByQuality)) {
@@ -164,7 +168,7 @@ export function transformEquipmentSlots(
       .filter((slug): slug is string => Boolean(slug));
 
     if (equipmentSlugs.length > 0) {
-      (result as any)[quality] = equipmentSlugs;
+      (result as Record<string, string[]>)[quality] = equipmentSlugs;
     }
   }
 
@@ -186,14 +190,14 @@ export function sortHeroRecords(records: HeroRecord[]): HeroRecord[] {
 export function createHeroesJsonString(records: HeroRecord[]): string {
   return JSON.stringify(
     records,
-    (_: string, value: any): any | undefined => {
+    (_: string, value: unknown): unknown | undefined => {
       if (Array.isArray(value) && value.length === 0) {
         // remove properties that are empty arrays
         return undefined;
       }
       return value;
     },
-    2
+    2,
   );
 }
 
@@ -209,7 +213,7 @@ export function validateHeroClass(heroClass: string): HeroRecord["class"] {
     "marksman",
     "healer",
   ] as const;
-  return validClasses.includes(heroClass as any)
+  return validClasses.includes(heroClass as (typeof validClasses)[number])
     ? (heroClass as HeroRecord["class"])
     : "tank";
 }
@@ -223,24 +227,24 @@ export function validateHeroFaction(faction: string): HeroRecord["faction"] {
     "eternity",
     "mystery",
   ] as const;
-  return validFactions.includes(faction as any)
+  return validFactions.includes(faction as (typeof validFactions)[number])
     ? (faction as HeroRecord["faction"])
     : "honor";
 }
 
 export function validateMainStat(mainStat: string): HeroRecord["main_stat"] {
   const validMainStats = ["intelligence", "agility", "strength"] as const;
-  return validMainStats.includes(mainStat as any)
+  return validMainStats.includes(mainStat as (typeof validMainStats)[number])
     ? (mainStat as HeroRecord["main_stat"])
     : "strength";
 }
 
 export function validateAttackTypes(
-  attackTypes: string[]
+  attackTypes: string[],
 ): HeroRecord["attack_type"] {
   const validAttackTypes = ["physical", "magic", "pure"] as const;
   const filtered = attackTypes.filter((type) =>
-    validAttackTypes.includes(type as any)
+    validAttackTypes.includes(type as (typeof validAttackTypes)[number]),
   );
   return filtered.length > 0
     ? (filtered as HeroRecord["attack_type"])
@@ -248,7 +252,7 @@ export function validateAttackTypes(
 }
 
 export function validateTeamBuff(
-  teamBuff: string
+  teamBuff: string,
 ): NonNullable<HeroRecord["artifacts"]>["weapon"]["team_buff"] {
   const validBuffs = [
     "physical attack",
@@ -260,11 +264,14 @@ export function validateTeamBuff(
     "armor penetration",
     "crit hit chance",
   ] as const;
-  return validBuffs.includes(teamBuff as any) ? (teamBuff as any) : "armor";
+  type ValidBuff = (typeof validBuffs)[number];
+  return validBuffs.includes(teamBuff as ValidBuff)
+    ? (teamBuff as ValidBuff)
+    : "armor";
 }
 
 export function validateBookName(
-  bookName: string
+  bookName: string,
 ): NonNullable<HeroRecord["artifacts"]>["book"] {
   const validBooks = [
     "Alchemist's Folio",
@@ -274,13 +281,14 @@ export function validateBookName(
     "Tome of Arcane Knowledge",
     "Warrior's Code",
   ] as const;
-  return validBooks.includes(bookName as any)
-    ? (bookName as any)
+  type ValidBook = (typeof validBooks)[number];
+  return validBooks.includes(bookName as ValidBook)
+    ? (bookName as ValidBook)
     : "Tome of Arcane Knowledge";
 }
 
 export function validateSkinStat(
-  statType: string
+  statType: string,
 ): NonNullable<HeroRecord["skins"]>[0]["stat"] {
   const validStats = [
     "intelligence",
@@ -296,10 +304,15 @@ export function validateSkinStat(
     "vampirism",
     "armor penetration",
     "crit hit chance",
-    "healing",
+    "toughness",
+    "magic reflection",
+    "crushing",
     "magic crit hit chance",
   ] as const;
-  return validStats.includes(statType as any) ? (statType as any) : "strength";
+  type ValidStat = (typeof validStats)[number];
+  return validStats.includes(statType as ValidStat)
+    ? (statType as ValidStat)
+    : "strength";
 }
 
 export function validateGlyphStat(statType: string): string {
@@ -317,8 +330,11 @@ export function validateGlyphStat(statType: string): string {
     "vampirism",
     "armor penetration",
     "crit hit chance",
-    "healing",
+    "toughness",
+    "magic reflection",
+    "crushing",
     "magic crit hit chance",
   ] as const;
-  return validStats.includes(statType as any) ? statType : "strength";
+  type ValidStat = (typeof validStats)[number];
+  return validStats.includes(statType as ValidStat) ? statType : "strength";
 }

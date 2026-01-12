@@ -12,6 +12,10 @@ import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn, getEquipmentImageUrl } from "~/lib/utils";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import type { Database } from "~/types/supabase";
+
+// Type for equipment from database
+type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
 
 async function loadEquipmentData(request: Request) {
   const equipmentRepository = new EquipmentRepository(request);
@@ -46,7 +50,7 @@ const cardVariants = cva("p-1 bottom-0 absolute w-full text-center", {
   },
 });
 
-function EquipmentContent({ equipments }: { equipments: any[] }) {
+function EquipmentContent({ equipments }: { equipments: Equipment[] }) {
   return (
     <div className="space-y-6">
       <RequireEditor>
@@ -72,7 +76,7 @@ function EquipmentContent({ equipments }: { equipments: any[] }) {
                 className="bg-cover h-28 w-28 relative bg-center hover:scale-110 transition-all duration-500"
                 style={{
                   backgroundImage: `url('${getEquipmentImageUrl(
-                    equipment.slug
+                    equipment.slug,
                   )}')`,
                 }}
               >
@@ -80,7 +84,7 @@ function EquipmentContent({ equipments }: { equipments: any[] }) {
                   className={cn(
                     cardVariants({
                       quality: equipment.quality,
-                    })
+                    }),
                   )}
                 >
                   <div className="font-semibold">{equipment.name}</div>
@@ -100,7 +104,7 @@ export default function EquipmentIndex({ loaderData }: Route.ComponentProps) {
   return (
     <Suspense fallback={<EquipmentIndexSkeleton />}>
       <Await resolve={loaderData?.equipmentData}>
-        {(data: { equipments: any[] | null }) => (
+        {(data: { equipments: Equipment[] | null }) => (
           <EquipmentContent equipments={data.equipments || []} />
         )}
       </Await>

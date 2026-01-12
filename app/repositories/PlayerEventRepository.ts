@@ -10,7 +10,7 @@ import type {
   RepositoryResult,
 } from "./types";
 
-import type { Json } from "~/types/supabase";
+import type { Database } from "~/types/supabase";
 
 // Schema for input validation (create operations)
 const PlayerEventInputSchema = z.object({
@@ -49,7 +49,9 @@ const PlayerEventSchema = z.object({
 });
 
 export class PlayerEventRepository extends BaseRepository<"player_event"> {
-  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
+  constructor(
+    requestOrSupabase: Request | SupabaseClient<Database> | null = null,
+  ) {
     if (
       requestOrSupabase &&
       typeof requestOrSupabase === "object" &&
@@ -61,7 +63,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
         PlayerEventInputSchema,
         "player_event",
         PlayerEventSchema,
-        "id"
+        "id",
       );
     } else {
       // Request or null provided (standard operation)
@@ -69,7 +71,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
         "player_event",
         PlayerEventInputSchema,
         requestOrSupabase as Request | null,
-        "id"
+        "id",
       );
     }
   }
@@ -79,7 +81,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
    */
   async createEvent(
     userId: string,
-    eventInput: CreatePlayerEventInput
+    eventInput: CreatePlayerEventInput,
   ): Promise<RepositoryResult<PlayerEvent>> {
     const eventData = {
       user_id: userId,
@@ -96,7 +98,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
    * Finds all events for a specific user
    */
   async findEventsByUser(
-    userId: string
+    userId: string,
   ): Promise<RepositoryResult<PlayerEvent[]>> {
     return this.findAll({
       where: { user_id: userId },
@@ -109,7 +111,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
    */
   async findEventsByHero(
     userId: string,
-    heroSlug: string
+    heroSlug: string,
   ): Promise<RepositoryResult<PlayerEvent[]>> {
     return this.findAll({
       where: {
@@ -132,7 +134,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
       | "UPDATE_HERO_EQUIPMENT"
       | "UPDATE_HERO_LEVEL"
       | "UPDATE_HERO_TALISMAN"
-      | "UPDATE_TEAM_NAME"
+      | "UPDATE_TEAM_NAME",
   ): Promise<RepositoryResult<PlayerEvent[]>> {
     return this.findAll({
       where: {
@@ -149,7 +151,7 @@ export class PlayerEventRepository extends BaseRepository<"player_event"> {
   async findRecentEvents(
     userId: string,
     limit: number = 50,
-    offset: number = 0
+    offset: number = 0,
   ): Promise<RepositoryResult<PlayerEvent[]>> {
     return this.findAll({
       where: { user_id: userId },

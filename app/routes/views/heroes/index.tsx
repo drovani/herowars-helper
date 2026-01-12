@@ -51,7 +51,9 @@ import {
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { BasicHero } from "~/repositories/types";
+import type { Hero } from "~/repositories/types";
+import type { HeroRecord } from "~/data/hero.zod";
+import type { EquipmentRecord } from "~/data/equipment.zod";
 
 async function loadHeroesData(request: Request) {
   const url = new URL(request.url);
@@ -59,17 +61,17 @@ async function loadHeroesData(request: Request) {
 
   const heroRepo = new HeroRepository(request);
 
-  let heroes: any[];
+  let heroes: Hero[] | HeroRecord[];
 
   if (mode === "cards") {
-    // Cards mode: Use lightweight query for minimal data
-    const basicHeroesResult = await heroRepo.findAllBasic();
+    // Cards mode: Use full Hero data for filtering/sorting capabilities
+    const heroesResult = await heroRepo.findAll();
 
-    if (basicHeroesResult.error) {
+    if (heroesResult.error) {
       throw new Response("Failed to load heroes", { status: 500 });
     }
 
-    heroes = basicHeroesResult.data || [];
+    heroes = heroesResult.data || [];
   } else {
     // Tiles mode: Load all heroes with full relationships (no pagination, we'll handle client-side)
     const completeHeroesResult = await heroRepo.findAllWithRelationships();
@@ -80,7 +82,7 @@ async function loadHeroesData(request: Request) {
 
     if (completeHeroesResult.data) {
       heroes = completeHeroesResult.data.map((hero) =>
-        transformCompleteHeroToRecord(hero)
+        transformCompleteHeroToRecord(hero),
       );
     } else {
       heroes = [];
@@ -88,7 +90,7 @@ async function loadHeroesData(request: Request) {
   }
 
   // Only load equipment for tiles mode (cards don't need it)
-  let equipment: any[] = [];
+  let equipment: EquipmentRecord[] = [];
   if (mode === "tiles") {
     const equipmentRepo = new EquipmentRepository(request);
     const equipmentResult = await equipmentRepo.getAllAsJson();
@@ -162,8 +164,8 @@ function HeroesContent({
   userCollection,
   mode: initialMode,
 }: {
-  heroes: any[];
-  equipment: any[];
+  heroes: Hero[] | HeroRecord[];
+  equipment: EquipmentRecord[];
   userCollection: string[];
   mode: string;
 }) {
@@ -190,7 +192,7 @@ function HeroesContent({
   const [search, setSearch] = useState(initialFilters.search || "");
   const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">(
     "mode",
-    (initialMode as "cards" | "tiles") || "cards"
+    (initialMode as "cards" | "tiles") || "cards",
   );
   const [filters, setFilters] = useState<HeroFiltersType>(initialFilters);
   const [sortOptions, setSortOptions] = useState<SortOptions>(initialSort);
@@ -199,18 +201,14 @@ function HeroesContent({
   const updateURL = (
     newFilters: HeroFiltersType,
     newSort: SortOptions,
-    newSearch: string
+    newSearch: string,
   ) => {
     const params = new URLSearchParams(window.location.search);
 
     // Clear existing filter and sort params
     const keysToRemove: string[] = [];
     params.forEach((_, key) => {
-      if (
-        key !== "mode" &&
-        key !== "page" &&
-        !key.startsWith("_")
-      ) {
+      if (key !== "mode" && key !== "page" && !key.startsWith("_")) {
         keysToRemove.push(key);
       }
     });
@@ -268,11 +266,7 @@ function HeroesContent({
     updateURL(filters, sortOptions, newSearch);
   };
 
-  const HeroCardWithButton = ({
-    hero,
-  }: {
-    hero: BasicHero | (typeof heroes)[0];
-  }) => {
+  const HeroCardWithButton = ({ hero }: { hero: Hero | HeroRecord }) => {
     const isSubmittingThisHero =
       fetcher.state === "submitting" &&
       fetcher.formData?.get("heroSlug") === hero.slug;
@@ -297,7 +291,7 @@ function HeroesContent({
                     stars: "1",
                     equipmentLevel: "1",
                   },
-                  { method: "POST" }
+                  { method: "POST" },
                 );
               }}
               size="sm"
@@ -312,8 +306,8 @@ function HeroesContent({
     hero,
     equipment,
   }: {
-    hero: any;
-    equipment: any[];
+    hero: Hero | HeroRecord;
+    equipment: EquipmentRecord[];
   }) => {
     const isSubmittingThisHero =
       fetcher.state === "submitting" &&
@@ -323,7 +317,17 @@ function HeroesContent({
       (isSubmittingThisHero && fetcher.formData?.get("action") === "addHero");
 
     // Only render tiles if hero has complete data (artifacts, skins, etc.)
-    if (!hero.artifacts || !hero.skins || !hero.glyphs || !hero.items) {
+    // Type guard: check if hero is a HeroRecord by checking for HeroRecord-specific properties
+    const isHeroRecord = (h: Hero | HeroRecord): h is HeroRecord =>
+      "artifacts" in h && "skins" in h && "glyphs" in h && "items" in h;
+
+    if (
+      !isHeroRecord(hero) ||
+      !hero.artifacts ||
+      !hero.skins ||
+      !hero.glyphs ||
+      !hero.items
+    ) {
       return null;
     }
 
@@ -355,7 +359,7 @@ function HeroesContent({
                         stars: "1",
                         equipmentLevel: "1",
                       },
-                      { method: "POST" }
+                      { method: "POST" },
                     );
                   }}
                   size="sm"
@@ -478,8 +482,8 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
     <Suspense fallback={<HeroIndexSkeleton />}>
       <Await resolve={loaderData?.heroesData}>
         {(data: {
-          heroes: any[];
-          equipment: any[];
+          heroes: Hero[] | HeroRecord[];
+          equipment: EquipmentRecord[];
           userCollection: string[];
           mode: string;
         }) => (

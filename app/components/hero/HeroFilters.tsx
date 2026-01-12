@@ -7,12 +7,26 @@ import { ChevronDownIcon, FilterIcon } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible";
 import { Label } from "~/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "~/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 import {
   HeroClass,
   HeroFaction,
@@ -24,7 +38,10 @@ import {
   Stats,
 } from "~/data/ReadonlyArrays";
 import { useIsMobile } from "~/hooks/useIsMobile";
-import { countActiveFilters, type HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
+import {
+  countActiveFilters,
+  type HeroFilters as HeroFiltersType,
+} from "~/lib/hero-filtering";
 
 interface HeroFiltersProps {
   filters: HeroFiltersType;
@@ -41,10 +58,24 @@ export function HeroFilters({
   const activeFilterCount = countActiveFilters(filters);
 
   if (isMobile) {
-    return <MobileFilters filters={filters} onFiltersChange={onFiltersChange} showCollectionFilter={showCollectionFilter} activeFilterCount={activeFilterCount} />;
+    return (
+      <MobileFilters
+        filters={filters}
+        onFiltersChange={onFiltersChange}
+        showCollectionFilter={showCollectionFilter}
+        activeFilterCount={activeFilterCount}
+      />
+    );
   }
 
-  return <DesktopFilters filters={filters} onFiltersChange={onFiltersChange} showCollectionFilter={showCollectionFilter} activeFilterCount={activeFilterCount} />;
+  return (
+    <DesktopFilters
+      filters={filters}
+      onFiltersChange={onFiltersChange}
+      showCollectionFilter={showCollectionFilter}
+      activeFilterCount={activeFilterCount}
+    />
+  );
 }
 
 function MobileFilters({
@@ -126,24 +157,31 @@ function FilterContent({
   const handleFilterChange = <K extends keyof HeroFiltersType>(
     key: K,
     value: string | boolean,
-    checked: boolean
+    checked: boolean,
   ) => {
     const newFilters = { ...filters };
 
     if (typeof value === "boolean") {
       if (checked) {
-        (newFilters as any)[key] = value;
+        // Type-safe assignment for boolean filter keys
+        (newFilters as HeroFiltersType)[key] = value as HeroFiltersType[K];
       } else {
-        delete (newFilters as any)[key];
+        delete newFilters[key];
       }
     } else {
-      const currentValues = (newFilters[key] as string[]) || [];
+      const currentValues = (newFilters[key] as string[] | undefined) || [];
       if (checked) {
-        (newFilters as any)[key] = [...currentValues, value];
+        (newFilters as HeroFiltersType)[key] = [
+          ...currentValues,
+          value,
+        ] as HeroFiltersType[K];
       } else {
-        (newFilters as any)[key] = currentValues.filter((v) => v !== value);
-        if ((newFilters[key] as string[]).length === 0) {
+        const filteredValues = currentValues.filter((v) => v !== value);
+        if (filteredValues.length === 0) {
           delete newFilters[key];
+        } else {
+          (newFilters as HeroFiltersType)[key] =
+            filteredValues as HeroFiltersType[K];
         }
       }
     }

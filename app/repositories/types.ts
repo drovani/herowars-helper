@@ -14,7 +14,7 @@ export type TableRelationships<T extends TableName> =
 
 // Helper type to extract relationship names from table relationships
 export type RelationshipNames<T extends TableName> =
-  TableRelationships<T> extends readonly any[]
+  TableRelationships<T> extends readonly { referencedRelation: string }[]
     ? TableRelationships<T>[number] extends { referencedRelation: infer R }
       ? R extends string
         ? R
@@ -24,7 +24,10 @@ export type RelationshipNames<T extends TableName> =
 
 // Helper type to extract foreign key column names for reverse relationships
 export type ForeignKeyColumns<T extends TableName> = {
-  [K in TableName]: Database["public"]["Tables"][K]["Relationships"] extends readonly any[]
+  [K in TableName]: Database["public"]["Tables"][K]["Relationships"] extends readonly {
+    referencedRelation: string;
+    foreignKeyName: string;
+  }[]
     ? Database["public"]["Tables"][K]["Relationships"][number] extends {
         referencedRelation: T;
         foreignKeyName: infer F;

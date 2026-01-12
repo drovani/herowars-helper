@@ -19,6 +19,30 @@ import type {
 } from "./types";
 
 import { generateSlug } from "~/lib/utils";
+import type { Database } from "~/types/supabase";
+
+// Type alias for hero data from database
+type HeroRow = Database["public"]["Tables"]["hero"]["Row"];
+
+// Interface for raw team data with nested hero relationships
+interface RawTeamHeroData {
+  id: string;
+  team_id: string;
+  hero_slug: string;
+  created_at: string | null;
+  hero: HeroRow;
+}
+
+interface RawTeamData {
+  id: string;
+  user_id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  player_team_hero: RawTeamHeroData[] | null;
+}
 
 // Schema for input validation (create/update operations)
 const PlayerTeamInputSchema = z.object({
@@ -40,7 +64,9 @@ const PlayerTeamSchema = z.object({
 });
 
 export class PlayerTeamRepository extends BaseRepository<"player_team"> {
-  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
+  constructor(
+    requestOrSupabase: Request | SupabaseClient<Database> | null = null,
+  ) {
     if (
       requestOrSupabase &&
       typeof requestOrSupabase === "object" &&
@@ -52,7 +78,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         PlayerTeamInputSchema,
         "player_team",
         PlayerTeamSchema,
-        "id"
+        "id",
       );
     } else {
       // Request or null provided (standard operation)
@@ -60,7 +86,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         "player_team",
         PlayerTeamInputSchema,
         requestOrSupabase as Request | null,
-        "id"
+        "id",
       );
     }
   }
@@ -69,7 +95,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
    * Find all teams for a specific user with hero details
    */
   async findByUserId(
-    userId: string
+    userId: string,
   ): Promise<RepositoryResult<TeamWithHeroes[]>> {
     try {
       const { data, error } = await this.supabase
@@ -81,7 +107,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
             *,
             hero (*)
           )
-        `
+        `,
         )
         .eq("user_id", userId)
         .order("created_at", { ascending: false });
@@ -95,14 +121,15 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       }
 
       // Transform data to match TeamWithHeroes interface
-      const teams: TeamWithHeroes[] = (data || []).map((team) => ({
+      const rawData = data as RawTeamData[] | null;
+      const teams: TeamWithHeroes[] = (rawData || []).map((team) => ({
         ...team,
         heroes: (team.player_team_hero || [])
-          .map((teamHero: any) => ({
+          .map((teamHero: RawTeamHeroData) => ({
             ...teamHero,
             hero: teamHero.hero,
           }))
-          .sort((a: any, b: any) => b.hero.order_rank - a.hero.order_rank), // Sort by order_rank descending
+          .sort((a, b) => b.hero.order_rank - a.hero.order_rank), // Sort by order_rank descending
       }));
 
       return { data: teams, error: null };
@@ -123,7 +150,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
    */
   async createTeam(
     userId: string,
-    teamData: CreatePlayerTeamInput
+    teamData: CreatePlayerTeamInput,
   ): Promise<RepositoryResult<PlayerTeam>> {
     try {
       let teamName = teamData.name;
@@ -184,7 +211,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   async updateTeam(
     teamId: string,
     userId: string,
-    updates: UpdatePlayerTeamInput
+    updates: UpdatePlayerTeamInput,
   ): Promise<RepositoryResult<PlayerTeam>> {
     try {
       // Get current team to check for name changes
@@ -220,7 +247,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
         const slugValidation = await this.validateSlugUniqueness(
           userId,
           newSlug,
-          teamId
+          teamId,
         );
         if (!slugValidation.isValid) {
           return {
@@ -256,7 +283,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
               oldSlug: currentTeam.slug,
               newSlug,
               error: eventResult.error.message,
-            }
+            },
           );
         }
       }
@@ -303,7 +330,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
    */
   async deleteTeam(
     teamId: string,
-    userId: string
+    userId: string,
   ): Promise<RepositoryResult<boolean>> {
     try {
       // Verify user owns the team
@@ -356,7 +383,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   async addHeroToTeam(
     teamId: string,
     userId: string,
-    heroData: AddHeroToTeamInput
+    heroData: AddHeroToTeamInput,
   ): Promise<RepositoryResult<PlayerTeamHero>> {
     try {
       // First verify the team belongs to the user and get current hero count
@@ -366,7 +393,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
           `
           id,
           player_team_hero (id)
-        `
+        `,
         )
         .eq("id", teamId)
         .eq("user_id", userId)
@@ -440,7 +467,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   async removeHeroFromTeam(
     teamId: string,
     userId: string,
-    heroSlug: string
+    heroSlug: string,
   ): Promise<RepositoryResult<boolean>> {
     try {
       // Verify team belongs to user
@@ -501,7 +528,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       if (error) {
         log.warn(
           "Failed to get existing team names, defaulting to Team 1:",
-          error
+          error,
         );
         return 1;
       }
@@ -525,7 +552,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
    */
   async findTeamWithHeroes(
     teamId: string,
-    userId: string
+    userId: string,
   ): Promise<RepositoryResult<TeamWithHeroes>> {
     try {
       const { data, error } = await this.supabase
@@ -537,7 +564,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
             *,
             hero (*)
           )
-        `
+        `,
         )
         .eq("id", teamId)
         .eq("user_id", userId)
@@ -559,14 +586,15 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       }
 
       // Transform data to match TeamWithHeroes interface
+      const rawData = data as RawTeamData;
       const team: TeamWithHeroes = {
-        ...data,
-        heroes: (data.player_team_hero || [])
-          .map((teamHero: any) => ({
+        ...rawData,
+        heroes: (rawData.player_team_hero || [])
+          .map((teamHero: RawTeamHeroData) => ({
             ...teamHero,
             hero: teamHero.hero,
           }))
-          .sort((a: any, b: any) => b.hero.order_rank - a.hero.order_rank), // Sort by order_rank descending
+          .sort((a, b) => b.hero.order_rank - a.hero.order_rank), // Sort by order_rank descending
       };
 
       return { data: team, error: null };
@@ -587,7 +615,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
    */
   async findTeamBySlug(
     slug: string,
-    userId: string
+    userId: string,
   ): Promise<RepositoryResult<TeamWithHeroes>> {
     try {
       const { data, error } = await this.supabase
@@ -599,7 +627,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
             *,
             hero (*)
           )
-        `
+        `,
         )
         .eq("slug", slug)
         .eq("user_id", userId)
@@ -621,14 +649,15 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       }
 
       // Transform data to match TeamWithHeroes interface
+      const rawData = data as RawTeamData;
       const team: TeamWithHeroes = {
-        ...data,
-        heroes: (data.player_team_hero || [])
-          .map((teamHero: any) => ({
+        ...rawData,
+        heroes: (rawData.player_team_hero || [])
+          .map((teamHero: RawTeamHeroData) => ({
             ...teamHero,
             hero: teamHero.hero,
           }))
-          .sort((a: any, b: any) => b.hero.order_rank - a.hero.order_rank),
+          .sort((a, b) => b.hero.order_rank - a.hero.order_rank),
       };
 
       return { data: team, error: null };
@@ -650,7 +679,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
   private async validateSlugUniqueness(
     userId: string,
     slug: string,
-    excludeTeamId?: string
+    excludeTeamId?: string,
   ): Promise<{ isValid: boolean; error?: string }> {
     try {
       let query = this.supabase
@@ -692,14 +721,14 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
    */
   async findTeamByOldSlug(
     oldSlug: string,
-    userId: string
+    userId: string,
   ): Promise<RepositoryResult<PlayerTeam | null>> {
     try {
       // Query event log for UPDATE_TEAM_NAME events with the old slug
       const eventRepo = new PlayerEventRepository(this.supabase);
       const eventsResult = await eventRepo.findEventsByType(
         userId,
-        "UPDATE_TEAM_NAME"
+        "UPDATE_TEAM_NAME",
       );
 
       if (eventsResult.error || !eventsResult.data) {
@@ -724,7 +753,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
               {
                 teamId: eventData.team_id,
                 error: error.message,
-              }
+              },
             );
             continue;
           }

@@ -16,6 +16,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:report": "vitest run > docs/test-report.txt 2>&1",
     "test:ui": "vitest --ui",
     "format": "prettier . --check --ignore-path .gitignore",
     "format:write": "prettier . --write --ignore-path .gitignore",

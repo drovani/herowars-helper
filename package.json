@@ -21,7 +21,7 @@
     "format:write": "prettier . --write --ignore-path .gitignore",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "lint:report": "eslint . > reports/eslint-report.txt 2>&1",
+    "lint:report": "eslint . > docs/eslint-report.txt 2>&1",
     "checks": "react-router typegen && tsc && eslint . && prettier . --check --ignore-path .gitignore && vitest run"
   },
   "dependencies": {

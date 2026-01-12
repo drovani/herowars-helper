@@ -1,0 +1,287 @@
+
+/home/drovani/herowars-helper/app/__tests__/mocks/msw/utils.ts
+  62:43  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/components/auth/AuthenticationErrorBoundary.tsx
+  122:26  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/components/auth/RequireRole.tsx
+  22:12  error  Fragments should contain more than one child - otherwise, there’s no need for a Fragment at all  react/jsx-no-useless-fragment
+  25:10  error  Fragments should contain more than one child - otherwise, there’s no need for a Fragment at all  react/jsx-no-useless-fragment
+
+/home/drovani/herowars-helper/app/components/auth/__tests__/AuthenticationErrorBoundary.test.tsx
+  4:18  error  'fireEvent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/components/auth/__tests__/LoginForm.test.tsx
+   51:13  error  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   58:13  error  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   66:13  error  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  204:13  error  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  217:13  error  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/components/auth/__tests__/LoginModal.test.tsx
+  396:15  error  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/components/forms/FormErrorBoundary.tsx
+  98:88  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  99:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/components/forms/__tests__/FormErrorBoundary.test.tsx
+  4:18  error  'fireEvent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/components/hero-form/ItemSelectionDialog.tsx
+  91:43  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  91:57  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/components/player/AddAllHeroesButton.tsx
+  116:81  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/components/player/__tests__/HeroCollectionCard.test.tsx
+  202:23  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/components/player/details/ArtifactsView.tsx
+  32:56  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/components/skeletons/AdminSetupSkeleton.tsx
+  7:3  error  'CardDescription' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  9:3  error  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/components/ui/command.tsx
+  29:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/home/drovani/herowars-helper/app/components/ui/input.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/home/drovani/herowars-helper/app/config/site.test.ts
+  128:13  error  'originalTemplate' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/hooks/__tests__/useErrorBoundary.test.tsx
+  63:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/hooks/useErrorBoundary.tsx
+  64:1   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  66:23  error    Unexpected any. Specify a different type                                                               @typescript-eslint/no-explicit-any
+  66:41  error    Unexpected any. Specify a different type                                                               @typescript-eslint/no-explicit-any
+
+/home/drovani/herowars-helper/app/hooks/useQueryState.test.tsx
+  3:32  error  'vi' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/hooks/useQueryState.ts
+  26:5  warning  React Hook useCallback has a missing dependency: 'replaceState'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/drovani/herowars-helper/app/hooks/useRoles.tsx
+  52:6  warning  React Hook useMemo has a missing dependency: 'user'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/drovani/herowars-helper/app/lib/__tests__/artifact-calculations.test.ts
+  8:8  error  'ArtifactUpgradeResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/lib/auth/utils.ts
+  98:23  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+/home/drovani/herowars-helper/app/lib/hero-data-migration.ts
+   42:9  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+  284:7  warning  Unexpected console statement. Only these console methods are allowed: warn, error  no-console
+
+/home/drovani/herowars-helper/app/lib/supabase/admin-client.ts
+  23:7  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  24:7  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/lib/supabase/admin.ts
+  132:5  error  'userData' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/lib/supabase/client.ts
+  15:7  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  16:7  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  40:7  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  41:7  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/lib/utils.test.ts
+  166:25  error  Unexpected constant truthiness on the left-hand side of a `&&` expression  no-constant-binary-expression
+  167:25  error  Unexpected constant truthiness on the left-hand side of a `&&` expression  no-constant-binary-expression
+
+/home/drovani/herowars-helper/app/repositories/BaseRepository.ts
+  410:28  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  412:28  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  568:20  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  641:20  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/repositories/EquipmentRepository.ts
+   393:24  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   659:28  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   680:31  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   784:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   785:18  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   830:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   831:27  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   885:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   886:18  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+   887:27  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  1086:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  1087:18  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  1088:27  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/repositories/HeroRepository.ts
+    9:1   warning  There should be at least one empty line between import groups  import/order
+  922:20  warning  Forbidden non-null assertion                                   @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/repositories/PlayerTeamRepository.ts
+  419:42  error  'checkError' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/repositories/__tests__/EquipmentRepository.test.ts
+   862:11  error  'mockEnchantedLuteFragment' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  1004:13  error  'mockComponent' is assigned a value but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  1250:13  error  'mockFragment' is assigned a value but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/repositories/__tests__/HeroRepository.test.ts
+   11:3   error    'HeroArtifact' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   12:3   error    'HeroSkin' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   13:3   error    'HeroGlyph' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  733:16  warning  Forbidden non-null assertion                                                    @typescript-eslint/no-non-null-assertion
+  743:16  warning  Forbidden non-null assertion                                                    @typescript-eslint/no-non-null-assertion
+  753:16  warning  Forbidden non-null assertion                                                    @typescript-eslint/no-non-null-assertion
+  763:16  warning  Forbidden non-null assertion                                                    @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/repositories/__tests__/PlayerHeroRepository.test.ts
+  407:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/repositories/__tests__/PlayerTeamRepository.test.ts
+  118:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  119:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  121:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  122:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  140:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  189:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  190:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  249:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  250:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  308:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  340:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  383:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  474:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  475:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  476:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  585:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  732:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  810:14  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/routes/resources/api/admin/users.test.tsx
+  26:1  warning  `./users` import should occur before import of `~/__tests__/mocks/admin`  import/order
+
+/home/drovani/herowars-helper/app/routes/views/account/profile.tsx
+  52:14  error  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/routes/views/admin/index.tsx
+  8:10  error  Fragments should contain more than one child - otherwise, there’s no need for a Fragment at all  react/jsx-no-useless-fragment
+
+/home/drovani/herowars-helper/app/routes/views/admin/setup.tsx
+    36:15  error    'HeroRecord' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+    37:1   warning  `~/data/equipments.json` import should occur before type import of `~/data/hero.zod`  import/order
+    44:1   warning  There should be at least one empty line between import groups                         import/order
+    45:1   warning  `@supabase/supabase-js` type import should occur before import of `loglevel`          import/order
+   193:10  error    'getEquipmentSubset' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   870:38  error    'actionData' is defined but never used. Allowed unused args must match /^_/u          @typescript-eslint/no-unused-vars
+  1405:51  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                       react/no-unescaped-entities
+  1406:56  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                       react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/routes/views/admin/test-coverage.tsx
+   40:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   42:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  462:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/drovani/herowars-helper/app/routes/views/admin/users.tsx
+  106:12  error    'error' is defined but never used. Allowed unused caught errors must match /^_/u                                   @typescript-eslint/no-unused-vars
+  144:14  error    'error' is defined but never used. Allowed unused caught errors must match /^_/u                                   @typescript-eslint/no-unused-vars
+  207:39  error    'removed' is assigned a value but never used. Allowed unused vars must match /^_/u                                 @typescript-eslint/no-unused-vars
+  224:6   warning  React Hook useEffect has a missing dependency: 'isRevalidating'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  253:6   warning  React Hook useEffect has a missing dependency: 'revalidator'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
+  673:57  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
+  673:70  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
+  882:37  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
+  882:50  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/routes/views/auth/sign-up.tsx
+  80:22  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/routes/views/equipment/new.tsx
+   3:34  error    'data' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  79:35  warning  Forbidden non-null assertion                                            @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/routes/views/equipment/slug.edit.tsx
+  118:35  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/routes/views/heroes/__tests__/slug.edit.integration.test.ts
+   94:15  error  'result' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  105:16  error  'e' is defined but never used. Allowed unused caught errors must match /^_/u       @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/routes/views/heroes/index.tsx
+   5:3   error    'ChevronLeftIcon' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   6:3   error    'ChevronRightIcon' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  24:10  error    'Button' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  48:3   error    'sortHeroRecords' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  55:1   warning  `~/data/hero.zod` type import should occur before import of `~/hooks/useIsMobile`       import/order
+  56:1   warning  `~/data/equipment.zod` type import should occur before import of `~/hooks/useIsMobile`  import/order
+
+/home/drovani/herowars-helper/app/routes/views/heroes/slug.edit.tsx
+  218:3  error  'actionData' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/routes/views/heroes/slug.tsx
+  39:1  warning  `~/data/hero.zod` type import should occur before import of `~/lib/auth/utils`       import/order
+  40:1  warning  `~/data/equipment.zod` type import should occur before import of `~/lib/auth/utils`  import/order
+  41:1  warning  `~/data/mission.zod` type import should occur before import of `~/lib/auth/utils`    import/order
+
+/home/drovani/herowars-helper/app/routes/views/missions/index.tsx
+  58:21  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/routes/views/missions/slug.edit.tsx
+    7:10  error  'ZodError' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   19:8   error  'Mission' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  111:3   error  'actionData' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/routes/views/player/index.tsx
+  8:10  error  Fragments should contain more than one child - otherwise, there’s no need for a Fragment at all  react/jsx-no-useless-fragment
+
+/home/drovani/herowars-helper/app/routes/views/player/roster/$heroSlug.$view.tsx
+  43:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  43:31  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  68:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  68:42  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/routes/views/player/roster/$heroSlug.tsx
+  39:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  39:42  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/routes/views/player/roster/layout.tsx
+  145:11  error  'heroes' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/drovani/herowars-helper/app/routes/views/player/teams/index.tsx
+   7:22  error    'useLoaderData' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  79:27  warning  Forbidden non-null assertion                                                     @typescript-eslint/no-non-null-assertion
+  80:19  warning  Forbidden non-null assertion                                                     @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/routes/views/player/teams/new.tsx
+  72:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  93:27  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/drovani/herowars-helper/app/routes/views/public/index.tsx
+  88:71  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  97:74  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/routes/views/tools/artifact-calculator.tsx
+  181:17  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/routes/views/tools/skin-calculator.tsx
+  112:29  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  127:53  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  127:59  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  224:77  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  245:51  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  245:57  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  245:82  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/home/drovani/herowars-helper/app/services/types.ts
+  19:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+✖ 161 problems (57 errors, 104 warnings)
+  0 errors and 10 warnings potentially fixable with the `--fix` option.
+

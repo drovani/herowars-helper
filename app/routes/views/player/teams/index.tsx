@@ -70,14 +70,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
         description: description || undefined,
       });
 
-      if (result.error) {
-        return { error: result.error.message };
+      if (result.error || !result.data) {
+        return { error: result.error?.message ?? "Failed to create team" };
       }
 
       return {
         success: true,
-        message: `Team "${result.data!.name}" created successfully`,
-        teamSlug: result.data!.slug,
+        message: `Team "${result.data.name}" created successfully`,
+        teamSlug: result.data.slug,
       };
     }
 

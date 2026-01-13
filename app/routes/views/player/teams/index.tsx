@@ -4,7 +4,7 @@
 import { useState } from "react";
 
 import { PlusIcon } from "lucide-react";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+import { useFetcher, useNavigate } from "react-router";
 
 import type { Route } from "./+types/index";
 

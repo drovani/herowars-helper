@@ -3,6 +3,8 @@
 
 import type { User } from "@supabase/supabase-js";
 
+import { useAuth } from "~/contexts/AuthContext";
+
 // Define the auth context user type based on the actual AuthContext
 export interface AuthContextUser {
   id: string;
@@ -95,7 +97,6 @@ export async function isAuthenticated(request: Request): Promise<boolean> {
  * Use this in React components
  */
 export function useAuthenticatedUser(): ClientAuthResult {
-  const { useAuth } = require("~/contexts/AuthContext");
   const { user, isLoading } = useAuth();
 
   return {

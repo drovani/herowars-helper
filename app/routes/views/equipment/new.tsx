@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { redirect, type UIMatch, data } from "react-router";
+import { redirect, type UIMatch } from "react-router";
 import { ZodError } from "zod";
 
 import type { Route } from "./+types/new";

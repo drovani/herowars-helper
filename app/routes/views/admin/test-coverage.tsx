@@ -37,8 +37,11 @@ import { createClient } from "~/lib/supabase/client";
 
 interface CoverageFile {
   path: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Istanbul coverage format uses complex nested structure
   statementMap: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Istanbul coverage format uses complex nested structure
   fnMap: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Istanbul coverage format uses complex nested structure
   branchMap: Record<string, any>;
   s: Record<string, number>;
   f: Record<string, number>;
@@ -458,7 +461,7 @@ export default function AdminTestCoverage() {
   const allFiles = Object.entries(coverage).filter(
     ([key]) => !key.includes("total")
   );
-  const summary = (coverage as any).total as CoverageSummary | undefined;
+  const summary = coverage["total"] as CoverageSummary | undefined;
 
   // Filter files based on selected criteria
   const filteredFiles = useMemo(() => {

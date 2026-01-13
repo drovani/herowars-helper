@@ -109,7 +109,7 @@ export default function SkinCalculator() {
                     </h1>
                     <p className="text-muted-foreground">
                         Calculate how many skin stone chests you need to open to upgrade your
-                        hero's skins to level 60.
+                        hero&apos;s skins to level 60.
                     </p>
                 </div>
 
@@ -124,7 +124,7 @@ export default function SkinCalculator() {
                             htmlFor="unlock-cost"
                             className="text-sm font-normal cursor-pointer"
                         >
-                            Include unlock cost for "Other" skins (5,000 stones)
+                            Include unlock cost for &quot;Other&quot; skins (5,000 stones)
                         </Label>
                     </div>
                     <Button variant="outline" onClick={handleClear} className="w-full md:w-auto">
@@ -221,7 +221,7 @@ export default function SkinCalculator() {
                             <p className="font-medium text-foreground">Skin Types:</p>
                             <ul className="list-disc list-inside space-y-1 ml-2">
                                 <li>
-                                    <strong>Default:</strong> Increases hero's main stat (30,825
+                                    <strong>Default:</strong> Increases hero&apos;s main stat (30,825
                                     stones total)
                                 </li>
                                 <li>
@@ -242,7 +242,7 @@ export default function SkinCalculator() {
                         <p className="text-xs italic">
                             Note: This calculator shows stones needed to level from current
                             level to 60. Use the checkbox above to optionally include the 5,000
-                            stone unlock cost for "Other" skin types if you haven't unlocked
+                            stone unlock cost for &quot;Other&quot; skin types if you haven&apos;t unlocked
                             them yet.
                         </p>
                     </CardContent>

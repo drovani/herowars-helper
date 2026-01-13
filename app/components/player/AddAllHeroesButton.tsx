@@ -113,7 +113,7 @@ export function AddAllHeroesButton({
               Add All Heroes to Collection
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This will add all available heroes to your collection that you don't already have.
+              This will add all available heroes to your collection that you don&apos;t already have.
               {expectedAddCount !== undefined && expectedAddCount > 0 && (
                 <>
                   <br />

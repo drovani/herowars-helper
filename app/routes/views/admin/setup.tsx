@@ -1393,8 +1393,8 @@ export function ErrorBoundary(props: Route.ErrorBoundaryProps) {
         <AlertTitle>Error in this route</AlertTitle>
         <AlertDescription>
           For some reason, after the form is posted and the data is processed,
-          React Router throws an AbortError. I can't figure out why, but I know
-          the data is there and the results are good. I'll try to fix this soon.
+          React Router throws an AbortError. I can&apos;t figure out why, but I know
+          the data is there and the results are good. I&apos;ll try to fix this soon.
         </AlertDescription>
         <AlertDescription>
           <pre>{JSON.stringify(props, null, 2)}</pre>

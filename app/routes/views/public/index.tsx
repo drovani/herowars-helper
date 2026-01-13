@@ -85,7 +85,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
-                    Craft and upgrade equipment to enhance your heroes' stats
+                    Craft and upgrade equipment to enhance your heroes&apos; stats
                     and abilities
                   </CardContent>
                 </Card>
@@ -94,7 +94,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                     <CardTitle className="text-lg">Strategic Combat</CardTitle>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
-                    Build synergistic teams that combine different heroes'
+                    Build synergistic teams that combine different heroes&apos;
                     strengths and abilities
                   </CardContent>
                 </Card>

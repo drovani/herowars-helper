@@ -88,7 +88,7 @@ export default function ItemSelectionDialog({
           </div>
           {availableEquipment.length === 0 && searchQuery && (
             <div className="text-center text-muted-foreground py-8">
-              No equipment found matching "{searchQuery}"
+              No equipment found matching &quot;{searchQuery}&quot;
             </div>
           )}
         </ScrollArea>

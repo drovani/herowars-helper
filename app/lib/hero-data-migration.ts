@@ -1,6 +1,8 @@
 // ABOUTME: Utility for migrating hero data from JSON format to database format
 // ABOUTME: Transforms complex nested hero data structures for bulk database operations
 
+import log from "loglevel";
+
 import type { HeroRecord } from "~/data/hero.zod";
 import type { CreateInput, CreateHeroWithData } from "~/repositories/types";
 
@@ -23,7 +25,7 @@ export interface HeroMigrationOptions {
  */
 export function transformHeroData(
   jsonHeroes: HeroRecord[],
-  options: HeroMigrationOptions = {}
+  options: HeroMigrationOptions = {},
 ): HeroMigrationResult {
   const { skipInvalidData = true, logProgress = false } = options;
 
@@ -39,7 +41,7 @@ export function transformHeroData(
   for (const jsonHero of jsonHeroes) {
     try {
       if (logProgress) {
-        console.log(`Processing hero: ${jsonHero.name} (${jsonHero.slug})`);
+        log.info(`Processing hero: ${jsonHero.name} (${jsonHero.slug})`);
       }
 
       // Validate required fields
@@ -89,7 +91,7 @@ export function transformHeroData(
       if (jsonHero.items) {
         const equipmentSlots = transformEquipmentSlots(
           jsonHero.slug,
-          jsonHero.items
+          jsonHero.items,
         );
         result.equipmentSlots.push(...equipmentSlots);
       }
@@ -113,7 +115,7 @@ export function transformHeroData(
  */
 function transformArtifacts(
   heroSlug: string,
-  artifacts: HeroRecord["artifacts"]
+  artifacts: HeroRecord["artifacts"],
 ): CreateInput<"hero_artifact">[] {
   if (!artifacts) return [];
 
@@ -160,7 +162,7 @@ function transformArtifacts(
  */
 function transformSkins(
   heroSlug: string,
-  skins: HeroRecord["skins"]
+  skins: HeroRecord["skins"],
 ): CreateInput<"hero_skin">[] {
   if (!skins) return [];
 
@@ -179,7 +181,7 @@ function transformSkins(
  */
 function transformGlyphs(
   heroSlug: string,
-  glyphs: HeroRecord["glyphs"]
+  glyphs: HeroRecord["glyphs"],
 ): CreateInput<"hero_glyph">[] {
   if (!glyphs) return [];
 
@@ -202,7 +204,7 @@ function transformGlyphs(
  */
 function transformEquipmentSlots(
   heroSlug: string,
-  items: HeroRecord["items"]
+  items: HeroRecord["items"],
 ): CreateInput<"hero_equipment_slot">[] {
   if (!items) return [];
 
@@ -248,15 +250,15 @@ function transformEquipmentSlots(
  * Create a complete hero data structure for bulk creation
  */
 export function createHeroWithDataFromJson(
-  jsonHero: HeroRecord
+  jsonHero: HeroRecord,
 ): CreateHeroWithData {
   const migration = transformHeroData([jsonHero]);
 
   if (migration.errors.length > 0) {
     throw new Error(
       `Failed to transform hero ${jsonHero.slug}: ${migration.errors.join(
-        ", "
-      )}`
+        ", ",
+      )}`,
     );
   }
 
@@ -266,7 +268,7 @@ export function createHeroWithDataFromJson(
     skins: migration.skins.filter((s) => s.hero_slug === jsonHero.slug),
     glyphs: migration.glyphs.filter((g) => g.hero_slug === jsonHero.slug),
     equipmentSlots: migration.equipmentSlots.filter(
-      (es) => es.hero_slug === jsonHero.slug
+      (es) => es.hero_slug === jsonHero.slug,
     ),
   };
 }
@@ -276,12 +278,12 @@ export function createHeroWithDataFromJson(
  */
 export function createProgressCallback(
   operationName: string,
-  logProgress: boolean = true
+  logProgress: boolean = true,
 ) {
   return (completed: number, total: number) => {
     if (logProgress) {
       const percentage = Math.round((completed / total) * 100);
-      console.log(`${operationName}: ${completed}/${total} (${percentage}%)`);
+      log.info(`${operationName}: ${completed}/${total} (${percentage}%)`);
     }
   };
 }
@@ -295,71 +297,71 @@ export function validateMigrationResult(result: HeroMigrationResult): string[] {
   // Check for duplicate hero slugs
   const heroSlugs = result.heroes.map((h) => h.slug);
   const duplicateHeroSlugs = heroSlugs.filter(
-    (slug, index) => heroSlugs.indexOf(slug) !== index
+    (slug, index) => heroSlugs.indexOf(slug) !== index,
   );
   if (duplicateHeroSlugs.length > 0) {
     validationErrors.push(
-      `Duplicate hero slugs found: ${duplicateHeroSlugs.join(", ")}`
+      `Duplicate hero slugs found: ${duplicateHeroSlugs.join(", ")}`,
     );
   }
 
   // Check for orphaned artifacts
   const orphanedArtifacts = result.artifacts.filter(
-    (a) => !heroSlugs.includes(a.hero_slug)
+    (a) => !heroSlugs.includes(a.hero_slug),
   );
   if (orphanedArtifacts.length > 0) {
     validationErrors.push(
-      `Found ${orphanedArtifacts.length} artifacts with missing hero references`
+      `Found ${orphanedArtifacts.length} artifacts with missing hero references`,
     );
   }
 
   // Check for orphaned skins
   const orphanedSkins = result.skins.filter(
-    (s) => !heroSlugs.includes(s.hero_slug)
+    (s) => !heroSlugs.includes(s.hero_slug),
   );
   if (orphanedSkins.length > 0) {
     validationErrors.push(
-      `Found ${orphanedSkins.length} skins with missing hero references`
+      `Found ${orphanedSkins.length} skins with missing hero references`,
     );
   }
 
   // Check for orphaned glyphs
   const orphanedGlyphs = result.glyphs.filter(
-    (g) => !heroSlugs.includes(g.hero_slug)
+    (g) => !heroSlugs.includes(g.hero_slug),
   );
   if (orphanedGlyphs.length > 0) {
     validationErrors.push(
-      `Found ${orphanedGlyphs.length} glyphs with missing hero references`
+      `Found ${orphanedGlyphs.length} glyphs with missing hero references`,
     );
   }
 
   // Check for orphaned equipment slots
   const orphanedEquipmentSlots = result.equipmentSlots.filter(
-    (es) => !heroSlugs.includes(es.hero_slug)
+    (es) => !heroSlugs.includes(es.hero_slug),
   );
   if (orphanedEquipmentSlots.length > 0) {
     validationErrors.push(
-      `Found ${orphanedEquipmentSlots.length} equipment slots with missing hero references`
+      `Found ${orphanedEquipmentSlots.length} equipment slots with missing hero references`,
     );
   }
 
   // Check for invalid glyph positions
   const invalidGlyphPositions = result.glyphs.filter(
-    (g) => g.position < 1 || g.position > 5
+    (g) => g.position < 1 || g.position > 5,
   );
   if (invalidGlyphPositions.length > 0) {
     validationErrors.push(
-      `Found ${invalidGlyphPositions.length} glyphs with invalid positions (must be 1-5)`
+      `Found ${invalidGlyphPositions.length} glyphs with invalid positions (must be 1-5)`,
     );
   }
 
   // Check for invalid equipment slot positions
   const invalidSlotPositions = result.equipmentSlots.filter(
-    (es) => es.slot_position < 1 || es.slot_position > 6
+    (es) => es.slot_position < 1 || es.slot_position > 6,
   );
   if (invalidSlotPositions.length > 0) {
     validationErrors.push(
-      `Found ${invalidSlotPositions.length} equipment slots with invalid positions (must be 1-6)`
+      `Found ${invalidSlotPositions.length} equipment slots with invalid positions (must be 1-6)`,
     );
   }
 

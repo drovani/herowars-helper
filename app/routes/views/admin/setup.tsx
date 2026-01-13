@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import {
   AlertCircle,
@@ -32,8 +33,6 @@ import {
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { formatTitle } from "~/config/site";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { HeroRecord } from "~/data/hero.zod";
 import equipmentsData from "~/data/equipments.json";
 import heroesData from "~/data/heroes.json";
 import chaptersAndMissionsData from "~/data/missions.json";
@@ -41,8 +40,9 @@ import { createAdminClient } from "~/lib/supabase/admin-client";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
+
+import type { EquipmentRecord } from "~/data/equipment.zod";
 import type { Database } from "~/types/supabase";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Interfaces for initialization results tracking
 interface InitResultDetails {
@@ -187,14 +187,6 @@ function transformMissions(data: typeof chaptersAndMissionsData) {
 // Helper function to transform equipment data to expected format
 function transformEquipments(data: typeof equipmentsData): EquipmentRecord[] {
   return data as EquipmentRecord[];
-}
-
-// Helper function to get a subset of equipment for testing
-function getEquipmentSubset(
-  data: typeof equipmentsData,
-  limit: number = 10,
-): EquipmentRecord[] {
-  return data.slice(0, limit) as EquipmentRecord[];
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -867,7 +859,7 @@ function DetailsSection({
   );
 }
 
-export default function AdminSetup({ actionData }: Route.ComponentProps) {
+export default function AdminSetup({ actionData: _actionData }: Route.ComponentProps) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const initdata = useMemo(() => fetcher.data, [fetcher.data]);

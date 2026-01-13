@@ -14,7 +14,7 @@ export function createClient(request: Request | null = null) {
 
     if (!supabaseUrl || !anonKey) {
       throw new Error(
-        "SUPABASE_DATABASE_URL and SUPABASE_ANON_KEY environment variables are required"
+        "SUPABASE_DATABASE_URL and SUPABASE_ANON_KEY environment variables are required",
       );
     }
 
@@ -23,7 +23,7 @@ export function createClient(request: Request | null = null) {
     const supabase = createServerClient<Database>(supabaseUrl, anonKey, {
       cookies: {
         getAll() {
-          return parseCookieHeader(request?.headers?.get("Cookie") ?? "") as {
+          return parseCookieHeader(request.headers.get("Cookie") ?? "") as {
             name: string;
             value: string;
           }[];
@@ -32,8 +32,8 @@ export function createClient(request: Request | null = null) {
           cookiesToSet.forEach(({ name, value, options }) =>
             headers.append(
               "Set-Cookie",
-              serializeCookieHeader(name, value, options)
-            )
+              serializeCookieHeader(name, value, options),
+            ),
           );
         },
       },
@@ -46,7 +46,7 @@ export function createClient(request: Request | null = null) {
 
     if (!supabaseUrl || !anonKey) {
       throw new Error(
-        "VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_ANON_KEY environment variables are required"
+        "VITE_SUPABASE_DATABASE_URL and VITE_SUPABASE_ANON_KEY environment variables are required",
       );
     }
 

@@ -5,5 +5,5 @@ export const meta = (_: Route.MetaArgs) => {
 };
 
 export default function Admin() {
-  return <></>;
+  return null;
 }

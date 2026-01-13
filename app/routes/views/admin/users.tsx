@@ -103,7 +103,7 @@ async function loadUsersData(request: Request) {
       error: null,
       hasServiceRole: true,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       users: [],
       error: "Service role not configured or API unavailable",
@@ -141,7 +141,7 @@ export const action = async ({ request }: { request: Request }) => {
 
       const data = await response.json();
       return data;
-    } catch (error) {
+    } catch (_error) {
       return {
         success: false,
         error: `Failed to ${action}`,
@@ -204,7 +204,7 @@ function AdminUsersContent({
         // Revert optimistic update on error
         setOptimisticUserStates((prev) => {
           if (updatingUserId) {
-            const { [updatingUserId]: removed, ...rest } = prev;
+            const { [updatingUserId]: _removed, ...rest } = prev;
             return rest;
           }
           return prev;

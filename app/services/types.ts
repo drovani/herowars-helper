@@ -16,4 +16,4 @@ export const ChangeTrackedSchema = z.object({
   updated_on: z.iso.date(),
 });
 
-export interface IChangeTracked extends z.infer<typeof ChangeTrackedSchema> {}
+export type IChangeTracked = z.infer<typeof ChangeTrackedSchema>;

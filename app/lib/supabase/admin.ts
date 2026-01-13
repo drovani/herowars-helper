@@ -129,7 +129,7 @@ export const adminUserOperations = {
   async createUser(
     email: string,
     password: string,
-    userData?: { full_name?: string; roles?: string[] },
+    _userData?: { full_name?: string; roles?: string[] },
   ) {
     const supabase = createAdminClient();
 

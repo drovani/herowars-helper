@@ -61,8 +61,8 @@ export function useErrorBoundary() {
  * }
  * ```
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic function wrapper requires any for type inference
 export function useAsyncErrorBoundary<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic function wrapper requires any for type inference
   T extends (...args: any[]) => Promise<any>,
 >(asyncFn: T): T {
   const showBoundary = useErrorBoundary();

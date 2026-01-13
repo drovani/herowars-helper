@@ -1,12 +1,7 @@
 import { Suspense, useState, useMemo } from "react";
 
 import { ToggleGroup } from "@radix-ui/react-toggle-group";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  LayoutGridIcon,
-  LayoutListIcon,
-} from "lucide-react";
+import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
 import { Await, Link, useFetcher, useNavigate } from "react-router";
 
 import type { Route } from "./+types/index";
@@ -21,7 +16,6 @@ import HeroSkinsCompact from "~/components/hero/HeroSkinsCompact";
 import { HeroSortControls } from "~/components/hero/HeroSortControls";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
 import { HeroIndexSkeleton } from "~/components/skeletons/HeroIndexSkeleton";
-import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { ToggleGroupItem } from "~/components/ui/toggle-group";
@@ -44,16 +38,13 @@ import {
   createSortParams,
   type SortOptions,
 } from "~/lib/hero-sorting";
-import {
-  sortHeroRecords,
-  transformCompleteHeroToRecord,
-} from "~/lib/hero-transformations";
+import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { Hero } from "~/repositories/types";
-import type { HeroRecord } from "~/data/hero.zod";
-import type { EquipmentRecord } from "~/data/equipment.zod";
 
 async function loadHeroesData(request: Request) {
   const url = new URL(request.url);

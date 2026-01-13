@@ -145,7 +145,7 @@ function MissionsContent({
             />
           </div>
         </div>
-        <div className="w-full sm:w-[200px]">
+        <div className="w-full sm:w-50">
           <Select
             value={selectedBoss || "all"}
             onValueChange={(value) =>

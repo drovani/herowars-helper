@@ -69,14 +69,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const equipmentRepo = new EquipmentRepository(request);
     const createResult = await equipmentRepo.create(validated);
 
-    if (createResult.error) {
+    if (createResult.error || !createResult.data) {
       return data(
-        { errors: { _errors: [createResult.error.message] } },
+        { errors: { _errors: [createResult.error?.message ?? "Failed to create equipment"] } },
         { status: 400 }
       );
     }
 
-    return redirect(`/equipment/${createResult.data!.slug}`);
+    return redirect(`/equipment/${createResult.data.slug}`);
   } catch (error) {
     if (error instanceof ZodError) {
       return data({ errors: error.format() }, { status: 400 });

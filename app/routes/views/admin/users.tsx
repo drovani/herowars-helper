@@ -221,7 +221,7 @@ function AdminUsersContent({
       }
       setUpdatingUserId(null); // Clear updating state
     }
-  }, [fetcher.data, updatingUserId, revalidator]);
+  }, [fetcher.data, updatingUserId, isRevalidating, revalidator]);
 
   // Clear updating state when fetcher becomes idle
   useEffect(() => {
@@ -250,12 +250,12 @@ function AdminUsersContent({
         setMessage(createUserFetcher.data.error || "Failed to create user");
       }
     }
-  }, [createUserFetcher.data]);
+  }, [createUserFetcher.data, revalidator]);
 
   const handleRoleChange = (userId: string, roles: string[]) => {
     if (!hasServiceRole) {
       setMessage(
-        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables."
+        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.",
       );
       return;
     }
@@ -273,7 +273,7 @@ function AdminUsersContent({
         userId,
         roles: JSON.stringify(roles),
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
@@ -297,7 +297,7 @@ function AdminUsersContent({
   const handleUserStatusChange = (userId: string, isEnabled: boolean) => {
     if (!hasServiceRole) {
       setMessage(
-        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables."
+        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.",
       );
       return;
     }
@@ -316,14 +316,14 @@ function AdminUsersContent({
         action,
         userId,
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
   const handleDeleteUser = (userId: string) => {
     if (!hasServiceRole) {
       setMessage(
-        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables."
+        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.",
       );
       return;
     }
@@ -341,7 +341,7 @@ function AdminUsersContent({
         action: "deleteUser",
         userId,
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
@@ -359,7 +359,7 @@ function AdminUsersContent({
         fullName: createUserForm.fullName,
         roles: JSON.stringify(createUserForm.roles),
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
@@ -546,12 +546,13 @@ function AdminUsersContent({
         <CardContent className="p-3 sm:p-6">
           {message && (
             <div
-              className={`mb-4 p-3 rounded border break-words text-sm ${hasServiceRole
+              className={`mb-4 p-3 rounded border break-words text-sm ${
+                hasServiceRole
                   ? message.includes("success")
                     ? "bg-green-100 text-green-800 border-green-300"
                     : "bg-red-100 text-red-800 border-red-300"
                   : "bg-yellow-100 text-yellow-800 border-yellow-300"
-                }`}
+              }`}
             >
               {!hasServiceRole && (
                 <strong className="block sm:inline">
@@ -670,9 +671,10 @@ function AdminUsersContent({
                                       </AlertDialogTitle>
                                       <AlertDialogDescription>
                                         Are you sure you want to permanently
-                                        delete the user &quot;{user.email}&quot;? This
-                                        action cannot be undone and will remove
-                                        all user data from the system.
+                                        delete the user &quot;{user.email}
+                                        &quot;? This action cannot be undone and
+                                        will remove all user data from the
+                                        system.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -879,8 +881,8 @@ function AdminUsersContent({
                                   </AlertDialogTitle>
                                   <AlertDialogDescription className="text-sm">
                                     Are you sure you want to permanently delete
-                                    &quot;{user.email}&quot;? This action cannot be
-                                    undone.
+                                    &quot;{user.email}&quot;? This action cannot
+                                    be undone.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter className="flex-col sm:flex-row gap-2">

@@ -49,5 +49,5 @@ export function useRoles() {
       isAuthenticated,
       isLoading,
     };
-  }, [user?.roles, isAuthenticated, isLoading]);
+  }, [user, isAuthenticated, isLoading]);
 }

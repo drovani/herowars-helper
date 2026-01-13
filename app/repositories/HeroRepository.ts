@@ -23,6 +23,7 @@ import type {
   HeroWithSkins,
   RepositoryResult,
 } from "./types";
+
 import type { Database } from "~/types/supabase";
 
 // Type for raw hero data from Supabase with joined relationships

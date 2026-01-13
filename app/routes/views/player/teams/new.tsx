@@ -65,21 +65,21 @@ export const action = async ({ request }: Route.ActionArgs) => {
         description: description || undefined,
       });
 
-      if (teamResult.error) {
-        return { error: teamResult.error.message };
+      if (teamResult.error || !teamResult.data) {
+        return { error: teamResult.error?.message ?? "Failed to create team" };
       }
 
-      const teamId = teamResult.data!.id;
+      const team = teamResult.data;
 
       // Add heroes to the team
       if (heroSlugs.length > 0) {
         for (const heroSlug of heroSlugs) {
-          const addResult = await teamRepo.addHeroToTeam(teamId, user.id, {
+          const addResult = await teamRepo.addHeroToTeam(team.id, user.id, {
             hero_slug: heroSlug,
           });
           if (addResult.error) {
             // If adding heroes fails, we should probably clean up the team
-            await teamRepo.deleteTeam(teamId, user.id);
+            await teamRepo.deleteTeam(team.id, user.id);
             return {
               error: `Failed to add hero ${heroSlug}: ${addResult.error.message}`,
             };
@@ -89,8 +89,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
       return {
         success: true,
-        teamId,
-        message: `Team "${teamResult.data!.name}" created successfully`,
+        teamId: team.id,
+        message: `Team "${team.name}" created successfully`,
         redirect: `/player/teams`,
       };
     }

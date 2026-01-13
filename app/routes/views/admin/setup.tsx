@@ -33,6 +33,7 @@ import {
 import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { formatTitle } from "~/config/site";
+import type { EquipmentRecord } from "~/data/equipment.zod";
 import equipmentsData from "~/data/equipments.json";
 import heroesData from "~/data/heroes.json";
 import chaptersAndMissionsData from "~/data/missions.json";
@@ -40,8 +41,6 @@ import { createAdminClient } from "~/lib/supabase/admin-client";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-
-import type { EquipmentRecord } from "~/data/equipment.zod";
 import type { Database } from "~/types/supabase";
 
 // Interfaces for initialization results tracking

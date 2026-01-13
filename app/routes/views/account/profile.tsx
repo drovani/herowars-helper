@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import log from "loglevel";
+
 import type { Route } from "./+types/profile";
 
 import { Button } from "~/components/ui/button";
@@ -14,7 +16,6 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
-
 
 export const loader = async (_: Route.LoaderArgs) => {
   return {};
@@ -49,8 +50,11 @@ export default function AccountIndex(_: Route.ComponentProps) {
     try {
       await updateProfile({ full_name: displayName });
       setMessage("Display name updated successfully!");
-    } catch (_error) {
-      setMessage("Failed to update display name. Please try again.");
+    } catch (error) {
+      log.error("Failed to update profile display name:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      setMessage(`Failed to update display name: ${errorMessage}`);
     } finally {
       setIsUpdating(false);
     }

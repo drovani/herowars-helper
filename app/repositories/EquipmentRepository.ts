@@ -398,8 +398,12 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
       // Filter out any failed results
       const validRequiredItems = requiredItemsWithEquipment.filter(
-        (item): item is { equipment: NonNullable<typeof item.equipment>; quantity: number } =>
-          item.equipment !== null,
+        (
+          item,
+        ): item is {
+          equipment: NonNullable<typeof item.equipment>;
+          quantity: number;
+        } => item.equipment !== null,
       );
 
       return {
@@ -452,7 +456,15 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
       // Process each required item
       for (const requiredItem of requiredItemsResult.data) {
         const componentResult = await this.findById(requiredItem.required_slug);
-        if (componentResult.error || !componentResult.data) {
+        if (componentResult.error) {
+          log.warn(
+            `Failed to load component ${requiredItem.required_slug}:`,
+            componentResult.error,
+          );
+          continue;
+        }
+        if (!componentResult.data) {
+          log.warn(`Component not found: ${requiredItem.required_slug}`);
           continue;
         }
 
@@ -461,7 +473,14 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         // Check if this component also has crafting requirements (recursive)
         if (component.crafting_gold_cost && component.crafting_gold_cost > 0) {
           const rawsResult = await this.findEquipmentRequiredForRaw(component);
-          if (rawsResult.error || !rawsResult.data) {
+          if (rawsResult.error) {
+            log.warn(
+              `Failed to load raw components for ${component.slug}:`,
+              rawsResult.error,
+            );
+            continue;
+          }
+          if (!rawsResult.data) {
             continue;
           }
 
@@ -657,8 +676,11 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         // Filter out any failed results and extract the data
         const equipmentRecords = equipmentResults
           .filter(
-            (result): result is typeof result & { data: NonNullable<typeof result.data> } =>
-              result.data !== null,
+            (
+              result,
+            ): result is typeof result & {
+              data: NonNullable<typeof result.data>;
+            } => result.data !== null,
           )
           .map((result) => result.data);
 

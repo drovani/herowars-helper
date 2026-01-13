@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 
+import log from "loglevel";
 import {
   UserRoundCheckIcon,
   UserRoundMinusIcon,
@@ -103,10 +104,13 @@ async function loadUsersData(request: Request) {
       error: null,
       hasServiceRole: true,
     };
-  } catch (_error) {
+  } catch (error) {
+    log.error("Admin users loader failed:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     return {
       users: [],
-      error: "Service role not configured or API unavailable",
+      error: `Failed to load users: ${errorMessage}`,
       hasServiceRole: false,
     };
   }
@@ -141,10 +145,13 @@ export const action = async ({ request }: { request: Request }) => {
 
       const data = await response.json();
       return data;
-    } catch (_error) {
+    } catch (error) {
+      log.error(`Admin users action '${action}' failed:`, error);
+      const errorDetail =
+        error instanceof Error ? error.message : "Unknown error";
       return {
         success: false,
-        error: `Failed to ${action}`,
+        error: `Failed to ${action}: ${errorDetail}`,
       };
     }
   }
@@ -546,12 +553,13 @@ function AdminUsersContent({
         <CardContent className="p-3 sm:p-6">
           {message && (
             <div
-              className={`mb-4 p-3 rounded border wrap-break-word text-sm ${hasServiceRole
+              className={`mb-4 p-3 rounded border wrap-break-word text-sm ${
+                hasServiceRole
                   ? message.includes("success")
                     ? "bg-green-100 text-green-800 border-green-300"
                     : "bg-red-100 text-red-800 border-red-300"
                   : "bg-yellow-100 text-yellow-800 border-yellow-300"
-                }`}
+              }`}
             >
               {!hasServiceRole && (
                 <strong className="block sm:inline">

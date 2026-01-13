@@ -15,41 +15,37 @@ export function createAdminClient(request: Request | null = null) {
 
   if (!supabaseUrl) {
     throw new Error(
-      "VITE_SUPABASE_DATABASE_URL environment variable is required for admin operations"
+      "VITE_SUPABASE_DATABASE_URL environment variable is required for admin operations",
     );
   }
 
   if (!serviceRoleKey) {
     throw new Error(
-      "SUPABASE_SERVICE_ROLE_KEY environment variable is required for admin operations"
+      "SUPABASE_SERVICE_ROLE_KEY environment variable is required for admin operations",
     );
   }
 
   if (request !== null && typeof process !== "undefined") {
     const headers = new Headers();
 
-    const supabase = createServerClient<Database>(
-      supabaseUrl,
-      serviceRoleKey,
-      {
-        cookies: {
-          getAll() {
-            return parseCookieHeader(request?.headers?.get("Cookie") ?? "") as {
-              name: string;
-              value: string;
-            }[];
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              headers.append(
-                "Set-Cookie",
-                serializeCookieHeader(name, value, options)
-              )
-            );
-          },
+    const supabase = createServerClient<Database>(supabaseUrl, serviceRoleKey, {
+      cookies: {
+        getAll() {
+          return parseCookieHeader(request.headers.get("Cookie") ?? "") as {
+            name: string;
+            value: string;
+          }[];
         },
-      }
-    );
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            headers.append(
+              "Set-Cookie",
+              serializeCookieHeader(name, value, options),
+            ),
+          );
+        },
+      },
+    });
 
     return { supabase, headers };
   } else {

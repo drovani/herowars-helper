@@ -406,10 +406,14 @@ export abstract class BaseRepository<T extends TableName> {
 
         batchResults.forEach((result) => {
           if (result.status === "fulfilled") {
+            const data = result.value.data;
+            if (!data) {
+              return;
+            }
             if (result.value.skipped) {
-              skipped.push(result.value.data!);
+              skipped.push(data);
             } else {
-              results.push(result.value.data!);
+              results.push(data);
             }
           } else {
             // Extract more detailed error information
@@ -565,7 +569,10 @@ export abstract class BaseRepository<T extends TableName> {
             if (result.error) {
               throw result.error;
             }
-            return result.data!;
+            if (!result.data) {
+              throw new Error("Upsert succeeded but returned no data");
+            }
+            return result.data;
           })
         );
 
@@ -638,7 +645,10 @@ export abstract class BaseRepository<T extends TableName> {
             if (result.error) {
               throw result.error;
             }
-            return result.data!;
+            if (!result.data) {
+              throw new Error("Update succeeded but returned no data");
+            }
+            return result.data;
           })
         );
 

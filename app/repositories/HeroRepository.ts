@@ -915,11 +915,17 @@ export class HeroRepository extends BaseRepository<"hero"> {
     try {
       // Start transaction - create hero first
       const heroResult = await this.create(heroData.hero);
-      if (heroResult.error) {
-        return heroResult as RepositoryResult<CompleteHero>;
+      if (heroResult.error || !heroResult.data) {
+        return {
+          data: null,
+          error: heroResult.error ?? {
+            message: "Failed to create hero",
+            code: "CREATE_FAILED",
+          },
+        };
       }
 
-      const hero = heroResult.data!;
+      const hero = heroResult.data;
       const results: {
         artifacts: HeroArtifact[];
         skins: HeroSkin[];

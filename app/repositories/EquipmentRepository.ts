@@ -390,7 +390,7 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
             requiredItem.required_slug,
           );
           return {
-            equipment: equipmentResult.data!,
+            equipment: equipmentResult.data ?? null,
             quantity: requiredItem.quantity,
           };
         }),
@@ -398,7 +398,8 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
       // Filter out any failed results
       const validRequiredItems = requiredItemsWithEquipment.filter(
-        (item) => item.equipment !== null,
+        (item): item is { equipment: NonNullable<typeof item.equipment>; quantity: number } =>
+          item.equipment !== null,
       );
 
       return {
@@ -655,8 +656,11 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
 
         // Filter out any failed results and extract the data
         const equipmentRecords = equipmentResults
-          .filter((result) => result.data !== null)
-          .map((result) => result.data!);
+          .filter(
+            (result): result is typeof result & { data: NonNullable<typeof result.data> } =>
+              result.data !== null,
+          )
+          .map((result) => result.data);
 
         equipmentResult = {
           data: equipmentRecords,
@@ -667,17 +671,20 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         equipmentResult = await this.findAll({});
       }
 
-      if (equipmentResult.error) {
+      if (equipmentResult.error || !equipmentResult.data) {
         return {
           data: null,
-          error: equipmentResult.error,
+          error: equipmentResult.error ?? {
+            message: "No equipment data returned",
+            code: "NO_DATA",
+          },
         };
       }
 
       // Transform database records back to JSON format
       const jsonRecords: EquipmentRecord[] = [];
 
-      for (const equipment of equipmentResult.data!) {
+      for (const equipment of equipmentResult.data) {
         // Get stats and required items for this equipment
         const [statsResult, requiredItemsResult] = await Promise.all([
           this.findStatsByEquipmentSlug(equipment.slug),
@@ -765,24 +772,30 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         this.findStatsByEquipmentSlug(slug),
       ]);
 
-      if (equipmentResult.error) {
+      if (equipmentResult.error || !equipmentResult.data) {
         return {
           data: null,
-          error: equipmentResult.error,
+          error: equipmentResult.error ?? {
+            message: "Equipment not found",
+            code: "NOT_FOUND",
+          },
         };
       }
 
-      if (statsResult.error) {
+      if (statsResult.error || !statsResult.data) {
         return {
           data: null,
-          error: statsResult.error,
+          error: statsResult.error ?? {
+            message: "Stats not found",
+            code: "NOT_FOUND",
+          },
         };
       }
 
       return {
         data: {
-          equipment: equipmentResult.data!,
-          stats: statsResult.data!,
+          equipment: equipmentResult.data,
+          stats: statsResult.data,
         },
         error: null,
       };
@@ -811,24 +824,30 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         this.findRequiredItemsByEquipmentSlug(slug),
       ]);
 
-      if (equipmentResult.error) {
+      if (equipmentResult.error || !equipmentResult.data) {
         return {
           data: null,
-          error: equipmentResult.error,
+          error: equipmentResult.error ?? {
+            message: "Equipment not found",
+            code: "NOT_FOUND",
+          },
         };
       }
 
-      if (requiredItemsResult.error) {
+      if (requiredItemsResult.error || !requiredItemsResult.data) {
         return {
           data: null,
-          error: requiredItemsResult.error,
+          error: requiredItemsResult.error ?? {
+            message: "Required items not found",
+            code: "NOT_FOUND",
+          },
         };
       }
 
       return {
         data: {
-          equipment: equipmentResult.data!,
-          required_items: requiredItemsResult.data!,
+          equipment: equipmentResult.data,
+          required_items: requiredItemsResult.data,
         },
         error: null,
       };
@@ -859,32 +878,41 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
           this.findRequiredItemsByEquipmentSlug(slug),
         ]);
 
-      if (equipmentResult.error) {
+      if (equipmentResult.error || !equipmentResult.data) {
         return {
           data: null,
-          error: equipmentResult.error,
+          error: equipmentResult.error ?? {
+            message: "Equipment not found",
+            code: "NOT_FOUND",
+          },
         };
       }
 
-      if (statsResult.error) {
+      if (statsResult.error || !statsResult.data) {
         return {
           data: null,
-          error: statsResult.error,
+          error: statsResult.error ?? {
+            message: "Stats not found",
+            code: "NOT_FOUND",
+          },
         };
       }
 
-      if (requiredItemsResult.error) {
+      if (requiredItemsResult.error || !requiredItemsResult.data) {
         return {
           data: null,
-          error: requiredItemsResult.error,
+          error: requiredItemsResult.error ?? {
+            message: "Required items not found",
+            code: "NOT_FOUND",
+          },
         };
       }
 
       return {
         data: {
-          equipment: equipmentResult.data!,
-          stats: statsResult.data!,
-          required_items: requiredItemsResult.data!,
+          equipment: equipmentResult.data,
+          stats: statsResult.data,
+          required_items: requiredItemsResult.data,
         },
         error: null,
       };
@@ -1054,10 +1082,13 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         skipExisting: true,
       });
 
-      if (equipmentResult.error) {
+      if (equipmentResult.error || !equipmentResult.data) {
         return {
           data: null,
-          error: equipmentResult.error,
+          error: equipmentResult.error ?? {
+            message: "Failed to create equipment",
+            code: "CREATE_FAILED",
+          },
         };
       }
 
@@ -1067,25 +1098,31 @@ export class EquipmentRepository extends BaseRepository<"equipment"> {
         this.bulkCreateRequiredItems(requiredItemsData),
       ]);
 
-      if (statsResult.error) {
+      if (statsResult.error || !statsResult.data) {
         return {
           data: null,
-          error: statsResult.error,
+          error: statsResult.error ?? {
+            message: "Failed to create stats",
+            code: "CREATE_FAILED",
+          },
         };
       }
 
-      if (requiredItemsResult.error) {
+      if (requiredItemsResult.error || !requiredItemsResult.data) {
         return {
           data: null,
-          error: requiredItemsResult.error,
+          error: requiredItemsResult.error ?? {
+            message: "Failed to create required items",
+            code: "CREATE_FAILED",
+          },
         };
       }
 
       return {
         data: {
-          equipment: equipmentResult.data!,
-          stats: statsResult.data!,
-          required_items: requiredItemsResult.data!,
+          equipment: equipmentResult.data,
+          stats: statsResult.data,
+          required_items: requiredItemsResult.data,
         },
         error: null,
       };

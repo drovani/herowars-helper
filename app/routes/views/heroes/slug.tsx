@@ -23,6 +23,9 @@ import { HeroDetailSkeleton } from "~/components/skeletons/HeroDetailSkeleton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { useAuth } from "~/contexts/AuthContext";
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
+import type { MissionRecord } from "~/data/mission.zod";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
@@ -36,9 +39,6 @@ import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { HeroRecord } from "~/data/hero.zod";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { MissionRecord } from "~/data/mission.zod";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   const heroName = loaderData?.basicHero?.name || "Hero Details";

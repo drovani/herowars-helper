@@ -20,6 +20,8 @@ import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useAuth } from "~/contexts/AuthContext";
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
 import {
@@ -39,8 +41,6 @@ import {
   type SortOptions,
 } from "~/lib/hero-sorting";
 import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { HeroRecord } from "~/data/hero.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";

@@ -10,7 +10,16 @@ import {
 import type { Database } from "~/types/supabase";
 
 export function createAdminClient(request: Request | null = null) {
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  const supabaseUrl = process.env.VITE_SUPABASE_DATABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl) {
+    throw new Error(
+      "VITE_SUPABASE_DATABASE_URL environment variable is required for admin operations"
+    );
+  }
+
+  if (!serviceRoleKey) {
     throw new Error(
       "SUPABASE_SERVICE_ROLE_KEY environment variable is required for admin operations"
     );
@@ -20,8 +29,8 @@ export function createAdminClient(request: Request | null = null) {
     const headers = new Headers();
 
     const supabase = createServerClient<Database>(
-      process.env.VITE_SUPABASE_DATABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      supabaseUrl,
+      serviceRoleKey,
       {
         cookies: {
           getAll() {

@@ -55,7 +55,7 @@ async function loadMissionsData(request: Request) {
           (m): m is Mission & Required<Pick<Mission, "hero_slug">> =>
             Boolean(m.hero_slug)
         )
-        .map((m) => m.hero_slug!)
+        .map((m) => m.hero_slug)
     )
   ).sort();
 

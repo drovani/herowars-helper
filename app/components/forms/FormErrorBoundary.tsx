@@ -95,8 +95,8 @@ export function FormErrorBoundary({
 
               <Alert className="border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
                 <AlertDescription>
-                  <strong>Good news:</strong> Your form data has been preserved. Click "Try
-                  Again" to retry your submission.
+                  <strong>Good news:</strong> Your form data has been preserved. Click &quot;Try
+                  Again&quot; to retry your submission.
                 </AlertDescription>
               </Alert>
 

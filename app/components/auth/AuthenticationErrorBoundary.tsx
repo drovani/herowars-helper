@@ -119,7 +119,7 @@ export function AuthenticationErrorBoundary({
               <Alert variant="destructive">
                 <ShieldAlertIcon className="size-4" />
                 <AlertDescription>
-                  You don't have permission to access this area. {roleText}
+                  You don&apos;t have permission to access this area. {roleText}
                 </AlertDescription>
               </Alert>
 

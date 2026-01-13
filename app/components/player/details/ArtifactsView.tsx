@@ -29,7 +29,7 @@ export function ArtifactsView({ playerHero }: ArtifactsViewProps) {
         <ul className="list-disc ml-6 space-y-2 text-sm text-muted-foreground">
           <li>Weapon artifact with team buff activation tracking</li>
           <li>Book artifact with fixed stat pair management</li>
-          <li>Ring artifact that always boosts the hero's main stat</li>
+          <li>Ring artifact that always boosts the hero&apos;s main stat</li>
           <li>Star level progression (1-6 stars) for each artifact</li>
           <li>Upgrade level tracking and resource calculations</li>
           <li>Artifact stone source and farming recommendations</li>

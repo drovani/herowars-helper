@@ -40,7 +40,7 @@ export default function HeroViewDetail() {
           <CardHeader>
             <CardTitle>Invalid View</CardTitle>
             <CardDescription>
-              The view "{view}" is not a valid hero detail view.
+              The view &quot;{view}&quot; is not a valid hero detail view.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -65,7 +65,7 @@ export default function HeroViewDetail() {
           <CardHeader>
             <CardTitle>Hero Not Found</CardTitle>
             <CardDescription>
-              The hero "{params.heroSlug}" was not found in your collection.
+              The hero &quot;{params.heroSlug}&quot; was not found in your collection.
             </CardDescription>
           </CardHeader>
         </Card>

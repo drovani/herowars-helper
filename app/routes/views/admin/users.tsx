@@ -670,7 +670,7 @@ function AdminUsersContent({
                                       </AlertDialogTitle>
                                       <AlertDialogDescription>
                                         Are you sure you want to permanently
-                                        delete the user "{user.email}"? This
+                                        delete the user &quot;{user.email}&quot;? This
                                         action cannot be undone and will remove
                                         all user data from the system.
                                       </AlertDialogDescription>
@@ -879,7 +879,7 @@ function AdminUsersContent({
                                   </AlertDialogTitle>
                                   <AlertDialogDescription className="text-sm">
                                     Are you sure you want to permanently delete
-                                    "{user.email}"? This action cannot be
+                                    &quot;{user.email}&quot;? This action cannot be
                                     undone.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>

@@ -36,7 +36,7 @@ export default function HeroDetail() {
           <CardHeader>
             <CardTitle>Hero Not Found</CardTitle>
             <CardDescription>
-              The hero "{params.heroSlug}" was not found in your collection.
+              The hero &quot;{params.heroSlug}&quot; was not found in your collection.
             </CardDescription>
           </CardHeader>
           <CardContent>

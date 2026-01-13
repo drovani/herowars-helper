@@ -1,21 +1,4 @@
 
-/home/drovani/herowars-helper/app/components/auth/AuthenticationErrorBoundary.tsx
-  122:26  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/components/forms/FormErrorBoundary.tsx
-  98:88  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  99:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/components/hero-form/ItemSelectionDialog.tsx
-  91:43  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  91:57  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/components/player/AddAllHeroesButton.tsx
-  116:81  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/components/player/details/ArtifactsView.tsx
-  32:56  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-
 /home/drovani/herowars-helper/app/hooks/useQueryState.ts
   26:5  warning  React Hook useCallback has a missing dependency: 'replaceState'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
 
@@ -61,20 +44,9 @@
     9:1   warning  There should be at least one empty line between import groups  import/order
   922:20  warning  Forbidden non-null assertion                                   @typescript-eslint/no-non-null-assertion
 
-/home/drovani/herowars-helper/app/routes/views/admin/setup.tsx
-  1396:51  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-  1397:56  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-
 /home/drovani/herowars-helper/app/routes/views/admin/users.tsx
-  224:6   warning  React Hook useEffect has a missing dependency: 'isRevalidating'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-  253:6   warning  React Hook useEffect has a missing dependency: 'revalidator'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
-  673:57  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
-  673:70  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
-  882:37  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
-  882:50  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                    react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/routes/views/auth/sign-up.tsx
-  80:22  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  224:6  warning  React Hook useEffect has a missing dependency: 'isRevalidating'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  253:6  warning  React Hook useEffect has a missing dependency: 'revalidator'. Either include it or remove the dependency array     react-hooks/exhaustive-deps
 
 /home/drovani/herowars-helper/app/routes/views/equipment/new.tsx
   79:35  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
@@ -97,16 +69,6 @@
 /home/drovani/herowars-helper/app/routes/views/missions/slug.edit.tsx
   6:1  warning  There should be at least one empty line between import groups  import/order
 
-/home/drovani/herowars-helper/app/routes/views/player/roster/$heroSlug.$view.tsx
-  43:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  43:31  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  68:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  68:42  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/routes/views/player/roster/$heroSlug.tsx
-  39:24  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  39:42  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-
 /home/drovani/herowars-helper/app/routes/views/player/teams/index.tsx
   79:27  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
   80:19  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
@@ -115,22 +77,6 @@
   72:22  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
   93:27  warning  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
 
-/home/drovani/herowars-helper/app/routes/views/public/index.tsx
-  88:71  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-  97:74  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/routes/views/tools/artifact-calculator.tsx
-  181:17  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-
-/home/drovani/herowars-helper/app/routes/views/tools/skin-calculator.tsx
-  112:29  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-  127:53  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  127:59  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  224:77  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-  245:51  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  245:57  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
-  245:82  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
-
-✖ 74 problems (0 errors, 74 warnings)
+✖ 44 problems (0 errors, 44 warnings)
   0 errors and 7 warnings potentially fixable with the `--fix` option.
 

@@ -108,14 +108,14 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     const equipmentRepo = new EquipmentRepository(request);
     const updateResult = await equipmentRepo.update(params.slug, validated);
 
-    if (updateResult.error) {
+    if (updateResult.error || !updateResult.data) {
       return data(
-        { errors: { _errors: [updateResult.error.message] } },
+        { errors: { _errors: [updateResult.error?.message ?? "Failed to update equipment"] } },
         { status: 400 },
       );
     }
 
-    return redirect(`/equipment/${updateResult.data!.slug}`);
+    return redirect(`/equipment/${updateResult.data.slug}`);
   } catch (error) {
     if (error instanceof ZodError) {
       return data({ errors: error.format() }, { status: 400 });

@@ -142,7 +142,7 @@ export const meta = (_: Route.MetaArgs) => {
 };
 
 export default function RosterLayout({ loaderData }: Route.ComponentProps) {
-  const { heroes, playerCollection } = loaderData;
+  const { heroes: _heroes, playerCollection } = loaderData;
   const { user, isLoading: authLoading } = useAuth();
   const fetcher = useFetcher();
   const params = useParams();

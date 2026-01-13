@@ -416,7 +416,7 @@ export class PlayerTeamRepository extends BaseRepository<"player_team"> {
       }
 
       // Check if hero is already in the team
-      const { data: existingHero, error: checkError } = await this.supabase
+      const { data: existingHero, error: _checkError } = await this.supabase
         .from("player_team_hero")
         .select("id")
         .eq("team_id", teamId)

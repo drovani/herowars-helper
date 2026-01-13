@@ -5,5 +5,5 @@ export const meta = (_: Route.MetaArgs) => {
 };
 
 export default function PlayerAdmin() {
-  return <></>;
+  return null;
 }

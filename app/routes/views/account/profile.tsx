@@ -49,7 +49,7 @@ export default function AccountIndex(_: Route.ComponentProps) {
     try {
       await updateProfile({ full_name: displayName });
       setMessage("Display name updated successfully!");
-    } catch (error) {
+    } catch (_error) {
       setMessage("Failed to update display name. Please try again.");
     } finally {
       setIsUpdating(false);

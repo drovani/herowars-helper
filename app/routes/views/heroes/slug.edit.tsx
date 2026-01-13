@@ -215,7 +215,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
 
 export default function EditHero({
   loaderData,
-  actionData,
+  actionData: _actionData,
 }: Route.ComponentProps) {
   const { hero, equipment } = loaderData;
 

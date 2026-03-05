@@ -1,30 +1,13 @@
-import { CheckCircle2, Clock, Sparkles } from "lucide-react";
+// ABOUTME: Home page for Hero Wars Helper, displaying a sunset notice
+// ABOUTME: since the project is no longer actively maintained.
+
+import { Archive } from "lucide-react";
 import { Link } from "react-router";
 
-import type { Route } from "./+types/index";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
-import { Badge } from "~/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { recentUpdates } from "~/data/recent-updates";
-
-export const loader = async (_: Route.LoaderArgs) => {
-  const currentDate = new Date();
-  return { currentDate: currentDate.toISOString() };
-};
-
-export default function Index({ loaderData }: Route.ComponentProps) {
-  const currentDate = new Date(loaderData.currentDate);
-  // Check if the update date is within the last 14 days
-  const roadmapSparkles =
-    recentUpdates.asof >
-    new Date(currentDate.getTime() - 14 * 24 * 60 * 60 * 1000);
+export default function Index() {
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       {/* Hero Section */}
@@ -33,310 +16,63 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           Hero Wars: Alliance Helper
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Your comprehensive companion for managing heroes, equipment, missions,
-          and more in Hero Wars: Alliance
+          A fan-made companion app for Hero Wars: Alliance — now archived
         </p>
       </div>
 
-      {/* Main Content */}
-      <Tabs defaultValue="about" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="about">About the Game</TabsTrigger>
-          <TabsTrigger value="app">About this App</TabsTrigger>
-          <TabsTrigger value="roadmap">
-            Roadmap
-            {roadmapSparkles && (
-              <Sparkles className="h-5 w-5 text-blue-500 mt-0.5 ml-0.5" />
-            )}
-          </TabsTrigger>
-        </TabsList>
+      {/* Sunset Notice */}
+      <Alert variant="destructive" className="border-2">
+        <Archive className="size-5" />
+        <AlertTitle className="text-lg">
+          This Project Is No Longer Maintained
+        </AlertTitle>
+        <AlertDescription className="mt-2 space-y-3">
+          <p>
+            I have stopped playing Hero Wars: Alliance and this project will no longer receive updates. The existing data remainsbrowsable as a reference, but it is outdated as the game has evolved.
+          </p>
+          <p>
+            For more about why this project was archived, read the blog post "
+            <a
+              href="https://rovani.net/posts/2026/done-playing-hero-wars"
+              className="font-medium underline underline-offset-4 hover:opacity-80"
+              target="_blank"
+            >
+              Hero Wars Built Something I Never Asked For — And I am Done Playing
+            </a>" for details on how Realm completely changed the game and made it less enjoyable for many players, including myself.
+          </p>
+        </AlertDescription>
+      </Alert>
 
-        {/* About the Game Tab */}
-        <TabsContent value="about" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>What is Hero Wars: Alliance?</CardTitle>
-              <CardDescription>
-                A mobile RPG game with deep team-building mechanics and
-                strategic combat
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p>
-                Hero Wars: Alliance is a popular mobile RPG where players
-                collect heroes, upgrade their skills and equipment, and battle
-                through campaigns, arena matches, and special events. The game
-                features:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                <Card className="bg-muted/50">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-lg">Heroes Collection</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    Collect and evolve over 50 unique heroes with different
-                    abilities, classes, and factions
-                  </CardContent>
-                </Card>
-                <Card className="bg-muted/50">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-lg">
-                      Deep Equipment System
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    Craft and upgrade equipment to enhance your heroes&apos; stats
-                    and abilities
-                  </CardContent>
-                </Card>
-                <Card className="bg-muted/50">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-lg">Strategic Combat</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    Build synergistic teams that combine different heroes&apos;
-                    strengths and abilities
-                  </CardContent>
-                </Card>
-                <Card className="bg-muted/50">
-                  <CardHeader className="p-4 pb-2">
-                    <CardTitle className="text-lg">Guild Gameplay</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    Join guilds to take on powerful Titans and participate in
-                    Guild Wars
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* About this App Tab */}
-        <TabsContent value="app" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>About the Helper App</CardTitle>
-              <CardDescription>
-                Your companion for optimizing hero builds and progression
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p>
-                This application was created to help Hero Wars: Alliance players
-                optimize their gameplay experience by providing:
-              </p>
-              <div className="grid grid-cols-1 gap-2 mt-2">
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium">Hero Information Database</h3>
-                    <p className="text-muted-foreground">
-                      Detailed profiles of all heroes with their stats,
-                      abilities, and optimal builds
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium">Equipment Tracker</h3>
-                    <p className="text-muted-foreground">
-                      Track equipment sources, crafting requirements, and
-                      hero-specific gear
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium">Mission Guide</h3>
-                    <p className="text-muted-foreground">
-                      Campaign mission information including rewards, bosses,
-                      and farming recommendations
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium">Titan Strategy</h3>
-                    <p className="text-muted-foreground">
-                      Titan upgrade priorities and optimization guidance
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-4 justify-center mt-4">
-                <Link
-                  to="/heroes"
-                  className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
-                >
-                  Browse Heroes
-                </Link>
-                <Link
-                  to="/equipment"
-                  className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
-                >
-                  View Equipment
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Roadmap Tab */}
-        <TabsContent value="roadmap" className="space-y-4 mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Development Roadmap</CardTitle>
-              <CardDescription>
-                Upcoming features and enhancements planned for the application
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-medium text-lg mb-2">
-                    Current Development
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-2">
-                      <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">Data Loader</span>
-                        <p className="text-muted-foreground">
-                          Get the equipment, heroes, and missions data directly
-                          from the game files instead of hand keying everything.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">Team Builder</span>
-                        <p className="text-muted-foreground">
-                          Create and save custom team compositions with synergy
-                          analysis
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">Resource Calculator</span>
-                        <p className="text-muted-foreground">
-                          Calculate resources needed to upgrade heroes and
-                          equipment
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">
-                          User Accounts & Progress Tracking
-                        </span>
-                        <p className="text-muted-foreground">
-                          Save your hero collection and track progression
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="font-medium text-lg mb-2">Future Plans</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-start gap-2">
-                      <Sparkles className="h-5 w-5 text-blue-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">
-                          Consumable Chest Advisor
-                        </span>
-                        <p className="text-muted-foreground">
-                          Calculate how many artifact or stone skin chests you
-                          should open to get the number of resources you need.
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Sparkles className="h-5 w-5 text-blue-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">PvP Meta Analysis</span>
-                        <p className="text-muted-foreground">
-                          Current Arena and Grand Arena meta teams and counters
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Sparkles className="h-5 w-5 text-blue-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">
-                          Hero Stats Calculator
-                        </span>
-                        <p className="text-muted-foreground">
-                          Interactive calculator showing exact stats at
-                          different levels and equipment tiers
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Sparkles className="h-5 w-5 text-blue-500 mt-0.5" />
-                      <div>
-                        <span className="font-medium">
-                          Interactive Guild War Planner
-                        </span>
-                        <p className="text-muted-foreground">
-                          Collaborative tool for planning guild war attacks and
-                          defenses
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 mt-2 border-t">
-                <p className="text-center text-sm text-muted-foreground">
-                  Have feature suggestions or feedback? Submit them on{" "}
-                  <a
-                    href="https://github.com/drovani/herowars-helper/issues"
-                    className="text-primary hover:underline"
-                  >
-                    GitHub
-                  </a>
-                  !
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* Recent Updates Section */}
+      {/* Browse Existing Data */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            Recent Updates
-            <Badge variant="outline" className="ml-2">
-              {recentUpdates.asof.toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
-            </Badge>
-          </CardTitle>
+          <CardTitle>Browse Existing Data</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2">
-            {recentUpdates.updates.map((update, index) => (
-              <li key={index} className="flex items-center gap-2">
-                <Badge className="h-1.5 w-1.5 rounded-full p-0 bg-green-500" />
-                {update}
-              </li>
-            ))}
-          </ul>
+          <p className="text-muted-foreground mb-4">
+            The game data collected during active development is still available
+            to browse.
+          </p>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Link
+              to="/heroes"
+              className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+            >
+              Browse Heroes
+            </Link>
+            <Link
+              to="/equipment"
+              className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+            >
+              View Equipment
+            </Link>
+            <Link
+              to="/missions"
+              className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
+            >
+              Mission Guide
+            </Link>
+          </div>
         </CardContent>
       </Card>
 

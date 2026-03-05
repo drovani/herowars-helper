@@ -48,14 +48,11 @@ async function loadMissionsData(request: Request) {
   const chapterMap = new Map(chapters.map((c) => [c.id, c.title]));
 
   // Get unique boss names for the select dropdown
-  const uniqueBosses = Array.from(
+  const uniqueBosses: string[] = Array.from(
     new Set(
       missions
-        .filter(
-          (m): m is Mission & Required<Pick<Mission, "hero_slug">> =>
-            Boolean(m.hero_slug)
-        )
         .map((m) => m.hero_slug)
+        .filter((slug): slug is string => slug !== null)
     )
   ).sort();
 

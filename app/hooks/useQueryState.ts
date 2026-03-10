@@ -1,10 +1,11 @@
 import { useCallback } from "react";
+
 import { useSearchParams } from "react-router";
 
 export function useQueryState<T extends string>(
   key: string,
   defaultValue: T,
-  replaceState: boolean = true
+  replaceState: boolean = true,
 ): [T, (value: T) => void] {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -22,7 +23,7 @@ export function useQueryState<T extends string>(
 
       setSearchParams(newParams, { replace: replaceState });
     },
-    [key, defaultValue, searchParams, setSearchParams]
+    [key, defaultValue, replaceState, searchParams, setSearchParams],
   );
 
   return [value, setValue];

@@ -1,8 +1,9 @@
 // ABOUTME: Utility functions for calculating skin upgrade requirements
 // ABOUTME: Includes calculations for skin stones and chests needed to upgrade skins from current level to level 60
 
-import skinDataRaw from "~/data/skin-upgrades.json";
 import { validateSkinUpgradesData } from "./schemas/skin-upgrades-schema";
+
+import skinDataRaw from "~/data/skin-upgrades.json";
 
 // Validate skin data at module load time
 const skinData = validateSkinUpgradesData(skinDataRaw);

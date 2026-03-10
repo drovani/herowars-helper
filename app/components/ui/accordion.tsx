@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 import {
   Content,
   Header,
@@ -7,7 +9,7 @@ import {
 } from "@radix-ui/react-accordion";
 import { type ClassValue } from "clsx";
 import { ChevronDown } from "lucide-react";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const Accordion = Root;

@@ -1,7 +1,8 @@
-import { Range, Root, Thumb, Track } from "@radix-ui/react-slider";
 import { forwardRef } from "react";
 
+import { Range, Root, Thumb, Track } from "@radix-ui/react-slider";
 import { type ClassValue } from "clsx";
+
 import { cn } from "~/lib/utils";
 
 const Slider = forwardRef<

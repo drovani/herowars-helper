@@ -2,6 +2,9 @@
 // ABOUTME: Allows users to input current artifact levels and see chest requirements to reach level 100
 
 import { useState } from "react";
+
+import type { Route } from "./+types/artifact-calculator";
+
 import {
   Card,
   CardContent,
@@ -16,7 +19,6 @@ import {
   calculateArtifactUpgrade,
   type ColorTier,
 } from "~/lib/artifact-calculations";
-import type { Route } from "./+types/artifact-calculator";
 
 export const meta = (_: Route.MetaArgs) => {
   return [
@@ -176,7 +178,7 @@ export default function ArtifactCalculator() {
         </h1>
         <p className="text-muted-foreground">
           Calculate how many artifact chests you need to open to upgrade your
-          heroes' artifacts to level 100.
+          heroes&apos; artifacts to level 100.
         </p>
       </div>
 

@@ -5,6 +5,7 @@ import {
   useFetcher,
   useSearchParams,
 } from "react-router";
+
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -56,9 +57,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function SignUp() {
   const fetcher = useFetcher<typeof action>();
-  let [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  const success = !!searchParams.has("success");
+  const success = Boolean(searchParams.has("success"));
   const error = fetcher.data?.error;
   const loading = fetcher.state === "submitting";
 
@@ -76,7 +77,7 @@ export default function SignUp() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  You've successfully signed up. Please check your email to
+                  You&apos;ve successfully signed up. Please check your email to
                   confirm your account before signing in.
                 </p>
               </CardContent>

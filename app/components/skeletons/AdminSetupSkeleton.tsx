@@ -1,14 +1,8 @@
 // ABOUTME: Skeleton placeholder for admin setup page with multi-step progress loading visualization
 // ABOUTME: Matches admin setup layout with form sections, progress indicators, and results display areas
 
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { cn } from "~/lib/utils";
 
 interface AdminSetupSkeletonProps {

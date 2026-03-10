@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+
 import { useRoles } from "~/hooks/useRoles";
 
 interface RequireRoleProps {
@@ -18,10 +19,10 @@ export function RequireRole({
   const { hasRole } = useRoles();
 
   if (hasRole(roles)) {
-    return <>{children}</>;
+    return children;
   }
 
-  return <>{fallback}</>;
+  return fallback;
 }
 
 /**

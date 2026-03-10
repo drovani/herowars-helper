@@ -1,7 +1,7 @@
 // ABOUTME: Type definitions for data services and interfaces
 // ABOUTME: Extracted from BaseDataService for use by database-backed services
 
-import { z, ZodError } from "zod";
+import { z, type ZodError } from "zod";
 
 export interface DataService<TRecord, TMutation> {
   getAll(ids?: string[]): Promise<TRecord[]>;
@@ -13,7 +13,7 @@ export interface DataService<TRecord, TMutation> {
 }
 
 export const ChangeTrackedSchema = z.object({
-  updated_on: z.string().date(),
+  updated_on: z.iso.date(),
 });
 
-export interface IChangeTracked extends z.infer<typeof ChangeTrackedSchema> {}
+export type IChangeTracked = z.infer<typeof ChangeTrackedSchema>;

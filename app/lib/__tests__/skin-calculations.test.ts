@@ -2,6 +2,7 @@
 // ABOUTME: Tests calculation logic, edge cases, and input validation
 
 import { describe, expect, it } from "vitest";
+
 import { calculateSkinUpgrade, getOtherSkinNames } from "../skin-calculations";
 
 describe("calculateSkinUpgrade", () => {

@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
+
 import { server } from "./mocks/msw/server";
 
 // Set up test environment variables for Supabase

@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+
+import log from "loglevel";
 import { type UseFormReturn } from "react-hook-form";
 import { data, useNavigate, useSubmit } from "react-router";
 import { ZodError } from "zod";
-import log from "loglevel";
+
 import CampaignSourcesField from "~/components/equipment-form/CampaignSourcesField";
 import CraftingField from "~/components/equipment-form/CraftingField";
 import StatsField from "~/components/equipment-form/StatsField";
@@ -209,7 +211,7 @@ export default function EquipmentForm({
                     min={1}
                     max={120}
                     {...field}
-                    onChange={(e) => field.onChange(+e.target.value)}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
                     disabled={isFragment || isRecipe}
                   />
                 </FormControl>
@@ -234,7 +236,7 @@ export default function EquipmentForm({
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value === "" ? null : +e.target.value
+                          e.target.value === "" ? null : Number(e.target.value)
                         )
                       }
                       className="pl-10"
@@ -264,7 +266,7 @@ export default function EquipmentForm({
                       value={field.value ?? ""}
                       onChange={(e) =>
                         field.onChange(
-                          e.target.value === "" ? null : +e.target.value
+                          e.target.value === "" ? null : Number(e.target.value)
                         )
                       }
                       className="pl-10"
@@ -295,7 +297,7 @@ export default function EquipmentForm({
                         {...field}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value === "" ? null : +e.target.value
+                            e.target.value === "" ? null : Number(e.target.value)
                           )
                         }
                         className="pl-10"
@@ -325,7 +327,7 @@ export default function EquipmentForm({
                         {...field}
                         onChange={(e) =>
                           field.onChange(
-                            e.target.value === "" ? null : +e.target.value
+                            e.target.value === "" ? null : Number(e.target.value)
                           )
                         }
                         className="pl-10"

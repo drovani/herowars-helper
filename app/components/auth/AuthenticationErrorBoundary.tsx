@@ -2,11 +2,13 @@
 // ABOUTME: Provides user-friendly messages for auth failures with appropriate recovery actions
 
 import { type ReactNode } from "react";
-import { ErrorBoundary, type ErrorBoundaryProps } from "~/components/ErrorBoundary";
-import { Button } from "~/components/ui/button";
-import { Alert, AlertDescription } from "~/components/ui/alert";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+
 import { ShieldAlertIcon, LogInIcon, HomeIcon } from "lucide-react";
+
+import { ErrorBoundary, type ErrorBoundaryProps } from "~/components/ErrorBoundary";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 interface AuthenticationErrorBoundaryProps {
   children: ReactNode;
@@ -117,7 +119,7 @@ export function AuthenticationErrorBoundary({
               <Alert variant="destructive">
                 <ShieldAlertIcon className="size-4" />
                 <AlertDescription>
-                  You don't have permission to access this area. {roleText}
+                  You don&apos;t have permission to access this area. {roleText}
                 </AlertDescription>
               </Alert>
 

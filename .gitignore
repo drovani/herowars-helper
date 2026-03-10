@@ -18,3 +18,5 @@ node_modules
 # But not .env.example
 !.env.example
 
+# Build reports and artifacts
+/reports/

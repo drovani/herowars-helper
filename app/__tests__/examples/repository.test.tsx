@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { mockSupabaseClient } from "~/__tests__/mocks/supabase";
 
 // Example repository class for testing patterns

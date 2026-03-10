@@ -2,10 +2,12 @@
 // ABOUTME: Provides user-friendly fallback UI for mission/chapter data loading and errors
 
 import { type ReactNode } from "react";
+
+import { MapIcon } from "lucide-react";
+
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { MapIcon } from "lucide-react";
 
 interface MissionErrorBoundaryProps {
   children: ReactNode;

@@ -1,7 +1,11 @@
 // ABOUTME: Roster layout component handles hero collection UI structure and state management
 // ABOUTME: Provides sidebar navigation and detail view container with responsive layout
 import { useState } from "react";
-import { Outlet, useFetcher, useParams, useNavigate } from "react-router";
+
+import { Outlet, useFetcher, useNavigate, useParams } from "react-router";
+
+import type { Route } from "./+types/layout";
+
 import { HeroDetailNavigation } from "~/components/player/HeroDetailNavigation";
 import { HeroListSidebar } from "~/components/player/HeroListSidebar";
 import { PlayerCollectionErrorBoundary } from "~/components/player/PlayerCollectionErrorBoundary";
@@ -21,8 +25,10 @@ import {
 import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { PlayerHeroWithDetails } from "~/repositories/types";
-import type { Route } from "./+types/layout";
+import type {
+  PlayerHeroWithDetails,
+  UpdatePlayerHeroInput,
+} from "~/repositories/types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
@@ -87,7 +93,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     }
 
     case "updateHero": {
-      const updates: any = {};
+      const updates: UpdatePlayerHeroInput = {};
       const stars = formData.get("stars");
       const equipmentLevel = formData.get("equipmentLevel");
       const level = formData.get("level");
@@ -103,7 +109,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
       const result = await playerHeroRepo.updateHeroProgress(
         user.id,
         heroSlug,
-        updates
+        updates,
       );
 
       if (result.error) {
@@ -116,7 +122,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     case "removeHero": {
       const result = await playerHeroRepo.removeFromCollection(
         user.id,
-        heroSlug
+        heroSlug,
       );
 
       if (result.error) {
@@ -136,7 +142,7 @@ export const meta = (_: Route.MetaArgs) => {
 };
 
 export default function RosterLayout({ loaderData }: Route.ComponentProps) {
-  const { heroes, playerCollection } = loaderData;
+  const { heroes: _heroes, playerCollection } = loaderData;
   const { user, isLoading: authLoading } = useAuth();
   const fetcher = useFetcher();
   const params = useParams();
@@ -171,7 +177,7 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
             <div className="animate-pulse space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-48 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-48 bg-gray-200 rounded" />
                 ))}
               </div>
             </div>
@@ -240,7 +246,7 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
       {/* Desktop Layout */}
       <div className="hidden lg:flex w-full">
         {/* Hero List Sidebar */}
-        <div className="w-80 flex-shrink-0">
+        <div className="w-80 shrink-0">
           <HeroListSidebar
             heroes={collection}
             selectedHeroSlug={selectedHeroSlug}
@@ -273,7 +279,7 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
 
           {/* Navigation */}
           {selectedHero && (
-            <div className="w-20 flex-shrink-0">
+            <div className="w-20 shrink-0">
               <HeroDetailNavigation
                 activeView={activeView}
                 onViewChange={handleViewChange}
@@ -293,11 +299,10 @@ export default function RosterLayout({ loaderData }: Route.ComponentProps) {
                 <button
                   key={playerHero.id}
                   onClick={() => handleSelectHero(playerHero.hero_slug)}
-                  className={`flex-shrink-0 p-2 rounded-lg border-2 transition-colors ${
-                    playerHero.hero_slug === selectedHeroSlug
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
+                  className={`shrink-0 p-2 rounded-lg border-2 transition-colors ${playerHero.hero_slug === selectedHeroSlug
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 hover:border-gray-300"
+                    }`}
                 >
                   <img
                     src={`/images/heroes/${playerHero.hero.slug}.png`}

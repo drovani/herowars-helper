@@ -1,6 +1,7 @@
 import { render, waitFor } from "@testing-library/react";
 import { useFetcher } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { LoginForm } from "../LoginForm";
 
 // Mock the useFetcher hook
@@ -47,7 +48,7 @@ describe("LoginForm", () => {
     });
 
     it("includes hidden redirectTo field when provided", () => {
-      const result = render(<LoginForm redirectTo="/dashboard" />);
+      const _ = render(<LoginForm redirectTo="/dashboard" />);
       const hiddenInput = document.querySelector('input[name="redirectTo"]');
       expect(hiddenInput).toBeInTheDocument();
       expect(hiddenInput).toHaveValue("/dashboard");

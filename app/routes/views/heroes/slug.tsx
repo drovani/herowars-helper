@@ -1,5 +1,6 @@
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { Suspense, useEffect } from "react";
+
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import {
   Await,
   Link,
@@ -8,6 +9,9 @@ import {
   type UIMatch,
 } from "react-router";
 import invariant from "tiny-invariant";
+
+import type { Route } from "./+types/slug";
+
 import { RequireEditor } from "~/components/auth/RequireRole";
 import HeroArtifacts from "~/components/hero/HeroArtifacts";
 import HeroGlyphs from "~/components/hero/HeroGlyphs";
@@ -19,6 +23,9 @@ import { HeroDetailSkeleton } from "~/components/skeletons/HeroDetailSkeleton";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { useAuth } from "~/contexts/AuthContext";
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
+import type { MissionRecord } from "~/data/mission.zod";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
@@ -32,7 +39,6 @@ import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { Route } from "./+types/slug";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   const heroName = loaderData?.basicHero?.name || "Hero Details";
@@ -88,9 +94,7 @@ async function loadDetailedHeroData(
   const hero = transformCompleteHeroToRecord(heroResult.data);
 
   const missionRepo = new MissionRepository(request);
-  const campaignSourcesResult = await missionRepo.findByHeroSlug(
-    params.slug
-  );
+  const campaignSourcesResult = await missionRepo.findByHeroSlug(params.slug);
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });
@@ -226,11 +230,11 @@ function HeroContent({
   equipmentUsed,
   isInCollection,
 }: {
-  hero: any;
-  prevHero: any;
-  nextHero: any;
-  campaignSources: any[];
-  equipmentUsed: any[];
+  hero: HeroRecord;
+  prevHero: HeroRecord | null;
+  nextHero: HeroRecord | null;
+  campaignSources: MissionRecord[];
+  equipmentUsed: EquipmentRecord[];
   isInCollection: boolean;
 }) {
   const navigate = useNavigate();
@@ -335,7 +339,7 @@ function HeroContent({
                 fetcher.submit(
                   {
                     action: "addHero",
-                    heroSlug: heroSlug,
+                    heroSlug,
                     stars: "1",
                     equipmentLevel: "1",
                   },
@@ -417,16 +421,19 @@ export default function Hero({ loaderData }: Route.ComponentProps) {
   return (
     <Suspense
       fallback={
-        <HeroDetailSkeleton showAddButton={!!user} showEditButton={true} />
+        <HeroDetailSkeleton
+          showAddButton={Boolean(user)}
+          showEditButton={true}
+        />
       }
     >
       <Await resolve={loaderData?.detailedData}>
         {(data: {
-          hero: any;
-          prevHero: any;
-          nextHero: any;
-          campaignSources: any[];
-          equipmentUsed: any[];
+          hero: HeroRecord;
+          prevHero: HeroRecord | null;
+          nextHero: HeroRecord | null;
+          campaignSources: MissionRecord[];
+          equipmentUsed: EquipmentRecord[];
           isInCollection: boolean;
         }) => (
           <HeroContent

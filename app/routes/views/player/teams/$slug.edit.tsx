@@ -1,10 +1,14 @@
 // ABOUTME: Team edit page with team builder interface for existing teams
 // ABOUTME: Allows users to modify team details and hero composition
 
+import { useEffect, useState } from "react";
+
 import log from "loglevel";
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useFetcher, useNavigate } from "react-router";
+
+import type { Route } from "./+types/$slug.edit";
+
 import { TeamBuilder } from "~/components/team/TeamBuilder";
 import { Button } from "~/components/ui/button";
 import {
@@ -21,7 +25,6 @@ import {
 } from "~/lib/auth/utils";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-import type { Route } from "./+types/$slug.edit";
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -197,6 +200,7 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
 
+  // Call all hooks before any conditional returns
   const [teamName, setTeamName] = useState(team.name);
   const [teamDescription, setTeamDescription] = useState(
     team.description || ""
@@ -207,6 +211,19 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
   const [removingHeroSlug, setRemovingHeroSlug] = useState<string | undefined>(
     undefined
   );
+
+  // Reset loading states when fetcher completes
+  useEffect(() => {
+    if (fetcher.state === "idle") {
+      setAddingHeroSlug(undefined);
+      setRemovingHeroSlug(undefined);
+
+      // Handle redirect if slug changed
+      if (fetcher.data?.redirectTo) {
+        navigate(fetcher.data.redirectTo);
+      }
+    }
+  }, [fetcher.state, fetcher.data, navigate]);
 
   // Show loading state while auth is initializing
   if (authLoading) {
@@ -261,19 +278,6 @@ export default function TeamEdit({ loaderData }: Route.ComponentProps) {
   const handleGoBack = () => {
     navigate("/player/teams");
   };
-
-  // Reset loading states when fetcher completes
-  useEffect(() => {
-    if (fetcher.state === "idle") {
-      setAddingHeroSlug(undefined);
-      setRemovingHeroSlug(undefined);
-
-      // Handle redirect if slug changed
-      if (fetcher.data?.redirectTo) {
-        navigate(fetcher.data.redirectTo);
-      }
-    }
-  }, [fetcher.state, fetcher.data, navigate]);
 
   const isSubmitting = fetcher.state === "submitting";
   const hasChanges =

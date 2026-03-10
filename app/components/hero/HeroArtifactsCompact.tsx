@@ -1,11 +1,12 @@
 import type { ClassValue } from "clsx";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "~/components/ui/hover-card";
 import type { HeroRecord } from "~/data/hero.zod";
-import { ArtifactBookStats, HeroMainStat } from "~/data/ReadonlyArrays";
+import { ArtifactBookStats, type HeroMainStat } from "~/data/ReadonlyArrays";
 import { cn, generateSlug } from "~/lib/utils";
 
 interface HeroArtifactsProps {
@@ -32,7 +33,7 @@ function HeroArtifactMini({
           />
           <div className="flex flex-col gap-2 justify-evenly">
             {artifactStats
-              .filter((stat) => stat != null)
+              .filter((stat) => stat !== null)
               .map((stat) => (
                 <img
                   key={stat}
@@ -54,7 +55,7 @@ function HeroArtifactMini({
           />
           <div className="flex flex-col gap-2">
             {artifactStats
-              .filter((stat) => stat != null)
+              .filter((stat) => stat !== null)
               .map((stat) => (
                 <div key={stat} className="capitalize flex gap-1">
                   <img

@@ -1,7 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { redirect, type UIMatch, data } from "react-router";
+import { data, redirect, type UIMatch } from "react-router";
 import { ZodError } from "zod";
+
+import type { Route } from "./+types/new";
+
 import EquipmentForm from "~/components/EquipmentForm";
 import {
   type EquipmentMutation,
@@ -9,7 +12,6 @@ import {
 } from "~/data/equipment.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/new";
 
 export const meta = (_: Route.MetaArgs) => {
   return [{ title: "Create new equipment" }];
@@ -17,7 +19,7 @@ export const meta = (_: Route.MetaArgs) => {
 
 export const handle = {
   breadcrumb: (
-    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>
+    matches: UIMatch<Route.ComponentProps["loaderData"], unknown>,
   ) => ({
     href: matches.pathname,
     title: "New",
@@ -59,22 +61,28 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 export const action = async ({ request }: Route.ActionArgs) => {
   const formData = await request.formData();
-  const data = JSON.parse(formData.get("equipment") as string);
+  const equipmentData = JSON.parse(formData.get("equipment") as string);
 
   try {
-    const validated = EquipmentMutationSchema.parse(data);
+    const validated = EquipmentMutationSchema.parse(equipmentData);
 
     const equipmentRepo = new EquipmentRepository(request);
     const createResult = await equipmentRepo.create(validated);
 
-    if (createResult.error) {
+    if (createResult.error || !createResult.data) {
       return data(
-        { errors: { _errors: [createResult.error.message] } },
-        { status: 400 }
+        {
+          errors: {
+            _errors: [
+              createResult.error?.message ?? "Failed to create equipment",
+            ],
+          },
+        },
+        { status: 400 },
       );
     }
 
-    return redirect(`/equipment/${createResult.data!.slug}`);
+    return redirect(`/equipment/${createResult.data.slug}`);
   } catch (error) {
     if (error instanceof ZodError) {
       return data({ errors: error.format() }, { status: 400 });

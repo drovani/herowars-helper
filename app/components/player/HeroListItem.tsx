@@ -64,7 +64,7 @@ export function HeroListItem({
     >
       <div className="flex items-center gap-3">
         {/* Hero Portrait with Equipment Border */}
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <div
             className={cn(
               "size-12 rounded border-2 overflow-hidden",

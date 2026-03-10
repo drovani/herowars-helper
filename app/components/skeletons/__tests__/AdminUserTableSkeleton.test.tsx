@@ -2,8 +2,10 @@
 // ABOUTME: Tests the admin user management table skeleton for loading states
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { AdminUserTableSkeleton } from "../AdminUserTableSkeleton";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("AdminUserTableSkeleton", () => {
   describe("basic rendering", () => {

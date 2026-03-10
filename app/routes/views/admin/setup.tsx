@@ -1,3 +1,6 @@
+import { useMemo, useState } from "react";
+
+import type { SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
 import {
   AlertCircle,
@@ -7,8 +10,10 @@ import {
   RefreshCwIcon,
   XCircle,
 } from "lucide-react";
-import { useMemo, useState } from "react";
 import { data, useFetcher, useNavigate } from "react-router";
+
+import type { Route } from "./+types/setup";
+
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -36,7 +41,120 @@ import { createAdminClient } from "~/lib/supabase/admin-client";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/setup";
+import type { Database } from "~/types/supabase";
+
+// Interfaces for initialization results tracking
+interface InitResultDetails {
+  created: number;
+  errors: number;
+  skipped: number;
+  total: number;
+  errorDetails: ErrorDetail[];
+  skippedDetails: SkippedItem[];
+}
+
+// Type for error detail records - flexible type for displaying error information
+interface ErrorDetailRecord {
+  title?: string;
+  name?: string;
+  slug?: string;
+  type?: string;
+  quality?: string;
+  buy_value_gold?: number;
+  sell_value?: number;
+  guild_activity_points?: number;
+  hero_level_required?: number;
+  class?: string;
+  faction?: string;
+  main_stat?: string;
+  attack_type?: string[] | string;
+  order_rank?: number;
+}
+
+interface ErrorDetail {
+  record: ErrorDetailRecord | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Using any to avoid TSX type inference issues
+  error: any;
+}
+
+interface SkippedItem {
+  id?: number;
+  title?: string;
+  name?: string;
+  slug?: string;
+  type?: string;
+  quality?: string;
+  buy_value_gold?: number;
+  sell_value?: number;
+  guild_activity_points?: number;
+  hero_level_required?: number;
+  class?: string;
+  faction?: string;
+  main_stat?: string;
+  attack_type?: string[] | string;
+  order_rank?: number;
+}
+
+interface PurgedResults {
+  missions: number;
+  chapters: number;
+  equipment: number;
+  heroes: number;
+  stats: number;
+  required_items: number;
+  errors: number;
+  errorDetails: ErrorDetail[];
+}
+
+interface InitResults {
+  chapters: InitResultDetails;
+  missions: InitResultDetails;
+  equipment: InitResultDetails;
+  heroes: InitResultDetails;
+  purged: PurgedResults;
+  processingTime: number;
+  mode: string;
+  dataset: string;
+  purgeRequested: boolean;
+}
+
+// Interface for partial failure details from bulk operations
+interface BulkErrorDetails {
+  chapters?: {
+    errors?: Array<{ data: unknown; error: unknown }>;
+    skipped?: SkippedItem[];
+  };
+  missions?: {
+    errors?: Array<{ data: unknown; error: unknown }>;
+    skipped?: SkippedItem[];
+  };
+  errors?: Array<{ data: unknown; error: unknown }>;
+  skipped?: SkippedItem[];
+}
+
+interface EquipmentErrorDetails {
+  errors?: Array<{
+    data?: unknown;
+    inputData?: unknown;
+    message?: string;
+    code?: string;
+    details?: unknown;
+    batchIndex?: number;
+  }>;
+  skipped?: SkippedItem[];
+}
+
+interface HeroErrorDetails {
+  errors?: Array<{
+    data?: unknown;
+    inputData?: unknown;
+    message?: string;
+    code?: string;
+    details?: unknown;
+    batchIndex?: number;
+  }>;
+  skipped?: SkippedItem[];
+}
 
 // Helper function to extract chapters from missions data
 function extractChapters(data: typeof chaptersAndMissionsData) {
@@ -70,14 +188,6 @@ function transformEquipments(data: typeof equipmentsData): EquipmentRecord[] {
   return data as EquipmentRecord[];
 }
 
-// Helper function to get a subset of equipment for testing
-function getEquipmentSubset(
-  data: typeof equipmentsData,
-  limit: number = 10
-): EquipmentRecord[] {
-  return data.slice(0, limit) as EquipmentRecord[];
-}
-
 export async function action({ request }: Route.ActionArgs) {
   const startTime = Date.now();
 
@@ -95,7 +205,7 @@ export async function action({ request }: Route.ActionArgs) {
       purgeFirst: purge,
     };
 
-    const results: any = {
+    const results: InitResults = {
       chapters: {
         created: 0,
         errors: 0,
@@ -147,17 +257,23 @@ export async function action({ request }: Route.ActionArgs) {
     // Initialize repositories with appropriate client
     const missionRepo =
       mode === "force"
-        ? new MissionRepository(createAdminClient(request).supabase as any)
+        ? new MissionRepository(
+            createAdminClient(request).supabase as SupabaseClient<Database>,
+          )
         : new MissionRepository(request);
 
     const equipmentRepo =
       mode === "force"
-        ? new EquipmentRepository(createAdminClient(request).supabase as any)
+        ? new EquipmentRepository(
+            createAdminClient(request).supabase as SupabaseClient<Database>,
+          )
         : new EquipmentRepository(request);
 
     const heroRepo =
       mode === "force"
-        ? new HeroRepository(createAdminClient(request).supabase as any)
+        ? new HeroRepository(
+            createAdminClient(request).supabase as SupabaseClient<Database>,
+          )
         : new HeroRepository(request);
 
     // Execute purge if requested
@@ -181,7 +297,7 @@ export async function action({ request }: Route.ActionArgs) {
         const equipmentPurgeResult = await equipmentRepo.purgeEquipmentDomain();
         if (equipmentPurgeResult.error) {
           throw new Error(
-            `Equipment domain purge failed: ${equipmentPurgeResult.error.message}`
+            `Equipment domain purge failed: ${equipmentPurgeResult.error.message}`,
           );
         }
 
@@ -198,7 +314,7 @@ export async function action({ request }: Route.ActionArgs) {
         const heroPurgeResult = await heroRepo.purgeHeroDomain();
         if (heroPurgeResult.error) {
           throw new Error(
-            `Hero domain purge failed: ${heroPurgeResult.error.message}`
+            `Hero domain purge failed: ${heroPurgeResult.error.message}`,
           );
         }
 
@@ -223,18 +339,18 @@ export async function action({ request }: Route.ActionArgs) {
           chapters: chaptersToCreate,
           missions: missionsToCreate,
         },
-        options
+        options,
       );
 
       // Handle both successful and partial failure cases
       if (
         initResult.error &&
         !["BULK_PARTIAL_FAILURE", "BULK_PARTIAL_SUCCESS"].includes(
-          initResult.error.code || ""
+          initResult.error.code || "",
         )
       ) {
         throw new Error(
-          `Mission data initialization failed: ${initResult.error.message}`
+          `Mission data initialization failed: ${initResult.error.message}`,
         );
       }
 
@@ -246,7 +362,7 @@ export async function action({ request }: Route.ActionArgs) {
 
       // Capture error and skip details from partial failures
       if (initResult.error?.details) {
-        const details = initResult.error.details as any;
+        const details = initResult.error.details as BulkErrorDetails;
 
         // Handle chapter-specific details
         if (details.chapters) {
@@ -254,18 +370,18 @@ export async function action({ request }: Route.ActionArgs) {
 
           // Handle chapter errors
           if (chapterDetails.errors && Array.isArray(chapterDetails.errors)) {
-            chapterDetails.errors.forEach((errorItem: any) => {
+            chapterDetails.errors.forEach((errorItem) => {
               results.chapters.errors++;
               results.chapters.errorDetails.push({
-                record: errorItem.data,
-                error: errorItem.error,
+                record: errorItem.data as ErrorDetailRecord,
+                error: errorItem.error as ErrorDetail["error"],
               });
             });
           }
 
           // Handle skipped chapters
           if (chapterDetails.skipped && Array.isArray(chapterDetails.skipped)) {
-            chapterDetails.skipped.forEach((skippedItem: any) => {
+            chapterDetails.skipped.forEach((skippedItem) => {
               results.chapters.skipped++;
               results.chapters.skippedDetails.push(skippedItem);
             });
@@ -278,18 +394,18 @@ export async function action({ request }: Route.ActionArgs) {
 
           // Handle mission errors
           if (missionDetails.errors && Array.isArray(missionDetails.errors)) {
-            missionDetails.errors.forEach((errorItem: any) => {
+            missionDetails.errors.forEach((errorItem) => {
               results.missions.errors++;
               results.missions.errorDetails.push({
-                record: errorItem.data,
-                error: errorItem.error,
+                record: errorItem.data as ErrorDetailRecord,
+                error: errorItem.error as ErrorDetail["error"],
               });
             });
           }
 
           // Handle skipped missions
           if (missionDetails.skipped && Array.isArray(missionDetails.skipped)) {
-            missionDetails.skipped.forEach((skippedItem: any) => {
+            missionDetails.skipped.forEach((skippedItem) => {
               results.missions.skipped++;
               results.missions.skippedDetails.push(skippedItem);
             });
@@ -298,24 +414,25 @@ export async function action({ request }: Route.ActionArgs) {
 
         // Legacy support: Handle flat structure for backward compatibility
         if (details.errors && Array.isArray(details.errors)) {
-          details.errors.forEach((errorItem: any) => {
+          details.errors.forEach((errorItem) => {
+            const errorData = errorItem.data as Record<string, unknown> | null;
             // Determine if this is a chapter or mission error based on the data structure
-            if (errorItem.data && "title" in errorItem.data) {
+            if (errorData && "title" in errorData) {
               // Chapter error
               results.chapters.errors++;
               results.chapters.errorDetails.push({
-                record: errorItem.data,
-                error: errorItem.error,
+                record: errorItem.data as ErrorDetailRecord,
+                error: errorItem.error as ErrorDetail["error"],
               });
             } else if (
-              errorItem.data &&
-              ("name" in errorItem.data || "slug" in errorItem.data)
+              errorData &&
+              ("name" in errorData || "slug" in errorData)
             ) {
               // Mission error
               results.missions.errors++;
               results.missions.errorDetails.push({
-                record: errorItem.data,
-                error: errorItem.error,
+                record: errorItem.data as ErrorDetailRecord,
+                error: errorItem.error as ErrorDetail["error"],
               });
             }
           });
@@ -323,7 +440,7 @@ export async function action({ request }: Route.ActionArgs) {
 
         // Legacy support: Handle flat skipped structure
         if (details.skipped && Array.isArray(details.skipped)) {
-          details.skipped.forEach((skippedItem: any) => {
+          details.skipped.forEach((skippedItem) => {
             if (skippedItem && "title" in skippedItem) {
               // Skipped chapter
               results.chapters.skipped++;
@@ -349,19 +466,18 @@ export async function action({ request }: Route.ActionArgs) {
         results.equipment.total = equipmentsToCreate.length;
 
         // Use the initializeFromJSON method
-        const equipmentInitResult = await equipmentRepo.initializeFromJSON(
-          equipmentsToCreate
-        );
+        const equipmentInitResult =
+          await equipmentRepo.initializeFromJSON(equipmentsToCreate);
 
         // Handle both successful and partial failure cases
         if (
           equipmentInitResult.error &&
           !["BULK_PARTIAL_FAILURE", "BULK_PARTIAL_SUCCESS"].includes(
-            equipmentInitResult.error.code || ""
+            equipmentInitResult.error.code || "",
           )
         ) {
           throw new Error(
-            `Equipment data initialization failed: ${equipmentInitResult.error.message}`
+            `Equipment data initialization failed: ${equipmentInitResult.error.message}`,
           );
         }
 
@@ -373,15 +489,16 @@ export async function action({ request }: Route.ActionArgs) {
 
         // Handle partial failures/success for equipment
         if (equipmentInitResult.error?.details) {
-          const details = equipmentInitResult.error.details as any;
+          const details = equipmentInitResult.error
+            .details as EquipmentErrorDetails;
 
           if (Array.isArray(details.errors)) {
-            details.errors.forEach((errorItem: any) => {
+            details.errors.forEach((errorItem) => {
               results.equipment.errors++;
               results.equipment.errorDetails.push({
                 record: errorItem.inputData || errorItem.data || null,
                 error: {
-                  message: errorItem.message,
+                  message: errorItem.message || "Unknown error",
                   code: errorItem.code,
                   details: errorItem.details,
                   inputData: errorItem.inputData,
@@ -392,7 +509,7 @@ export async function action({ request }: Route.ActionArgs) {
           }
 
           if (Array.isArray(details.skipped)) {
-            details.skipped.forEach((skippedItem: any) => {
+            details.skipped.forEach((skippedItem) => {
               results.equipment.skipped++;
               results.equipment.skippedDetails.push(skippedItem);
             });
@@ -408,23 +525,26 @@ export async function action({ request }: Route.ActionArgs) {
     if (!dataset || dataset === "heroes") {
       try {
         // Get hero data from JSON file
-        const heroesFromJson = heroesData as any[];
+        // HeroRecord is the zod-validated type; the repository handles transformation
+        const heroesFromJson = heroesData as unknown[];
         results.heroes.total = heroesFromJson.length;
 
         // Use the repository's bulk import capabilities
+        // Type assertion needed as heroesData is untyped JSON
         const heroInitResult = await heroRepo.initializeFromJSON(
-          heroesFromJson
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- JSON data matches HeroJsonData interface
+          heroesFromJson as any,
         );
 
         // Handle both successful and partial failure cases
         if (
           heroInitResult.error &&
           !["BULK_PARTIAL_FAILURE", "BULK_PARTIAL_SUCCESS"].includes(
-            heroInitResult.error.code || ""
+            heroInitResult.error.code || "",
           )
         ) {
           throw new Error(
-            `Hero data initialization failed: ${heroInitResult.error.message}`
+            `Hero data initialization failed: ${heroInitResult.error.message}`,
           );
         }
 
@@ -435,15 +555,15 @@ export async function action({ request }: Route.ActionArgs) {
 
         // Handle partial failures/success for heroes
         if (heroInitResult.error?.details) {
-          const details = heroInitResult.error.details as any;
+          const details = heroInitResult.error.details as HeroErrorDetails;
 
           if (Array.isArray(details.errors)) {
-            details.errors.forEach((errorItem: any) => {
+            details.errors.forEach((errorItem) => {
               results.heroes.errors++;
               results.heroes.errorDetails.push({
                 record: errorItem.inputData || errorItem.data || null,
                 error: {
-                  message: errorItem.message,
+                  message: errorItem.message || "Unknown error",
                   code: errorItem.code,
                   details: errorItem.details,
                   inputData: errorItem.inputData,
@@ -454,7 +574,7 @@ export async function action({ request }: Route.ActionArgs) {
           }
 
           if (Array.isArray(details.skipped)) {
-            details.skipped.forEach((skippedItem: any) => {
+            details.skipped.forEach((skippedItem) => {
               results.heroes.skipped++;
               results.heroes.skippedDetails.push(skippedItem);
             });
@@ -491,7 +611,7 @@ export async function action({ request }: Route.ActionArgs) {
           error.message.includes("Existing data conflict.")
             ? 409
             : 500,
-      }
+      },
     );
   }
 }
@@ -506,8 +626,8 @@ function DetailsSection({
   errorDetails,
   type,
 }: {
-  skippedDetails?: any[];
-  errorDetails?: any[];
+  skippedDetails?: SkippedItem[];
+  errorDetails?: ErrorDetail[];
   type: string;
 }) {
   const [showSkipped, setShowSkipped] = useState(false);
@@ -589,145 +709,146 @@ function DetailsSection({
           <CollapsibleContent className="space-y-1">
             <div className="bg-red-50 border border-red-200 rounded p-2 max-h-64 overflow-y-auto">
               <div className="text-xs space-y-3">
-                {errorDetails.map((item, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-red-200 pb-2 last:border-b-0"
-                  >
-                    {/* Item identifier */}
-                    <div className="font-medium text-red-800 mb-1">
-                      {type === "chapters"
-                        ? item.record?.title
-                        : item.record?.name ||
-                          item.record?.slug ||
-                          "Unknown item"}
-                      {item.record?.slug && item.record?.name && (
-                        <span className="text-red-600 font-normal ml-1">
-                          ({item.record.slug})
-                        </span>
+                {errorDetails.map(
+                  (item: ErrorDetail, index: number): React.ReactNode => (
+                    <div
+                      key={index}
+                      className="border-b border-red-200 pb-2 last:border-b-0"
+                    >
+                      {/* Item identifier */}
+                      <div className="font-medium text-red-800 mb-1">
+                        {type === "chapters"
+                          ? item.record?.title
+                          : item.record?.name ||
+                            item.record?.slug ||
+                            "Unknown item"}
+                        {item.record?.slug && item.record?.name && (
+                          <span className="text-red-600 font-normal ml-1">
+                            ({item.record.slug})
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Error message */}
+                      <div className="text-red-600 text-xs mb-1">
+                        <strong>Error:</strong>{" "}
+                        {item.error?.message || "Unknown error"}
+                      </div>
+
+                      {item.error?.code && (
+                        <div className="text-red-500 text-xs mb-1">
+                          <strong>Code:</strong> {String(item.error.code)}
+                        </div>
+                      )}
+
+                      {item.error?.batchIndex !== undefined && (
+                        <div className="text-red-500 text-xs mb-1">
+                          <strong>Item #:</strong>{" "}
+                          {Number(item.error.batchIndex) + 1}
+                        </div>
+                      )}
+
+                      {type === "equipment" && item.record && (
+                        <div className="text-red-700 text-xs space-y-1">
+                          {item.record.type && (
+                            <div>
+                              <strong>Type:</strong> {String(item.record.type)}
+                            </div>
+                          )}
+                          {item.record.quality && (
+                            <div>
+                              <strong>Quality:</strong>{" "}
+                              {String(item.record.quality)}
+                            </div>
+                          )}
+                          {item.record.buy_value_gold !== undefined && (
+                            <div>
+                              <strong>Gold Value:</strong>{" "}
+                              {item.record.buy_value_gold}
+                            </div>
+                          )}
+                          {item.record.sell_value !== undefined && (
+                            <div>
+                              <strong>Sell Value:</strong>{" "}
+                              {item.record.sell_value}
+                            </div>
+                          )}
+                          {item.record.guild_activity_points !== undefined && (
+                            <div>
+                              <strong>Guild Points:</strong>{" "}
+                              {item.record.guild_activity_points}
+                            </div>
+                          )}
+                          {item.record.hero_level_required !== undefined && (
+                            <div>
+                              <strong>Hero Level:</strong>{" "}
+                              {item.record.hero_level_required}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {type === "heroes" && item.record && (
+                        <div className="text-red-700 text-xs space-y-1">
+                          {item.record.class && (
+                            <div>
+                              <strong>Class:</strong> {item.record.class}
+                            </div>
+                          )}
+                          {item.record.faction && (
+                            <div>
+                              <strong>Faction:</strong> {item.record.faction}
+                            </div>
+                          )}
+                          {item.record.main_stat && (
+                            <div>
+                              <strong>Main Stat:</strong>{" "}
+                              {item.record.main_stat}
+                            </div>
+                          )}
+                          {item.record.attack_type && (
+                            <div>
+                              <strong>Attack Type:</strong>{" "}
+                              {Array.isArray(item.record.attack_type)
+                                ? item.record.attack_type.join(", ")
+                                : item.record.attack_type}
+                            </div>
+                          )}
+                          {item.record.order_rank !== undefined && (
+                            <div>
+                              <strong>Order Rank:</strong>{" "}
+                              {item.record.order_rank}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Raw error details for debugging */}
+                      {item.error?.details && (
+                        <details className="mt-2">
+                          <summary className="text-red-500 text-xs cursor-pointer hover:text-red-700">
+                            Show Raw Error Details
+                          </summary>
+                          <pre className="text-xs text-red-600 mt-1 p-1 bg-red-100 rounded overflow-x-auto">
+                            {JSON.stringify(item.error.details, null, 2)}
+                          </pre>
+                        </details>
+                      )}
+
+                      {/* Input data that caused the error */}
+                      {item.error?.inputData && (
+                        <details className="mt-2">
+                          <summary className="text-red-500 text-xs cursor-pointer hover:text-red-700">
+                            Show Input Data
+                          </summary>
+                          <pre className="text-xs text-red-600 mt-1 p-1 bg-red-100 rounded overflow-x-auto">
+                            {JSON.stringify(item.error.inputData, null, 2)}
+                          </pre>
+                        </details>
                       )}
                     </div>
-
-                    {/* Error message */}
-                    <div className="text-red-600 text-xs mb-1">
-                      <strong>Error:</strong>{" "}
-                      {item.error?.message || "Unknown error"}
-                    </div>
-
-                    {/* Error code */}
-                    {item.error?.code && (
-                      <div className="text-red-500 text-xs mb-1">
-                        <strong>Code:</strong> {item.error.code}
-                      </div>
-                    )}
-
-                    {/* Batch index for debugging */}
-                    {item.error?.batchIndex !== undefined && (
-                      <div className="text-red-500 text-xs mb-1">
-                        <strong>Item #:</strong> {item.error.batchIndex + 1}
-                      </div>
-                    )}
-
-                    {/* Equipment-specific details */}
-                    {type === "equipment" && item.record && (
-                      <div className="text-red-700 text-xs space-y-1">
-                        {item.record.type && (
-                          <div>
-                            <strong>Type:</strong> {item.record.type}
-                          </div>
-                        )}
-                        {item.record.quality && (
-                          <div>
-                            <strong>Quality:</strong> {item.record.quality}
-                          </div>
-                        )}
-                        {item.record.buy_value_gold !== undefined && (
-                          <div>
-                            <strong>Gold Value:</strong>{" "}
-                            {item.record.buy_value_gold}
-                          </div>
-                        )}
-                        {item.record.sell_value !== undefined && (
-                          <div>
-                            <strong>Sell Value:</strong>{" "}
-                            {item.record.sell_value}
-                          </div>
-                        )}
-                        {item.record.guild_activity_points !== undefined && (
-                          <div>
-                            <strong>Guild Points:</strong>{" "}
-                            {item.record.guild_activity_points}
-                          </div>
-                        )}
-                        {item.record.hero_level_required !== undefined && (
-                          <div>
-                            <strong>Hero Level:</strong>{" "}
-                            {item.record.hero_level_required}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Hero-specific details */}
-                    {type === "heroes" && item.record && (
-                      <div className="text-red-700 text-xs space-y-1">
-                        {item.record.class && (
-                          <div>
-                            <strong>Class:</strong> {item.record.class}
-                          </div>
-                        )}
-                        {item.record.faction && (
-                          <div>
-                            <strong>Faction:</strong> {item.record.faction}
-                          </div>
-                        )}
-                        {item.record.main_stat && (
-                          <div>
-                            <strong>Main Stat:</strong> {item.record.main_stat}
-                          </div>
-                        )}
-                        {item.record.attack_type && (
-                          <div>
-                            <strong>Attack Type:</strong>{" "}
-                            {Array.isArray(item.record.attack_type)
-                              ? item.record.attack_type.join(", ")
-                              : item.record.attack_type}
-                          </div>
-                        )}
-                        {item.record.order_rank !== undefined && (
-                          <div>
-                            <strong>Order Rank:</strong>{" "}
-                            {item.record.order_rank}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Raw error details for debugging */}
-                    {item.error?.details && (
-                      <details className="mt-2">
-                        <summary className="text-red-500 text-xs cursor-pointer hover:text-red-700">
-                          Show Raw Error Details
-                        </summary>
-                        <pre className="text-xs text-red-600 mt-1 p-1 bg-red-100 rounded overflow-x-auto">
-                          {JSON.stringify(item.error.details, null, 2)}
-                        </pre>
-                      </details>
-                    )}
-
-                    {/* Input data that caused the error */}
-                    {item.error?.inputData && (
-                      <details className="mt-2">
-                        <summary className="text-red-500 text-xs cursor-pointer hover:text-red-700">
-                          Show Input Data
-                        </summary>
-                        <pre className="text-xs text-red-600 mt-1 p-1 bg-red-100 rounded overflow-x-auto">
-                          {JSON.stringify(item.error.inputData, null, 2)}
-                        </pre>
-                      </details>
-                    )}
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </div>
           </CollapsibleContent>
@@ -737,7 +858,7 @@ function DetailsSection({
   );
 }
 
-export default function AdminSetup({ actionData }: Route.ComponentProps) {
+export default function AdminSetup({ actionData: _actionData }: Route.ComponentProps) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const initdata = useMemo(() => fetcher.data, [fetcher.data]);
@@ -887,7 +1008,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
     created: number,
     errors: number,
     skipped: number,
-    total: number
+    total: number,
   ) => {
     if (errors > 0) {
       return <AlertTriangle className="size-4 text-yellow-500" />;
@@ -905,7 +1026,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
     created: number,
     errors: number,
     skipped: number,
-    total: number
+    total: number,
   ) => {
     if (errors > 0) {
       return <Badge variant="destructive">Partial Success</Badge>;
@@ -1043,7 +1164,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                             initdata.results.chapters.created,
                             initdata.results.chapters.errors,
                             initdata.results.chapters.skipped,
-                            initdata.results.chapters.total
+                            initdata.results.chapters.total,
                           )}
                           Chapters
                         </h3>
@@ -1051,7 +1172,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                           initdata.results.chapters.created,
                           initdata.results.chapters.errors,
                           initdata.results.chapters.skipped,
-                          initdata.results.chapters.total
+                          initdata.results.chapters.total,
                         )}
                       </div>
                       <div className="text-sm space-y-1">
@@ -1099,7 +1220,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                             initdata.results.missions.created,
                             initdata.results.missions.errors,
                             initdata.results.missions.skipped,
-                            initdata.results.missions.total
+                            initdata.results.missions.total,
                           )}
                           Missions
                         </h3>
@@ -1107,7 +1228,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                           initdata.results.missions.created,
                           initdata.results.missions.errors,
                           initdata.results.missions.skipped,
-                          initdata.results.missions.total
+                          initdata.results.missions.total,
                         )}
                       </div>
                       <div className="text-sm space-y-1">
@@ -1155,7 +1276,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                             initdata.results.equipment.created,
                             initdata.results.equipment.errors,
                             initdata.results.equipment.skipped,
-                            initdata.results.equipment.total
+                            initdata.results.equipment.total,
                           )}
                           Equipment
                         </h3>
@@ -1163,7 +1284,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                           initdata.results.equipment.created,
                           initdata.results.equipment.errors,
                           initdata.results.equipment.skipped,
-                          initdata.results.equipment.total
+                          initdata.results.equipment.total,
                         )}
                       </div>
                       <div className="text-sm space-y-1">
@@ -1212,7 +1333,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                             initdata.results.heroes.created,
                             initdata.results.heroes.errors,
                             initdata.results.heroes.skipped,
-                            initdata.results.heroes.total
+                            initdata.results.heroes.total,
                           )}
                           Heroes
                         </h3>
@@ -1220,7 +1341,7 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
                           initdata.results.heroes.created,
                           initdata.results.heroes.errors,
                           initdata.results.heroes.skipped,
-                          initdata.results.heroes.total
+                          initdata.results.heroes.total,
                         )}
                       </div>
                       <div className="text-sm space-y-1">
@@ -1267,13 +1388,13 @@ export default function AdminSetup({ actionData }: Route.ComponentProps) {
 export function ErrorBoundary(props: Route.ErrorBoundaryProps) {
   return (
     <div className="space-y-4">
-      <Alert variant={"destructive"}>
+      <Alert variant="destructive">
         <AlertCircle className="size-4" />
         <AlertTitle>Error in this route</AlertTitle>
         <AlertDescription>
           For some reason, after the form is posted and the data is processed,
-          React Router throws an AbortError. I can't figure out why, but I know
-          the data is there and the results are good. I'll try to fix this soon.
+          React Router throws an AbortError. I can&apos;t figure out why, but I know
+          the data is there and the results are good. I&apos;ll try to fix this soon.
         </AlertDescription>
         <AlertDescription>
           <pre>{JSON.stringify(props, null, 2)}</pre>

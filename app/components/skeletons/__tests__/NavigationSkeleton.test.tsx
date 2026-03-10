@@ -2,8 +2,10 @@
 // ABOUTME: Tests the navigation skeleton building block used for auth loading states and navigation structure
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { NavigationSkeleton } from "../NavigationSkeleton";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("NavigationSkeleton", () => {
   describe("basic rendering", () => {

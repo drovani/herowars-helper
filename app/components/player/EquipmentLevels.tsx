@@ -1,6 +1,7 @@
 // ABOUTME: EquipmentLevels component displays and allows editing of hero equipment tier levels (1-16)
 // ABOUTME: Shows plus/minus buttons for updating equipment progression
 import { MinusIcon, PlusIcon } from "lucide-react";
+
 import { Button } from "~/components/ui/button";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";

@@ -2,10 +2,12 @@
 // ABOUTME: Provides user-friendly fallback UI that preserves user input and offers retry
 
 import { type ReactNode } from "react";
+
+import { FileWarningIcon } from "lucide-react";
+
 import { ErrorBoundary } from "~/components/ErrorBoundary";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { FileWarningIcon } from "lucide-react";
 
 interface FormErrorBoundaryProps {
   children: ReactNode;
@@ -93,8 +95,8 @@ export function FormErrorBoundary({
 
               <Alert className="border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
                 <AlertDescription>
-                  <strong>Good news:</strong> Your form data has been preserved. Click "Try
-                  Again" to retry your submission.
+                  <strong>Good news:</strong> Your form data has been preserved. Click &quot;Try
+                  Again&quot; to retry your submission.
                 </AlertDescription>
               </Alert>
 

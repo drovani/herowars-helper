@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+
 import { type UseFormReturn } from "react-hook-form";
+
 import ChapterMissions from "~/components/equipment-form/ChapterMissions";
 import {
   Accordion,

@@ -32,9 +32,8 @@ export function useErrorBoundary() {
   const [error, setError] = useState<Error | null>(null);
 
   const showBoundary = useCallback((error: Error | unknown) => {
-    const errorInstance = error instanceof Error
-      ? error
-      : new Error(String(error));
+    const errorInstance =
+      error instanceof Error ? error : new Error(String(error));
 
     setError(errorInstance);
   }, []);
@@ -62,9 +61,10 @@ export function useErrorBoundary() {
  * }
  * ```
  */
-export function useAsyncErrorBoundary<T extends (...args: any[]) => Promise<any>>(
-  asyncFn: T
-): T {
+export function useAsyncErrorBoundary<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic function wrapper requires any for type inference
+  T extends (...args: any[]) => Promise<any>,
+>(asyncFn: T): T {
   const showBoundary = useErrorBoundary();
 
   const wrappedFn = useCallback(
@@ -75,7 +75,7 @@ export function useAsyncErrorBoundary<T extends (...args: any[]) => Promise<any>
         showBoundary(error);
       }
     },
-    [asyncFn, showBoundary]
+    [asyncFn, showBoundary],
   ) as T;
 
   return wrappedFn;

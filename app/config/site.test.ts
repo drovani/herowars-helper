@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { formatTitle, siteConfig, type SiteConfig } from "./site";
 
 describe("Site Configuration", () => {

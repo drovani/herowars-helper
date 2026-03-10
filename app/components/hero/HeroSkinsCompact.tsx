@@ -1,12 +1,15 @@
 import type { ClassValue } from "clsx";
-import type { HeroRecord } from "~/data/hero.zod";
-import { cn, generateSlug } from "~/lib/utils";
-import SkinImage from "./SkinImage";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "../ui/hover-card";
+
+import SkinImage from "./SkinImage";
+
+import type { HeroRecord } from "~/data/hero.zod";
+import { cn, generateSlug } from "~/lib/utils";
 
 interface HeroSkinsProps {
   skins: HeroRecord["skins"];

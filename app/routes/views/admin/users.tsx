@@ -1,9 +1,11 @@
+import { Suspense, useEffect, useState } from "react";
+
+import log from "loglevel";
 import {
   UserRoundCheckIcon,
   UserRoundMinusIcon,
   UserRoundXIcon,
 } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
 import {
   Await,
   redirect,
@@ -11,6 +13,7 @@ import {
   useLoaderData,
   useRevalidator,
 } from "react-router";
+
 import { AdminUserTableSkeleton } from "~/components/skeletons/AdminUserTableSkeleton";
 import {
   AlertDialog,
@@ -102,9 +105,12 @@ async function loadUsersData(request: Request) {
       hasServiceRole: true,
     };
   } catch (error) {
+    log.error("Admin users loader failed:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     return {
       users: [],
-      error: "Service role not configured or API unavailable",
+      error: `Failed to load users: ${errorMessage}`,
       hasServiceRole: false,
     };
   }
@@ -140,9 +146,12 @@ export const action = async ({ request }: { request: Request }) => {
       const data = await response.json();
       return data;
     } catch (error) {
+      log.error(`Admin users action '${action}' failed:`, error);
+      const errorDetail =
+        error instanceof Error ? error.message : "Unknown error";
       return {
         success: false,
-        error: `Failed to ${action}`,
+        error: `Failed to ${action}: ${errorDetail}`,
       };
     }
   }
@@ -202,7 +211,7 @@ function AdminUsersContent({
         // Revert optimistic update on error
         setOptimisticUserStates((prev) => {
           if (updatingUserId) {
-            const { [updatingUserId]: removed, ...rest } = prev;
+            const { [updatingUserId]: _removed, ...rest } = prev;
             return rest;
           }
           return prev;
@@ -219,7 +228,7 @@ function AdminUsersContent({
       }
       setUpdatingUserId(null); // Clear updating state
     }
-  }, [fetcher.data, updatingUserId, revalidator]);
+  }, [fetcher.data, updatingUserId, isRevalidating, revalidator]);
 
   // Clear updating state when fetcher becomes idle
   useEffect(() => {
@@ -248,12 +257,12 @@ function AdminUsersContent({
         setMessage(createUserFetcher.data.error || "Failed to create user");
       }
     }
-  }, [createUserFetcher.data]);
+  }, [createUserFetcher.data, revalidator]);
 
   const handleRoleChange = (userId: string, roles: string[]) => {
     if (!hasServiceRole) {
       setMessage(
-        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables."
+        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.",
       );
       return;
     }
@@ -271,7 +280,7 @@ function AdminUsersContent({
         userId,
         roles: JSON.stringify(roles),
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
@@ -295,7 +304,7 @@ function AdminUsersContent({
   const handleUserStatusChange = (userId: string, isEnabled: boolean) => {
     if (!hasServiceRole) {
       setMessage(
-        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables."
+        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.",
       );
       return;
     }
@@ -314,14 +323,14 @@ function AdminUsersContent({
         action,
         userId,
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
   const handleDeleteUser = (userId: string) => {
     if (!hasServiceRole) {
       setMessage(
-        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables."
+        "Service role not configured. Please add SUPABASE_SERVICE_ROLE_KEY to your environment variables.",
       );
       return;
     }
@@ -339,7 +348,7 @@ function AdminUsersContent({
         action: "deleteUser",
         userId,
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
@@ -357,7 +366,7 @@ function AdminUsersContent({
         fullName: createUserForm.fullName,
         roles: JSON.stringify(createUserForm.roles),
       },
-      { method: "post" }
+      { method: "post" },
     );
   };
 
@@ -544,12 +553,13 @@ function AdminUsersContent({
         <CardContent className="p-3 sm:p-6">
           {message && (
             <div
-              className={`mb-4 p-3 rounded border break-words text-sm ${hasServiceRole
+              className={`mb-4 p-3 rounded border wrap-break-word text-sm ${
+                hasServiceRole
                   ? message.includes("success")
                     ? "bg-green-100 text-green-800 border-green-300"
                     : "bg-red-100 text-red-800 border-red-300"
                   : "bg-yellow-100 text-yellow-800 border-yellow-300"
-                }`}
+              }`}
             >
               {!hasServiceRole && (
                 <strong className="block sm:inline">
@@ -668,9 +678,10 @@ function AdminUsersContent({
                                       </AlertDialogTitle>
                                       <AlertDialogDescription>
                                         Are you sure you want to permanently
-                                        delete the user "{user.email}"? This
-                                        action cannot be undone and will remove
-                                        all user data from the system.
+                                        delete the user &quot;{user.email}
+                                        &quot;? This action cannot be undone and
+                                        will remove all user data from the
+                                        system.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -695,7 +706,7 @@ function AdminUsersContent({
                         <TableCell>
                           {updatingUserId === user.id ? (
                             <div className="flex items-center">
-                              <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2"></div>
+                              <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2" />
                               <span className="text-sm">Updating...</span>
                             </div>
                           ) : !hasServiceRole ? (
@@ -777,7 +788,7 @@ function AdminUsersContent({
                       {/* Status Loading */}
                       {updatingUserId === user.id && (
                         <div className="flex items-center mb-3 p-2 bg-gray-50 rounded">
-                          <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2"></div>
+                          <div className="animate-spin rounded-full size-4 border-b-2 border-gray-900 mr-2" />
                           <span className="text-sm">Updating...</span>
                         </div>
                       )}
@@ -877,8 +888,8 @@ function AdminUsersContent({
                                   </AlertDialogTitle>
                                   <AlertDialogDescription className="text-sm">
                                     Are you sure you want to permanently delete
-                                    "{user.email}"? This action cannot be
-                                    undone.
+                                    &quot;{user.email}&quot;? This action cannot
+                                    be undone.
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter className="flex-col sm:flex-row gap-2">

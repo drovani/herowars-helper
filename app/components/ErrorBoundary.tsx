@@ -2,11 +2,13 @@
 // ABOUTME: Provides foundation for all error boundaries in the application with retry mechanisms
 
 import { Component, type ErrorInfo, type ReactNode } from "react";
+
 import log from "loglevel";
+import { AlertTriangleIcon, RefreshCwIcon, HomeIcon } from "lucide-react";
+
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { AlertTriangleIcon, RefreshCwIcon, HomeIcon } from "lucide-react";
 
 export interface ErrorBoundaryProps {
   /** Child components to render */

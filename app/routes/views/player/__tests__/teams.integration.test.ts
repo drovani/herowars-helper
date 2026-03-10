@@ -1,13 +1,15 @@
 // ABOUTME: Integration tests for player teams index page covering data loading and CRUD operations
 // ABOUTME: Tests authentication flows and team management repository integration
 import { describe, it, expect, beforeEach, vi } from "vitest";
+
 import { loader, action } from "../teams/index";
-import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
+
 import { createMockSupabaseClient } from "~//__tests__/mocks/supabase";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
+import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
 
 // Mock the repositories
 vi.mock("~/repositories/PlayerTeamRepository");
@@ -39,7 +41,7 @@ describe("Player Teams Integration", () => {
       deleteTeam: vi.fn(),
     };
 
-    vi.mocked(PlayerTeamRepository).mockImplementation(function() { return mockTeamRepo; });
+    vi.mocked(PlayerTeamRepository).mockImplementation(() => { return mockTeamRepo; });
 
     // Mock auth utilities
     vi.mocked(getAuthenticatedUser).mockResolvedValue({

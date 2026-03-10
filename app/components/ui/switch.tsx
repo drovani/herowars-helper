@@ -1,6 +1,7 @@
+import { forwardRef, useState } from "react";
+
 import { Root, Thumb } from "@radix-ui/react-switch";
 import { type ClassValue } from "clsx";
-import { forwardRef, useState } from "react";
 
 import { cn } from "~/lib/utils";
 

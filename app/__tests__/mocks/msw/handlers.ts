@@ -2,6 +2,7 @@
 // ABOUTME: Provides realistic HTTP responses for database operations without hitting real Supabase
 
 import { http, HttpResponse } from "msw";
+
 import {
   createMockEquipment,
   createMockMission,
@@ -9,6 +10,7 @@ import {
   SUPABASE_ERRORS,
   createMockEquipmentList,
 } from "./factories";
+
 import type { Database } from "~/types/supabase";
 
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
@@ -23,7 +25,7 @@ let chapterStore: Chapter[] = [];
 /**
  * Helper to extract table name from URL path
  */
-const getTableFromPath = (url: URL): string => {
+const _getTableFromPath = (url: URL): string => {
   const pathMatch = url.pathname.match(/\/rest\/v1\/([^/?]+)/);
   return pathMatch?.[1] || "";
 };
@@ -53,7 +55,7 @@ const equipmentHandlers = [
     if (headerValidation) return headerValidation;
 
     const url = new URL(request.url);
-    const select = url.searchParams.get("select");
+    const _select = url.searchParams.get("select");
     const filter = url.searchParams.get("slug");
     const limit = url.searchParams.get("limit");
     const order = url.searchParams.get("order");
@@ -206,7 +208,7 @@ const missionHandlers = [
     if (headerValidation) return headerValidation;
 
     const url = new URL(request.url);
-    const select = url.searchParams.get("select");
+    const _select = url.searchParams.get("select");
     const slugFilter = url.searchParams.get("slug");
     const chapterIdFilter = url.searchParams.get("chapter_id");
     const heroSlugFilter = url.searchParams.get("hero_slug");
@@ -222,7 +224,7 @@ const missionHandlers = [
         data.find((m) => m.slug === slug) || createMockMission({ slug });
 
       // Handle select with relationships (e.g., "*, chapter(*)")
-      if (select?.includes("chapter(")) {
+      if (_select?.includes("chapter(")) {
         const chapter =
           chapterStore.find((c) => c.id === mission.chapter_id) ||
           createMockChapter({ id: mission.chapter_id });
@@ -364,7 +366,7 @@ const chapterHandlers = [
     if (headerValidation) return headerValidation;
 
     const url = new URL(request.url);
-    const select = url.searchParams.get("select");
+    const _select = url.searchParams.get("select");
     const idFilter = url.searchParams.get("id");
     const order = url.searchParams.get("order");
 
@@ -377,7 +379,7 @@ const chapterHandlers = [
       let chapter = data.find((c) => c.id === id) || createMockChapter({ id });
 
       // Handle select with relationships (e.g., "*, mission(*)")
-      if (select?.includes("mission(")) {
+      if (_select?.includes("mission(")) {
         const missions = missionStore.filter((m) => m.chapter_id === id);
         chapter = { ...chapter, missions } as any;
       }

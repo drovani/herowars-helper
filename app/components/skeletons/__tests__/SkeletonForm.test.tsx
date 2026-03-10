@@ -2,8 +2,10 @@
 // ABOUTME: Tests the form skeleton building block used for form loading states and multi-step forms
 
 import { describe, expect, it } from "vitest";
-import { render } from "~/__tests__/utils/test-utils";
+
 import { SkeletonForm } from "../SkeletonForm";
+
+import { render } from "~/__tests__/utils/test-utils";
 
 describe("SkeletonForm", () => {
   describe("basic rendering", () => {

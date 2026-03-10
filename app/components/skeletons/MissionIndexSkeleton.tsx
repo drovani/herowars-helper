@@ -1,8 +1,8 @@
 // ABOUTME: Skeleton placeholder for mission index page with chapter sections and mission cards
 // ABOUTME: Supports chapter organization with search filters and mission grid layouts including boss placeholders
 
-import { Skeleton } from "~/components/ui/skeleton";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 interface MissionIndexSkeletonProps {

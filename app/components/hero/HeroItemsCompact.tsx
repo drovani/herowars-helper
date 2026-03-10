@@ -1,11 +1,10 @@
+import { useState } from "react";
+
 import { HoverCard } from "@radix-ui/react-hover-card";
 import type { ClassValue } from "clsx";
 import { AlertCircle } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import type { HeroRecord } from "~/data/hero.zod";
-import { cn, generateSlug } from "~/lib/utils";
+
 import EquipmentImage from "../EquipmentImage";
 import { Badge } from "../ui/badge";
 import { HoverCardContent, HoverCardTrigger } from "../ui/hover-card";
@@ -16,6 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
+import { cn, generateSlug } from "~/lib/utils";
 
 interface HeroItemsProps {
   equipment: EquipmentRecord[];
@@ -30,14 +33,14 @@ export default function HeroItemsCompact({
   equipment,
   className,
 }: HeroItemsProps) {
-  if (items === undefined) return <div></div>;
-
-  const ranks = Object.keys(items);
+  // Call all hooks before any conditional returns
+  const ranks = items ? Object.keys(items) : [];
   const [selectedRank, setSelectedRank] = useState<ItemRank>(
-    ranks[0] as ItemRank
+    (ranks[0] as ItemRank) || ("white" as ItemRank)
   );
 
-  const getEquipment = (slug: string) => equipment.find((e) => e.slug === slug);
+  // Early return checks must come after all hook calls
+  if (items === undefined) return <div />;
 
   if (!items || Object.keys(items).length === 0) {
     return (
@@ -47,6 +50,8 @@ export default function HeroItemsCompact({
       </div>
     );
   }
+
+  const getEquipment = (slug: string) => equipment.find((e) => e.slug === slug);
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>

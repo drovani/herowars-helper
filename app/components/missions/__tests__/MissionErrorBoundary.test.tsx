@@ -2,13 +2,14 @@
 // ABOUTME: Covers mission-specific error handling and context-aware messages
 
 import { render } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import log from "loglevel";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { MissionErrorBoundary } from "../MissionErrorBoundary";
 
 function ThrowError() {
   throw new Error("Test mission error");
-  // eslint-disable-next-line no-unreachable
+   
   return null;
 }
 

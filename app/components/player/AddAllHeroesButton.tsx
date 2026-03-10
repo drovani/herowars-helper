@@ -1,8 +1,9 @@
 // ABOUTME: AddAllHeroesButton component provides bulk hero addition with confirmation and progress feedback
 // ABOUTME: Shows confirmation dialog, loading states, and operation results for bulk hero collection management
-import { useState, useEffect } from "react";
-import { UserRoundPlusIcon, LoaderCircle, CheckCircle, AlertTriangle, UsersIcon } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { useEffect, useState } from "react";
+
+import { AlertTriangle, CheckCircle, LoaderCircle, UserRoundPlusIcon, UsersIcon } from "lucide-react";
+
 import { Alert, AlertDescription } from "~/components/ui/alert";
 import {
   AlertDialog,
@@ -15,6 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
+import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import { cn } from "~/lib/utils";
 
@@ -78,11 +80,11 @@ export function AddAllHeroesButton({
     }
   }, [result, showResult]);
 
-  const buttonText = isLoading 
-    ? `Adding Heroes...` 
+  const buttonText = isLoading
+    ? `Adding Heroes...`
     : "Add All Heroes to Collection";
 
-  const buttonIcon = isLoading 
+  const buttonIcon = isLoading
     ? <LoaderCircle className="size-4 animate-spin" />
     : <UsersIcon className="size-4" />;
 
@@ -103,7 +105,7 @@ export function AddAllHeroesButton({
             {buttonText}
           </Button>
         </AlertDialogTrigger>
-        
+
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -111,7 +113,7 @@ export function AddAllHeroesButton({
               Add All Heroes to Collection
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This will add all available heroes to your collection that you don't already have.
+              This will add all available heroes to your collection that you don&apos;t already have.
               {expectedAddCount !== undefined && expectedAddCount > 0 && (
                 <>
                   <br />
@@ -129,12 +131,12 @@ export function AddAllHeroesButton({
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          
+
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isLoading}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleConfirm}
               disabled={isLoading || expectedAddCount === 0}
               className="flex items-center gap-2"
@@ -159,19 +161,19 @@ export function AddAllHeroesButton({
 
       {/* Result display */}
       {result && showResult && (
-        <Alert 
+        <Alert
           className={cn(
             "transition-all duration-300",
-            result.success 
+            result.success
               ? "border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
               : "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200"
           )}
         >
           <div className="flex items-start gap-2">
             {result.success ? (
-              <CheckCircle className="size-4 mt-0.5 flex-shrink-0" />
+              <CheckCircle className="size-4 mt-0.5 shrink-0" />
             ) : (
-              <AlertTriangle className="size-4 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="size-4 mt-0.5 shrink-0" />
             )}
             <AlertDescription className="flex-1">
               <div className="font-medium mb-1">

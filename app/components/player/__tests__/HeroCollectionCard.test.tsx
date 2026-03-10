@@ -1,12 +1,14 @@
 // ABOUTME: Tests for HeroCollectionCard component covering hero display and interactions
 // ABOUTME: Tests star/equipment updates and hero removal functionality
 import { describe, expect, it, vi } from "vitest";
+
+import { HeroCollectionCard } from "../HeroCollectionCard";
+
 import {
   fireEvent,
   renderWithRouter as render,
 } from "~/__tests__/utils/test-utils";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
-import { HeroCollectionCard } from "../HeroCollectionCard";
 
 const mockPlayerHero: PlayerHeroWithDetails = {
   id: "1",

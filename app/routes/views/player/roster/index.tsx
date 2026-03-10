@@ -1,7 +1,11 @@
 // ABOUTME: Player roster page displays user's hero collection with management capabilities
 // ABOUTME: Allows viewing, filtering, and managing personal hero collection including stars and equipment levels
 import { useState } from "react";
+
 import { useFetcher } from "react-router";
+
+import type { Route } from "./+types/index";
+
 import { AddAllHeroesButton } from "~/components/player/AddAllHeroesButton";
 import { HeroCollectionCard } from "~/components/player/HeroCollectionCard";
 import { PlayerCollectionErrorBoundary } from "~/components/player/PlayerCollectionErrorBoundary";
@@ -31,7 +35,6 @@ import { transformBasicHeroToRecord } from "~/lib/hero-transformations";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
 import type { PlayerHeroWithDetails } from "~/repositories/types";
-import type { Route } from "./+types/index";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const heroRepo = new HeroRepository(request);
@@ -203,7 +206,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
   // Extract bulk result directly from fetcher data to simplify state management
   const bulkResult = fetcher.data && fetcher.state === "idle" && 
     (fetcher.data.success || fetcher.data.error) ? {
-      success: !!fetcher.data.success,
+      success: Boolean(fetcher.data.success),
       message: fetcher.data.message || fetcher.data.error,
       data: fetcher.data.data,
     } : null;
@@ -243,7 +246,7 @@ export default function PlayerRoster({ loaderData }: Route.ComponentProps) {
             <div className="animate-pulse space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-48 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-48 bg-gray-200 rounded" />
                 ))}
               </div>
             </div>

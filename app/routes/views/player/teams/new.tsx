@@ -2,26 +2,29 @@
 // ABOUTME: Allows users to create new teams with name, description, and hero selection
 
 import { useState } from "react";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
+import { useFetcher, useNavigate } from "react-router";
+
+import type { Route } from "./+types/new";
+
+import { TeamBuilder } from "~/components/team/TeamBuilder";
 import { Button } from "~/components/ui/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { TeamBuilder } from "~/components/team/TeamBuilder";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
 import {
   getAuthenticatedUser,
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
-import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { Route } from "./+types/new";
+import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
+import type { PlayerTeamHero, Hero } from "~/repositories/types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -62,21 +65,21 @@ export const action = async ({ request }: Route.ActionArgs) => {
         description: description || undefined,
       });
 
-      if (teamResult.error) {
-        return { error: teamResult.error.message };
+      if (teamResult.error || !teamResult.data) {
+        return { error: teamResult.error?.message ?? "Failed to create team" };
       }
 
-      const teamId = teamResult.data!.id;
+      const team = teamResult.data;
 
       // Add heroes to the team
       if (heroSlugs.length > 0) {
         for (const heroSlug of heroSlugs) {
-          const addResult = await teamRepo.addHeroToTeam(teamId, user.id, {
+          const addResult = await teamRepo.addHeroToTeam(team.id, user.id, {
             hero_slug: heroSlug,
           });
           if (addResult.error) {
             // If adding heroes fails, we should probably clean up the team
-            await teamRepo.deleteTeam(teamId, user.id);
+            await teamRepo.deleteTeam(team.id, user.id);
             return {
               error: `Failed to add hero ${heroSlug}: ${addResult.error.message}`,
             };
@@ -86,8 +89,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
       return {
         success: true,
-        teamId,
-        message: `Team "${teamResult.data!.name}" created successfully`,
+        teamId: team.id,
+        message: `Team "${team.name}" created successfully`,
         redirect: `/player/teams`,
       };
     }
@@ -168,11 +171,9 @@ export default function TeamNew({ loaderData }: Route.ComponentProps) {
   };
 
   // Convert selected hero slugs to team hero format for display
-  const teamHeroes = selectedHeroes
+  const teamHeroes: Array<PlayerTeamHero & { hero: Hero }> = selectedHeroes
     .map((heroSlug) => {
-      const playerHero = userHeroes.find(
-        (ph: any) => ph.hero_slug === heroSlug
-      );
+      const playerHero = userHeroes.find((ph) => ph.hero_slug === heroSlug);
       if (!playerHero) return null;
 
       return {
@@ -183,7 +184,7 @@ export default function TeamNew({ loaderData }: Route.ComponentProps) {
         hero: playerHero.hero,
       };
     })
-    .filter(Boolean) as any[];
+    .filter((item): item is NonNullable<typeof item> => item !== null);
 
   const isSubmitting = fetcher.state === "submitting";
   const canSave = teamName.trim() !== "" || selectedHeroes.length > 0;

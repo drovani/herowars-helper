@@ -1,11 +1,13 @@
 import type { ClassValue } from "clsx";
-import type { HeroRecord } from "~/data/hero.zod";
-import { cn, generateSlug } from "~/lib/utils";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "../ui/hover-card";
+
+import type { HeroRecord } from "~/data/hero.zod";
+import { cn, generateSlug } from "~/lib/utils";
 
 interface HeroGlyphsCompactProps {
   glyphs: HeroRecord["glyphs"];
@@ -16,7 +18,8 @@ export default function HeroGlyphsCompact({
   glyphs,
   className,
 }: HeroGlyphsCompactProps) {
-  if (glyphs == null) return <div className={cn(className)} />;
+  if (glyphs === null || glyphs === undefined)
+    return <div className={cn(className)} />;
 
   return (
     <div className={cn("flex flex-col justify-evenly items-center", className)}>

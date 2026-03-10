@@ -1,27 +1,27 @@
-import { ToggleGroup } from "@radix-ui/react-toggle-group";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  LayoutGridIcon,
-  LayoutListIcon,
-} from "lucide-react";
 import { Suspense, useState, useMemo } from "react";
+
+import { ToggleGroup } from "@radix-ui/react-toggle-group";
+import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
 import { Await, Link, useFetcher, useNavigate } from "react-router";
+
+import type { Route } from "./+types/index";
+
 import { ActiveFilterChips } from "~/components/hero/ActiveFilterChips";
 import HeroArtifactsCompact from "~/components/hero/HeroArtifactsCompact";
 import HeroCard from "~/components/hero/HeroCard";
 import { HeroFilters } from "~/components/hero/HeroFilters";
 import HeroGlyphsCompact from "~/components/hero/HeroGlyphsCompact";
 import HeroItemsCompact from "~/components/hero/HeroItemsCompact";
-import { HeroSortControls } from "~/components/hero/HeroSortControls";
 import HeroSkinsCompact from "~/components/hero/HeroSkinsCompact";
+import { HeroSortControls } from "~/components/hero/HeroSortControls";
 import { AddHeroButton } from "~/components/player/AddHeroButton";
 import { HeroIndexSkeleton } from "~/components/skeletons/HeroIndexSkeleton";
-import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useAuth } from "~/contexts/AuthContext";
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import type { HeroRecord } from "~/data/hero.zod";
 import { useIsMobile } from "~/hooks/useIsMobile";
 import { useQueryState } from "~/hooks/useQueryState";
 import {
@@ -32,23 +32,19 @@ import {
   filterHeroes,
   parseFilterParams,
   createFilterParams,
+  type HeroFilters as HeroFiltersType,
 } from "~/lib/hero-filtering";
-import type { HeroFilters as HeroFiltersType } from "~/lib/hero-filtering";
 import {
   sortHeroes,
   parseSortParams,
   createSortParams,
+  type SortOptions,
 } from "~/lib/hero-sorting";
-import type { SortOptions } from "~/lib/hero-sorting";
-import {
-  sortHeroRecords,
-  transformCompleteHeroToRecord,
-} from "~/lib/hero-transformations";
+import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { HeroRepository } from "~/repositories/HeroRepository";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
-import type { BasicHero } from "~/repositories/types";
-import type { Route } from "./+types/index";
+import type { Hero } from "~/repositories/types";
 
 async function loadHeroesData(request: Request) {
   const url = new URL(request.url);
@@ -56,17 +52,17 @@ async function loadHeroesData(request: Request) {
 
   const heroRepo = new HeroRepository(request);
 
-  let heroes: any[];
+  let heroes: Hero[] | HeroRecord[];
 
   if (mode === "cards") {
-    // Cards mode: Use lightweight query for minimal data
-    const basicHeroesResult = await heroRepo.findAllBasic();
+    // Cards mode: Use full Hero data for filtering/sorting capabilities
+    const heroesResult = await heroRepo.findAll();
 
-    if (basicHeroesResult.error) {
+    if (heroesResult.error) {
       throw new Response("Failed to load heroes", { status: 500 });
     }
 
-    heroes = basicHeroesResult.data || [];
+    heroes = heroesResult.data || [];
   } else {
     // Tiles mode: Load all heroes with full relationships (no pagination, we'll handle client-side)
     const completeHeroesResult = await heroRepo.findAllWithRelationships();
@@ -77,7 +73,7 @@ async function loadHeroesData(request: Request) {
 
     if (completeHeroesResult.data) {
       heroes = completeHeroesResult.data.map((hero) =>
-        transformCompleteHeroToRecord(hero)
+        transformCompleteHeroToRecord(hero),
       );
     } else {
       heroes = [];
@@ -85,7 +81,7 @@ async function loadHeroesData(request: Request) {
   }
 
   // Only load equipment for tiles mode (cards don't need it)
-  let equipment: any[] = [];
+  let equipment: EquipmentRecord[] = [];
   if (mode === "tiles") {
     const equipmentRepo = new EquipmentRepository(request);
     const equipmentResult = await equipmentRepo.getAllAsJson();
@@ -159,8 +155,8 @@ function HeroesContent({
   userCollection,
   mode: initialMode,
 }: {
-  heroes: any[];
-  equipment: any[];
+  heroes: Hero[] | HeroRecord[];
+  equipment: EquipmentRecord[];
   userCollection: string[];
   mode: string;
 }) {
@@ -187,7 +183,7 @@ function HeroesContent({
   const [search, setSearch] = useState(initialFilters.search || "");
   const [displayMode, setDisplayMode] = useQueryState<"cards" | "tiles">(
     "mode",
-    (initialMode as "cards" | "tiles") || "cards"
+    (initialMode as "cards" | "tiles") || "cards",
   );
   const [filters, setFilters] = useState<HeroFiltersType>(initialFilters);
   const [sortOptions, setSortOptions] = useState<SortOptions>(initialSort);
@@ -196,18 +192,14 @@ function HeroesContent({
   const updateURL = (
     newFilters: HeroFiltersType,
     newSort: SortOptions,
-    newSearch: string
+    newSearch: string,
   ) => {
     const params = new URLSearchParams(window.location.search);
 
     // Clear existing filter and sort params
     const keysToRemove: string[] = [];
     params.forEach((_, key) => {
-      if (
-        key !== "mode" &&
-        key !== "page" &&
-        !key.startsWith("_")
-      ) {
+      if (key !== "mode" && key !== "page" && !key.startsWith("_")) {
         keysToRemove.push(key);
       }
     });
@@ -265,11 +257,7 @@ function HeroesContent({
     updateURL(filters, sortOptions, newSearch);
   };
 
-  const HeroCardWithButton = ({
-    hero,
-  }: {
-    hero: BasicHero | (typeof heroes)[0];
-  }) => {
+  const HeroCardWithButton = ({ hero }: { hero: Hero | HeroRecord }) => {
     const isSubmittingThisHero =
       fetcher.state === "submitting" &&
       fetcher.formData?.get("heroSlug") === hero.slug;
@@ -290,11 +278,11 @@ function HeroesContent({
                 fetcher.submit(
                   {
                     action: "addHero",
-                    heroSlug: heroSlug,
+                    heroSlug,
                     stars: "1",
                     equipmentLevel: "1",
                   },
-                  { method: "POST" }
+                  { method: "POST" },
                 );
               }}
               size="sm"
@@ -309,8 +297,8 @@ function HeroesContent({
     hero,
     equipment,
   }: {
-    hero: any;
-    equipment: any[];
+    hero: Hero | HeroRecord;
+    equipment: EquipmentRecord[];
   }) => {
     const isSubmittingThisHero =
       fetcher.state === "submitting" &&
@@ -320,7 +308,17 @@ function HeroesContent({
       (isSubmittingThisHero && fetcher.formData?.get("action") === "addHero");
 
     // Only render tiles if hero has complete data (artifacts, skins, etc.)
-    if (!hero.artifacts || !hero.skins || !hero.glyphs || !hero.items) {
+    // Type guard: check if hero is a HeroRecord by checking for HeroRecord-specific properties
+    const isHeroRecord = (h: Hero | HeroRecord): h is HeroRecord =>
+      "artifacts" in h && "skins" in h && "glyphs" in h && "items" in h;
+
+    if (
+      !isHeroRecord(hero) ||
+      !hero.artifacts ||
+      !hero.skins ||
+      !hero.glyphs ||
+      !hero.items
+    ) {
       return null;
     }
 
@@ -348,11 +346,11 @@ function HeroesContent({
                     fetcher.submit(
                       {
                         action: "addHero",
-                        heroSlug: heroSlug,
+                        heroSlug,
                         stars: "1",
                         equipmentLevel: "1",
                       },
-                      { method: "POST" }
+                      { method: "POST" },
                     );
                   }}
                   size="sm"
@@ -396,7 +394,7 @@ function HeroesContent({
             <HeroFilters
               filters={filters}
               onFiltersChange={handleFiltersChange}
-              showCollectionFilter={!!user}
+              showCollectionFilter={Boolean(user)}
             />
             {!isMobile && (
               <ToggleGroup
@@ -475,8 +473,8 @@ export default function HeroesIndex({ loaderData }: Route.ComponentProps) {
     <Suspense fallback={<HeroIndexSkeleton />}>
       <Await resolve={loaderData?.heroesData}>
         {(data: {
-          heroes: any[];
-          equipment: any[];
+          heroes: Hero[] | HeroRecord[];
+          equipment: EquipmentRecord[];
           userCollection: string[];
           mode: string;
         }) => (

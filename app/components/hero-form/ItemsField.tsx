@@ -1,5 +1,14 @@
 import { useMemo, useState } from "react";
+
 import { type UseFormReturn } from "react-hook-form";
+
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+
 import EquipmentImage from "~/components/EquipmentImage";
 import ItemSelectionDialog from "~/components/hero-form/ItemSelectionDialog";
 import {
@@ -11,12 +20,6 @@ import {
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { type HeroMutation, type HeroRecord } from "~/data/hero.zod";
 import { HeroRankLevel } from "~/data/ReadonlyArrays";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
 
 interface ItemsFieldProps {
   form: UseFormReturn<HeroMutation>;
@@ -85,7 +88,7 @@ export default function ItemsField({ form, hero, equipment }: ItemsFieldProps) {
                     return (
                       <div key={rank} className="space-y-2">
                         <FormLabel
-                          className={`text-base capitalize font-medium`}
+                          className="text-base capitalize font-medium"
                         >
                           {rankLabel}
                         </FormLabel>

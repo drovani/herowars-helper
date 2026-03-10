@@ -1,6 +1,7 @@
 // ABOUTME: Hero detail route handles individual hero management with view switching
 // ABOUTME: Defaults to hero view and supports URL-based view navigation
 import { useParams, useOutletContext } from "react-router";
+
 import { HeroDetailView } from "~/components/player/HeroDetailView";
 import {
   Card,
@@ -35,7 +36,7 @@ export default function HeroDetail() {
           <CardHeader>
             <CardTitle>Hero Not Found</CardTitle>
             <CardDescription>
-              The hero "{params.heroSlug}" was not found in your collection.
+              The hero &quot;{params.heroSlug}&quot; was not found in your collection.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+
 import {
   Anchor,
   Blocks,
@@ -13,8 +15,8 @@ import {
   Wrench,
   XCircle,
 } from "lucide-react";
-import { useMemo, useState } from "react";
 import { useLoaderData } from "react-router";
+
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -35,8 +37,11 @@ import { createClient } from "~/lib/supabase/client";
 
 interface CoverageFile {
   path: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Istanbul coverage format uses complex nested structure
   statementMap: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Istanbul coverage format uses complex nested structure
   fnMap: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Istanbul coverage format uses complex nested structure
   branchMap: Record<string, any>;
   s: Record<string, number>;
   f: Record<string, number>;
@@ -258,11 +263,10 @@ function FileDetails({
   const openInVSCode = (lineNumber?: number) => {
     const cleanPath = filePath.replace(/^\/.*\/herowars-helper\//, "");
     // For local development, assume the project is in the current working directory
-    const fullPath = `${
-      window.location.origin.includes("localhost")
+    const fullPath = `${window.location.origin.includes("localhost")
         ? "/home/drovani/herowars-helper"
         : ""
-    }/${cleanPath}`;
+      }/${cleanPath}`;
     const uri = lineNumber
       ? `vscode://file${fullPath}:${lineNumber}`
       : `vscode://file${fullPath}`;
@@ -287,16 +291,16 @@ function FileDetails({
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 {isOpen ? (
-                  <ChevronDown className="size-4 flex-shrink-0" />
+                  <ChevronDown className="size-4 shrink-0" />
                 ) : (
-                  <ChevronRight className="size-4 flex-shrink-0" />
+                  <ChevronRight className="size-4 shrink-0" />
                 )}
-                <FileTypeIcon className="size-4 flex-shrink-0" />
+                <FileTypeIcon className="size-4 shrink-0" />
                 <CardTitle className="text-sm font-mono truncate">
                   {filePath.replace(/^\/.*\/herowars-helper\//, "")}
                 </CardTitle>
               </div>
-              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -391,9 +395,9 @@ function FileDetails({
                       >
                         <div className="flex items-center gap-2 min-w-0 flex-1">
                           {count > 0 ? (
-                            <CheckCircle className="size-3 text-green-500 flex-shrink-0" />
+                            <CheckCircle className="size-3 text-green-500 shrink-0" />
                           ) : (
-                            <XCircle className="size-3 text-red-500 flex-shrink-0" />
+                            <XCircle className="size-3 text-red-500 shrink-0" />
                           )}
                           <span className="font-mono text-xs break-all">
                             Statement {statementId}:{" "}
@@ -406,7 +410,7 @@ function FileDetails({
                           </span>
                         </div>
                         {count === 0 && lineNumber && (
-                          <div className="flex gap-1 flex-shrink-0">
+                          <div className="flex gap-1 shrink-0">
                             <Button
                               variant="outline"
                               size="sm"
@@ -457,7 +461,7 @@ export default function AdminTestCoverage() {
   const allFiles = Object.entries(coverage).filter(
     ([key]) => !key.includes("total")
   );
-  const summary = (coverage as any).total as CoverageSummary | undefined;
+  const summary = coverage["total"] as CoverageSummary | undefined;
 
   // Filter files based on selected criteria
   const filteredFiles = useMemo(() => {
@@ -728,19 +732,19 @@ export default function AdminTestCoverage() {
               {(coverageFilter !== "all" ||
                 fileTypeFilter !== "all" ||
                 issueFilter !== "all") && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setCoverageFilter("all");
-                    setFileTypeFilter("all");
-                    setIssueFilter("all");
-                  }}
-                  className="h-8 px-3 text-xs"
-                >
-                  Clear Filters
-                </Button>
-              )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setCoverageFilter("all");
+                      setFileTypeFilter("all");
+                      setIssueFilter("all");
+                    }}
+                    className="h-8 px-3 text-xs"
+                  >
+                    Clear Filters
+                  </Button>
+                )}
             </div>
           </CardContent>
         </Card>

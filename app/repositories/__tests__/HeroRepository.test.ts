@@ -1,10 +1,11 @@
 // ABOUTME: Comprehensive test suite for HeroRepository class
 // ABOUTME: Tests all CRUD operations, relationship queries, and bulk operations with mocked Supabase client
 
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import log from "loglevel";
-import { HeroRepository } from "../HeroRepository";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
 import { mockSupabaseClient } from "../../__tests__/mocks/supabase";
+import { HeroRepository } from "../HeroRepository";
 import type {
   Hero,
   HeroArtifact,

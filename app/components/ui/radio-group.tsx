@@ -1,7 +1,9 @@
+import { forwardRef } from "react";
+
 import { Indicator, Item, Root } from "@radix-ui/react-radio-group";
 import { type ClassValue } from "clsx";
 import { Circle } from "lucide-react";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const RadioGroup = forwardRef<

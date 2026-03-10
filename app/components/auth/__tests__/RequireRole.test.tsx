@@ -1,7 +1,9 @@
 import { render } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useRoles } from "~/hooks/useRoles";
+
 import { RequireEditor, RequireRole } from "../RequireRole";
+
+import { useRoles } from "~/hooks/useRoles";
 
 // Mock the useRoles hook
 vi.mock("~/hooks/useRoles", () => ({

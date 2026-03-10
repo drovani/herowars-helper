@@ -1,7 +1,9 @@
+import { forwardRef } from "react";
+
 import { Indicator, Root } from "@radix-ui/react-checkbox";
 import { type ClassValue } from "clsx";
 import { CheckIcon } from "lucide-react";
-import { forwardRef } from "react";
+
 import { cn } from "~/lib/utils";
 
 const Checkbox = forwardRef<

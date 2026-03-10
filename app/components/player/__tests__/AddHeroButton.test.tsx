@@ -2,6 +2,7 @@
 // ABOUTME: Tests button behavior for collection status and loading states
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+
 import { AddHeroButton } from "../AddHeroButton";
 
 describe("AddHeroButton", () => {

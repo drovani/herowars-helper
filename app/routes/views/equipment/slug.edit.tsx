@@ -3,6 +3,9 @@ import { useForm } from "react-hook-form";
 import { data, redirect, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 import { ZodError } from "zod";
+
+import type { Route } from "./+types/slug.edit";
+
 import EquipmentForm from "~/components/EquipmentForm";
 import {
   EquipmentMutationSchema,
@@ -10,7 +13,6 @@ import {
 } from "~/data/equipment.zod";
 import { EquipmentRepository } from "~/repositories/EquipmentRepository";
 import { MissionRepository } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/slug.edit";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [
@@ -106,14 +108,14 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
     const equipmentRepo = new EquipmentRepository(request);
     const updateResult = await equipmentRepo.update(params.slug, validated);
 
-    if (updateResult.error) {
+    if (updateResult.error || !updateResult.data) {
       return data(
-        { errors: { _errors: [updateResult.error.message] } },
+        { errors: { _errors: [updateResult.error?.message ?? "Failed to update equipment"] } },
         { status: 400 },
       );
     }
 
-    return redirect(`/equipment/${updateResult.data!.slug}`);
+    return redirect(`/equipment/${updateResult.data.slug}`);
   } catch (error) {
     if (error instanceof ZodError) {
       return data({ errors: error.format() }, { status: 400 });

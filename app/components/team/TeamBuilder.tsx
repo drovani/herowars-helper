@@ -2,7 +2,11 @@
 // ABOUTME: Handles hero selection from user collection with search/filter and team validation
 
 import { useState } from "react";
+
 import { SearchIcon, PlusIcon } from "lucide-react";
+
+import { TeamHeroDisplay } from "./TeamHeroDisplay";
+
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {
@@ -24,7 +28,6 @@ import {
 } from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
 import { Textarea } from "~/components/ui/textarea";
-import { TeamHeroDisplay } from "./TeamHeroDisplay";
 import type {
   PlayerTeamHero,
   Hero,

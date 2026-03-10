@@ -1,7 +1,11 @@
-import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+
+import { createReadableStreamFromReadable } from "@react-router/node";
+
 import type { Route } from "./+types/json";
+
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+
 
 export async function loader({ request }: Route.LoaderArgs) {
   const equipmentRepository = new EquipmentRepository(request);

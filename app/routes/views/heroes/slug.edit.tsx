@@ -1,17 +1,20 @@
 // heroes.$slug_.edit.tsx
 import { zodResolver } from "@hookform/resolvers/zod";
+import log from "loglevel";
 import { useForm } from "react-hook-form";
 import { data, redirect, type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
-import log from "loglevel";
+
+import type { Route } from "./+types/slug.edit";
+
 import HeroForm from "~/components/HeroForm";
 import { Badge } from "~/components/ui/badge";
 import { HeroMutationSchema, type HeroMutation } from "~/data/hero.zod";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
 import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
 import { createClient } from "~/lib/supabase/client";
-import type { Route } from "./+types/slug.edit";
+import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import { HeroRepository } from "~/repositories/HeroRepository";
+
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   return [
@@ -212,7 +215,7 @@ export const action = async ({ params, request }: Route.ActionArgs) => {
 
 export default function EditHero({
   loaderData,
-  actionData,
+  actionData: _actionData,
 }: Route.ComponentProps) {
   const { hero, equipment } = loaderData;
 

@@ -1,8 +1,10 @@
 // ABOUTME: Tests for StarRating component covering interactive star selection
 // ABOUTME: Tests both readonly and interactive modes with proper event handling
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render } from "~/__tests__/utils/test-utils";
+
 import { StarRating } from "../StarRating";
+
+import { fireEvent, render } from "~/__tests__/utils/test-utils";
 
 describe("StarRating", () => {
   describe("readonly mode", () => {

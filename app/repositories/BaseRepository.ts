@@ -1,7 +1,10 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+// ABOUTME: Base repository class providing CRUD operations for Supabase tables.
+// ABOUTME: Uses generic typing with type assertions for dynamic table access patterns.
+
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import log from "loglevel";
-import type { ZodSchema } from "zod";
-import { createClient } from "~/lib/supabase/client";
+import type { ZodSchema, ZodType } from "zod";
+
 import type {
   BulkOptions,
   CreateInput,
@@ -16,32 +19,58 @@ import type {
   UpdateInput,
 } from "./types";
 
+import { createClient } from "~/lib/supabase/client";
+import type { Database } from "~/types/supabase";
+
+// Type for Supabase client with database schema - used for better type inference
+type TypedSupabaseClient = SupabaseClient<Database>;
+
+// Type for filter builder query - uses unknown for dynamic query building
+type FilterBuilder = {
+  eq: (column: string, value: unknown) => FilterBuilder;
+  order: (column: string, options?: { ascending?: boolean }) => FilterBuilder;
+  limit: (count: number) => FilterBuilder;
+  range: (from: number, to: number) => FilterBuilder;
+  single: () => Promise<{ data: unknown; error: PostgrestError | null }>;
+  select: (columns?: string) => FilterBuilder;
+  insert: (
+    values: unknown,
+    options?: { count?: string }
+  ) => { select: () => FilterBuilder };
+  update: (values: unknown) => FilterBuilder;
+  delete: () => FilterBuilder;
+  upsert: (
+    values: unknown,
+    options?: { onConflict?: string; ignoreDuplicates?: boolean }
+  ) => { select: () => FilterBuilder };
+};
+
 export abstract class BaseRepository<T extends TableName> {
-  protected supabase: SupabaseClient<any>;
+  protected supabase: TypedSupabaseClient;
   protected tableName: T;
-  protected schema: ZodSchema<any>;
+  protected schema: ZodSchema<unknown>;
   protected primaryKeyColumn: string;
 
   constructor(
-    tableNameOrSupabase: T | SupabaseClient<any>,
-    schema: ZodSchema<any>,
+    tableNameOrSupabase: T | TypedSupabaseClient,
+    schema: ZodSchema<unknown>,
     requestOrTableName?: Request | T | null,
-    primaryKeyColumnOrSchema?: string | ZodSchema<any>,
+    primaryKeyColumnOrSchema?: string | ZodSchema<unknown>,
     primaryKeyColumn: string = "id"
   ) {
     // Handle different constructor signatures
     if (typeof tableNameOrSupabase === "string") {
       // First signature: (tableName, schema, request?, primaryKeyColumn?)
       const { supabase } = createClient(requestOrTableName as Request | null);
-      this.supabase = supabase as unknown as SupabaseClient<any>;
+      this.supabase = supabase as unknown as TypedSupabaseClient;
       this.tableName = tableNameOrSupabase;
       this.schema = schema;
       this.primaryKeyColumn = (primaryKeyColumnOrSchema as string) || "id";
     } else {
       // Second signature: (supabase, tableName, schema, primaryKeyColumn?)
-      this.supabase = tableNameOrSupabase as unknown as SupabaseClient<any>;
+      this.supabase = tableNameOrSupabase as unknown as TypedSupabaseClient;
       this.tableName = requestOrTableName as T;
-      this.schema = primaryKeyColumnOrSchema as ZodSchema<any>;
+      this.schema = primaryKeyColumnOrSchema as ZodSchema<unknown>;
       this.primaryKeyColumn = primaryKeyColumn;
     }
   }
@@ -52,11 +81,11 @@ export abstract class BaseRepository<T extends TableName> {
     try {
       let query = this.supabase
         .from(this.tableName)
-        .select(this.buildSelectClause(options.include));
+        .select(this.buildSelectClause(options.include)) as unknown as FilterBuilder;
 
       if (options.where) {
         Object.entries(options.where).forEach(([key, value]) => {
-          query = (query as any).eq(key, value);
+          query = query.eq(key, value);
         });
       }
 
@@ -87,7 +116,10 @@ export abstract class BaseRepository<T extends TableName> {
         );
       }
 
-      const { data, error } = await query;
+      const { data, error } = (await query) as unknown as {
+        data: EntityRow<T>[] | null;
+        error: PostgrestError | null;
+      };
 
       if (error) {
         log.error(`Error finding all ${this.tableName}:`, error);
@@ -123,11 +155,16 @@ export abstract class BaseRepository<T extends TableName> {
     options: FindByIdOptions = {}
   ): Promise<RepositoryResult<EntityRow<T>>> {
     try {
-      const { data, error } = await (this.supabase as any)
+      const query = this.supabase
         .from(this.tableName)
-        .select(this.buildSelectClause(options.include))
-        .eq(this.primaryKeyColumn as any, id)
-        .single();
+        .select(this.buildSelectClause(options.include)) as unknown as FilterBuilder;
+
+      const { data, error } = (await query
+        .eq(this.primaryKeyColumn, id)
+        .single()) as unknown as {
+        data: EntityRow<T> | null;
+        error: PostgrestError | null;
+      };
 
       if (error) {
         log.error(`Error finding ${this.tableName} by id ${id}:`, error);
@@ -180,9 +217,13 @@ export abstract class BaseRepository<T extends TableName> {
 
       // If skipExisting is true, check if record already exists
       if (options.skipExisting) {
-        const primaryKeyValue = (input as any)[this.primaryKeyColumn];
+        const primaryKeyValue = (input as Record<string, unknown>)[
+          this.primaryKeyColumn
+        ];
         if (primaryKeyValue) {
-          const existingRecord = await this.findById(primaryKeyValue);
+          const existingRecord = await this.findById(
+            primaryKeyValue as IdType
+          );
           if (existingRecord.data) {
             // Record exists, return it as skipped
             return {
@@ -195,11 +236,16 @@ export abstract class BaseRepository<T extends TableName> {
       }
 
       // Proceed with normal insert
-      const { data, error } = await this.supabase
-        .from(this.tableName)
-        .insert(input as any)
+      const query = this.supabase.from(
+        this.tableName
+      ) as unknown as FilterBuilder;
+      const { data, error } = (await query
+        .insert(input)
         .select()
-        .single();
+        .single()) as unknown as {
+        data: EntityRow<T> | null;
+        error: PostgrestError | null;
+      };
 
       if (error) {
         log.error(`Error creating ${this.tableName}:`, error);
@@ -232,7 +278,14 @@ export abstract class BaseRepository<T extends TableName> {
     input: UpdateInput<T>
   ): Promise<RepositoryResult<EntityRow<T>>> {
     try {
-      const validation = (this.schema as any).partial().safeParse(input);
+      // Use the schema's partial method if available, otherwise validate as-is
+      const schemaWithPartial = this.schema as ZodType<unknown> & {
+        partial?: () => ZodType<unknown>;
+      };
+      const validationSchema = schemaWithPartial.partial
+        ? schemaWithPartial.partial()
+        : this.schema;
+      const validation = validationSchema.safeParse(input);
       if (!validation.success) {
         return {
           data: null,
@@ -244,12 +297,17 @@ export abstract class BaseRepository<T extends TableName> {
         };
       }
 
-      const { data, error } = await (this.supabase as any)
-        .from(this.tableName)
-        .update(input as any)
-        .eq(this.primaryKeyColumn as any, id)
+      const query = this.supabase.from(
+        this.tableName
+      ) as unknown as FilterBuilder;
+      const { data, error } = (await query
+        .update(input)
+        .eq(this.primaryKeyColumn, id)
         .select()
-        .single();
+        .single()) as unknown as {
+        data: EntityRow<T> | null;
+        error: PostgrestError | null;
+      };
 
       if (error) {
         log.error(`Error updating ${this.tableName} with id ${id}:`, error);
@@ -281,10 +339,14 @@ export abstract class BaseRepository<T extends TableName> {
 
   async delete(id: IdType): Promise<RepositoryResult<boolean>> {
     try {
-      const { error } = await (this.supabase as any)
-        .from(this.tableName)
+      const query = this.supabase.from(
+        this.tableName
+      ) as unknown as FilterBuilder;
+      const { error } = (await query
         .delete()
-        .eq(this.primaryKeyColumn as any, id);
+        .eq(this.primaryKeyColumn, id)) as unknown as {
+        error: PostgrestError | null;
+      };
 
       if (error) {
         log.error(`Error deleting ${this.tableName} with id ${id}:`, error);
@@ -344,21 +406,26 @@ export abstract class BaseRepository<T extends TableName> {
 
         batchResults.forEach((result) => {
           if (result.status === "fulfilled") {
+            const data = result.value.data;
+            if (!data) {
+              return;
+            }
             if (result.value.skipped) {
-              skipped.push(result.value.data!);
+              skipped.push(data);
             } else {
-              results.push(result.value.data!);
+              results.push(data);
             }
           } else {
             // Extract more detailed error information
+            const reason = result.reason as Record<string, unknown>;
             const errorMsg =
-              result.reason?.message ||
-              result.reason?.error?.message ||
-              result.reason?.details ||
+              (reason?.message as string) ||
+              ((reason?.error as Record<string, unknown>)?.message as string) ||
+              (reason?.details as string) ||
               "Unknown error in bulk create";
             const errorCode =
-              result.reason?.code ||
-              result.reason?.error?.code ||
+              (reason?.code as string) ||
+              ((reason?.error as Record<string, unknown>)?.code as string) ||
               "UNKNOWN_ERROR";
 
             errors.push({
@@ -371,8 +438,8 @@ export abstract class BaseRepository<T extends TableName> {
             log.error(`Bulk create error for ${this.tableName}:`, {
               message: errorMsg,
               code: errorCode,
-              inputData: result.reason?.inputData,
-              batchIndex: result.reason?.batchIndex,
+              inputData: reason?.inputData,
+              batchIndex: reason?.batchIndex,
               reason: result.reason,
             });
           }
@@ -446,14 +513,19 @@ export abstract class BaseRepository<T extends TableName> {
         };
       }
 
-      const { data, error } = await this.supabase
-        .from(this.tableName)
-        .upsert(input as any, {
+      const query = this.supabase.from(
+        this.tableName
+      ) as unknown as FilterBuilder;
+      const { data, error } = (await query
+        .upsert(input, {
           onConflict: this.primaryKeyColumn,
           ignoreDuplicates: false,
         })
         .select()
-        .single();
+        .single()) as unknown as {
+        data: EntityRow<T> | null;
+        error: PostgrestError | null;
+      };
 
       if (error) {
         log.error(`Error upserting ${this.tableName}:`, error);
@@ -497,7 +569,10 @@ export abstract class BaseRepository<T extends TableName> {
             if (result.error) {
               throw result.error;
             }
-            return result.data!;
+            if (!result.data) {
+              throw new Error("Upsert succeeded but returned no data");
+            }
+            return result.data;
           })
         );
 
@@ -505,9 +580,10 @@ export abstract class BaseRepository<T extends TableName> {
           if (result.status === "fulfilled") {
             results.push(result.value);
           } else {
+            const reason = result.reason as RepositoryError;
             errors.push({
-              message: result.reason.message || "Unknown error in bulk upsert",
-              code: result.reason.code,
+              message: reason.message || "Unknown error in bulk upsert",
+              code: reason.code,
               details: result.reason,
             });
           }
@@ -569,7 +645,10 @@ export abstract class BaseRepository<T extends TableName> {
             if (result.error) {
               throw result.error;
             }
-            return result.data!;
+            if (!result.data) {
+              throw new Error("Update succeeded but returned no data");
+            }
+            return result.data;
           })
         );
 
@@ -577,9 +656,10 @@ export abstract class BaseRepository<T extends TableName> {
           if (result.status === "fulfilled") {
             results.push(result.value);
           } else {
+            const reason = result.reason as RepositoryError;
             errors.push({
-              message: result.reason.message || "Unknown error in bulk update",
-              code: result.reason.code,
+              message: reason.message || "Unknown error in bulk update",
+              code: reason.code,
               details: result.reason,
             });
           }
@@ -667,7 +747,7 @@ export abstract class BaseRepository<T extends TableName> {
     return {};
   }
 
-  protected handleError(error: any): RepositoryError {
+  protected handleError(error: PostgrestError): RepositoryError {
     // Handle specific PostgreSQL error codes
     if (error.code === "23505") {
       return {

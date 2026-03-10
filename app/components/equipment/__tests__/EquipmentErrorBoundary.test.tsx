@@ -2,13 +2,14 @@
 // ABOUTME: Covers equipment-specific error handling and context-aware messages
 
 import { render } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import log from "loglevel";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { EquipmentErrorBoundary } from "../EquipmentErrorBoundary";
 
 function ThrowError() {
   throw new Error("Test equipment error");
-  // eslint-disable-next-line no-unreachable
+   
   return null;
 }
 

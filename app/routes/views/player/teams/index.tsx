@@ -2,16 +2,13 @@
 // ABOUTME: Main team list view with grid layout and team creation capabilities
 
 import { useState } from "react";
-import { useFetcher, useLoaderData, useNavigate } from "react-router";
+
 import { PlusIcon } from "lucide-react";
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { useFetcher, useNavigate } from "react-router";
+
+import type { Route } from "./+types/index";
+
+import { TeamListCard } from "~/components/team/TeamListCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +19,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
-import { TeamListCard } from "~/components/team/TeamListCard";
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
 import { formatTitle } from "~/config/site";
 import { useAuth } from "~/contexts/AuthContext";
 import {
@@ -30,7 +34,7 @@ import {
   requireAuthenticatedUser,
 } from "~/lib/auth/utils";
 import { PlayerTeamRepository } from "~/repositories/PlayerTeamRepository";
-import type { Route } from "./+types/index";
+import type { TeamWithHeroes } from "~/repositories/types";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { user } = await getAuthenticatedUser(request);
@@ -66,14 +70,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
         description: description || undefined,
       });
 
-      if (result.error) {
-        return { error: result.error.message };
+      if (result.error || !result.data) {
+        return { error: result.error?.message ?? "Failed to create team" };
       }
 
       return {
         success: true,
-        message: `Team "${result.data!.name}" created successfully`,
-        teamSlug: result.data!.slug,
+        message: `Team "${result.data.name}" created successfully`,
+        teamSlug: result.data.slug,
       };
     }
 
@@ -125,7 +129,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
             <div className="animate-pulse space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-32 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-32 bg-gray-200 rounded" />
                 ))}
               </div>
             </div>
@@ -153,7 +157,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
   const handleCreateTeam = () => {
     fetcher.submit(
       { action: "createTeam", name: "", description: "" },
-      { method: "POST" }
+      { method: "POST" },
     );
   };
 
@@ -169,7 +173,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
     if (deleteTeamId) {
       fetcher.submit(
         { action: "deleteTeam", teamId: deleteTeamId },
-        { method: "POST" }
+        { method: "POST" },
       );
       setDeleteTeamId(null);
     }
@@ -209,7 +213,7 @@ export default function TeamsIndex({ loaderData }: Route.ComponentProps) {
       {/* Teams Grid */}
       {teams.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {teams.map((team: any) => (
+          {teams.map((team: TeamWithHeroes) => (
             <TeamListCard
               key={team.id}
               team={team}

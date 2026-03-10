@@ -1,13 +1,14 @@
 // ABOUTME: HeroDetailView component manages view switching and layout for hero detail screens
 // ABOUTME: Routes between different hero management views and handles common data fetching
-import { cn } from "~/lib/utils";
-import type { PlayerHeroWithDetails } from "~/repositories/types";
 import { ArtifactsView } from "./details/ArtifactsView";
 import { GlyphsView } from "./details/GlyphsView";
 import { HeroView } from "./details/HeroView";
 import { SkillsView } from "./details/SkillsView";
 import { SkinsView } from "./details/SkinsView";
 import { SparksView } from "./details/SparksView";
+
+import { cn } from "~/lib/utils";
+import type { PlayerHeroWithDetails } from "~/repositories/types";
 
 interface HeroDetailViewProps {
   playerHero: PlayerHeroWithDetails;

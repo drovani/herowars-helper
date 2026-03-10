@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "~/contexts/AuthContext";
+
+import log from "loglevel";
+
+import type { Route } from "./+types/profile";
+
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 import {
   Card,
   CardContent,
@@ -10,8 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 import { formatTitle } from "~/config/site";
-import type { Route } from "./+types/profile";
+import { useAuth } from "~/contexts/AuthContext";
 
 export const loader = async (_: Route.LoaderArgs) => {
   return {};
@@ -47,7 +51,10 @@ export default function AccountIndex(_: Route.ComponentProps) {
       await updateProfile({ full_name: displayName });
       setMessage("Display name updated successfully!");
     } catch (error) {
-      setMessage("Failed to update display name. Please try again.");
+      log.error("Failed to update profile display name:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      setMessage(`Failed to update display name: ${errorMessage}`);
     } finally {
       setIsUpdating(false);
     }
@@ -66,11 +73,11 @@ export default function AccountIndex(_: Route.ComponentProps) {
           </CardHeader>
           <CardContent>
             <div className="animate-pulse space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-              <div className="h-10 bg-gray-200 rounded"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-              <div className="h-10 bg-gray-200 rounded"></div>
-              <div className="h-10 bg-gray-200 rounded w-1/3"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/4" />
+              <div className="h-10 bg-gray-200 rounded" />
+              <div className="h-4 bg-gray-200 rounded w-1/4" />
+              <div className="h-10 bg-gray-200 rounded" />
+              <div className="h-10 bg-gray-200 rounded w-1/3" />
             </div>
           </CardContent>
         </Card>

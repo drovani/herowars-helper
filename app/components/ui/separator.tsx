@@ -1,7 +1,8 @@
-import { Root } from "@radix-ui/react-separator";
 import { forwardRef } from "react";
 
+import { Root } from "@radix-ui/react-separator";
 import { type ClassValue } from "clsx";
+
 import { cn } from "~/lib/utils";
 
 const Separator = forwardRef<

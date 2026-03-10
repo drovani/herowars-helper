@@ -1,7 +1,11 @@
+import { Suspense, useMemo, useState } from "react";
+
 import { cva } from "class-variance-authority";
 import { MapIcon, SearchIcon } from "lucide-react";
-import { Suspense, useMemo, useState } from "react";
 import { Await, Link } from "react-router";
+
+import type { Route } from "./+types/index";
+
 import { MissionIndexSkeleton } from "~/components/skeletons/MissionIndexSkeleton";
 import { Card, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -18,7 +22,6 @@ import {
   MissionRepository,
   type Mission,
 } from "~/repositories/MissionRepository";
-import type { Route } from "./+types/index";
 
 async function loadMissionsData(request: Request) {
   const missionRepo = new MissionRepository(request);
@@ -45,14 +48,11 @@ async function loadMissionsData(request: Request) {
   const chapterMap = new Map(chapters.map((c) => [c.id, c.title]));
 
   // Get unique boss names for the select dropdown
-  const uniqueBosses = Array.from(
+  const uniqueBosses: string[] = Array.from(
     new Set(
       missions
-        .filter(
-          (m): m is Mission & Required<Pick<Mission, "hero_slug">> =>
-            !!m.hero_slug
-        )
-        .map((m) => m.hero_slug!)
+        .map((m) => m.hero_slug)
+        .filter((slug): slug is string => slug !== null)
     )
   ).sort();
 
@@ -142,7 +142,7 @@ function MissionsContent({
             />
           </div>
         </div>
-        <div className="w-full sm:w-[200px]">
+        <div className="w-full sm:w-50">
           <Select
             value={selectedBoss || "all"}
             onValueChange={(value) =>

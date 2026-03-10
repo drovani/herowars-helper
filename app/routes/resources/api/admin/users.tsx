@@ -1,6 +1,10 @@
 import log from "loglevel";
+
 import { adminUserOperations } from "~/lib/supabase/admin";
 import { createClient } from "~/lib/supabase/client";
+
+// Type for Supabase user with banned_until property
+type UserWithBan = { banned_until?: string };
 
 export async function loader({ request }: { request: Request }) {
   try {
@@ -27,7 +31,7 @@ export async function loader({ request }: { request: Request }) {
         {
           status: 403,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
@@ -44,12 +48,12 @@ export async function loader({ request }: { request: Request }) {
           app_metadata: user.app_metadata,
           created_at: user.created_at,
           last_sign_in_at: user.last_sign_in_at,
-          banned_until: (user as any).banned_until,
+          banned_until: (user as UserWithBan).banned_until,
         })),
       }),
       {
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   } catch (error) {
     log.error("Admin users API error:", error);
@@ -60,7 +64,7 @@ export async function loader({ request }: { request: Request }) {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 }
@@ -90,7 +94,7 @@ export async function action({ request }: { request: Request }) {
         {
           status: 403,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
@@ -104,7 +108,7 @@ export async function action({ request }: { request: Request }) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
@@ -115,7 +119,7 @@ export async function action({ request }: { request: Request }) {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
@@ -128,7 +132,7 @@ export async function action({ request }: { request: Request }) {
             {
               status: 400,
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
         }
 
@@ -139,13 +143,13 @@ export async function action({ request }: { request: Request }) {
             {
               status: 400,
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
         }
 
         const updatedUser = await adminUserOperations.updateUserRoles(
           userId,
-          roles
+          roles,
         );
 
         return new Response(
@@ -161,7 +165,7 @@ export async function action({ request }: { request: Request }) {
           }),
           {
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
       }
 
@@ -173,7 +177,7 @@ export async function action({ request }: { request: Request }) {
             {
               status: 400,
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
         }
 
@@ -186,7 +190,7 @@ export async function action({ request }: { request: Request }) {
           }),
           {
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
       }
 
@@ -198,7 +202,7 @@ export async function action({ request }: { request: Request }) {
             {
               status: 400,
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
         }
 
@@ -211,12 +215,12 @@ export async function action({ request }: { request: Request }) {
             user: {
               id: updatedUser.id,
               email: updatedUser.email,
-              banned_until: (updatedUser as any).banned_until,
+              banned_until: (updatedUser as UserWithBan).banned_until,
             },
           }),
           {
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
       }
 
@@ -230,12 +234,12 @@ export async function action({ request }: { request: Request }) {
             user: {
               id: updatedUser.id,
               email: updatedUser.email,
-              banned_until: (updatedUser as any).banned_until,
+              banned_until: (updatedUser as UserWithBan).banned_until,
             },
           }),
           {
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
       }
 
@@ -251,7 +255,7 @@ export async function action({ request }: { request: Request }) {
             {
               status: 400,
               headers: { "Content-Type": "application/json" },
-            }
+            },
           );
         }
 
@@ -288,7 +292,7 @@ export async function action({ request }: { request: Request }) {
           }),
           {
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
       }
 
@@ -307,7 +311,7 @@ export async function action({ request }: { request: Request }) {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 }

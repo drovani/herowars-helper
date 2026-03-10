@@ -1,11 +1,14 @@
 import { Link } from "react-router";
-import type { EquipmentRecord } from "~/data/equipment.zod";
-import { type HeroRecord } from "~/data/hero.zod";
+
 import { Card, CardTitle } from "../ui/card";
+
 import HeroArtifactsCompact from "./HeroArtifactsCompact";
 import HeroGlyphsCompact from "./HeroGlyphsCompact";
 import HeroItemsCompact from "./HeroItemsCompact";
 import HeroSkinsCompact from "./HeroSkinsCompact";
+
+import type { EquipmentRecord } from "~/data/equipment.zod";
+import { type HeroRecord } from "~/data/hero.zod";
 
 interface HeroTileProps {
   hero: HeroRecord;

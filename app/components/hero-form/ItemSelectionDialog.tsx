@@ -1,5 +1,7 @@
-import { SearchIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+
+import { SearchIcon, XIcon } from "lucide-react";
+
 import EquipmentImage from "~/components/EquipmentImage";
 import { Button } from "~/components/ui/button";
 import {
@@ -86,7 +88,7 @@ export default function ItemSelectionDialog({
           </div>
           {availableEquipment.length === 0 && searchQuery && (
             <div className="text-center text-muted-foreground py-8">
-              No equipment found matching "{searchQuery}"
+              No equipment found matching &quot;{searchQuery}&quot;
             </div>
           )}
         </ScrollArea>

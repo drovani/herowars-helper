@@ -1,13 +1,17 @@
-import { createReadableStreamFromReadable } from "@react-router/node";
 import { Readable } from "node:stream";
-import { HeroRepository } from "~/repositories/HeroRepository";
+
+import { createReadableStreamFromReadable } from "@react-router/node";
+
+import type { Route } from "./+types/json";
+
 import {
   transformCompleteHeroToRecord,
   transformBasicHeroToRecord,
   sortHeroRecords,
   createHeroesJsonString,
 } from "~/lib/hero-transformations";
-import type { Route } from "./+types/json";
+import { HeroRepository } from "~/repositories/HeroRepository";
+
 
 export async function loader({ request }: Route.LoaderArgs) {
   const heroRepo = new HeroRepository(request);

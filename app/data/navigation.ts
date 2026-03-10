@@ -15,14 +15,14 @@ import {
 
 interface NavigationGroup {
   name: string;
-  icon?: React.ComponentType<any>;
+  icon?: React.ComponentType<{ className?: string }>;
   items: NavigationItem[];
   roles?: string[];
 }
 
 interface NavigationItem {
   name: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   href?: string;
   children?: NavigationItem[];
   reloadDocument?: boolean;

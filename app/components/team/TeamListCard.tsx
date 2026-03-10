@@ -1,13 +1,14 @@
 // ABOUTME: Team list card component for displaying team summary information
 // ABOUTME: Shows team name, hero count, last modified date with edit/delete actions
 
-import { Link } from "react-router";
 import {
   MoreHorizontalIcon,
   PencilIcon,
   TrashIcon,
   UsersIcon,
 } from "lucide-react";
+import { Link } from "react-router";
+
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import {

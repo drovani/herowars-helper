@@ -1,8 +1,20 @@
-import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "~/types/supabase";
+import { z } from "zod";
+
 import { BaseRepository } from "./BaseRepository";
 import type { RepositoryResult } from "./types";
+
+import type { Database } from "~/types/supabase";
+
+// Interface for bulk operation error tracking
+interface BulkOperationError {
+  data: unknown;
+  error: {
+    message: string;
+    code: string;
+    details: unknown;
+  };
+}
 
 // Zod schema for mission validation
 const missionSchema = z.object({
@@ -38,7 +50,9 @@ export type MissionImportData = MissionInsert;
 export type ChapterImportData = ChapterInsert;
 
 export class MissionRepository extends BaseRepository<"mission"> {
-  constructor(requestOrSupabase: Request | SupabaseClient<any> | null = null) {
+  constructor(
+    requestOrSupabase: Request | SupabaseClient<Database> | null = null,
+  ) {
     if (
       requestOrSupabase &&
       typeof requestOrSupabase === "object" &&
@@ -52,7 +66,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
         "mission",
         missionSchema,
         requestOrSupabase as Request | null,
-        "slug"
+        "slug",
       );
     }
   }
@@ -85,7 +99,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
   }
 
   async findWithChapter(
-    slug: string
+    slug: string,
   ): Promise<RepositoryResult<MissionWithChapter>> {
     return this.findById(slug, {
       include: { chapter: true },
@@ -93,7 +107,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
   }
 
   async findByCampaignSource(
-    equipmentSlug: string
+    equipmentSlug: string,
   ): Promise<RepositoryResult<Mission[]>> {
     try {
       // Query missions that are referenced in equipment campaign_sources
@@ -229,7 +243,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
   }
 
   async findChapterWithMissions(
-    id: number
+    id: number,
   ): Promise<RepositoryResult<ChapterWithMissions>> {
     try {
       const { data, error } = await this.supabase
@@ -238,7 +252,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
           `
           *,
           missions:mission(*)
-        `
+        `,
         )
         .eq("id", id)
         .order("missions.level", { ascending: true })
@@ -274,12 +288,12 @@ export class MissionRepository extends BaseRepository<"mission"> {
   // Bulk operations for admin data loading
   async bulkCreateChapters(
     chapterData: ChapterImportData[],
-    options: { skipExisting?: boolean } = {}
+    options: { skipExisting?: boolean } = {},
   ): Promise<RepositoryResult<Chapter[]>> {
     try {
       const results: Chapter[] = [];
       const skipped: Chapter[] = [];
-      const errors: any[] = [];
+      const errors: BulkOperationError[] = [];
 
       for (const data of chapterData) {
         const validation = chapterSchema.safeParse(data);
@@ -365,18 +379,18 @@ export class MissionRepository extends BaseRepository<"mission"> {
 
   async bulkCreateMissions(
     missionData: MissionImportData[],
-    options: { skipExisting?: boolean } = {}
+    options: { skipExisting?: boolean } = {},
   ): Promise<RepositoryResult<Mission[]>> {
     return this.bulkCreate(missionData, { skipExisting: options.skipExisting });
   }
 
   // Upsert methods for force mode admin operations
   async bulkUpsertChapters(
-    chapterData: ChapterImportData[]
+    chapterData: ChapterImportData[],
   ): Promise<RepositoryResult<Chapter[]>> {
     try {
       const results: Chapter[] = [];
-      const errors: any[] = [];
+      const errors: BulkOperationError[] = [];
 
       for (const data of chapterData) {
         const validation = chapterSchema.safeParse(data);
@@ -443,7 +457,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
   }
 
   async bulkUpsertMissions(
-    missionData: MissionImportData[]
+    missionData: MissionImportData[],
   ): Promise<RepositoryResult<Mission[]>> {
     return this.bulkUpsert(missionData);
   }
@@ -459,7 +473,7 @@ export class MissionRepository extends BaseRepository<"mission"> {
       skipExisting?: boolean;
       failIfExists?: boolean;
       purgeFirst?: boolean;
-    } = {}
+    } = {},
   ): Promise<RepositoryResult<{ missions: Mission[]; chapters: Chapter[] }>> {
     try {
       // Handle purge if requested

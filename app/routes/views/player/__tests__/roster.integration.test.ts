@@ -50,10 +50,12 @@ describe("Player Roster Integration", () => {
       addAllHeroesToCollection: vi.fn(),
     };
 
-    vi.mocked(HeroRepository).mockImplementation(() => { return mockHeroRepo; });
-    vi.mocked(PlayerHeroRepository).mockImplementation(
-      () => { return mockPlayerHeroRepo; }
-    );
+    vi.mocked(HeroRepository).mockImplementation(function () {
+      return mockHeroRepo;
+    });
+    vi.mocked(PlayerHeroRepository).mockImplementation(function () {
+      return mockPlayerHeroRepo;
+    });
 
     // Mock auth utilities
     vi.mocked(getAuthenticatedUser).mockResolvedValue({
@@ -178,8 +180,8 @@ describe("Player Roster Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -256,7 +258,7 @@ describe("Player Roster Integration", () => {
           hero_slug: "astaroth",
           stars: 1,
           equipment_level: 1,
-        }
+        },
       );
     });
 
@@ -315,7 +317,7 @@ describe("Player Roster Integration", () => {
       expect(mockPlayerHeroRepo.updateHeroProgress).toHaveBeenCalledWith(
         "user1",
         "astaroth",
-        { stars: 5 }
+        { stars: 5 },
       );
     });
   });
@@ -349,7 +351,7 @@ describe("Player Roster Integration", () => {
       expect(mockPlayerHeroRepo.updateHeroProgress).toHaveBeenCalledWith(
         "user1",
         "astaroth",
-        { equipment_level: 15 }
+        { equipment_level: 15 },
       );
     });
   });
@@ -381,7 +383,7 @@ describe("Player Roster Integration", () => {
       expect(result.message).toBe("Hero removed from collection");
       expect(mockPlayerHeroRepo.removeFromCollection).toHaveBeenCalledWith(
         "user1",
-        "astaroth"
+        "astaroth",
       );
     });
   });
@@ -390,7 +392,7 @@ describe("Player Roster Integration", () => {
     it("should return error for unauthenticated user", async () => {
       // Mock requireAuthenticatedUser to throw for this test
       vi.mocked(requireAuthenticatedUser).mockRejectedValue(
-        new Response("Authentication required", { status: 401 })
+        new Response("Authentication required", { status: 401 }),
       );
 
       const formData = new FormData();
@@ -407,8 +409,8 @@ describe("Player Roster Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -448,7 +450,16 @@ describe("Player Roster Integration", () => {
           addedCount: 8,
           skippedCount: 2,
           errorCount: 0,
-          addedHeroes: ["galahad", "keira", "maya", "qing-mao", "jet", "thea", "aurora", "dante"],
+          addedHeroes: [
+            "galahad",
+            "keira",
+            "maya",
+            "qing-mao",
+            "jet",
+            "thea",
+            "aurora",
+            "dante",
+          ],
           skippedHeroes: ["astaroth", "celeste"],
           errors: [],
         },
@@ -465,12 +476,17 @@ describe("Player Roster Integration", () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.message).toBe("Successfully added 8 heroes to your collection!");
+      expect(result.message).toBe(
+        "Successfully added 8 heroes to your collection!",
+      );
       expect(result.data).toEqual(mockResult.data);
-      expect(mockPlayerHeroRepo.addAllHeroesToCollection).toHaveBeenCalledWith("user1", {
-        batchSize: 50,
-        parallelism: 5,
-      });
+      expect(mockPlayerHeroRepo.addAllHeroesToCollection).toHaveBeenCalledWith(
+        "user1",
+        {
+          batchSize: 50,
+          parallelism: 5,
+        },
+      );
     });
 
     it("should handle case when all heroes already in collection", async () => {
@@ -550,7 +566,9 @@ describe("Player Roster Integration", () => {
       });
 
       expect(result.success).toBe(true);
-      expect(result.message).toBe("Added 3 heroes to your collection. 1 heroes had errors.");
+      expect(result.message).toBe(
+        "Added 3 heroes to your collection. 1 heroes had errors.",
+      );
       expect(result.data).toEqual(mockResult.data);
     });
 
@@ -567,7 +585,8 @@ describe("Player Roster Integration", () => {
         data: null,
         error: {
           code: "FETCH_HEROES_FAILED",
-          message: "Failed to fetch available heroes: Database connection failed",
+          message:
+            "Failed to fetch available heroes: Database connection failed",
         },
       };
 
@@ -580,7 +599,9 @@ describe("Player Roster Integration", () => {
         unstable_pattern: "",
       });
 
-      expect(result.error).toBe("Failed to fetch available heroes: Database connection failed");
+      expect(result.error).toBe(
+        "Failed to fetch available heroes: Database connection failed",
+      );
       expect(result.code).toBe("FETCH_HEROES_FAILED");
     });
 

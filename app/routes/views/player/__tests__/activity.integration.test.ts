@@ -36,9 +36,9 @@ describe("Player Activity Integration", () => {
       findEventsByUser: vi.fn(),
     };
 
-    vi.mocked(PlayerEventRepository).mockImplementation(
-      () => { return mockPlayerEventRepo; }
-    );
+    vi.mocked(PlayerEventRepository).mockImplementation(function () {
+      return mockPlayerEventRepo;
+    });
 
     // Mock auth utilities
     vi.mocked(getAuthenticatedUser).mockResolvedValue({
@@ -100,10 +100,10 @@ describe("Player Activity Integration", () => {
       expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith(
         "user1",
         10,
-        0
+        0,
       );
       expect(mockPlayerEventRepo.findEventsByUser).toHaveBeenCalledWith(
-        "user1"
+        "user1",
       );
     });
 
@@ -189,10 +189,10 @@ describe("Player Activity Integration", () => {
       expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith(
         "user1",
         10,
-        0
+        0,
       );
       expect(mockPlayerEventRepo.findEventsByUser).toHaveBeenCalledWith(
-        "user1"
+        "user1",
       );
     });
 
@@ -231,10 +231,10 @@ describe("Player Activity Integration", () => {
       expect(mockPlayerEventRepo.findRecentEvents).toHaveBeenCalledWith(
         "user2",
         10,
-        0
+        0,
       );
       expect(mockPlayerEventRepo.findEventsByUser).toHaveBeenCalledWith(
-        "user2"
+        "user2",
       );
     });
   });

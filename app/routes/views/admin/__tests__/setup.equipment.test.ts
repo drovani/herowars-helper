@@ -63,30 +63,34 @@ vi.mock("~/lib/supabase/client", () => ({
 
 // Mock the MissionRepository to avoid import issues
 vi.mock("~/repositories/MissionRepository", () => ({
-  MissionRepository: vi.fn().mockImplementation(() => { return {
-    initializeMissionData: vi.fn().mockResolvedValue({
-      data: { chapters: [], missions: [] },
-      error: null,
-    }),
-    purgeMissionDomain: vi.fn().mockResolvedValue({
-      data: { missions: 0, chapters: 0 },
-      error: null,
-    }),
-  }; }),
+  MissionRepository: vi.fn().mockImplementation(function () {
+    return {
+      initializeMissionData: vi.fn().mockResolvedValue({
+        data: { chapters: [], missions: [] },
+        error: null,
+      }),
+      purgeMissionDomain: vi.fn().mockResolvedValue({
+        data: { missions: 0, chapters: 0 },
+        error: null,
+      }),
+    };
+  }),
 }));
 
 // Mock the HeroRepository to avoid import issues
 vi.mock("~/repositories/HeroRepository", () => ({
-  HeroRepository: vi.fn().mockImplementation(() => { return {
-    initializeFromJSON: vi.fn().mockResolvedValue({
-      data: { heroes: [] },
-      error: null,
-    }),
-    purgeHeroDomain: vi.fn().mockResolvedValue({
-      data: { heroes: 0 },
-      error: null,
-    }),
-  }; }),
+  HeroRepository: vi.fn().mockImplementation(function () {
+    return {
+      initializeFromJSON: vi.fn().mockResolvedValue({
+        data: { heroes: [] },
+        error: null,
+      }),
+      purgeHeroDomain: vi.fn().mockResolvedValue({
+        data: { heroes: 0 },
+        error: null,
+      }),
+    };
+  }),
 }));
 
 describe("Admin Setup - Equipment Import", () => {
@@ -161,7 +165,7 @@ describe("Admin Setup - Equipment Import", () => {
 
       vi.spyOn(
         EquipmentRepository.prototype,
-        "initializeFromJSON"
+        "initializeFromJSON",
       ).mockResolvedValue(mockInitResult);
 
       const response = await action({ request: mockRequest } as any);
@@ -177,7 +181,7 @@ describe("Admin Setup - Equipment Import", () => {
 
       // Verify EquipmentRepository was called with correct data
       expect(
-        EquipmentRepository.prototype.initializeFromJSON
+        EquipmentRepository.prototype.initializeFromJSON,
       ).toHaveBeenCalledWith([
         expect.objectContaining({ slug: "test-sword", name: "Test Sword" }),
         expect.objectContaining({
@@ -215,7 +219,7 @@ describe("Admin Setup - Equipment Import", () => {
 
       vi.spyOn(
         EquipmentRepository.prototype,
-        "initializeFromJSON"
+        "initializeFromJSON",
       ).mockResolvedValue({
         data: { equipment: [], stats: [], required_items: [] },
         error: mockError,
@@ -230,10 +234,10 @@ describe("Admin Setup - Equipment Import", () => {
       expect(data.results.equipment.errorDetails).toHaveLength(1);
       expect(data.results.equipment.skippedDetails).toHaveLength(1);
       expect(data.results.equipment.errorDetails[0].record.slug).toBe(
-        "test-sword"
+        "test-sword",
       );
       expect(data.results.equipment.skippedDetails[0].slug).toBe(
-        "test-fragment"
+        "test-fragment",
       );
     });
 
@@ -254,7 +258,7 @@ describe("Admin Setup - Equipment Import", () => {
 
       vi.spyOn(
         EquipmentRepository.prototype,
-        "initializeFromJSON"
+        "initializeFromJSON",
       ).mockResolvedValue({
         data: null,
         error: mockError,
@@ -280,7 +284,7 @@ describe("Admin Setup - Equipment Import", () => {
       // Mock both repositories
       vi.spyOn(
         EquipmentRepository.prototype,
-        "initializeFromJSON"
+        "initializeFromJSON",
       ).mockResolvedValue({
         data: {
           equipment: [
@@ -313,7 +317,7 @@ describe("Admin Setup - Equipment Import", () => {
       expect(data.success).toBe(true);
       expect(data.results.equipment.total).toBe(2);
       expect(
-        EquipmentRepository.prototype.initializeFromJSON
+        EquipmentRepository.prototype.initializeFromJSON,
       ).toHaveBeenCalled();
     });
 
@@ -331,7 +335,7 @@ describe("Admin Setup - Equipment Import", () => {
       // Spy on EquipmentRepository to ensure it's not called
       const equipmentSpy = vi.spyOn(
         EquipmentRepository.prototype,
-        "initializeFromJSON"
+        "initializeFromJSON",
       );
 
       const response = await action({ request: mockRequest } as any);
@@ -353,7 +357,7 @@ describe("Admin Setup - Equipment Import", () => {
 
       vi.spyOn(
         EquipmentRepository.prototype,
-        "initializeFromJSON"
+        "initializeFromJSON",
       ).mockResolvedValue({
         data: { equipment: [], stats: [], required_items: [] },
         error: null,
@@ -383,7 +387,7 @@ describe("Admin Setup - Equipment Import", () => {
       let capturedTransformData: any;
       vi.spyOn(
         EquipmentRepository.prototype,
-        "initializeFromJSON"
+        "initializeFromJSON",
       ).mockImplementation((data) => {
         capturedTransformData = data;
         return Promise.resolve({
@@ -435,7 +439,7 @@ describe("Admin Setup - Equipment Import", () => {
         expect.arrayContaining([
           expect.objectContaining({ slug: "test-sword" }),
           expect.objectContaining({ slug: "test-fragment" }),
-        ])
+        ]),
       );
     });
   });

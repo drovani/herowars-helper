@@ -24,7 +24,11 @@ import { useAuth } from "~/contexts/AuthContext";
 
 export function SiteUserMenu() {
   const { isMobile, state } = useSidebar();
-  const { isAuthenticated, user, signOut } = useAuth();
+  const { isAuthenticated, user, signOut, isStaticMode } = useAuth();
+
+  if (isStaticMode) {
+    return null;
+  }
 
   return (
     <div>
@@ -99,10 +103,7 @@ export function SiteUserMenu() {
         </SidebarMenu>
       ) : state === "expanded" ? (
         <LoginModal>
-          <Button
-            variant="outline"
-            className="w-full flex items-center gap-2"
-          >
+          <Button variant="outline" className="w-full flex items-center gap-2">
             <LogInIcon />
             <span>Sign in</span>
           </Button>

@@ -11,14 +11,14 @@ import { EquipmentIndexSkeleton } from "~/components/skeletons/EquipmentIndexSke
 import { Button } from "~/components/ui/button";
 import { Card, CardHeader } from "~/components/ui/card";
 import { cn, getEquipmentImageUrl } from "~/lib/utils";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+import { createEquipmentRepository } from "~/repositories/factory";
 import type { Database } from "~/types/supabase";
 
 // Type for equipment from database
 type Equipment = Database["public"]["Tables"]["equipment"]["Row"];
 
 async function loadEquipmentData(request: Request) {
-  const equipmentRepository = new EquipmentRepository(request);
+  const equipmentRepository = createEquipmentRepository(request);
   const equipmentResult = await equipmentRepository.findAll();
 
   if (equipmentResult.error) {

@@ -4,11 +4,13 @@ import { createReadableStreamFromReadable } from "@react-router/node";
 
 import type { Route } from "./+types/json";
 
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
+// ABOUTME: Equipment JSON export route — streams all equipment data as a downloadable JSON file.
+// ABOUTME: Uses the repository factory to work in both static and live modes.
 
+import { createEquipmentRepository } from "~/repositories/factory";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const equipmentRepository = new EquipmentRepository(request);
+  const equipmentRepository = createEquipmentRepository(request);
   const equipmentResult = await equipmentRepository.getAllAsJson();
 
   if (equipmentResult.error) {

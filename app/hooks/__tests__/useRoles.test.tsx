@@ -23,6 +23,7 @@ describe("useRoles", () => {
         user: null,
         isAuthenticated: false,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -68,6 +69,7 @@ describe("useRoles", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -120,6 +122,7 @@ describe("useRoles", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -171,6 +174,7 @@ describe("useRoles", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -216,6 +220,7 @@ describe("useRoles", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -240,6 +245,7 @@ describe("useRoles", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -262,6 +268,7 @@ describe("useRoles", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });

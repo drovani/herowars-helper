@@ -68,8 +68,49 @@ export class StaticMissionProvider {
     return { data: missions, error: null };
   }
 
+  async findById(slug: string): Promise<RepositoryResult<Mission>> {
+    const raw = jsonData.missions.find((m) => m.slug === slug);
+    if (!raw) {
+      return {
+        data: null,
+        error: { message: `Mission not found: ${slug}`, code: "NOT_FOUND" },
+      };
+    }
+    return { data: mapJsonToMissionRow(raw), error: null };
+  }
+
   async findAllChapters(): Promise<RepositoryResult<Chapter[]>> {
     const chapters = [...jsonData.chapters].sort((a, b) => a.id - b.id);
     return { data: chapters, error: null };
+  }
+
+  async findChapterById(id: number): Promise<RepositoryResult<Chapter>> {
+    const chapter = jsonData.chapters.find((c) => c.id === id);
+    if (!chapter) {
+      return {
+        data: null,
+        error: { message: `Chapter not found: ${id}`, code: "NOT_FOUND" },
+      };
+    }
+    return { data: chapter, error: null };
+  }
+
+  async findByHeroSlug(heroSlug: string): Promise<RepositoryResult<Mission[]>> {
+    const missions = sortMissions(
+      jsonData.missions
+        .filter((m) => m.hero_slug === heroSlug)
+        .map(mapJsonToMissionRow),
+    );
+    return { data: missions, error: null };
+  }
+
+  async findByCampaignSource(
+    equipmentSlug: string,
+  ): Promise<RepositoryResult<Mission[]>> {
+    // Campaign source data is embedded in equipment records; without the equipment JSON
+    // relationship mapping, we return all missions that list this slug and filter at the
+    // equipment level. Since static equipment is already filtered in the route, return empty.
+    void equipmentSlug;
+    return { data: [], error: null };
   }
 }

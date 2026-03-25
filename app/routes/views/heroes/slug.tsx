@@ -35,10 +35,13 @@ import {
   transformBasicHeroToRecord,
   transformCompleteHeroToRecord,
 } from "~/lib/hero-transformations";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
-import { MissionRepository } from "~/repositories/MissionRepository";
+import { isStaticMode } from "~/lib/static-mode";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
+import {
+  createHeroRepository,
+  createEquipmentRepository,
+  createMissionRepository,
+} from "~/repositories/factory";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   const heroName = loaderData?.basicHero?.name || "Hero Details";
@@ -57,7 +60,7 @@ export const handle = {
 async function loadBasicHeroData(params: { slug: string }, request: Request) {
   invariant(params.slug, "Missing hero slug param");
 
-  const heroRepo = new HeroRepository(request);
+  const heroRepo = createHeroRepository(request);
   const heroResult = await heroRepo.findById(params.slug);
 
   if (heroResult.error || !heroResult.data) {
@@ -81,7 +84,7 @@ async function loadDetailedHeroData(
 ) {
   invariant(params.slug, "Missing hero slug param");
 
-  const heroRepo = new HeroRepository(request);
+  const heroRepo = createHeroRepository(request);
   const heroResult = await heroRepo.findWithAllData(params.slug);
 
   if (heroResult.error || !heroResult.data) {
@@ -93,25 +96,27 @@ async function loadDetailedHeroData(
 
   const hero = transformCompleteHeroToRecord(heroResult.data);
 
-  const missionRepo = new MissionRepository(request);
+  const missionRepo = createMissionRepository(request);
   const campaignSourcesResult = await missionRepo.findByHeroSlug(params.slug);
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });
   }
 
-  // Check if hero is in user's collection
-  const { user } = await getAuthenticatedUser(request);
+  // Check if hero is in user's collection (skipped in static mode)
   let isInCollection = false;
 
-  if (user) {
-    const playerHeroRepo = new PlayerHeroRepository(request);
-    const collectionResult = await playerHeroRepo.isHeroInCollection(
-      user.id,
-      params.slug,
-    );
-    if (!collectionResult.error && collectionResult.data) {
-      isInCollection = collectionResult.data;
+  if (!isStaticMode()) {
+    const { user } = await getAuthenticatedUser(request);
+    if (user) {
+      const playerHeroRepo = new PlayerHeroRepository(request);
+      const collectionResult = await playerHeroRepo.isHeroInCollection(
+        user.id,
+        params.slug,
+      );
+      if (!collectionResult.error && collectionResult.data) {
+        isInCollection = collectionResult.data;
+      }
     }
   }
 
@@ -135,7 +140,7 @@ async function loadDetailedHeroData(
     }
   }
 
-  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentRepo = createEquipmentRepository(request);
   const equipmentUsedResult = await equipmentRepo.getAllAsJson();
 
   if (equipmentUsedResult.error) {
@@ -194,6 +199,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
+  if (isStaticMode()) return { error: "Not available in read-only mode" };
+
   const user = await requireAuthenticatedUser(request);
 
   const formData = await request.formData();

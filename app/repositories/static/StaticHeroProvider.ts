@@ -174,6 +174,17 @@ export class StaticHeroProvider {
     return { data: rows, error: null };
   }
 
+  async findById(slug: string): Promise<RepositoryResult<Hero>> {
+    const json = this.heroes.find((h) => h.slug === slug);
+    if (!json) {
+      return {
+        data: null,
+        error: { message: `Hero not found: ${slug}`, code: "NOT_FOUND" },
+      };
+    }
+    return { data: mapJsonToHeroRow(json), error: null };
+  }
+
   async findWithAllData(slug: string): Promise<RepositoryResult<CompleteHero>> {
     const json = this.heroes.find((h) => h.slug === slug);
 
@@ -196,5 +207,12 @@ export class StaticHeroProvider {
       .sort((a, b) => a.order_rank - b.order_rank);
 
     return { data: completeHeroes, error: null };
+  }
+
+  // Returns empty results in static mode — relational queries are not available
+  async findHeroesUsingEquipment(
+    _equipmentSlug: string,
+  ): Promise<RepositoryResult<Hero[]>> {
+    return { data: [], error: null };
   }
 }

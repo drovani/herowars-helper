@@ -18,13 +18,11 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { cn, getHeroImageUrl } from "~/lib/utils";
-import {
-  MissionRepository,
-  type Mission,
-} from "~/repositories/MissionRepository";
+import { type Mission } from "~/repositories/MissionRepository";
+import { createMissionRepository } from "~/repositories/factory";
 
 async function loadMissionsData(request: Request) {
-  const missionRepo = new MissionRepository(request);
+  const missionRepo = createMissionRepository(request);
   const missionsResult = await missionRepo.findAll({
     orderBy: [
       { column: "chapter_id", ascending: true },
@@ -52,22 +50,26 @@ async function loadMissionsData(request: Request) {
     new Set(
       missions
         .map((m) => m.hero_slug)
-        .filter((slug): slug is string => slug !== null)
-    )
+        .filter((slug): slug is string => slug !== null),
+    ),
   ).sort();
 
   // Group missions by chapter for organized display
-  const missionsByChapter = missions.reduce((acc, mission) => {
-    if (!acc[mission.chapter_id]) {
-      acc[mission.chapter_id] = {
-        title:
-          chapterMap.get(mission.chapter_id) || `Chapter ${mission.chapter_id}`,
-        missions: [],
-      };
-    }
-    acc[mission.chapter_id].missions.push(mission);
-    return acc;
-  }, {} as Record<number, { title: string; missions: Mission[] }>);
+  const missionsByChapter = missions.reduce(
+    (acc, mission) => {
+      if (!acc[mission.chapter_id]) {
+        acc[mission.chapter_id] = {
+          title:
+            chapterMap.get(mission.chapter_id) ||
+            `Chapter ${mission.chapter_id}`,
+          missions: [],
+        };
+      }
+      acc[mission.chapter_id].missions.push(mission);
+      return acc;
+    },
+    {} as Record<number, { title: string; missions: Mission[] }>,
+  );
 
   return { missionsByChapter, uniqueBosses };
 }
@@ -104,27 +106,31 @@ function MissionsContent({
   const filteredMissionsByChapter = useMemo(() => {
     const lowercaseQuery = searchQuery.toLowerCase();
 
-    return Object.entries(missionsByChapter).reduce((acc, [chapter, data]) => {
-      const chapterNum = Number(chapter);
-      const filteredMissions = data.missions.filter((mission) => {
-        const matchesSearch =
-          mission.slug.toLowerCase().includes(lowercaseQuery) ||
-          mission.name.toLowerCase().includes(lowercaseQuery);
+    return Object.entries(missionsByChapter).reduce(
+      (acc, [chapter, data]) => {
+        const chapterNum = Number(chapter);
+        const filteredMissions = data.missions.filter((mission) => {
+          const matchesSearch =
+            mission.slug.toLowerCase().includes(lowercaseQuery) ||
+            mission.name.toLowerCase().includes(lowercaseQuery);
 
-        const matchesBoss = !selectedBoss || mission.hero_slug === selectedBoss;
+          const matchesBoss =
+            !selectedBoss || mission.hero_slug === selectedBoss;
 
-        return matchesSearch && matchesBoss;
-      });
+          return matchesSearch && matchesBoss;
+        });
 
-      if (filteredMissions.length > 0) {
-        acc[chapterNum] = {
-          title: data.title,
-          missions: filteredMissions,
-        };
-      }
+        if (filteredMissions.length > 0) {
+          acc[chapterNum] = {
+            title: data.title,
+            missions: filteredMissions,
+          };
+        }
 
-      return acc;
-    }, {} as Record<number, { title: string; missions: Mission[] }>);
+        return acc;
+      },
+      {} as Record<number, { title: string; missions: Mission[] }>,
+    );
   }, [missionsByChapter, searchQuery, selectedBoss]);
 
   return (
@@ -200,7 +206,7 @@ function MissionsContent({
                             "text-2xl font-bold",
                             mission.hero_slug
                               ? "text-foreground"
-                              : "text-muted-foreground"
+                              : "text-muted-foreground",
                           )}
                         >
                           {mission.slug}
@@ -210,7 +216,7 @@ function MissionsContent({
                         className={cn(
                           cardVariants({
                             variant: mission.hero_slug ? "boss" : "default",
-                          })
+                          }),
                         )}
                       >
                         <CardTitle className="text-sm truncate">
@@ -227,7 +233,7 @@ function MissionsContent({
                 ))}
               </div>
             </div>
-          )
+          ),
         )
       ) : (
         <div className="text-center text-muted-foreground py-8">

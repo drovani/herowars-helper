@@ -6,6 +6,7 @@ import {
   EQUIPMENT_QUALITIES,
   type EquipmentRecord,
 } from "~/data/equipment.zod";
+import type { EquipmentRequirements } from "~/repositories/EquipmentRepository";
 import type { RepositoryResult } from "~/repositories/types";
 import type { Database } from "~/types/supabase";
 
@@ -54,6 +55,17 @@ export class StaticEquipmentProvider {
     return { data: rows, error: null };
   }
 
+  async findById(slug: string): Promise<RepositoryResult<EquipmentRow>> {
+    const record = equipments.find((r) => r.slug === slug);
+    if (!record) {
+      return {
+        data: null,
+        error: { message: `Equipment not found: ${slug}`, code: "NOT_FOUND" },
+      };
+    }
+    return { data: mapRecordToRow(record), error: null };
+  }
+
   async getAllAsJson(
     ids?: string[],
   ): Promise<RepositoryResult<EquipmentRecord[]>> {
@@ -72,5 +84,36 @@ export class StaticEquipmentProvider {
     });
 
     return { data: sorted, error: null };
+  }
+
+  // Relationship queries return empty results in static mode — no relational data available
+  async findEquipmentThatRequires(
+    _slug: string,
+  ): Promise<
+    RepositoryResult<Array<{ equipment: EquipmentRow; quantity: number }>>
+  > {
+    return { data: [], error: null };
+  }
+
+  async findEquipmentRequiredFor(
+    _slugOrEquipment: string | EquipmentRow,
+  ): Promise<
+    RepositoryResult<Array<{ equipment: EquipmentRow; quantity: number }>>
+  > {
+    return { data: [], error: null };
+  }
+
+  async findEquipmentRequiredForRaw(
+    _equipment: EquipmentRow,
+  ): Promise<RepositoryResult<EquipmentRequirements | null>> {
+    return { data: null, error: null };
+  }
+
+  async findRawComponentOf(
+    _slug: string,
+  ): Promise<
+    RepositoryResult<Array<{ equipment: EquipmentRow; totalQuantity: number }>>
+  > {
+    return { data: [], error: null };
   }
 }

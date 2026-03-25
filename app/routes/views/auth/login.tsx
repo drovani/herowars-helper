@@ -1,4 +1,12 @@
-import { type ActionFunctionArgs, Link, redirect } from "react-router";
+// ABOUTME: Login page route — handles email/password authentication via Supabase.
+// ABOUTME: Redirects to home in static mode where authentication is unavailable.
+
+import {
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  Link,
+  redirect,
+} from "react-router";
 
 import { LoginForm } from "~/components/auth/LoginForm";
 import {
@@ -8,9 +16,21 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { isStaticMode } from "~/lib/static-mode";
 import { createClient } from "~/lib/supabase/client";
 
+export const loader = async (_args: LoaderFunctionArgs) => {
+  if (isStaticMode()) {
+    return redirect("/");
+  }
+  return null;
+};
+
 export const action = async ({ request }: ActionFunctionArgs) => {
+  if (isStaticMode()) {
+    return { error: "Not available in read-only mode" };
+  }
+
   const { supabase, headers } = createClient(request);
 
   const formData = await request.formData();

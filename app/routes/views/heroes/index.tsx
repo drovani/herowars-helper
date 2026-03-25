@@ -41,16 +41,19 @@ import {
   type SortOptions,
 } from "~/lib/hero-sorting";
 import { transformCompleteHeroToRecord } from "~/lib/hero-transformations";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
+import { isStaticMode } from "~/lib/static-mode";
 import { PlayerHeroRepository } from "~/repositories/PlayerHeroRepository";
+import {
+  createHeroRepository,
+  createEquipmentRepository,
+} from "~/repositories/factory";
 import type { Hero } from "~/repositories/types";
 
 async function loadHeroesData(request: Request) {
   const url = new URL(request.url);
   const mode = url.searchParams.get("mode") || "cards";
 
-  const heroRepo = new HeroRepository(request);
+  const heroRepo = createHeroRepository(request);
 
   let heroes: Hero[] | HeroRecord[];
 
@@ -83,7 +86,7 @@ async function loadHeroesData(request: Request) {
   // Only load equipment for tiles mode (cards don't need it)
   let equipment: EquipmentRecord[] = [];
   if (mode === "tiles") {
-    const equipmentRepo = new EquipmentRepository(request);
+    const equipmentRepo = createEquipmentRepository(request);
     const equipmentResult = await equipmentRepo.getAllAsJson();
 
     if (equipmentResult.error) {
@@ -94,15 +97,17 @@ async function loadHeroesData(request: Request) {
       equipmentResult.data?.filter((eq) => eq.type === "equipable") || [];
   }
 
-  // Check user's collection if authenticated
-  const { user } = await getAuthenticatedUser(request);
+  // Check user's collection if authenticated (skipped in static mode)
   let userCollection: string[] = [];
 
-  if (user) {
-    const playerHeroRepo = new PlayerHeroRepository(request);
-    const collectionResult = await playerHeroRepo.findByUserId(user.id);
-    if (!collectionResult.error && collectionResult.data) {
-      userCollection = collectionResult.data.map((ph) => ph.hero_slug);
+  if (!isStaticMode()) {
+    const { user } = await getAuthenticatedUser(request);
+    if (user) {
+      const playerHeroRepo = new PlayerHeroRepository(request);
+      const collectionResult = await playerHeroRepo.findByUserId(user.id);
+      if (!collectionResult.error && collectionResult.data) {
+        userCollection = collectionResult.data.map((ph) => ph.hero_slug);
+      }
     }
   }
 
@@ -121,6 +126,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
+  if (isStaticMode()) return { error: "Not available in read-only mode" };
+
   const user = await requireAuthenticatedUser(request);
 
   const formData = await request.formData();

@@ -1,5 +1,9 @@
+// ABOUTME: Forgot password page route — sends a password reset email via Supabase.
+// ABOUTME: Redirects to home in static mode where authentication is unavailable.
+
 import {
   type ActionFunctionArgs,
+  type LoaderFunctionArgs,
   Link,
   data,
   redirect,
@@ -17,9 +21,24 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { isStaticMode } from "~/lib/static-mode";
 import { createClient } from "~/lib/supabase/client";
 
+export const loader = async (_args: LoaderFunctionArgs) => {
+  if (isStaticMode()) {
+    return redirect("/");
+  }
+  return null;
+};
+
 export const action = async ({ request }: ActionFunctionArgs) => {
+  if (isStaticMode()) {
+    return data({
+      error: "Not available in read-only mode",
+      data: { email: "" },
+    });
+  }
+
   const formData = await request.formData();
   const email = formData.get("email") as string;
 
@@ -37,7 +56,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         error: error instanceof Error ? error.message : "An error occurred",
         data: { email },
       },
-      { headers }
+      { headers },
     );
   }
 

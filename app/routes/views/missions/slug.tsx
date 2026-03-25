@@ -10,8 +10,10 @@ import EquipmentImage from "~/components/EquipmentImage";
 import { buttonVariants } from "~/components/ui/button";
 import { type EquipmentRecord } from "~/data/equipment.zod";
 import { generateSlug, getHeroImageUrl } from "~/lib/utils";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { MissionRepository } from "~/repositories/MissionRepository";
+import {
+  createEquipmentRepository,
+  createMissionRepository,
+} from "~/repositories/factory";
 
 export const meta = ({ data }: Route.MetaArgs) => {
   if (!data) {
@@ -40,7 +42,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     throw new Response("Missing slug parameter", { status: 400 });
   }
 
-  const missionRepo = new MissionRepository(request);
+  const missionRepo = createMissionRepository(request);
 
   // Find the mission
   const [missionsResult, missionResult] = await Promise.all([
@@ -69,7 +71,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     chapterResult.data?.title || `Chapter ${mission.chapter_id}`;
 
   // Get equipment that can be found in this mission
-  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentRepo = createEquipmentRepository(request);
   const allEquipmentResult = await equipmentRepo.getAllAsJson();
 
   if (allEquipmentResult.error) {

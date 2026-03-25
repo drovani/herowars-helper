@@ -1,3 +1,6 @@
+// ABOUTME: Displays an appropriate access-denied message based on auth state.
+// ABOUTME: Shows a read-only mode card in static mode, or auth/permission errors otherwise.
+
 import { Link } from "react-router";
 
 import { Button } from "~/components/ui/button";
@@ -8,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { useAuth } from "~/contexts/AuthContext";
 import { useRoles } from "~/hooks/useRoles";
 
 interface UnauthorizedAccessProps {
@@ -19,7 +23,26 @@ export function UnauthorizedAccess({
   requiredRole = "editor",
   action = "edit this content",
 }: UnauthorizedAccessProps) {
+  const { isStaticMode } = useAuth();
   const { isAuthenticated, user } = useRoles();
+
+  if (isStaticMode) {
+    return (
+      <Card className="mx-auto max-w-md">
+        <CardHeader>
+          <CardTitle>Read-Only Mode</CardTitle>
+          <CardDescription>
+            This feature is not available in read-only mode.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild variant="outline">
+            <Link to="/">Go to Homepage</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!isAuthenticated) {
     return (

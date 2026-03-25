@@ -41,17 +41,25 @@ export function SiteSidebar({
   };
 }) {
   const { isMobile, setOpenMobile } = useSidebar();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isStaticMode } = useAuth();
 
-  // Filter navigation groups based on current auth state
-  const navgroups = navigation.filter(
-    (group) =>
-      !("roles" in group) ||
-      (isAuthenticated &&
+  // Filter navigation groups based on current auth state and static mode
+  const navgroups = navigation.filter((group) => {
+    // Exclude auth-required groups when running in static mode
+    if (isStaticMode && group.requiresAuth) return false;
+
+    // Exclude role-restricted groups when not authenticated or lacking the required role
+    if ("roles" in group) {
+      return (
+        isAuthenticated &&
         user?.roles.some((role) =>
-          (group.roles as ReadonlyArray<string>).includes(role)
-        ))
-  );
+          (group.roles as ReadonlyArray<string>).includes(role),
+        )
+      );
+    }
+
+    return true;
+  });
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -94,7 +102,7 @@ export function SiteSidebar({
                             <item.icon
                               className={cn(
                                 "inline",
-                                isActive && "fill-green-300"
+                                isActive && "fill-green-300",
                               )}
                             />
                             <span>{item.name}</span>

@@ -1,5 +1,5 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "json.schemas": [
     {
       "fileMatch": [
@@ -20,6 +20,15 @@
       "url": "./app/data/hero-schema.json"
     }
   ],
-  "explorer.excludeGitIgnore": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.netlify": true,
+    "**/.react-router": true,
+    "**/build": true,
+    "**/.hg": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "explorer.excludeGitIgnore": false,
   "postman.settings.dotenv-detection-notification-visibility": false
 }

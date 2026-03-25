@@ -33,10 +33,10 @@ export const loader = async (_args: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   if (isStaticMode()) {
-    return data({
-      error: "Not available in read-only mode",
-      data: { email: "" },
-    });
+    return Response.json(
+      { error: "Not available in read-only mode" },
+      { status: 403 },
+    );
   }
 
   const formData = await request.formData();

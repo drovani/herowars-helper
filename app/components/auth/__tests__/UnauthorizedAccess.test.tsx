@@ -35,6 +35,85 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 describe("UnauthorizedAccess", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset useAuth to non-static mode default so tests that don't override it start clean
+    mockUseAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      isStaticMode: false,
+      signOut: vi.fn(),
+      updateProfile: vi.fn(),
+    });
+  });
+
+  describe("when app is in static mode", () => {
+    beforeEach(() => {
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        isStaticMode: true,
+        signOut: vi.fn(),
+        updateProfile: vi.fn(),
+      });
+      mockUseRoles.mockReturnValue({
+        hasRole: vi.fn(() => false),
+        canEdit: vi.fn(() => false),
+        isAdmin: vi.fn(() => false),
+        isUser: vi.fn(() => false),
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
+    });
+
+    it("shows Read-Only Mode heading", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      expect(
+        result.getByRole("heading", { name: "Read-Only Mode" }),
+      ).toBeInTheDocument();
+    });
+
+    it("shows a link to the homepage", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      const homeLink = result.getByRole("link", { name: "Go to Homepage" });
+      expect(homeLink).toBeInTheDocument();
+      expect(homeLink).toHaveAttribute("href", "/");
+    });
+
+    it("does not show Authentication Required heading", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      expect(
+        result.queryByText("Authentication Required"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not show Insufficient Permissions heading", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      expect(
+        result.queryByText("Insufficient Permissions"),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("when user is not authenticated", () => {

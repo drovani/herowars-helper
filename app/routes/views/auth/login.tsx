@@ -28,7 +28,10 @@ export const loader = async (_args: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   if (isStaticMode()) {
-    return { error: "Not available in read-only mode" };
+    return Response.json(
+      { error: "Not available in read-only mode" },
+      { status: 403 },
+    );
   }
 
   const { supabase, headers } = createClient(request);

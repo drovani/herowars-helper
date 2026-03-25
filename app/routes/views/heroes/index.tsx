@@ -126,7 +126,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
-  if (isStaticMode()) return { error: "Not available in read-only mode" };
+  if (isStaticMode())
+    return Response.json(
+      { error: "Not available in read-only mode" },
+      { status: 403 },
+    );
 
   const user = await requireAuthenticatedUser(request);
 

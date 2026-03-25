@@ -93,6 +93,57 @@ describe("StaticHeroProvider", () => {
     });
   });
 
+  describe("findById", () => {
+    it("returns a Hero row for a known slug", async () => {
+      const result = await provider.findById("aidan");
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.slug).toBe("aidan");
+      expect(result.data).toHaveProperty("name");
+      expect(result.data).toHaveProperty("class");
+      expect(result.data).toHaveProperty("faction");
+      expect(result.data).toHaveProperty("main_stat");
+    });
+
+    it("returns NOT_FOUND error for unknown slug", async () => {
+      const result = await provider.findById("no-such-hero");
+      expect(result.data).toBeNull();
+      expect(result.error).not.toBeNull();
+      expect(result.error!.code).toBe("NOT_FOUND");
+    });
+  });
+
+  describe("findHeroesUsingEquipment", () => {
+    it("returns heroes that use a known equipment slug", async () => {
+      // First find any hero with equipment slots to get a valid slug
+      const allResult = await provider.findAllWithRelationships();
+      const heroWithSlots = allResult.data!.find(
+        (h) =>
+          h.equipmentSlots.length > 0 &&
+          h.equipmentSlots.some((s) => s.equipment_slug),
+      );
+      if (!heroWithSlots) return; // skip if no equipped heroes in test data
+      const equipSlug = heroWithSlots.equipmentSlots.find(
+        (s) => s.equipment_slug,
+      )!.equipment_slug!;
+
+      const result = await provider.findHeroesUsingEquipment(equipSlug);
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.some((h) => h.slug === heroWithSlots.slug)).toBe(
+        true,
+      );
+    });
+
+    it("returns empty array for equipment not used by any hero", async () => {
+      const result = await provider.findHeroesUsingEquipment(
+        "no-such-equipment-xyz",
+      );
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual([]);
+    });
+  });
+
   describe("findAllWithRelationships", () => {
     it("returns all heroes with relationship data", async () => {
       const result = await provider.findAllWithRelationships();

@@ -1,10 +1,10 @@
+// ABOUTME: Hero JSON detail route — displays all data for a single hero as formatted JSON.
+// ABOUTME: Uses repository factories to support both static and live data sources.
+
 import { type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 
 import type { Route } from "./+types/slug.json";
-
-// ABOUTME: Hero JSON detail route — displays all data for a single hero as formatted JSON.
-// ABOUTME: Uses repository factories to support both static and live data sources.
 
 import {
   transformCompleteHeroToRecord,

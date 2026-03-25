@@ -1,6 +1,8 @@
 // ABOUTME: Static provider that serves hero data from the JSON file on disk.
 // ABOUTME: Used in static mode when Supabase environment variables are not set.
 
+import log from "loglevel";
+
 import heroesJson from "~/data/heroes.json";
 import type {
   CompleteHero,
@@ -166,6 +168,10 @@ function buildCompleteHero(json: HeroJsonRecord): CompleteHero {
 export class StaticHeroProvider {
   private readonly heroes: HeroJsonRecord[] = heroesJson as HeroJsonRecord[];
 
+  constructor() {
+    log.info("StaticHeroProvider: serving hero data from static JSON files");
+  }
+
   async findAll(): Promise<RepositoryResult<Hero[]>> {
     const rows = this.heroes
       .map(mapJsonToHeroRow)
@@ -209,10 +215,16 @@ export class StaticHeroProvider {
     return { data: completeHeroes, error: null };
   }
 
-  // Returns empty results in static mode — relational queries are not available
+  // Reverse-lookup: iterate all heroes and check if any equipment slot matches the given slug.
   async findHeroesUsingEquipment(
-    _equipmentSlug: string,
+    equipmentSlug: string,
   ): Promise<RepositoryResult<Hero[]>> {
-    return { data: [], error: null };
+    const matching = this.heroes.filter((json) => {
+      if (!json.items) return false;
+      return Object.values(json.items).some((slots) =>
+        slots.some((slot) => slot === equipmentSlug),
+      );
+    });
+    return { data: matching.map(mapJsonToHeroRow), error: null };
   }
 }

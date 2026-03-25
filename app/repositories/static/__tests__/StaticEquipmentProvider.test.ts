@@ -40,6 +40,25 @@ describe("StaticEquipmentProvider", () => {
     });
   });
 
+  describe("findById", () => {
+    it("returns an equipment row for a known slug", async () => {
+      const result = await provider.findById("apprentices-mantle");
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.slug).toBe("apprentices-mantle");
+      expect(result.data).toHaveProperty("name");
+      expect(result.data).toHaveProperty("quality");
+      expect(result.data).toHaveProperty("type");
+    });
+
+    it("returns NOT_FOUND error for unknown slug", async () => {
+      const result = await provider.findById("no-such-equipment");
+      expect(result.data).toBeNull();
+      expect(result.error).not.toBeNull();
+      expect(result.error!.code).toBe("NOT_FOUND");
+    });
+  });
+
   describe("getAllAsJson", () => {
     it("returns EquipmentRecord array without errors", async () => {
       const result = await provider.getAllAsJson();

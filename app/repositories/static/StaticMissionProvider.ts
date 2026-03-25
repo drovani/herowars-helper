@@ -1,6 +1,9 @@
 // ABOUTME: Static provider that serves mission and chapter data from the JSON file on disk.
 // ABOUTME: Used in static mode when Supabase environment variables are not set.
 
+import log from "loglevel";
+
+import equipmentsJson from "~/data/equipments.json";
 import missionsJson from "~/data/missions.json";
 import type { RepositoryResult } from "~/repositories/types";
 import type { Chapter, Mission } from "~/repositories/MissionRepository";
@@ -15,6 +18,11 @@ interface MissionsJsonData {
   }>;
 }
 
+interface EquipmentJsonRecord {
+  slug: string;
+  campaign_sources?: string[];
+}
+
 interface OrderByOption {
   column: string;
   ascending?: boolean;
@@ -25,6 +33,7 @@ interface FindAllOptions {
 }
 
 const jsonData = missionsJson as MissionsJsonData;
+const equipmentData = equipmentsJson as unknown as EquipmentJsonRecord[];
 
 function parseMissionSlug(slug: string): { chapter_id: number; level: number } {
   const parts = slug.split("-");
@@ -58,6 +67,12 @@ function sortMissions(missions: Mission[]): Mission[] {
 }
 
 export class StaticMissionProvider {
+  constructor() {
+    log.info(
+      "StaticMissionProvider: serving mission data from static JSON files",
+    );
+  }
+
   async findAll(
     options?: FindAllOptions,
   ): Promise<RepositoryResult<Mission[]>> {
@@ -107,10 +122,21 @@ export class StaticMissionProvider {
   async findByCampaignSource(
     equipmentSlug: string,
   ): Promise<RepositoryResult<Mission[]>> {
-    // Campaign source data is embedded in equipment records; without the equipment JSON
-    // relationship mapping, we return all missions that list this slug and filter at the
-    // equipment level. Since static equipment is already filtered in the route, return empty.
-    void equipmentSlug;
-    return { data: [], error: null };
+    // Look up the equipment record by slug to retrieve its campaign_sources mission slugs,
+    // then return the corresponding mission rows from the missions JSON.
+    const equipment = equipmentData.find((e) => e.slug === equipmentSlug);
+    if (
+      !equipment?.campaign_sources ||
+      equipment.campaign_sources.length === 0
+    ) {
+      return { data: [], error: null };
+    }
+    const missionSlugs = new Set(equipment.campaign_sources);
+    const missions = sortMissions(
+      jsonData.missions
+        .filter((m) => missionSlugs.has(m.slug))
+        .map(mapJsonToMissionRow),
+    );
+    return { data: missions, error: null };
   }
 }

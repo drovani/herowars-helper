@@ -1,11 +1,11 @@
+// ABOUTME: Hero JSON export route — streams all hero data as a downloadable JSON file.
+// ABOUTME: Uses the repository factory to work in both static and live modes.
+
 import { Readable } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
 
 import type { Route } from "./+types/json";
-
-// ABOUTME: Hero JSON export route — streams all hero data as a downloadable JSON file.
-// ABOUTME: Uses the repository factory to work in both static and live modes.
 
 import {
   transformCompleteHeroToRecord,

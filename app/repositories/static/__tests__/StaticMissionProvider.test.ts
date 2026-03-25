@@ -71,6 +71,85 @@ describe("StaticMissionProvider", () => {
     });
   });
 
+  describe("findById", () => {
+    it("returns a Mission row for a known slug", async () => {
+      const result = await provider.findById("1-1");
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.slug).toBe("1-1");
+      expect(result.data!.chapter_id).toBe(1);
+      expect(result.data!.level).toBe(1);
+    });
+
+    it("returns NOT_FOUND error for unknown slug", async () => {
+      const result = await provider.findById("99-99");
+      expect(result.data).toBeNull();
+      expect(result.error).not.toBeNull();
+      expect(result.error!.code).toBe("NOT_FOUND");
+    });
+  });
+
+  describe("findChapterById", () => {
+    it("returns chapter 1 with the correct title", async () => {
+      const result = await provider.findChapterById(1);
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.id).toBe(1);
+      expect(result.data!.title).toBe("Ruled by Fire");
+    });
+
+    it("returns NOT_FOUND error for unknown chapter id", async () => {
+      const result = await provider.findChapterById(9999);
+      expect(result.data).toBeNull();
+      expect(result.error).not.toBeNull();
+      expect(result.error!.code).toBe("NOT_FOUND");
+    });
+  });
+
+  describe("findByHeroSlug", () => {
+    it("returns missions for a hero that appears as a boss", async () => {
+      // Find a hero slug that exists in mission data by looking at findAll results
+      const allResult = await provider.findAll();
+      const missionWithHero = allResult.data!.find((m) => m.hero_slug !== null);
+      if (!missionWithHero || !missionWithHero.hero_slug) return; // skip if none
+
+      const result = await provider.findByHeroSlug(missionWithHero.hero_slug);
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.length).toBeGreaterThan(0);
+      expect(
+        result.data!.every((m) => m.hero_slug === missionWithHero.hero_slug),
+      ).toBe(true);
+    });
+
+    it("returns empty array for a hero slug that is not a boss in any mission", async () => {
+      const result = await provider.findByHeroSlug("no-such-hero-xyz");
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual([]);
+    });
+  });
+
+  describe("findByCampaignSource", () => {
+    it("returns missions for equipment that has campaign sources", async () => {
+      // apprentices-mantle has campaign_sources: ["1-3", "2-4", ...]
+      const result = await provider.findByCampaignSource("apprentices-mantle");
+      expect(result.error).toBeNull();
+      expect(result.data).not.toBeNull();
+      expect(result.data!.length).toBeGreaterThan(0);
+      // All returned missions should be from the campaign_sources list
+      const slugs = result.data!.map((m) => m.slug);
+      expect(slugs).toContain("1-3");
+    });
+
+    it("returns empty array for equipment with no campaign sources", async () => {
+      const result = await provider.findByCampaignSource(
+        "no-such-equipment-xyz",
+      );
+      expect(result.error).toBeNull();
+      expect(result.data).toEqual([]);
+    });
+  });
+
   describe("findAllChapters", () => {
     it("returns a list of chapters without errors", async () => {
       const result = await provider.findAllChapters();

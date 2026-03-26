@@ -44,6 +44,9 @@ function parseMissionSlug(slug: string): { chapter_id: number; level: number } {
       return { chapter_id, level };
     }
   }
+  log.warn(
+    `StaticMissionProvider: could not parse mission slug "${slug}", defaulting to chapter_id=0, level=0`,
+  );
   return { chapter_id: 0, level: 0 };
 }
 
@@ -76,7 +79,7 @@ export class StaticMissionProvider {
   async findAll(
     options?: FindAllOptions,
   ): Promise<RepositoryResult<Mission[]>> {
-    // The options parameter is accepted for interface compatibility with MissionRepository.
+    // The options parameter is accepted for duck-type compatibility with MissionRepository.
     // Static data is always sorted by chapter_id then level by default.
     void options;
     const missions = sortMissions(jsonData.missions.map(mapJsonToMissionRow));

@@ -14,9 +14,9 @@ import type { Database } from "~/types/supabase";
 
 type EquipmentRow = Database["public"]["Tables"]["equipment"]["Row"];
 
-// The equipments.json records already closely match EquipmentRecord shape.
-// We cast them via unknown since the JSON loader types don't exactly match but
-// the runtime data is compatible.
+// The equipments.json records match EquipmentRecord shape at runtime but TypeScript's
+// JSON import types are generic; the cast via unknown bridges that type gap without
+// losing type safety in the rest of the file.
 const equipments = equipmentsJson as unknown as EquipmentRecord[];
 
 function mapRecordToRow(record: EquipmentRecord): EquipmentRow {
@@ -169,7 +169,12 @@ export class StaticEquipmentProvider {
     baseItems.gold_cost += crafting.gold_cost;
     for (const [reqSlug, qty] of Object.entries(crafting.required_items)) {
       const reqRecord = equipments.find((r) => r.slug === reqSlug);
-      if (!reqRecord) continue;
+      if (!reqRecord) {
+        log.warn(
+          `StaticEquipmentProvider: crafting ingredient "${reqSlug}" not found in equipment data`,
+        );
+        continue;
+      }
       const reqRow = mapRecordToRow(reqRecord);
       // If the required item also has crafting, recurse to get raw components
       if ("crafting" in reqRecord && reqRecord.crafting) {
@@ -204,7 +209,7 @@ export class StaticEquipmentProvider {
     return { data: baseItems, error: null };
   }
 
-  // Walk the crafting tree upward to find all final products (non-craftable equipables) that use this slug.
+  // Walk the crafting tree upward to find all final products (equipment not used as an ingredient in other recipes) that use this slug.
   async findRawComponentOf(
     slug: string,
   ): Promise<

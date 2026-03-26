@@ -63,10 +63,17 @@ function LiveAuthProvider({
   // Set up Supabase Auth event listeners
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSupabaseUser(session?.user ?? null);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setSupabaseUser(session?.user ?? null);
+        setLoading(false);
+      })
+      .catch((error) => {
+        log.error("Failed to get auth session:", error);
+        setSupabaseUser(null);
+        setLoading(false);
+      });
 
     // Listen for auth changes
     const {

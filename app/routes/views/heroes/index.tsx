@@ -2,6 +2,7 @@ import { Suspense, useState, useMemo } from "react";
 
 import { ToggleGroup } from "@radix-ui/react-toggle-group";
 import { LayoutGridIcon, LayoutListIcon } from "lucide-react";
+import log from "loglevel";
 import { Await, Link, useFetcher, useNavigate } from "react-router";
 
 import type { Route } from "./+types/index";
@@ -105,7 +106,12 @@ async function loadHeroesData(request: Request) {
     if (user) {
       const playerHeroRepo = new PlayerHeroRepository(request);
       const collectionResult = await playerHeroRepo.findByUserId(user.id);
-      if (!collectionResult.error && collectionResult.data) {
+      if (collectionResult.error) {
+        log.warn(
+          "Failed to load user collection:",
+          collectionResult.error.message,
+        );
+      } else if (collectionResult.data) {
         userCollection = collectionResult.data.map((ph) => ph.hero_slug);
       }
     }

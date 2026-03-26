@@ -1,6 +1,7 @@
 import { Suspense, useEffect } from "react";
 
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
+import log from "loglevel";
 import {
   Await,
   Link,
@@ -114,7 +115,12 @@ async function loadDetailedHeroData(
         user.id,
         params.slug,
       );
-      if (!collectionResult.error && collectionResult.data) {
+      if (collectionResult.error) {
+        log.warn(
+          "Failed to check hero collection status:",
+          collectionResult.error.message,
+        );
+      } else if (collectionResult.data) {
         isInCollection = collectionResult.data;
       }
     }

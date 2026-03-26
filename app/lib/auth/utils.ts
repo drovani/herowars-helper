@@ -4,6 +4,7 @@
 import type { User } from "@supabase/supabase-js";
 
 import { useAuth } from "~/contexts/AuthContext";
+import { isStaticMode } from "~/lib/static-mode";
 
 // Define the auth context user type based on the actual AuthContext
 export interface AuthContextUser {
@@ -33,8 +34,12 @@ export interface ClientAuthResult {
  * Pass the request object to indicate server-side usage
  */
 export async function getAuthenticatedUser(
-  request: Request
+  request: Request,
 ): Promise<ServerAuthResult> {
+  if (isStaticMode()) {
+    return { user: null, error: null };
+  }
+
   try {
     const { createClient } = await import("~/lib/supabase/client");
     const { supabase } = createClient(request);
@@ -68,8 +73,12 @@ export async function getAuthenticatedUser(
  * Use this when authentication is required for the route
  */
 export async function requireAuthenticatedUser(
-  request: Request
+  request: Request,
 ): Promise<User> {
+  if (isStaticMode()) {
+    throw new Response("Not available in read-only mode", { status: 403 });
+  }
+
   const { user, error } = await getAuthenticatedUser(request);
 
   if (error) {
@@ -88,6 +97,10 @@ export async function requireAuthenticatedUser(
  * Returns true if authenticated, false otherwise
  */
 export async function isAuthenticated(request: Request): Promise<boolean> {
+  if (isStaticMode()) {
+    return false;
+  }
+
   const { user } = await getAuthenticatedUser(request);
   return user !== null;
 }

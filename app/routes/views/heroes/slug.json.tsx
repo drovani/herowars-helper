@@ -1,3 +1,6 @@
+// ABOUTME: Hero JSON detail route — displays all data for a single hero as formatted JSON.
+// ABOUTME: Uses repository factories to support both static and live data sources.
+
 import { type UIMatch } from "react-router";
 import invariant from "tiny-invariant";
 
@@ -8,9 +11,11 @@ import {
   transformBasicHeroToRecord,
   sortHeroRecords,
 } from "~/lib/hero-transformations";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
-import { MissionRepository } from "~/repositories/MissionRepository";
+import {
+  createHeroRepository,
+  createEquipmentRepository,
+  createMissionRepository,
+} from "~/repositories/factory";
 
 export const meta = ({ loaderData }: Route.MetaArgs) => {
   return [
@@ -36,7 +41,7 @@ export const handle = {
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   invariant(params.slug, "Missing hero slug param");
 
-  const heroRepo = new HeroRepository(request);
+  const heroRepo = createHeroRepository(request);
   const heroResult = await heroRepo.findWithAllData(params.slug);
 
   if (heroResult.error || !heroResult.data) {
@@ -48,10 +53,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
   const hero = transformCompleteHeroToRecord(heroResult.data);
 
-  const missionRepo = new MissionRepository(request);
-  const campaignSourcesResult = await missionRepo.findByHeroSlug(
-    params.slug
-  );
+  const missionRepo = createMissionRepository(request);
+  const campaignSourcesResult = await missionRepo.findByHeroSlug(params.slug);
 
   if (campaignSourcesResult.error) {
     throw new Response("Failed to load campaign sources", { status: 500 });
@@ -64,7 +67,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
       equipmentSlugs.push(...tier[1]);
     }
   }
-  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentRepo = createEquipmentRepository(request);
   const equipmentUsedResult = await equipmentRepo.findAll();
 
   if (equipmentUsedResult.error) {

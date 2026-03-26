@@ -1,14 +1,16 @@
+// ABOUTME: Missions JSON export route — streams all mission and chapter data as a downloadable JSON file.
+// ABOUTME: Uses the repository factory to work in both static and live modes.
+
 import { Readable } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
 
 import type { Route } from "./+types/json";
 
-import { MissionRepository } from "~/repositories/MissionRepository";
-
+import { createMissionRepository } from "~/repositories/factory";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const missionRepo = new MissionRepository(request);
+  const missionRepo = createMissionRepository(request);
 
   // Get missions with proper sorting
   const missionsResult = await missionRepo.findAll({

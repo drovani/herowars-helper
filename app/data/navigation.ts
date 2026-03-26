@@ -18,6 +18,7 @@ interface NavigationGroup {
   icon?: React.ComponentType<{ className?: string }>;
   items: NavigationItem[];
   roles?: string[];
+  requiresAuth?: boolean;
 }
 
 interface NavigationItem {
@@ -75,6 +76,7 @@ export const navigation: NavigationGroup[] = [
   },
   {
     name: "Player Tools",
+    requiresAuth: true,
     items: [
       {
         name: "Hero Roster",

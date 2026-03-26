@@ -39,7 +39,7 @@ describe("Player Teams Edit Integration", () => {
 
   beforeEach(() => {
     mockRequest = new Request(
-      `http://localhost:3000/player/teams/${mockSlug}/edit`
+      `http://localhost:3000/player/teams/${mockSlug}/edit`,
     );
 
     mockTeamRepo = {
@@ -55,10 +55,12 @@ describe("Player Teams Edit Integration", () => {
       findWithHeroDetails: vi.fn(),
     };
 
-    vi.mocked(PlayerTeamRepository).mockImplementation(() => { return mockTeamRepo; });
-    vi.mocked(PlayerHeroRepository).mockImplementation(
-      () => { return mockPlayerHeroRepo; }
-    );
+    vi.mocked(PlayerTeamRepository).mockImplementation(function () {
+      return mockTeamRepo;
+    });
+    vi.mocked(PlayerHeroRepository).mockImplementation(function () {
+      return mockPlayerHeroRepo;
+    });
 
     // Mock auth utilities
     vi.mocked(getAuthenticatedUser).mockResolvedValue({
@@ -170,10 +172,10 @@ describe("Player Teams Edit Integration", () => {
       expect(result.userHeroes).toHaveLength(2);
       expect(mockTeamRepo.findTeamBySlug).toHaveBeenCalledWith(
         mockSlug,
-        "user1"
+        "user1",
       );
       expect(mockPlayerHeroRepo.findWithHeroDetails).toHaveBeenCalledWith(
-        "user1"
+        "user1",
       );
     });
 
@@ -188,8 +190,8 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -199,8 +201,8 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        } as any)
+          unstable_pattern: "",
+        } as any),
       ).rejects.toThrow(Response);
     });
 
@@ -219,8 +221,8 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -247,8 +249,8 @@ describe("Player Teams Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
   });
@@ -284,7 +286,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -296,7 +298,7 @@ describe("Player Teams Edit Integration", () => {
 
       expect(result.success).toBe(true);
       expect(result.message).toBe(
-        'Team "Updated Arena Team" updated successfully'
+        'Team "Updated Arena Team" updated successfully',
       );
       expect(mockTeamRepo.updateTeam).toHaveBeenCalledWith(
         mockTeamId,
@@ -304,7 +306,7 @@ describe("Player Teams Edit Integration", () => {
         {
           name: "Updated Arena Team",
           description: "Updated description",
-        }
+        },
       );
     });
 
@@ -338,7 +340,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -355,7 +357,7 @@ describe("Player Teams Edit Integration", () => {
         {
           name: undefined,
           description: undefined,
-        }
+        },
       );
     });
 
@@ -386,7 +388,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -425,7 +427,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -440,7 +442,7 @@ describe("Player Teams Edit Integration", () => {
       expect(mockTeamRepo.addHeroToTeam).toHaveBeenCalledWith(
         mockTeamId,
         "user1",
-        { hero_slug: "aurora" }
+        { hero_slug: "aurora" },
       );
     });
 
@@ -465,7 +467,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -505,7 +507,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -547,7 +549,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -562,7 +564,7 @@ describe("Player Teams Edit Integration", () => {
       expect(mockTeamRepo.removeHeroFromTeam).toHaveBeenCalledWith(
         mockTeamId,
         "user1",
-        "astaroth"
+        "astaroth",
       );
     });
 
@@ -587,7 +589,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -627,7 +629,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -663,7 +665,7 @@ describe("Player Teams Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({

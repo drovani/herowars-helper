@@ -26,9 +26,11 @@ import {
   transformCompleteHeroToRecord,
 } from "~/lib/hero-transformations";
 import { generateSlug } from "~/lib/utils";
-import { EquipmentRepository } from "~/repositories/EquipmentRepository";
-import { HeroRepository } from "~/repositories/HeroRepository";
-import { MissionRepository } from "~/repositories/MissionRepository";
+import {
+  createEquipmentRepository,
+  createHeroRepository,
+  createMissionRepository,
+} from "~/repositories/factory";
 import type { Database } from "~/types/supabase";
 
 // Type for mission data from the database
@@ -84,7 +86,7 @@ async function loadBasicEquipmentData(
 ) {
   invariant(params.slug, "Missing equipment slug param");
 
-  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentRepo = createEquipmentRepository(request);
   const equipmentJsonResult = await equipmentRepo.getAllAsJson([params.slug]);
 
   if (
@@ -112,7 +114,7 @@ async function loadDetailedEquipmentData(
 ) {
   invariant(params.slug, "Missing equipment slug param");
 
-  const equipmentRepo = new EquipmentRepository(request);
+  const equipmentRepo = createEquipmentRepository(request);
 
   // Get main equipment details in both formats
   const [equipmentJsonResult, equipmentDbResult] = await Promise.all([
@@ -181,8 +183,8 @@ async function loadDetailedEquipmentData(
     requiredEquipmentRaw = null;
   }
 
-  // Get mission sources using the new repository
-  const missionRepo = new MissionRepository(request);
+  // Get mission sources using the repository factory
+  const missionRepo = createMissionRepository(request);
   const missionSourcesResult = await missionRepo.findByCampaignSource(
     equipment.slug,
   );
@@ -193,7 +195,7 @@ async function loadDetailedEquipmentData(
 
   const missionSources = missionSourcesResult.data || [];
 
-  const heroRepo = new HeroRepository(request);
+  const heroRepo = createHeroRepository(request);
   const heroesUsingItemResult = await heroRepo.findHeroesUsingEquipment(
     equipment.slug,
   );

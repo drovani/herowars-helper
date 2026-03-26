@@ -48,10 +48,12 @@ describe("Player Teams New Integration", () => {
       findWithHeroDetails: vi.fn(),
     };
 
-    vi.mocked(PlayerTeamRepository).mockImplementation(() => { return mockTeamRepo; });
-    vi.mocked(PlayerHeroRepository).mockImplementation(
-      () => { return mockPlayerHeroRepo; }
-    );
+    vi.mocked(PlayerTeamRepository).mockImplementation(function () {
+      return mockTeamRepo;
+    });
+    vi.mocked(PlayerHeroRepository).mockImplementation(function () {
+      return mockPlayerHeroRepo;
+    });
 
     // Mock auth utilities
     vi.mocked(getAuthenticatedUser).mockResolvedValue({
@@ -133,7 +135,7 @@ describe("Player Teams New Integration", () => {
       expect(result.userHeroes[0].hero_slug).toBe("astaroth");
       expect(result.userHeroes[1].hero_slug).toBe("aurora");
       expect(mockPlayerHeroRepo.findWithHeroDetails).toHaveBeenCalledWith(
-        "user1"
+        "user1",
       );
     });
 
@@ -148,8 +150,8 @@ describe("Player Teams New Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -164,8 +166,8 @@ describe("Player Teams New Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -216,7 +218,7 @@ describe("Player Teams New Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -241,19 +243,19 @@ describe("Player Teams New Integration", () => {
         1,
         "new-team-id",
         "user1",
-        { hero_slug: "astaroth" }
+        { hero_slug: "astaroth" },
       );
       expect(mockTeamRepo.addHeroToTeam).toHaveBeenNthCalledWith(
         2,
         "new-team-id",
         "user1",
-        { hero_slug: "aurora" }
+        { hero_slug: "aurora" },
       );
       expect(mockTeamRepo.addHeroToTeam).toHaveBeenNthCalledWith(
         3,
         "new-team-id",
         "user1",
-        { hero_slug: "celeste" }
+        { hero_slug: "celeste" },
       );
     });
 
@@ -282,7 +284,7 @@ describe("Player Teams New Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -325,7 +327,7 @@ describe("Player Teams New Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -357,7 +359,7 @@ describe("Player Teams New Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -403,7 +405,7 @@ describe("Player Teams New Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -414,11 +416,11 @@ describe("Player Teams New Integration", () => {
       });
 
       expect(result.error).toBe(
-        "Failed to add hero invalid-hero: Hero not found"
+        "Failed to add hero invalid-hero: Hero not found",
       );
       expect(mockTeamRepo.deleteTeam).toHaveBeenCalledWith(
         "new-team-id",
-        "user1"
+        "user1",
       );
     });
   });
@@ -433,7 +435,7 @@ describe("Player Teams New Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({

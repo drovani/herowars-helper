@@ -47,6 +47,7 @@ describe("ProtectedEditorLayout", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -56,7 +57,7 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Protected Content")).toBeInTheDocument();
@@ -66,11 +67,15 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
-      expect(result.queryByText("Insufficient Permissions")).not.toBeInTheDocument();
-      expect(result.queryByText("Authentication Required")).not.toBeInTheDocument();
+      expect(
+        result.queryByText("Insufficient Permissions"),
+      ).not.toBeInTheDocument();
+      expect(
+        result.queryByText("Authentication Required"),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -87,6 +92,7 @@ describe("ProtectedEditorLayout", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -96,7 +102,7 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Protected Content")).toBeInTheDocument();
@@ -116,6 +122,7 @@ describe("ProtectedEditorLayout", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -125,7 +132,7 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Protected Content")).toBeInTheDocument();
@@ -145,6 +152,7 @@ describe("ProtectedEditorLayout", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -154,18 +162,20 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
-      expect(result.getByText("You need admin or editor role to access this page.")).toBeInTheDocument();
+      expect(
+        result.getByText("You need admin or editor role to access this page."),
+      ).toBeInTheDocument();
     });
 
     it("does not render the outlet content", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.queryByText("Protected Content")).not.toBeInTheDocument();
@@ -175,12 +185,14 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Current user: Test User")).toBeInTheDocument();
       expect(result.getByText("Your roles: user")).toBeInTheDocument();
-      expect(result.getByText("Required role: admin or editor")).toBeInTheDocument();
+      expect(
+        result.getByText("Required role: admin or editor"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -190,6 +202,7 @@ describe("ProtectedEditorLayout", () => {
         user: null,
         isAuthenticated: false,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -199,18 +212,20 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Authentication Required")).toBeInTheDocument();
-      expect(result.getByText("You must be logged in to access this page.")).toBeInTheDocument();
+      expect(
+        result.getByText("You must be logged in to access this page."),
+      ).toBeInTheDocument();
     });
 
     it("does not render the outlet content", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.queryByText("Protected Content")).not.toBeInTheDocument();
@@ -220,7 +235,7 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
@@ -240,6 +255,7 @@ describe("ProtectedEditorLayout", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -247,7 +263,7 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
@@ -266,6 +282,7 @@ describe("ProtectedEditorLayout", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -273,7 +290,7 @@ describe("ProtectedEditorLayout", () => {
       const result = render(
         <Wrapper>
           <ProtectedEditorLayout />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();

@@ -4,13 +4,27 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { UnauthorizedAccess } from "../UnauthorizedAccess";
 
+import { useAuth } from "~/contexts/AuthContext";
 import { useRoles } from "~/hooks/useRoles";
+
+// Mock the AuthContext (required because UnauthorizedAccess uses useAuth for isStaticMode)
+vi.mock("~/contexts/AuthContext", () => ({
+  useAuth: vi.fn(() => ({
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
+    isStaticMode: false,
+    signOut: vi.fn(),
+    updateProfile: vi.fn(),
+  })),
+}));
 
 // Mock the useRoles hook
 vi.mock("~/hooks/useRoles", () => ({
   useRoles: vi.fn(),
 }));
 
+const mockUseAuth = vi.mocked(useAuth);
 const mockUseRoles = vi.mocked(useRoles);
 
 // Helper component to wrap with router
@@ -21,6 +35,85 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
 describe("UnauthorizedAccess", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset useAuth to non-static mode default so tests that don't override it start clean
+    mockUseAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      isStaticMode: false,
+      signOut: vi.fn(),
+      updateProfile: vi.fn(),
+    });
+  });
+
+  describe("when app is in static mode", () => {
+    beforeEach(() => {
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        isStaticMode: true,
+        signOut: vi.fn(),
+        updateProfile: vi.fn(),
+      });
+      mockUseRoles.mockReturnValue({
+        hasRole: vi.fn(() => false),
+        canEdit: vi.fn(() => false),
+        isAdmin: vi.fn(() => false),
+        isUser: vi.fn(() => false),
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+      });
+    });
+
+    it("shows Read-Only Mode heading", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      expect(
+        result.getByRole("heading", { name: "Read-Only Mode" }),
+      ).toBeInTheDocument();
+    });
+
+    it("shows a link to the homepage", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      const homeLink = result.getByRole("link", { name: "Go to Homepage" });
+      expect(homeLink).toBeInTheDocument();
+      expect(homeLink).toHaveAttribute("href", "/");
+    });
+
+    it("does not show Authentication Required heading", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      expect(
+        result.queryByText("Authentication Required"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("does not show Insufficient Permissions heading", () => {
+      const result = render(
+        <Wrapper>
+          <UnauthorizedAccess />
+        </Wrapper>,
+      );
+
+      expect(
+        result.queryByText("Insufficient Permissions"),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("when user is not authenticated", () => {
@@ -40,12 +133,12 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Authentication Required")).toBeInTheDocument();
       expect(
-        result.getByText("You must be logged in to edit this content.")
+        result.getByText("You must be logged in to edit this content."),
       ).toBeInTheDocument();
       expect(result.getByRole("link", { name: "Sign In" })).toBeInTheDocument();
     });
@@ -54,12 +147,12 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess action="access this feature" />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Authentication Required")).toBeInTheDocument();
       expect(
-        result.getByText("You must be logged in to access this feature.")
+        result.getByText("You must be logged in to access this feature."),
       ).toBeInTheDocument();
     });
 
@@ -67,7 +160,7 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       const signInLink = result.getByRole("link", { name: "Sign In" });
@@ -99,12 +192,12 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
       expect(
-        result.getByText("You need editor role to edit this content.")
+        result.getByText("You need editor role to edit this content."),
       ).toBeInTheDocument();
     });
 
@@ -112,12 +205,12 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess requiredRole="admin" action="manage users" />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Insufficient Permissions")).toBeInTheDocument();
       expect(
-        result.getByText("You need admin role to manage users.")
+        result.getByText("You need admin role to manage users."),
       ).toBeInTheDocument();
     });
 
@@ -125,7 +218,7 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Current user: Test User")).toBeInTheDocument();
@@ -154,7 +247,7 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Your roles: user, viewer")).toBeInTheDocument();
@@ -164,7 +257,7 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       const heroesLink = result.getByRole("link", { name: "Back to Heroes" });
@@ -199,7 +292,7 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Your roles:")).toBeInTheDocument();
@@ -226,7 +319,7 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess requiredRole="moderator" />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(result.getByText("Required role: moderator")).toBeInTheDocument();
@@ -248,11 +341,11 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(
-        result.getByRole("heading", { name: "Authentication Required" })
+        result.getByRole("heading", { name: "Authentication Required" }),
       ).toBeInTheDocument();
     });
 
@@ -277,14 +370,14 @@ describe("UnauthorizedAccess", () => {
       const result = render(
         <Wrapper>
           <UnauthorizedAccess />
-        </Wrapper>
+        </Wrapper>,
       );
 
       expect(
-        result.getByRole("link", { name: "Back to Heroes" })
+        result.getByRole("link", { name: "Back to Heroes" }),
       ).toBeInTheDocument();
       expect(
-        result.getByRole("link", { name: "Back to Equipment" })
+        result.getByRole("link", { name: "Back to Equipment" }),
       ).toBeInTheDocument();
     });
   });

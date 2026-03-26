@@ -31,7 +31,7 @@ describe("Hero Edit Integration", () => {
 
   beforeEach(() => {
     mockRequest = new Request(
-      `http://localhost:3000/heroes/${mockHeroSlug}/edit`
+      `http://localhost:3000/heroes/${mockHeroSlug}/edit`,
     );
 
     mockSupabaseClient = createMockSupabaseClient();
@@ -47,14 +47,22 @@ describe("Hero Edit Integration", () => {
       getAllAsJson: vi.fn(),
     };
 
-    vi.mocked(HeroRepository).mockImplementation(() => { return mockHeroRepo; });
-    vi.mocked(EquipmentRepository).mockImplementation(() => { return mockEquipmentRepo; });
+    vi.mocked(HeroRepository).mockImplementation(function () {
+      return mockHeroRepo;
+    });
+    vi.mocked(EquipmentRepository).mockImplementation(function () {
+      return mockEquipmentRepo;
+    });
 
     // Setup createClient mock to return fresh client each time
-    vi.mocked(supabaseClientModule.createClient).mockImplementation(() => { return {
-      supabase: mockSupabaseClient,
-      headers: undefined,
-    }; });
+    vi.mocked(supabaseClientModule.createClient).mockImplementation(
+      function () {
+        return {
+          supabase: mockSupabaseClient,
+          headers: undefined,
+        };
+      },
+    );
   });
 
   describe("loader", () => {
@@ -95,7 +103,7 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockHeroSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
+          unstable_pattern: "",
         } as any);
 
         // Loader returns a Response or throws
@@ -114,8 +122,8 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        } as any)
+          unstable_pattern: "",
+        } as any),
       ).rejects.toThrow();
     });
 
@@ -130,8 +138,8 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockHeroSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        } as any)
+          unstable_pattern: "",
+        } as any),
       ).rejects.toThrow();
     });
 
@@ -160,8 +168,8 @@ describe("Hero Edit Integration", () => {
           request: mockRequest,
           params: { slug: mockHeroSlug },
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        } as any)
+          unstable_pattern: "",
+        } as any),
       ).rejects.toThrow();
     });
   });
@@ -190,7 +198,7 @@ describe("Hero Edit Integration", () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       const result = await action({
@@ -205,6 +213,5 @@ describe("Hero Edit Integration", () => {
         expect(result.status).toBe(500);
       }
     });
-
   });
 });

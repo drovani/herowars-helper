@@ -41,7 +41,9 @@ describe("Player Teams Integration", () => {
       deleteTeam: vi.fn(),
     };
 
-    vi.mocked(PlayerTeamRepository).mockImplementation(() => { return mockTeamRepo; });
+    vi.mocked(PlayerTeamRepository).mockImplementation(function () {
+      return mockTeamRepo;
+    });
 
     // Mock auth utilities
     vi.mocked(getAuthenticatedUser).mockResolvedValue({
@@ -118,8 +120,8 @@ describe("Player Teams Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -134,8 +136,8 @@ describe("Player Teams Integration", () => {
           request: mockRequest,
           params: {},
           context: { VALUE_FROM_NETLIFY: "test" },
-        unstable_pattern: "",
-        })
+          unstable_pattern: "",
+        }),
       ).rejects.toThrow(Response);
     });
 
@@ -285,7 +287,7 @@ describe("Player Teams Integration", () => {
       expect(result.message).toBe("Team deleted successfully");
       expect(mockTeamRepo.deleteTeam).toHaveBeenCalledWith(
         "team-to-delete",
-        "user1"
+        "user1",
       );
     });
 

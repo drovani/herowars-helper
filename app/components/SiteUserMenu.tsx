@@ -24,7 +24,11 @@ import { useAuth } from "~/contexts/AuthContext";
 
 export function SiteUserMenu() {
   const { isMobile, state } = useSidebar();
-  const { isAuthenticated, user, signOut } = useAuth();
+  const { isAuthenticated, user, signOut, isStaticMode } = useAuth();
+
+  if (isStaticMode) {
+    return null;
+  }
 
   return (
     <div>
@@ -37,7 +41,7 @@ export function SiteUserMenu() {
                   size="lg"
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <Avatar className="h-8 w-8 rounded-lg">
+                  <Avatar className="size-8 rounded-lg">
                     <AvatarImage src={`${user.avatar}`} alt={user.name} />
                     <AvatarFallback className="rounded-lg">
                       {user.fallback}
@@ -58,7 +62,7 @@ export function SiteUserMenu() {
               >
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
+                    <Avatar className="size-8 rounded-lg">
                       <AvatarImage src={`${user.avatar}`} alt={user.name} />
                       <AvatarFallback className="rounded-lg">
                         {user.fallback}
@@ -99,10 +103,7 @@ export function SiteUserMenu() {
         </SidebarMenu>
       ) : state === "expanded" ? (
         <LoginModal>
-          <Button
-            variant="outline"
-            className="w-full flex items-center gap-2"
-          >
+          <Button variant="outline" className="w-full flex items-center gap-2">
             <LogInIcon />
             <span>Sign in</span>
           </Button>

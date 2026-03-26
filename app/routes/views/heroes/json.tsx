@@ -1,3 +1,6 @@
+// ABOUTME: Hero JSON export route — streams all hero data as a downloadable JSON file.
+// ABOUTME: Uses the repository factory to work in both static and live modes.
+
 import { Readable } from "node:stream";
 
 import { createReadableStreamFromReadable } from "@react-router/node";
@@ -10,11 +13,10 @@ import {
   sortHeroRecords,
   createHeroesJsonString,
 } from "~/lib/hero-transformations";
-import { HeroRepository } from "~/repositories/HeroRepository";
-
+import { createHeroRepository } from "~/repositories/factory";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const heroRepo = new HeroRepository(request);
+  const heroRepo = createHeroRepository(request);
   const heroesResult = await heroRepo.findAll();
 
   if (heroesResult.error) {
@@ -31,7 +33,7 @@ export async function loader({ request }: Route.LoaderArgs) {
           }
           // Fallback to basic hero if complete data is not available
           return transformBasicHeroToRecord(hero);
-        })
+        }),
       )
     : [];
 

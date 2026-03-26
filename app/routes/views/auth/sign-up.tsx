@@ -1,5 +1,9 @@
+// ABOUTME: Sign-up page route — handles new user account creation via Supabase.
+// ABOUTME: Redirects to home in static mode where authentication is unavailable.
+
 import {
   type ActionFunctionArgs,
+  type LoaderFunctionArgs,
   Link,
   redirect,
   useFetcher,
@@ -16,9 +20,24 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { isStaticMode } from "~/lib/static-mode";
 import { createClient } from "~/lib/supabase/client";
 
+export const loader = async (_args: LoaderFunctionArgs) => {
+  if (isStaticMode()) {
+    return redirect("/");
+  }
+  return null;
+};
+
 export const action = async ({ request }: ActionFunctionArgs) => {
+  if (isStaticMode()) {
+    return Response.json(
+      { error: "Not available in read-only mode" },
+      { status: 403 },
+    );
+  }
+
   const { supabase } = createClient(request);
 
   const url = new URL(request.url);

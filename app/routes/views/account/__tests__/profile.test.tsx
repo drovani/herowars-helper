@@ -48,6 +48,7 @@ describe("AccountProfile Auth Hydration", () => {
         user: null,
         isAuthenticated: false,
         isLoading: true,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -56,7 +57,7 @@ describe("AccountProfile Auth Hydration", () => {
 
       expect(result.getByText("Loading...")).toBeInTheDocument();
       expect(
-        result.getByText("Initializing your account information.")
+        result.getByText("Initializing your account information."),
       ).toBeInTheDocument();
       expect(result.getByTestId("loading-skeleton")).toBeInTheDocument();
 
@@ -76,6 +77,7 @@ describe("AccountProfile Auth Hydration", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -84,7 +86,7 @@ describe("AccountProfile Auth Hydration", () => {
 
       expect(result.getByText("Account Settings")).toBeInTheDocument();
       expect(
-        result.getByText("Manage your account information and preferences.")
+        result.getByText("Manage your account information and preferences."),
       ).toBeInTheDocument();
       expect(result.getByTestId("email")).toHaveValue("user@example.com");
       expect(result.getByTestId("display-name")).toHaveValue("Test User");
@@ -105,6 +107,7 @@ describe("AccountProfile Auth Hydration", () => {
         user: null,
         isAuthenticated: false,
         isLoading: true,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -128,6 +131,7 @@ describe("AccountProfile Auth Hydration", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -138,18 +142,18 @@ describe("AccountProfile Auth Hydration", () => {
       await waitFor(() => {
         expect(result.queryByText("Loading...")).not.toBeInTheDocument();
         expect(
-          result.queryByTestId("loading-skeleton")
+          result.queryByTestId("loading-skeleton"),
         ).not.toBeInTheDocument();
         expect(result.getByText("Account Settings")).toBeInTheDocument();
         expect(result.getByTestId("email")).toHaveValue(
-          "freshly-logged-in@example.com"
+          "freshly-logged-in@example.com",
         );
         expect(result.getByTestId("display-name")).toHaveValue("Fresh User");
       });
 
       // Verify all interactive elements are working
       expect(
-        result.getByRole("button", { name: "Update Display Name" })
+        result.getByRole("button", { name: "Update Display Name" }),
       ).toBeInTheDocument();
       expect(result.getByTestId("display-name")).not.toBeDisabled();
     });
@@ -167,6 +171,7 @@ describe("AccountProfile Auth Hydration", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -192,6 +197,7 @@ describe("AccountProfile Auth Hydration", () => {
         user: null,
         isAuthenticated: false,
         isLoading: true,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -201,7 +207,7 @@ describe("AccountProfile Auth Hydration", () => {
       // User should see loading state (not blank page)
       expect(result.getByText("Loading...")).toBeInTheDocument();
       expect(
-        result.getByText("Initializing your account information.")
+        result.getByText("Initializing your account information."),
       ).toBeInTheDocument();
 
       // The fix: auth completes and user data loads
@@ -216,6 +222,7 @@ describe("AccountProfile Auth Hydration", () => {
         },
         isAuthenticated: true,
         isLoading: false,
+        isStaticMode: false,
         signOut: vi.fn(),
         updateProfile: vi.fn(),
       });
@@ -226,7 +233,7 @@ describe("AccountProfile Auth Hydration", () => {
       await waitFor(() => {
         expect(result.getByText("Account Settings")).toBeInTheDocument();
         expect(result.getByTestId("email")).toHaveValue(
-          "bug-fix-test@example.com"
+          "bug-fix-test@example.com",
         );
         expect(result.getByTestId("display-name")).toHaveValue("Bug Fix User");
       });

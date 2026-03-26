@@ -1,3 +1,6 @@
+// ABOUTME: React context for authentication state, shared across the component tree.
+// ABOUTME: Supports static mode (no Supabase) by returning a null-user, unauthenticated context.
+
 import {
   createContext,
   useCallback,
@@ -11,6 +14,8 @@ import { type AuthError, type User } from "@supabase/supabase-js";
 import log from "loglevel";
 
 import { createClient } from "~/lib/supabase/client";
+import { isStaticMode } from "~/lib/static-mode";
+
 interface AuthContextType {
   user: {
     id: string;
@@ -22,13 +27,29 @@ interface AuthContextType {
   } | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isStaticMode: boolean;
   signOut: () => Promise<void>;
   updateProfile: (data: { full_name: string }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({
+// Provides a no-op auth context when the application runs without Supabase
+function StaticAuthProvider({ children }: { children: React.ReactNode }) {
+  const value: AuthContextType = {
+    user: null,
+    isAuthenticated: false,
+    isLoading: false,
+    isStaticMode: true,
+    signOut: async () => {},
+    updateProfile: async () => {},
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+// Provides live Supabase-backed auth context for normal (non-static) operation
+function LiveAuthProvider({
   children,
   request,
 }: {
@@ -42,10 +63,17 @@ export function AuthProvider({
   // Set up Supabase Auth event listeners
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSupabaseUser(session?.user ?? null);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setSupabaseUser(session?.user ?? null);
+        setLoading(false);
+      })
+      .catch((error) => {
+        log.error("Failed to get auth session:", error);
+        setSupabaseUser(null);
+        setLoading(false);
+      });
 
     // Listen for auth changes
     const {
@@ -68,7 +96,7 @@ export function AuthProvider({
 
     // Get name from metadata or use fallback
     const fullName = String(
-      userMetadata.full_name || userMetadata.name || "Anonymous Shroom"
+      userMetadata.full_name || userMetadata.name || "Anonymous Shroom",
     );
 
     // Create fallback initials from name
@@ -111,7 +139,7 @@ export function AuthProvider({
         throw error;
       }
     },
-    [supabase.auth]
+    [supabase.auth],
   );
 
   const value = useMemo(
@@ -119,13 +147,28 @@ export function AuthProvider({
       user: transformedUser,
       isAuthenticated: Boolean(supabaseUser),
       isLoading: loading,
+      isStaticMode: false,
       signOut,
       updateProfile,
     }),
-    [transformedUser, supabaseUser, loading, signOut, updateProfile]
+    [transformedUser, supabaseUser, loading, signOut, updateProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function AuthProvider({
+  children,
+  request,
+}: {
+  children: React.ReactNode;
+  request: Request;
+}) {
+  if (isStaticMode()) {
+    return <StaticAuthProvider>{children}</StaticAuthProvider>;
+  }
+
+  return <LiveAuthProvider request={request}>{children}</LiveAuthProvider>;
 }
 
 export function useAuth() {

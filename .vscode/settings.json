@@ -20,6 +20,13 @@
       "url": "./app/data/hero-schema.json"
     }
   ],
-  "explorer.excludeGitIgnore": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.netlify": true,
+    "**/.react-router": true,
+    "**/supabase/.branches": true,
+    "**/supabase/.temp": true
+  },
+  "explorer.excludeGitIgnore": false,
   "postman.settings.dotenv-detection-notification-visibility": false
 }
